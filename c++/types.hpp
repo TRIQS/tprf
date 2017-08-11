@@ -29,7 +29,9 @@ namespace tprf {
 enum class Channel_t { PP, PH, PH_bar }; // Channels
 
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
-
+typedef g2_iw_t::const_view_type g2_iw_cvt;
+typedef g2_iw_t::view_type g2_iw_vt;
+  
 using scalar_t = g2_iw_t::scalar_t;
 
 /// Container type of one-particle Green and Vertex functions in Matsubara

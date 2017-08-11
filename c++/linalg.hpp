@@ -32,12 +32,12 @@ using namespace triqs::arrays;
 namespace tprf {
 
  /// [G]^{-1}, Two-particle response-function inversion in the PH channel
- template <Channel_t CH> g2_iw_t inverse(g2_iw_t const &g);
+  template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
 
  /// C = A * B, two-particle response-function product the PH channel
- template <Channel_t CH> g2_iw_t product(g2_iw_t const &A, g2_iw_t const &B);
+ template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
 
  /// 1, identity two-particle response-function the PH channel
- template <Channel_t CH> g2_iw_t identity(g2_iw_t const &g);
+ template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
 
 } // namespace tprf

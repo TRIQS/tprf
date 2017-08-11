@@ -26,7 +26,7 @@ namespace tprf {
  // ----------------------------------------------------
 
  /// Inverse: [G]^{-1}, Two-particle response-function inversion
- template <Channel_t CH> g2_iw_t inverse(g2_iw_t const &g) {
+ template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g) {
 
   channel_grouping<CH> chg;
   auto g_inv = make_gf(g.mesh(), g.target(), g.memory_layout());
@@ -50,7 +50,7 @@ namespace tprf {
  // ----------------------------------------------------
 
  /// product: C = A * B, two-particle response-function product
- template <Channel_t CH> g2_iw_t product(g2_iw_t const &A, g2_iw_t const &B) {
+ template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B) {
 
   channel_grouping<CH> chg;
   // check that A and B are compatible!
@@ -78,7 +78,7 @@ namespace tprf {
  // ----------------------------------------------------
 
  /// Identity: 1, identity two-particle response-function
- template <Channel_t CH> g2_iw_t identity(g2_iw_t const &g) {
+ template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g) {
 
   channel_grouping<CH> chg;
   auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
@@ -96,8 +96,16 @@ namespace tprf {
 
  // ----------------------------------------------------
 
- template g2_iw_t inverse<Channel_t::PH>(g2_iw_t const &);
- template g2_iw_t product<Channel_t::PH>(g2_iw_t const &, g2_iw_t const &);
- template g2_iw_t identity<Channel_t::PH>(g2_iw_t const &);
+ template g2_iw_t inverse<Channel_t::PH>(g2_iw_cvt);
+ template g2_iw_t inverse<Channel_t::PH_bar>(g2_iw_cvt);
+ template g2_iw_t inverse<Channel_t::PP>(g2_iw_cvt);
 
+ template g2_iw_t product<Channel_t::PH>(g2_iw_cvt, g2_iw_cvt);
+ template g2_iw_t product<Channel_t::PH_bar>(g2_iw_cvt, g2_iw_cvt);
+ template g2_iw_t product<Channel_t::PP>(g2_iw_cvt, g2_iw_cvt);
+
+ template g2_iw_t identity<Channel_t::PH>(g2_iw_cvt);
+ template g2_iw_t identity<Channel_t::PH_bar>(g2_iw_cvt);
+ template g2_iw_t identity<Channel_t::PP>(g2_iw_cvt);
+  
 } // namespace tprf
