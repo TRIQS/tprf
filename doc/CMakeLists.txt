@@ -11,12 +11,21 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in ${CMAKE_CURRENT_BINARY_DIR
 
 # all rst files of the documentation
 file(GLOB_RECURSE doc_sources *.rst)
+set(DOC_SOURCE ${CMAKE_CURRENT_BINARY_DIR})
 
 # create documentation target
 set(sphinx_top ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
 add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${doc_sources} py_copy fourier tprf_c
-                   COMMAND ${CMAKE_BINARY_DIR}/build_pytriqs ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -b html ${CMAKE_CURRENT_SOURCE_DIR} html)
+                   COMMAND ${CMAKE_BINARY_DIR}/build_pytriqs ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -b html ${DOC_SOURCE} html)
 add_custom_target(doc_sphinx ALL DEPENDS ${sphinx_top})
+
+# Create a temporary copy of the doc that will be completed by the automatically generated one.
+FILE(GLOB_RECURSE all_rst_files RELATIVE ${CMAKE_SOURCE_DIR}/doc *.rst _* *.py *.png *.cpp)
+SET(rst_copy_tar  ${CMAKE_CURRENT_BINARY_DIR}/rst_copy.tar)
+add_custom_command (OUTPUT ${rst_copy_tar} DEPENDS ${all_rst_files}
+ COMMAND cd ${CMAKE_SOURCE_DIR}/doc && tar cf ${rst_copy_tar} ${all_rst_files} && cd ${CMAKE_BINARY_DIR}/doc && tar xf ${rst_copy_tar} )
+add_custom_target(rst_copy DEPENDS ${rst_copy_tar})
+add_dependencies(doc_sphinx rst_copy) # we must first have copied the sources
 
 # use c++2doc to automatically build the documentation of C++
 option(DocWithCpp2doc "Use c++2doc to generate C++ documentation of tprf classes and functions (requires libclang)" ON)

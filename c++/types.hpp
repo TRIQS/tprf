@@ -26,16 +26,21 @@ using namespace triqs::gfs;
 
 namespace tprf {
 
-enum class Channel_t { PP, PH, PH_bar }; // Channels
+/// Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)
+enum class Channel_t { PP, PH, PH_bar };
 
+/// Two-particle response function type with three Matsubara frequencies
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
+
+/// Short hand constant view type for g2_iw_t
 typedef g2_iw_t::const_view_type g2_iw_cvt;
+
+/// Short hand view type for g2_iw_t
 typedef g2_iw_t::view_type g2_iw_vt;
   
 using scalar_t = g2_iw_t::scalar_t;
 
 /// Container type of one-particle Green and Vertex functions in Matsubara
-/// frequencies
 using g_iw_t = gf<imfreq, matrix_valued>;
 
 /// Container type of two-particle Green and Vertex functions in imaginary time

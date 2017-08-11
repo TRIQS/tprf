@@ -23,6 +23,8 @@ Reference manual
 .. toctree::
    :maxdepth: 1
 
+   reference/linalg
+
 FAQs
 ----
 

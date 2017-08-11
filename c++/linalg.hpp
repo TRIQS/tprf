@@ -26,18 +26,58 @@
 using namespace triqs::gfs;
 using namespace triqs::arrays;
 
-#include "types.hpp"
 #include "channel_grouping.hpp"
+#include "types.hpp"
 
 namespace tprf {
 
- /// [G]^{-1}, Two-particle response-function inversion in the PH channel
-  template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
+/** Two-particle response-function inversion $[g]^{-1}$.
+ 
+ The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
+ is cast to matrix form and inverted
 
- /// C = A * B, two-particle response-function product the PH channel
- template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
+ .. math::
+   [g]^{-1} = [ g_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
 
- /// 1, identity two-particle response-function the PH channel
- template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
+ where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ 
+ Storage is allocated and the inverse is returned by value.
+ 
+ @tparam CH selects the two-particle channel
+ @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
+ @return :math:`[g]^{-1}` in the given channel
+ @include tprf/linalg.hpp
+ @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
+ 
+ */
+template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
+
+/** Two-particle response-function product $A * B$
+ 
+ The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
+ and $B \equiv A_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ product is computed
+
+ .. math::
+   (A * B)_{abcd}(\omega, \nu, \nu') 
+   = \sum_{\nu_1 A_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+
+ where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+
+ FIXME
+ 
+ Storage is allocated and the inverse is returned by value.
+ 
+ @tparam CH selects the two-particle channel
+ @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
+ @return :math:`[g]^{-1}` in the given channel
+ @include tprf/linalg.hpp
+ @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
+ 
+ */
+template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
+
+/// 1, identity two-particle response-function the PH channel
+template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
 
 } // namespace tprf
