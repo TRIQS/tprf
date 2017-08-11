@@ -24,6 +24,15 @@ add_subdirectory(c++)
 # Remove this for a pure C++ code.
 if (${TRIQS_WITH_PYTHON_SUPPORT})
  add_subdirectory(python)
+
+ # Build Sphinx based docs
+ option(BUILD_DOC "Build documentation" OFF)
+ if(${BUILD_DOC})
+   if(NOT ${TRIQS_WITH_DOCUMENTATION})
+     message(FATAL_ERROR "Error: TRIQS library has not been compiled with its documentation")
+   endif()
+   add_subdirectory(doc)
+ endif(${BUILD_DOC})
 endif()
 
 # Add tests
