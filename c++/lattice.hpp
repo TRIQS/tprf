@@ -23,12 +23,16 @@
 #include "types.hpp"
 
 namespace tprf {
-  gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh);
-  gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma);
+  
+gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh);
+gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma);
 
-  gr_iw_t gr_from_gk(gk_iw_cvt gk);
-  gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const & bz);
+gr_iw_t gr_from_gk(gk_iw_cvt gk);
+gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz);
 
-  //chi0r_t chi0r_from_gr_ph(gr_iw_cvt gr);
-  //chi0k_t chi0k_from_chi0r(chi0r_t chi0r);  
+chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr);
+
+chi0r_t chi0r_from_chi0q(chi0q_cvt chi0q);
+chi0q_t chi0q_from_chi0r(chi0r_cvt chi0r, brillouin_zone const & bz);
+
 } // namespace tprf

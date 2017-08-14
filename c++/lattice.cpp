@@ -25,10 +25,15 @@
 using namespace triqs::clef;
 
 namespace {
-placeholder<0> inu;
-placeholder<1> k;
-placeholder<2> a;
-placeholder<3> b;
+placeholder<0> iw;
+placeholder<1> inu;
+placeholder<2> k;
+placeholder<3> r;
+
+placeholder<4> a;
+placeholder<5> b;
+placeholder<6> c;
+placeholder<7> d;
 } // namespace
 
 #include <triqs/arrays/linalg/det_and_inverse.hpp>
@@ -76,11 +81,11 @@ gr_iw_t gr_from_gk(gk_iw_cvt gk) {
   auto _ = var_t{};
   for (auto const &nidx : std::get<0>(gr.mesh()))
     gr[nidx][_] = inverse_fourier(gk[nidx][_]);
-  
+
   return gr;
 }
 
-gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const & bz) {
+gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz) {
   int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
 
   gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>(
@@ -89,8 +94,56 @@ gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const & bz) {
   auto _ = var_t{};
   for (auto const &nidx : std::get<0>(gk.mesh()))
     gk[nidx][_] = fourier(gr[nidx][_]);
-  
+
   return gk;
 }
-  
+
+chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr) {
+
+  int nb = gr.target().shape()[0];
+  int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
+  double beta = std::get<0>(gr.mesh()).domain().beta;
+
+  chi0r_t chi0r{{{beta, Boson, nw}, {beta, Fermion, nnu}, {nk, nk}},
+                {nb, nb, nb, nb}};
+
+  chi0r(iw, inu, r)(a, b, c, d) << gr(inu, r)(d, a) * gr(inu + iw, -r)(b, c);
+
+  return chi0r;
+}
+
+chi0r_t chi0r_from_chi0q(chi0q_cvt chi0q) {
+  auto mb = std::get<0>(chi0q.mesh());
+  auto mf = std::get<1>(chi0q.mesh());
+  int nk = std::get<2>(chi0q.mesh()).get_dimensions()[0];
+
+  auto chi0r =
+      make_gf<chi0r_t::mesh_t::var_t>({mb, mf, {nk, nk}}, chi0q.target());
+
+  for (auto const &widx : std::get<0>(chi0r.mesh())) {
+    for (auto const &nidx : std::get<1>(chi0r.mesh())) {
+      auto _ = var_t{};
+      chi0r[widx][nidx][_] = inverse_fourier(chi0q[widx][nidx][_]);
+    }
+  }
+  return chi0r;
+}
+
+chi0q_t chi0q_from_chi0r(chi0r_cvt chi0r, brillouin_zone const &bz) {
+  auto mb = std::get<0>(chi0r.mesh());
+  auto mf = std::get<1>(chi0r.mesh());
+  int nk = std::get<2>(chi0r.mesh()).get_dimensions()[0];
+
+  auto chi0q =
+      make_gf<chi0q_t::mesh_t::var_t>({mb, mf, {bz, nk}}, chi0r.target());
+
+  for (auto const &widx : std::get<0>(chi0q.mesh())) {
+    for (auto const &nidx : std::get<1>(chi0q.mesh())) {
+      auto _ = var_t{};
+      chi0q[widx][nidx][_] = fourier(chi0r[widx][nidx][_]);
+    }
+  }
+  return chi0q;
+}
+
 } // namespace tprf

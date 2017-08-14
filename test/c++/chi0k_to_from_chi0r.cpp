@@ -31,33 +31,13 @@ using namespace triqs::lattice;
 #include "lattice.hpp"
 using namespace tprf;
 
-TEST(lattice, g0k_to_from_g0r) {
+TEST(lattice, chi0k_to_from_chi0r) {
+
  double beta = 100.0;
- int n_iw = 1025;
+ int n_iw = 1028;
 
- int nk = 4; 
- double t = 1.0;
- auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
- 
- triqs::clef::placeholder<0> om_;
- triqs::clef::placeholder<1> k_;
-
- auto ek = ek_t{{bz, nk}, {1, 1}};
- ek(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
-
- double mu = 0.;
- auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
- auto g0k = g0k_from_ek(mu, ek, mesh);
-
- auto g0r = gr_from_gk(g0k);
- auto g0k_ref = gk_from_gr(g0r, bz);
-
- EXPECT_CLOSE_ARRAY(g0k.data(), g0k_ref.data()); 
-}
-
-TEST(lattice, gk_to_from_gr) {
- double beta = 100.0;
- int n_iw = 1025;
+ int nw = 8;
+ int nnu = 128;
 
  int nk = 4; 
  double t = 1.0;
@@ -76,11 +56,13 @@ TEST(lattice, gk_to_from_gr) {
  sigma(om_) << 1./om_;
  
  auto gk = gk_from_ek_sigma(mu, ek, sigma);
-
  auto gr = gr_from_gk(gk);
- auto gk_ref = gk_from_gr(gr, bz);
+ 
+ auto chi0r = chi0r_from_gr_PH(nw, nnu, gr);
+ auto chi0q = chi0q_from_chi0r(chi0r, bz);
+ auto chi0r_ref = chi0r_from_chi0q(chi0q);
 
- EXPECT_CLOSE_ARRAY(gk.data(), gk_ref.data()); 
+ EXPECT_CLOSE_ARRAY(chi0r.data(), chi0r_ref.data()); 
 }
 
 MAKE_MAIN;

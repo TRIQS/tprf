@@ -11,7 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/c++)
 #target_link_libraries (linalg_ops ${TRIQS_LIBRARY_ALL} ${TRIQS_LIBRARY_GTEST} tprf_c)
 #add_test(linalg_ops ${CMAKE_CURRENT_BINARY_DIR}/linalg_ops)
 
-set(SIMPLE_TESTS linalg_ops bubble gf_inverse gk_to_from_gr)
+set(SIMPLE_TESTS linalg_ops bubble gf_inverse gk_to_from_gr chi0k_to_from_chi0r)
 
 foreach(t ${SIMPLE_TESTS})
   add_executable(${t} ${CMAKE_CURRENT_SOURCE_DIR}/${t}.cpp)

@@ -48,6 +48,14 @@ typedef gr_iw_t::const_view_type gr_iw_cvt;
 typedef gr_iw_t::view_type gr_iw_vt;
 
 
+typedef gf<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q_t;
+typedef chi0q_t::const_view_type chi0q_cvt;
+typedef chi0q_t::view_type chi0q_vt;
+
+typedef gf<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r_t;
+typedef chi0r_t::const_view_type chi0r_cvt;
+typedef chi0r_t::view_type chi0r_vt;
+
 /// Two-particle response function type with three Matsubara frequencies
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
 
