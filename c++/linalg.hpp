@@ -52,32 +52,53 @@ namespace tprf {
  */
 template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
 
-/** Two-particle response-function product $A * B$
+/** Two-particle response-function product :math:`A * B`
  
  The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
- and $B \equiv A_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ and $B \equiv B_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
  product is computed
 
  .. math::
-   (A * B)_{abcd}(\omega, \nu, \nu') 
-   = \sum_{\nu_1 A_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+   (A * B)_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
+   = \sum_{\bar{\nu}ab} 
+   A_{\{\nu\alpha\beta\}, \{\bar{\nu}ab\}}(\omega) 
+   B_{\{\bar{\nu}ab\}, \{\nu'\gamma\delta\}}(\omega) 
 
  where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
 
- FIXME
- 
- Storage is allocated and the inverse is returned by value.
+ Storage is allocated and the product is returned by value.
  
  @tparam CH selects the two-particle channel
- @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
- @return :math:`[g]^{-1}` in the given channel
+ @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')`
+ @param B two-particle response function :math:`B \equiv A_{abcd}(\omega, \nu, \nu')`
+ @return :math:`(A * B)` in the given channel
  @include tprf/linalg.hpp
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
 
-/// 1, identity two-particle response-function the PH channel
+/** Two-particle response-function identity operator :math:`\mathbf{1}`
+ 
+ Constructs the unity-operator in the given channel
+ 
+ .. math::
+   \mathbf{1}_{abcd}(\omega,\nu,\nu') =
+   \mathbf{1}_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
+   \equiv 
+   \delta_{\nu\nu'} \delta_{\alpha\gamma} \delta_{\beta\delta}
+
+ where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+
+ Storage is allocated and the result is returned by value.
+ 
+ @tparam CH selects the two-particle channel
+ @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
+ @return the unity operator :math:`\mathbf{1}`, in the given channel
+ @include tprf/linalg.hpp
+ @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
+ 
+ */
 template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
 
 } // namespace tprf
