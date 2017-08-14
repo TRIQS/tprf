@@ -29,6 +29,12 @@ namespace tprf {
 /// Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)
 enum class Channel_t { PP, PH, PH_bar };
 
+/// Singl-particle response function type with one Matsubara frequency
+typedef gf<imfreq, matrix_valued> g_iw_t;
+
+typedef g_iw_t::const_view_type g_iw_cvt;
+typedef g_iw_t::view_type g_iw_vt;
+
 /// Two-particle response function type with three Matsubara frequencies
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
 
