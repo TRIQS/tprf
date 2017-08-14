@@ -18,13 +18,38 @@
  * TRIQS. If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
-#pragma once
 
-#include "types.hpp"
+#include <triqs/clef.hpp>
+#include <triqs/gfs.hpp>
+#include <triqs/test_tools/gfs.hpp>
 
-namespace tprf {
+using namespace triqs::gfs;
+using namespace triqs::arrays;
+using namespace triqs::lattice;
 
-template <Channel_t CH> g2_iw_t chi0_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
-template <Channel_t CH> g2_iw_t chi_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
+TEST(tprf, gf_inverse) {
+ double beta = 100.0;
+ int n_iw = 1025;
 
-} // namespace tprf
+ int nk = 4; 
+ double t = 1.0;
+ auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
+ 
+ auto G_iw = gf<cartesian_product<imfreq, brillouin_zone>>{{{beta, Fermion, n_iw}, {bz, nk}}, {1, 1}};
+
+ triqs::clef::placeholder<0> om_;
+ triqs::clef::placeholder<1> k_;
+ 
+ G_iw(om_, k_) << om_ - 2*t * (cos(k_(0)) + cos(k_(1)));
+
+ //G_iw = inverse(G_iw); // does not work, see TRIQS issue #463
+ 
+ for( auto const & kidx : std::get<1>(G_iw.mesh()) ) {
+   auto _ = var_t{};
+   auto G = G_iw[_][kidx];
+   G_iw[_][kidx] = inverse(G);
+  }
+
+}
+
+MAKE_MAIN;

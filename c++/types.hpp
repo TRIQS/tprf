@@ -31,9 +31,22 @@ enum class Channel_t { PP, PH, PH_bar };
 
 /// Singl-particle response function type with one Matsubara frequency
 typedef gf<imfreq, matrix_valued> g_iw_t;
-
 typedef g_iw_t::const_view_type g_iw_cvt;
 typedef g_iw_t::view_type g_iw_vt;
+
+/// Lattice types
+typedef gf<brillouin_zone, matrix_valued> ek_t;
+typedef ek_t::const_view_type ek_cvt;
+typedef ek_t::view_type ek_vt;
+  
+typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> gk_iw_t;
+typedef gk_iw_t::const_view_type gk_iw_cvt;
+typedef gk_iw_t::view_type gk_iw_vt;
+
+typedef gf<cartesian_product<imfreq, cyclic_lattice>, matrix_valued> gr_iw_t;
+typedef gr_iw_t::const_view_type gr_iw_cvt;
+typedef gr_iw_t::view_type gr_iw_vt;
+
 
 /// Two-particle response function type with three Matsubara frequencies
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;

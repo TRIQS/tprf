@@ -7,14 +7,14 @@ include_directories(${CMAKE_SOURCE_DIR}/c++)
 #triqs_add_all_cpp_tests_in_current_dir()
 
 # Linalg Test
-add_executable(linalg_ops ${CMAKE_CURRENT_SOURCE_DIR}/linalg_ops.cpp)
-target_link_libraries (linalg_ops ${TRIQS_LIBRARY_ALL} ${TRIQS_LIBRARY_GTEST} tprf_c)
-add_test(linalg_ops ${CMAKE_CURRENT_BINARY_DIR}/linalg_ops)
+#add_executable(linalg_ops ${CMAKE_CURRENT_SOURCE_DIR}/linalg_ops.cpp)
+#target_link_libraries (linalg_ops ${TRIQS_LIBRARY_ALL} ${TRIQS_LIBRARY_GTEST} tprf_c)
+#add_test(linalg_ops ${CMAKE_CURRENT_BINARY_DIR}/linalg_ops)
 
-#set(SIMPLE_TESTS linalg_ops)
+set(SIMPLE_TESTS linalg_ops bubble gf_inverse gk_to_from_gr)
 
-#foreach(t ${SIMPLE_TESTS})
-#    add_executable(${t} ${CMAKE_CURRENT_SOURCE_DIR}/${t}.cpp)
-#    triqs_set_rpath_for_target(${t})
-#    triqs_add_cpp_test(${t})
-#endforeach(t)
+foreach(t ${SIMPLE_TESTS})
+  add_executable(${t} ${CMAKE_CURRENT_SOURCE_DIR}/${t}.cpp)
+  target_link_libraries (${t} ${TRIQS_LIBRARY_ALL} ${TRIQS_LIBRARY_GTEST} tprf_c)
+  add_test(${t} ${CMAKE_CURRENT_BINARY_DIR}/${t})
+endforeach(t)

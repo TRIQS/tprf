@@ -24,6 +24,7 @@
 #include <triqs/clef.hpp>
 using namespace triqs::clef;
 
+namespace {
 placeholder<0> a;
 placeholder<1> b;
 placeholder<2> c;
@@ -32,6 +33,7 @@ placeholder<3> d;
 placeholder<4> Omega;
 placeholder<5> n;
 placeholder<6> np;
+} // namespace
 
 namespace tprf {
 
