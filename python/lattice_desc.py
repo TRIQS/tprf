@@ -31,11 +31,6 @@ using namespace triqs::lattice;
 using namespace tprf;
 """)
 
-
-# cpp2py does not cope with typedefs... at all
-#module.add_function ("gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh)", doc = """""")
-#module.add_function ("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma)", doc = """""") 
-
 module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matrix_valued> ek, gf_mesh<imfreq> mesh)", doc = """""")
 module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
 
@@ -45,9 +40,6 @@ module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic
 module.add_function("chi0r_t chi0r_from_gr_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
 module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
 module.add_function("chi0q_t chi0q_from_chi0r(gf_view<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r, brillouin_zone bz)", doc = """""")
-
-module.add_function ("chi0_t get_at_q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, mini_vector<int, 3> q)", doc = """""")
-module.add_function ("gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(gf_view<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi0)", doc = """""")
 
 module.add_function ("gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
 

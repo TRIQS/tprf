@@ -146,26 +146,6 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz) {
   return chi0q;
 }
 
-chi0_t get_at_q(chi0q_vt chi0q, mini_vector<int, 3> q) {
-  auto chi0 = make_gf<chi0_t::mesh_t::var_t>(
-      {std::get<0>(chi0q.mesh()), std::get<1>(chi0q.mesh())}, chi0q.target());
-
-  auto _ = var_t{};
-  chi0[_][_] = chi0q[_][_][q];
-  return chi0;
-}
-
-gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(chi0_vt chi0) {
-  auto chi0w = make_gf<cartesian_product<imfreq>>({std::get<0>(chi0.mesh())},
-                                                  chi0.target());
-
-  auto mesh = std::get<1>(chi0.mesh());
-  chi0w(iw)(a, b, c, d) << sum(chi0(iw, inu)(a, b, c, d), inu = mesh) /
-                               mesh.size();
-
-  return chi0w;
-}
-
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu(chi0q_t chi0q) {
 
@@ -173,9 +153,7 @@ chi0q_sum_nu(chi0q_t chi0q) {
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
       {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
 
-  chi0q_w(iw, k)(a, b, c, d)
-      << sum(chi0q(iw, inu, k)(a, b, c, d), inu = mesh) / mesh.size();
-
+  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / mesh.size();
   return chi0q_w;
 }
 

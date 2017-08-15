@@ -39,9 +39,6 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr);
 chi0r_t chi0r_from_chi0q(chi0q_vt chi0q);
 chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz);
 
-chi0_t get_at_q(chi0q_vt chi0k, mini_vector<int, 3> q);
-gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(chi0_vt chi0);
-
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(chi0q_t chi0q);
 
 } // namespace tprf
