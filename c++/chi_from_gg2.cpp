@@ -85,4 +85,14 @@ template <> g2_iw_t chi_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
   return chi;
 }
 
+
+// ----------------------------------------------------
+// functions for (easier) Python wrapping
+  
+g2_iw_t chi0_from_gg2_PH(g_iw_vt g, g2_iw_vt g2) { return chi0_from_gg2<Channel_t::PH>(g, g2); }
+g2_iw_t chi0_from_gg2_PP(g_iw_vt g, g2_iw_vt g2) { return chi0_from_gg2<Channel_t::PP>(g, g2); }
+
+g2_iw_t chi_from_gg2_PH(g_iw_vt g, g2_iw_vt g2) { return chi_from_gg2<Channel_t::PH>(g, g2); }
+g2_iw_t chi_from_gg2_PP(g_iw_vt g, g2_iw_vt g2) { return chi_from_gg2<Channel_t::PP>(g, g2); }
+
 } // namespace tprf

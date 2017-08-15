@@ -25,5 +25,17 @@ target_link_libraries(lattice tprf_c)
 triqs_set_rpath_for_target(lattice)
 install(TARGETS lattice DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+# Build the C++ extension module
+triqs_python_extension(linalg ${python_destination})
+target_link_libraries(linalg tprf_c)
+triqs_set_rpath_for_target(linalg)
+install(TARGETS linalg DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
+# Build the C++ extension module
+triqs_python_extension(chi_from_gg2 ${python_destination})
+target_link_libraries(chi_from_gg2 tprf_c)
+triqs_set_rpath_for_target(chi_from_gg2)
+install(TARGETS chi_from_gg2 DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 # Install utilities
 install(FILES Dummy.py DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})

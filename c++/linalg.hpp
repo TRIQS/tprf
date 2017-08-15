@@ -52,6 +52,11 @@ namespace tprf {
  */
 template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
 
+g2_iw_t inverse_PH(g2_iw_vt g) { return inverse<Channel_t::PH>(g); }
+g2_iw_t inverse_PP(g2_iw_vt g) { return inverse<Channel_t::PP>(g); }
+g2_iw_t inverse_PH_bar(g2_iw_vt g) { return inverse<Channel_t::PH_bar>(g); }
+
+  
 /** Two-particle response-function product :math:`A * B`
  
  The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
@@ -78,6 +83,10 @@ template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
  */
 template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
 
+g2_iw_t product_PH(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PH>(A, B); }
+g2_iw_t product_PP(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PP>(A, B); }
+g2_iw_t product_PH_bar(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PH_bar>(A, B); }
+  
 /** Two-particle response-function identity operator :math:`\mathbf{1}`
  
  Constructs the unity-operator in the given channel
@@ -100,5 +109,9 @@ template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
  
  */
 template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
+
+g2_iw_t identity_PH(g2_iw_vt g) { return identity<Channel_t::PH>(g); }
+g2_iw_t identity_PP(g2_iw_vt g) { return identity<Channel_t::PP>(g); }
+g2_iw_t identity_PH_bar(g2_iw_vt g) { return identity<Channel_t::PH_bar>(g); }
 
 } // namespace tprf
