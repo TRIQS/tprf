@@ -22,12 +22,24 @@
 
 #include "types.hpp"
 
+#include <triqs/lattice/tight_binding.hpp>
+#include <triqs/lattice/brillouin_zone.hpp>
+
 namespace tprf {
+
+void test_function();
+void test_function_tb(triqs::lattice::tight_binding tb);
+void test_function_bz(triqs::lattice::brillouin_zone bz);
+void test_function_ek(ek_vt ek);
+//void test_function_gk(gk_iw_cvt gk);
+//void test_function_gk(gf_const_view<cartesian_product<imfreq, brillouin_zone>> gk);
+//void test_function_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk);
+void test_function_gk(gk_iw_vt gk);
   
 gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh);
 gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma);
 
-gr_iw_t gr_from_gk(gk_iw_cvt gk);
+gr_iw_t gr_from_gk(gk_iw_vt gk);
 gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz);
 
 chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr);

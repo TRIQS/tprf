@@ -41,6 +41,31 @@ using triqs::arrays::inverse;
 
 namespace tprf {
 
+  void test_function() {
+    std::cout << "Hello lattice module!\n";
+  }
+
+  void test_function_tb(triqs::lattice::tight_binding tb) {
+    std::cout << "Hello lattice module tb arg!\n";
+  }
+
+  void test_function_bz(triqs::lattice::brillouin_zone bz) {
+    std::cout << "Hello lattice module bz arg!\n";
+  }
+
+  void test_function_ek(ek_vt ek){
+    std::cout << "Hello lattice module ek arg!\n";
+  }
+
+  //void test_function_gk(gk_iw_cvt gk) { std::cout << "Hello lattice module gk arg!\n"; }
+
+  //void test_function_gk(gf_const_view<cartesian_product<imfreq, brillouin_zone>> gk)  { std::cout << "Hello lattice module gk arg!\n"; }
+  //void test_function_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)  { std::cout << "Hello lattice module gk arg!\n"; }
+
+  void test_function_gk(gk_iw_vt gk)  { std::cout << "Hello lattice module gk arg!\n"; }
+
+  
+  
 gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh) {
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
 
@@ -72,7 +97,7 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma) {
   return gk;
 }
 
-gr_iw_t gr_from_gk(gk_iw_cvt gk) {
+gr_iw_t gr_from_gk(gk_iw_vt gk) {
   int nk = std::get<1>(gk.mesh()).get_dimensions()[0];
 
   gr_iw_t gr = make_gf<gr_iw_t::mesh_t::var_t>(

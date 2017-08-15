@@ -18,5 +18,12 @@ include_directories(${TRIQS_INCLUDE_ALL} ${CMAKE_CURRENT_SOURCE_DIR})
 triqs_set_rpath_for_target(fourier)
 install(TARGETS fourier DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+# Build the C++ extension module
+triqs_python_extension(lattice ${python_destination})
+target_link_libraries(lattice tprf_c)
+include_directories(${TRIQS_INCLUDE_ALL} ${CMAKE_CURRENT_SOURCE_DIR})
+triqs_set_rpath_for_target(lattice)
+install(TARGETS lattice DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 # Install utilities
 install(FILES Dummy.py DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
