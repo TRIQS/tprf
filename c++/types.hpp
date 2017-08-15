@@ -21,14 +21,17 @@
 #pragma once
 
 #include <triqs/gfs.hpp>
-
+#include <triqs/arrays.hpp>
 using namespace triqs::gfs;
+using namespace triqs::arrays;
 
 namespace tprf {
 
 /// Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)
 enum class Channel_t { PP, PH, PH_bar };
 
+typedef triqs::utility::mini_vector<int,3> kpt_t;
+  
 /// Singl-particle response function type with one Matsubara frequency
 typedef gf<imfreq, matrix_valued> g_iw_t;
 typedef g_iw_t::const_view_type g_iw_cvt;
@@ -47,6 +50,10 @@ typedef gf<cartesian_product<imfreq, cyclic_lattice>, matrix_valued> gr_iw_t;
 typedef gr_iw_t::const_view_type gr_iw_cvt;
 typedef gr_iw_t::view_type gr_iw_vt;
 
+
+typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi0_t;
+typedef chi0_t::const_view_type chi0_cvt;
+typedef chi0_t::view_type chi0_vt;
 
 typedef gf<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q_t;
 typedef chi0q_t::const_view_type chi0q_cvt;
@@ -68,7 +75,7 @@ typedef g2_iw_t::view_type g2_iw_vt;
 using scalar_t = g2_iw_t::scalar_t;
 
 /// Container type of one-particle Green and Vertex functions in Matsubara
-using g_iw_t = gf<imfreq, matrix_valued>;
+//using g_iw_t = gf<imfreq, matrix_valued>;
 
 /// Container type of two-particle Green and Vertex functions in imaginary time
 using g_tau_t = gf<imtime, matrix_valued>;

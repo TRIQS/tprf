@@ -3,7 +3,7 @@
 from wrap_generator import *
 
 # The module
-module = module_(full_name = "pytriqs.applications.tprf.lattie", doc = "Green's function lattice tools", app_name = "pytriqs.applications.tprf.lattice")
+module = module_(full_name = "pytriqs.applications.tprf.lattice", doc = "Green's function lattice tools", app_name = "pytriqs.applications.tprf.lattice")
 
 # All the triqs C++/Python modules
 
@@ -31,8 +31,32 @@ using namespace triqs::lattice;
 using namespace tprf;
 """)
 
-#module.add_function ("gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh)", doc = """""")
-#module.add_function ("gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma)", doc = """""")
-module.add_function ("gr_iw_t gr_from_gk(gk_iw_vt gk)", doc = """""")
+
+# cpp2py does not cope with typedefs... at all
+#module.add_function ("gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh)", doc = """""")
+#module.add_function ("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma)", doc = """""") 
+
+module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matrix_valued> ek, gf_mesh<imfreq> mesh)", doc = """""")
+module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
+
+module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)", doc = """""")
+module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr, brillouin_zone bz)", doc = """""")
+
+module.add_function("chi0r_t chi0r_from_gr_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
+module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
+module.add_function("chi0q_t chi0q_from_chi0r(gf_view<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r, brillouin_zone bz)", doc = """""")
+
+module.add_function ("chi0_t get_at_q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, mini_vector<int, 3> q)", doc = """""")
+module.add_function ("gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(gf_view<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi0)", doc = """""")
+
+module.add_function ("gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
+
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
+#module.add_function ("", doc = """""")
 
 module.generate_code()

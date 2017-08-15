@@ -41,32 +41,7 @@ using triqs::arrays::inverse;
 
 namespace tprf {
 
-  void test_function() {
-    std::cout << "Hello lattice module!\n";
-  }
-
-  void test_function_tb(triqs::lattice::tight_binding tb) {
-    std::cout << "Hello lattice module tb arg!\n";
-  }
-
-  void test_function_bz(triqs::lattice::brillouin_zone bz) {
-    std::cout << "Hello lattice module bz arg!\n";
-  }
-
-  void test_function_ek(ek_vt ek){
-    std::cout << "Hello lattice module ek arg!\n";
-  }
-
-  //void test_function_gk(gk_iw_cvt gk) { std::cout << "Hello lattice module gk arg!\n"; }
-
-  //void test_function_gk(gf_const_view<cartesian_product<imfreq, brillouin_zone>> gk)  { std::cout << "Hello lattice module gk arg!\n"; }
-  //void test_function_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)  { std::cout << "Hello lattice module gk arg!\n"; }
-
-  void test_function_gk(gk_iw_vt gk)  { std::cout << "Hello lattice module gk arg!\n"; }
-
-  
-  
-gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh) {
+gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
 
   g0k(inu, k)(a, b) << kronecker(a, b) * (inu + mu) - ek(k)(a, b);
@@ -80,7 +55,7 @@ gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh) {
   return g0k;
 }
 
-gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma) {
+gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
   gk_iw_t gk =
       make_gf<gk_iw_t::mesh_t::var_t>({sigma.mesh(), ek.mesh()}, ek.target());
@@ -110,7 +85,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gk) {
   return gr;
 }
 
-gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz) {
+gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz) {
   int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
 
   gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>(
@@ -123,7 +98,7 @@ gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz) {
   return gk;
 }
 
-chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr) {
+chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
 
   int nb = gr.target().shape()[0];
   int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
@@ -137,7 +112,7 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr) {
   return chi0r;
 }
 
-chi0r_t chi0r_from_chi0q(chi0q_cvt chi0q) {
+chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
   auto mb = std::get<0>(chi0q.mesh());
   auto mf = std::get<1>(chi0q.mesh());
   int nk = std::get<2>(chi0q.mesh()).get_dimensions()[0];
@@ -154,7 +129,7 @@ chi0r_t chi0r_from_chi0q(chi0q_cvt chi0q) {
   return chi0r;
 }
 
-chi0q_t chi0q_from_chi0r(chi0r_cvt chi0r, brillouin_zone const &bz) {
+chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz) {
   auto mb = std::get<0>(chi0r.mesh());
   auto mf = std::get<1>(chi0r.mesh());
   int nk = std::get<2>(chi0r.mesh()).get_dimensions()[0];
@@ -169,6 +144,39 @@ chi0q_t chi0q_from_chi0r(chi0r_cvt chi0r, brillouin_zone const &bz) {
     }
   }
   return chi0q;
+}
+
+chi0_t get_at_q(chi0q_vt chi0q, mini_vector<int, 3> q) {
+  auto chi0 = make_gf<chi0_t::mesh_t::var_t>(
+      {std::get<0>(chi0q.mesh()), std::get<1>(chi0q.mesh())}, chi0q.target());
+
+  auto _ = var_t{};
+  chi0[_][_] = chi0q[_][_][q];
+  return chi0;
+}
+
+gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(chi0_vt chi0) {
+  auto chi0w = make_gf<cartesian_product<imfreq>>({std::get<0>(chi0.mesh())},
+                                                  chi0.target());
+
+  auto mesh = std::get<1>(chi0.mesh());
+  chi0w(iw)(a, b, c, d) << sum(chi0(iw, inu)(a, b, c, d), inu = mesh) /
+                               mesh.size();
+
+  return chi0w;
+}
+
+gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
+chi0q_sum_nu(chi0q_t chi0q) {
+
+  auto mesh = std::get<1>(chi0q.mesh());
+  auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
+      {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
+
+  chi0q_w(iw, k)(a, b, c, d)
+      << sum(chi0q(iw, inu, k)(a, b, c, d), inu = mesh) / mesh.size();
+
+  return chi0q_w;
 }
 
 } // namespace tprf

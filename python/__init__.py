@@ -24,6 +24,7 @@ DOC
 
 """
 
-from tprf.fourier import chi4_iw_from_tau
+from fourier import chi4_iw_from_tau
+from lattice import g0k_from_ek
 
-__all__ = ['chi4_iw_from_tau']
+__all__ = ['chi4_iw_from_tau', 'g0k_from_ek']

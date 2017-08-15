@@ -22,29 +22,26 @@
 
 #include "types.hpp"
 
-#include <triqs/lattice/tight_binding.hpp>
 #include <triqs/lattice/brillouin_zone.hpp>
+#include <triqs/lattice/tight_binding.hpp>
+#include <triqs/utility/mini_vector.hpp>
 
 namespace tprf {
 
-void test_function();
-void test_function_tb(triqs::lattice::tight_binding tb);
-void test_function_bz(triqs::lattice::brillouin_zone bz);
-void test_function_ek(ek_vt ek);
-//void test_function_gk(gk_iw_cvt gk);
-//void test_function_gk(gf_const_view<cartesian_product<imfreq, brillouin_zone>> gk);
-//void test_function_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk);
-void test_function_gk(gk_iw_vt gk);
-  
-gk_iw_t g0k_from_ek(double mu, ek_cvt ek, g_iw_t::mesh_t mesh);
-gk_iw_t gk_from_ek_sigma(double mu, ek_cvt ek, g_iw_cvt sigma);
+gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh);
+gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma);
 
 gr_iw_t gr_from_gk(gk_iw_vt gk);
-gk_iw_t gk_from_gr(gr_iw_cvt gr, brillouin_zone const &bz);
+gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz);
 
-chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_cvt gr);
+chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr);
 
-chi0r_t chi0r_from_chi0q(chi0q_cvt chi0q);
-chi0q_t chi0q_from_chi0r(chi0r_cvt chi0r, brillouin_zone const & bz);
+chi0r_t chi0r_from_chi0q(chi0q_vt chi0q);
+chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz);
+
+chi0_t get_at_q(chi0q_vt chi0k, mini_vector<int, 3> q);
+gf<cartesian_product<imfreq>, tensor_valued<4>> chi0_sum_nu(chi0_vt chi0);
+
+gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(chi0q_t chi0q);
 
 } // namespace tprf

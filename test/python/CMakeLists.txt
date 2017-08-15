@@ -6,3 +6,5 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_h5_files} DESTINATION ${CMAKE_CURREN
 triqs_add_python_test(g_iw_from_tau)
 triqs_add_python_test(chi4_iw_from_tau)
 
+# lattice
+triqs_add_python_test(gk_to_from_gr)
