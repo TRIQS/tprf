@@ -105,11 +105,25 @@ The Particle-Particle (:math:`PP`) channel:
 .. math::
    \begin{align}
    \nu_1 &= \nu \, , \\
+   \nu_2 &= \nu' \, , \\
+   \nu_3 &= \omega - \nu \, , \\
+   \nu_4 &= \omega - \nu' \, .
+   \end{align}
+   :label: PP_freq
+
+.. note::
+   The current definition of the :math:`PP` channel in `cthyb` is actually the :math:`PPx` channel. FIXME!
+	   
+The Crossed-Particle-Particle (:math:`PPx`) channel:
+
+.. math::
+   \begin{align}
+   \nu_1 &= \nu \, , \\
    \nu_2 &= \omega - \nu' \, , \\
    \nu_3 &= \omega - \nu \, , \\
    \nu_4 &= \nu' \, .
    \end{align}
-   :label: PP_freq
+   :label: PPx_freq
 
 In a general product :math:`P = \Gamma \stackrel{r}{*} \chi_0` the total frequency conservation of the components of the product :math:`\Gamma` and :math:`\chi_0` gives two constraints that when combined gives the total frequency conservation of the product :math:`P` and a reduction of the frequency summation of the product from two frequencies to one. This is achieved by using the above global reparametrizations of the four fermionic Matsubara frequencies :math:`\nu_1 ,\, \nu_2 ,\, \nu_3 ,\, \nu_4` of every response function :math:`Q(\nu_1\nu_2\nu_3\nu_4)` for the particular channel :math:`r \in \{PH, \bar{PH}, PP\}` in question.
 
@@ -299,3 +313,49 @@ Particle-Particle channel (:math:`PP`)
 .. math::
    P(abcd) =
    \Gamma^{PP}(a\bar{u}c\bar{v}) 
+   \,
+   \chi^{PP}_0(\bar{u}b\bar{v}d)
+   \\ =
+   \sum_{\bar{u}\bar{v}}
+   \iint_0^\beta d\tau_{\bar{u}} d\tau_{\bar{v}}
+   \Gamma^{PP}_{a\bar{u}c\bar{v}}(\tau_a, \tau_{\bar{u}}, \tau_c, \tau_{\bar{v}}) 
+   \,
+   \chi^{PP}_{0, \bar{u}b\bar{v}d}(\tau_{\bar{u}}, \tau_b, \tau_{\bar{v}}, \tau_d)
+
+.. math::
+   P(abcd)
+   =
+   \frac{1}{\beta^4} \sum
+   \exp \Big[
+   -i\nu_a \tau_a - i \nu_{\bar{b}} \tau_{\bar{b}} - i \nu_{\bar{c}} \tau_{\bar{c}} - i \nu_{d} \tau_d
+   \Big]
+   \\ \times
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\nu_{\bar{u}} \nu_{\bar{v}}}
+   \Gamma^{\bar{PP}}_{a\bar{u}c\bar{v}}(\nu_a \nu_{\bar{u}} \nu_c \nu_{\bar{v}})
+   \,
+   \chi^{\bar{PP}}_{0, \bar{u}b\bar{v}d}(\nu_{\bar{u}} \nu_b \nu_{\bar{v}} \nu_d)
+   \\ \times
+   \delta_{\nu_a - \nu_{\bar{u}} + \nu_c - \nu_{\bar{v}}, 0}
+   \delta_{\nu_{\bar{u}} - \nu_b + \nu_{\bar{v}} - \nu_d, 0}
+
+Inserting :eq:`PP_freq` gives
+   
+.. math::
+   P(abcd)
+   =
+   \frac{1}{\beta^4} \sum
+   \exp \Big[
+   -i(\nu) \tau_a - i (\nu') \tau_{\bar{b}}
+   - i (\omega - \nu') \tau_{\bar{c}} - i (\omega - \nu') \tau_d
+   \Big]
+   \\ \times
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{\bar{PP}}_{a\bar{u}c\bar{v}}
+   (\nu, \bar{\nu}, \omega - \nu, \omega - \bar{\nu})
+   \,
+   \chi^{\bar{PP}}_{0, \bar{u}b\bar{v}d}
+   (\bar{\nu}, \nu', \omega - \bar{\nu}, \omega - \nu')
