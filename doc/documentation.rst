@@ -10,6 +10,8 @@ Theory and notation
    :maxdepth: 1
 
    theory/notation
+   theory/vertex
+   theory/boundary_conditions
 
 User guide
 ----------
