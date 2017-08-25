@@ -31,7 +31,22 @@ The disconnected Green's function :math:`G^{(2),diss}` is given by
    -
    G_{d\bar{a}}(\tau_4, \tau_1) G_{b\bar{c}}(\tau_2, \tau_3)
 
-   
+
+Abbreviated notation
+--------------------
+
+In order to economically express relations invovling two-particle objects we will also employ the short hand notation
+
+.. math::
+   G^{(2)}(\bar{a}a\bar{b}b) \equiv
+   G^{(2)}_{\bar{a} a \bar{b} b}(\tau_{\bar{a}}, \tau_a, \tau_{\bar{b}}, \tau_b)
+
+and use Einstein summation for repeated labels, e.g.
+
+.. math::
+   G(a\bar{a})G(b\bar{a}) \equiv
+   \sum_{\bar{a}} \int_0^\beta d \tau_{\bar{a}} \,
+   G_{a \bar{a}}(\tau_a, \tau_{\bar{a}}) G_{b \bar{a}}(\tau_b, \tau_{\bar{a}})
 
 Matsubara frequency transforms
 ------------------------------
