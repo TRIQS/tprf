@@ -22,6 +22,7 @@ copyright = u'2017, H. U.R. Strand'
 version = '@TPRF_VERSION@'
 release = '@TPRF_RELEASE@'
 
+math_number_all = True
 mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
 templates_path = ['@CMAKE_SOURCE_DIR@/doc/_templates']
 

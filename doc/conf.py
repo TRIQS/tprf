@@ -5,15 +5,17 @@
 import sys
 sys.path.insert(0, "@TRIQS_SPHINXEXT_PATH@/numpydoc")
 
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.mathjax',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.doctest',
-              'sphinx.ext.todo',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.autosummary',
-              'plot_directive',
-              'numpydoc']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.intersphinx',
+    #'sphinx.ext.doctest',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
+    #'plot_directive',
+    #'numpydoc',
+    ]
 
 source_suffix = '.rst'
 
@@ -28,15 +30,16 @@ templates_path = ['_templates']
 
 #html_theme = 'triqs'
 #html_theme_path = ['@TRIQS_THEMES_PATH@']
-html_show_sphinx = False
-html_context = {'header_title': 'tprf',
-                'header_subtitle': 'two-particle response function tools based on the <a class="triqs" style="font-size: 12px" href="http://ipht.cea.fr/triqs">TRIQS</a> library',
-                'header_links': [['Install', 'install'],
-                                 ['Documentation', 'documentation'],
-                                 ['Issues', 'issues'],
-                                 ['About TPRF', 'about']]}
+#html_show_sphinx = False
+#html_context = {'header_title': 'tprf',
+#                'header_subtitle': 'two-particle response function tools based on the <a class="triqs" #style="font-size: 12px" href="http://ipht.cea.fr/triqs">TRIQS</a> library',
+#                'header_links': [['Install', 'install'],
+#                                 ['Documentation', 'documentation'],
+#                                 ['Issues', 'issues'],
+#                                 ['About TPRF', 'about']]}
+
 html_static_path = ['_static']
-html_sidebars = {'index': ['sideb.html', 'searchbox.html']}
+#html_sidebars = {'index': ['sideb.html', 'searchbox.html']}
 
 htmlhelp_basename = 'TRIQSTPRFdoc'
 

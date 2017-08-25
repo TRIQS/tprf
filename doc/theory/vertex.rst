@@ -310,6 +310,8 @@ which shows that the same index grouping relations hold for both products :math:
 Vertical-Particle-Hole channel (:math:`\bar{PH}`)
 -------------------------------------------------
 
+The vertical-particle-hole product is defined in the channel's Bethe-Salpeter equation as
+
 .. math::
    \begin{multline}
    P(ab\bar{c}\bar{d}) =
@@ -372,5 +374,13 @@ using :math:`\bar{PH}` frequency notation and grouping indices we get
    \Gamma^{\bar{PH}}_{\{ \nu, a\bar{d} \}, \{ \bar{\nu}, \bar{u}v \}}(\omega)
    \,
    \chi^{\bar{PH}}_{0, \{\bar{\nu}, \bar{u}v \}, \{\nu', b\bar{c} \} }(\omega)
+
+The reversed product :math:`\chi^{\bar{PH}}_0 * \Gamma^{\bar{PH}}` can be analysed in the same way and gives the same index pairing.
    
-   
+
+Particle-Particle channel (:math:`PP`)
+--------------------------------------
+
+.. math::
+   P(abcd) =
+   \Gamma^{PP}(a\bar{u}c\bar{v}) 
