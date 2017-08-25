@@ -24,25 +24,13 @@ Each equation and index pairing is associated with one "channel" within which th
    F(a\bar{b}c\bar{d}) = \Gamma^{PH}(a\bar{b}c\bar{d}) -
    \Gamma^{PH}(a\bar{b}u\bar{v}) G(u\bar{u}) G(v\bar{v}) F(v\bar{u}c\bar{d})
 
-.. 
-   F(a\bar{a}b\bar{b}) = \Gamma^{PH}(a\bar{a}b\bar{b}) -
-   \Gamma^{PH}(a\bar{a}u\bar{v}) G(u\bar{u}) G(v\bar{v}) F(v\bar{u}b\bar{b})
-
 .. math::
    F(a\bar{b}c\bar{d}) = \Gamma^{\bar{PH}}(a\bar{b}c\bar{d}) +
    \Gamma^{\bar{PH}}(a\bar{u}v\bar{d}) G(u\bar{u}) G(v\bar{v}) F(u\bar{b}c\bar{v})
-
-.. 
-   F(a\bar{a}b\bar{b}) = \Gamma^{\bar{PH}}(a\bar{a}b\bar{b}) +
-   \Gamma^{\bar{PH}}(a\bar{u}v\bar{b}) G(u\bar{u}) G(v\bar{v}) F(u\bar{a}b\bar{v})
    
 .. math::
    F(a\bar{b}c\bar{d}) = \Gamma^{PP}(a\bar{b}c\bar{d}) + \frac{1}{2}
    \Gamma^{PP}(a\bar{u}c\bar{v}) G(u\bar{u}) G(v\bar{v}) F(v\bar{b}u\bar{d})
-
-.. 
-   F(a\bar{a}b\bar{b}) = \Gamma^{PP}(a\bar{a}b\bar{b}) + \frac{1}{2}
-   \Gamma^{PP}(a\bar{u}b\bar{v}) G(u\bar{u}) G(v\bar{v}) F(v\bar{a}u\bar{b})
 
 Channel non-interacting vertex function :math:`\chi_0^r`
 
@@ -52,8 +40,6 @@ Channel non-interacting vertex function :math:`\chi_0^r`
    \big(
    \chi_0^{PH}(\bar{v}u\bar{u}v) = G(u\bar{u}) G(v\bar{v})
    \big)
-..
-   \chi_0^{PH}(\bar{u}u\bar{v}v) = G(u\bar{v}) G(v\bar{u})
 
 .. math::
    \chi_0^{\bar{PH}}(\bar{a}b\bar{c}d) = G(b\bar{a}) G(d\bar{c})
@@ -69,8 +55,6 @@ Channel non-interacting vertex function :math:`\chi_0^r`
    \chi_0^{PP}(\bar{u}v\bar{v}u) = G(u\bar{u}) G(v\bar{v})
    \big)
 
-.. \big( \chi_0^{PP}(\bar{u}u\bar{v}v) = \chi_0^{PH}(\bar{u}u\bar{v}v) \big)
-
 Re-expressed BSE eqs.
 
 .. math::
@@ -78,27 +62,15 @@ Re-expressed BSE eqs.
    \Gamma^{PH}(a\bar{b}q\bar{p}) \, \chi^{PH}_0(\bar{p}q\bar{r}s) \, F(s\bar{r}c\bar{d})
    :label: BSE_PH
 
-..
-   F(a\bar{a}b\bar{b}) = \Gamma^{PH}(a\bar{a}b\bar{b}) -
-   \Gamma^{PH}(a\bar{a}u\bar{v}) \, \chi^{PH}_0(\bar{v}u\bar{u}v) \, F(v\bar{u}b\bar{b})
-
 .. math::
    F(a\bar{b}c\bar{d}) = \Gamma^{\bar{PH}}(a\bar{b}c\bar{d}) +
    \Gamma^{\bar{PH}}(a\bar{p}s\bar{d}) \, \chi^{\bar{PH}}_0(\bar{p}q\bar{r}s) \, F(q\bar{b}c\bar{r})
    :label: BSE_PHbar
-
-..
-   F(a\bar{a}b\bar{b}) = \Gamma^{\bar{PH}}(a\bar{a}b\bar{b}) +
-   \Gamma^{\bar{PH}}(a\bar{u}v\bar{b}) \, \chi^{\bar{PH}}_0(\bar{u}u\bar{v}v) \, F(u\bar{a}b\bar{v})
    
 .. math::
    F(a\bar{b}c\bar{d}) = \Gamma^{PP}(a\bar{b}c\bar{d}) + \frac{1}{2}
    \Gamma^{PP}(a\bar{p}c\bar{r}) \, \chi^{PP}_0(\bar{p}q\bar{r}s) \, F(q\bar{b}s\bar{d})
    :label: BSE_PP
-
-.. 
-   F(a\bar{a}b\bar{b}) = \Gamma^{PP}(a\bar{a}b\bar{b}) + \frac{1}{2}
-   \Gamma^{PP}(a\bar{u}b\bar{v}) \, \chi^{PP}_0(\bar{u}v\bar{v}u) \, F(v\bar{a}u\bar{b})
    
 
 Matsubara frequency parametrization
@@ -149,15 +121,6 @@ Particle-Hole channel (:math:`PH`)
 
 Consider the PH product
 
-.. 
-   P(u\bar{u}\bar{v}v) =
-   \Gamma^{PH}(u\bar{u}a\bar{b}) \, \chi^{PH}_0(\bar{b}a\bar{v}v)
-   \\ =
-   \iint_0^\beta d\tau_a d\tau_{\bar{b}} \,
-   \Gamma^{PH}(\tau_{u} \tau_{\bar{u}} \tau_{a} \tau_{\bar{b}})
-   \,
-   \chi^{PH}_0(\tau_{\bar{b}} \tau_{a} \tau_{\bar{v}} \tau_{v})
-
 .. math::
    \begin{multline}
    P(a\bar{b}\bar{c}d) =
@@ -171,21 +134,6 @@ Consider the PH product
    \end{multline}
 
 Fourier transforming :math:`\Gamma^{PH}` and :math:`\chi^{PH}_0` and explicitly inserting Kronecker delta functions for the total frequency conservation gives
-
-.. 
-   P(u\bar{u}\bar{v}v) =
-   \frac{1}{\beta^4} \sum
-   \exp \Big[
-   -i\nu_u \tau_u + i \nu_{\bar{u}} \tau_{\bar{u}} + i \nu_{\bar{v}} \tau_{\bar{v}}- i \nu_{v} \tau_v
-   \Big]
-   \\ \times
-   \frac{1}{\beta^2} \sum_{\nu_{a} \nu_{\bar{b}}}
-   \Gamma^{PH}(\nu_u \nu_{\bar{u}} \nu_{a} \nu_{\bar{b}})
-   \,
-   \chi^{PH}_0(\nu_{\bar{b}} \nu_a \nu_{\bar{v}} \nu_v)
-   \,
-   \delta_{\nu_{u} - \nu_{\bar{u}} + \nu_{a} - \nu_{\bar{b}}, 0} 
-   \delta_{\nu_{\bar{b}} - \nu_{a} + \nu_{\bar{v}} - \nu_{v}, 0} 
 
 .. math::
    P(a\bar{b}\bar{c}d) =
@@ -204,34 +152,7 @@ Fourier transforming :math:`\Gamma^{PH}` and :math:`\chi^{PH}_0` and explicitly 
    \delta_{\nu_{a} - \nu_{\bar{b}} + \nu_{u} - \nu_{\bar{v}}, 0} 
    \delta_{\nu_{\bar{v}} - \nu_{u} + \nu_{\bar{c}} - \nu_{d}, 0} 
    
-..
-   The two Kronecker delta functions gives two-constraints which can be used to reduce the inner summation from two to one Matsubara frequency (and the total frequency conservation of the resulting product :math:`P`). This can be achieved by a carefylly choosen global reparametrization of the four fermionic Matsubara frequencies :math:`\nu_1 ,\, \nu_2 ,\, \nu_3 ,\, \nu_4` of every response function :math:`Q(\nu_1\nu_2\nu_3\nu_4)`.
-
-..
-   For each channel we replace each pair of frequencies in the left and right argument of the product, that are internally summed over, with one fermionic and the same fermionic plus one bosonic Matsubara frequency. For the PH channel this ammounts to
-
 Inserting the :math:`PH` frequency pairing :eq:`PH_freq` in this expression fulfills both Kronecker delta functions and reduce the summation by one frequency to
-   
-.. 
-   \nu_1 = \nu
-   \, , \quad
-   \nu_2 = \nu + \omega
-   \, , \quad
-   \nu_3 = \nu' + \omega
-   \, , \quad
-   \nu_4 = \nu' 
-
-.. 
-   P(u\bar{u}\bar{v}v) =
-   \frac{1}{\beta^4} \sum
-   \exp \Big[
-   -i\nu \tau_u + i (\nu + \omega) \tau_{\bar{u}} + i (\nu' + \omega) \tau_{\bar{v}} - i \nu' \tau_v
-   \Big]
-   \\ \times
-   \frac{1}{\beta^2} \sum_{\bar{\nu}}
-   \Gamma^{PH}(\nu, \nu+\omega, \bar{\nu} + \omega, \bar{\nu})
-   \,
-   \chi^{PH}_0(\bar{\nu}, \bar{\nu} + \omega, \nu' + \omega, \nu')
 
 .. math::
    P(a\bar{b}\bar{c}d) =
@@ -247,18 +168,6 @@ Inserting the :math:`PH` frequency pairing :eq:`PH_freq` in this expression fulf
 
 Using the three frequency notation :math:`Q(\omega, \nu, \nu') \equiv Q(\nu, \nu+\omega, \nu'+\omega, \nu)` we get the final product relation
 
-.. 
-   P^{PH}_{u\bar{u}\bar{v}v}(\omega, \nu,\nu') =
-   \frac{1}{\beta^2} \sum_{\bar{\nu} a\bar{b}}
-   \Gamma^{PH}_{u\bar{u}a\bar{b}}(\omega,\nu, \bar{\nu})
-   \,
-   \chi^{PH}_{0, \bar{b}a\bar{v}v }(\omega,\bar{\nu}, \nu)
-   \\ = 
-   \frac{1}{\beta^2} \sum_{\bar{\nu} a\bar{b}}
-   \Gamma^{PH}_{ \{ \nu u\bar{u} \},\{ \bar{\nu} a\bar{b} \}}(\omega)
-   \,
-   \chi^{PH}_{0, \{\bar{\nu} \bar{b}a  \},\{ \nu \bar{v}v \}}(\omega)
-
 .. math::
    P^{PH}_{a\bar{b}\bar{c}d}(\omega, \nu,\nu') =
    \frac{1}{\beta^2} \sum_{\bar{\nu} u\bar{v}}
@@ -267,12 +176,18 @@ Using the three frequency notation :math:`Q(\omega, \nu, \nu') \equiv Q(\nu, \nu
    \chi^{PH}_{0, \bar{v}u\bar{c}d }(\omega,\bar{\nu}, \nu)
    \\ = 
    \frac{1}{\beta^2} \sum_{\bar{\nu} u\bar{v}}
-   \Gamma^{PH}_{ \{ \nu, a\bar{b} \},\{ \bar{\nu}, u\bar{v} \}}(\omega)
+   \Gamma^{PH}_{ \{ \nu, a\bar{b} \},\{ \bar{\nu}, \bar{v}u \}}(\omega)
    \,
-   \chi^{PH}_{0, \{\bar{\nu}, \bar{v}u \},\{ \nu, \bar{c}d \}}(\omega)
+   \chi^{PH}_{0, \{\bar{\nu}, \bar{v}u \},\{ \nu, d\bar{c} \}}(\omega)
 
 .. note::
 
+   The right hand side indices has to be permuted in order to make the product a direct matrix multiplication. I.e. the pairing reads
+
+   .. math::
+      P^{PH}_{abcd}(\omega, \nu, \nu') = P^{PH}_{\{\nu, ab \}, \{\nu', dc\}}(\omega)
+   
+..
    The orbital indices in the right term :math:`\chi^{PH}_0` are transposed, i.e, :math:`\{ \bar{\nu},\bar{v}u \}` and not :math:`\{ \bar{\nu}, u\bar{v} \}` as in our reference notes!
 
    This transpose has to be done in the index reordering when mapping to matrices!
@@ -283,7 +198,7 @@ Writing the reversed product :math:`P = \chi^{PH}_0 * \Gamma^{PH}` in slightly c
 
 .. math::
    \mathcal{F} \big\{ P(\bar{a}bc\bar{d}) \big\}
-   =
+   \\ =
    \frac{1}{\beta^2} \sum_{\bar{u}v} \sum_{\bar{\nu}}
    \chi^{PH}_{0, \bar{a}b\bar{u}v}(\nu \nu+\omega, \bar{\nu} + \omega, \bar{\nu})
    \,
@@ -300,9 +215,9 @@ where :math:`\mathcal{F}\{ \cdot \}` denotes Fourier transformation to four ferm
    \Gamma^{PH}_{v\bar{u}c\bar{d}}(\omega, \bar{\nu}, \nu')
    \\=
    \frac{1}{\beta^2} \sum_{\bar{\nu}, \bar{u}v}
-   \chi^{PH}_{0, \{ \nu, \bar{a}b \}, \{\bar{\nu}, \bar{u}v \} }(\omega)
+   \chi^{PH}_{0, \{ \nu, \bar{a}b \}, \{\bar{\nu}, v\bar{u} \} }(\omega)
    \,
-   \Gamma^{PH}_{\{ \bar{\nu} , v\bar{u} \}, \{ \nu', c\bar{d}\}}(\omega)
+   \Gamma^{PH}_{\{ \bar{\nu} , v\bar{u} \}, \{ \nu', \bar{d}c\}}(\omega)
    
 which shows that the same index grouping relations hold for both products :math:`\chi_0^{PH} * \Gamma^{PH}` and :math:`\Gamma^{PH} * \chi_0^{PH}`.
 
