@@ -5,13 +5,19 @@ Vertex functions
 
 .. note:: This notation follows closely [Ayral, Parcollet, PRB 94, 075159 (2016)] with the exception that :math:`PH` and :math:`\bar{PH}` are interchanged.
 
-Fully recucible vertex function :math:`F(a\bar{a}b\bar{b})`
+Fully reducible vertex :math:`F`
+--------------------------------
+
+The fully recucible vertex function :math:`F(a\bar{a}b\bar{b})` is defined as the aputation of the connected two-particle Green's function :math:`G^{(2)}_c` by four single-particle Green's functions :math:`G`, one for each leg.
 
 .. math::
    G^{(2)}_c(\bar{a}b\bar{c}d) =
    G(a\bar{a}) G(b\bar{b}) F(a\bar{b}c\bar{d}) G(c\bar{c}) G(d\bar{d})
 
-Bethe-Salpeter equations for :math:`F`
+Bethe-Salpeter equations
+========================
+   
+The Bethe-Salpeter equations for the fully reducible vertex :math:`F` is defined for any given channel :math:`r` as
 
 .. math::
    F = \Gamma^{r} + \Gamma^{r} GG F
@@ -32,7 +38,12 @@ Each equation and index pairing is associated with one "channel" within which th
    F(a\bar{b}c\bar{d}) = \Gamma^{PP}(a\bar{b}c\bar{d}) + \frac{1}{2}
    \Gamma^{PP}(a\bar{u}c\bar{v}) G(u\bar{u}) G(v\bar{v}) F(v\bar{b}u\bar{d})
 
-Channel non-interacting vertex function :math:`\chi_0^r`
+Collecting the two single-particle Green's functions into a channel dependent "bare" susceptibility :math:`\chi^r_0` the Behte-Salpeter equations can be expressed as
+
+.. math::
+   F = \Gamma^r + \Gamma^r \stackrel{r}{*} \chi^r_0 \stackrel{r}{*}  F 
+
+where the channel non-interacting vertex functions :math:`\chi_0^r` are defined as
 
 .. math::
    \chi_0^{PH}(\bar{a}b\bar{c}d) = G(b\bar{c}) G(d\bar{a})
@@ -55,7 +66,7 @@ Channel non-interacting vertex function :math:`\chi_0^r`
    \chi_0^{PP}(\bar{u}v\bar{v}u) = G(u\bar{u}) G(v\bar{v})
    \big)
 
-Re-expressed BSE eqs.
+yielding the Bethe-Salpeter equations expressed fully in two-particle quantities
 
 .. math::
    F(a\bar{b}c\bar{d}) = \Gamma^{PH}(a\bar{b}c\bar{d}) -
@@ -71,16 +82,58 @@ Re-expressed BSE eqs.
    F(a\bar{b}c\bar{d}) = \Gamma^{PP}(a\bar{b}c\bar{d}) + \frac{1}{2}
    \Gamma^{PP}(a\bar{p}c\bar{r}) \, \chi^{PP}_0(\bar{p}q\bar{r}s) \, F(q\bar{b}s\bar{d})
    :label: BSE_PP
-   
+
+Note that the notion of the product :math:`\stackrel{r}{*}` is dependent on the channel :math:`r` and consists of different choices of contracting two indices in Eqs. :eq:`BSE_PH`, :eq:`BSE_PHbar`, and :eq:`BSE_PP`.
+
 
 Matsubara frequency parametrization
 ===================================
 
 In a carefully choosen parametrization of Matsubara frequencies, the two-time integrals appearing in the products of the Bethe-Salpeter equations :eq:`BSE_PH`, :eq:`BSE_PHbar`, and :eq:`BSE_PP` can be reduced to a single sum over one Matsubara frequency. This is achieved by using a channel dependent three frequency reparametrization that directly imposes total frequency conservation, the forms are
 
-The (horizontal) Particle-Hole (:math:`PH`) channel:
-
 .. math::
+   \begin{array}{ll}
+   PH: \left\{
+   \begin{array}{rl}
+   \nu_1 &=& \nu \\
+   \nu_2 &=& \nu + \omega \\
+   \nu_3 &=& \nu' + \omega \\
+   \nu_4 &=& \nu'  
+   \end{array}
+   \right.
+   \, , & \quad
+   \bar{PH}: \left\{
+   \begin{array}{rcl}
+   \nu_1 &=& \nu \\
+   \nu_2 &=& \nu'\\
+   \nu_3 &=& \nu' + \omega\\
+   \nu_4 &=& \nu + \omega 
+   \end{array}\right.
+   \, , \quad
+   \\ \\
+   PP: \left\{
+   \begin{array}{rcl}
+   \nu_1 &=& \nu \\
+   \nu_2 &=& \nu' \\
+   \nu_3 &=& \omega - \nu \\
+   \nu_4 &=& \omega - \nu'
+   \end{array}\right.
+   \, , & \quad   
+   PPx: \left\{
+   \begin{array}{rcl}
+   \nu_1 &=& \nu \\
+   \nu_2 &=& \omega - \nu' \\
+   \nu_3 &=& \omega - \nu \\
+   \nu_4 &=& \nu'
+   \end{array}\right.
+   \end{array}
+   :label: channel_freq
+
+for the (horizontal) Particle-Hole (:math:`PH`) channel, the (vertical) Particle-Hole (:math:`\bar{PH}`) channel, the Particle-Particle (:math:`PP`) channel, and the Crossed-Particle-Particle (:math:`PPx`) channel, respectively.
+
+.. The (horizontal) Particle-Hole (:math:`PH`) channel:
+
+.. 
    \begin{align}
    \nu_1 &= \nu \, , \\
    \nu_2 &= \nu + \omega \, , \\
@@ -89,9 +142,9 @@ The (horizontal) Particle-Hole (:math:`PH`) channel:
    \end{align}
    :label: PH_freq
    
-The (vertical) Particle-Hole (:math:`\bar{PH}`) channel:
+.. The (vertical) Particle-Hole (:math:`\bar{PH}`) channel:
 
-.. math::
+.. 
    \begin{align}
    \nu_1 &= \nu \, , \\
    \nu_2 &= \nu' \, , \\
@@ -100,9 +153,9 @@ The (vertical) Particle-Hole (:math:`\bar{PH}`) channel:
    \end{align}
    :label: PHbar_freq
    
-The Particle-Particle (:math:`PP`) channel:
+.. The Particle-Particle (:math:`PP`) channel:
 
-.. math::
+.. 
    \begin{align}
    \nu_1 &= \nu \, , \\
    \nu_2 &= \nu' \, , \\
@@ -114,9 +167,9 @@ The Particle-Particle (:math:`PP`) channel:
 .. note::
    The current definition of the :math:`PP` channel in `cthyb` is actually the :math:`PPx` channel. FIXME!
 	   
-The Crossed-Particle-Particle (:math:`PPx`) channel:
+.. The Crossed-Particle-Particle (:math:`PPx`) channel:
 
-.. math::
+.. 
    \begin{align}
    \nu_1 &= \nu \, , \\
    \nu_2 &= \omega - \nu' \, , \\
@@ -125,13 +178,105 @@ The Crossed-Particle-Particle (:math:`PPx`) channel:
    \end{align}
    :label: PPx_freq
 
+In terms of imaginary time the channel dependent three frequency representation maps to the follwing pairing of the four imaginary times :math:`\tau_a`, :math:`\tau_\bar{b}`, :math:`\tau_c`, :math:`tau_{\bar{d}}` of a response function :math:`\chi_{a\bar{b}c\bar{d}}(\tau_a, \tau_{\bar{b}}, \tau_c, \tau_{\bar{d}})`
+
+.. math::
+   PH : \,
+   + i\omega (\tau_{\bar{b}} - \tau_c)
+   + i\nu    (-\tau_{a} + \tau_{\bar{b}})
+   + i\nu'   (-\tau_{c} + \tau_{\bar{d}})
+
+.. math::
+   \bar{PH} : \,
+   + i\omega (-\tau_{c} + \tau_{\bar{d}})
+   + i\nu    (-\tau_{a} + \tau_{\bar{d}})
+   + i\nu'   (\tau_{\bar{b}} - \tau_{c})
+
+.. math::
+   PP : \,
+   + i\omega (-\tau_{c} + \tau_{\bar{d}})
+   + i\nu    (-\tau_{a} + \tau_{c})
+   + i\nu'   (\tau_{\bar{b}} - \tau_{\bar{d}})
+
+.. math::
+   PPx : \,
+   + i\omega (\tau_{\bar{b}} - \tau_{c})
+   + i\nu    (-\tau_{a} + \tau_{c})
+   + i\nu'   (-\tau_{\bar{b}} + \tau_{\bar{d}})
+
 In a general product :math:`P = \Gamma \stackrel{r}{*} \chi_0` the total frequency conservation of the components of the product :math:`\Gamma` and :math:`\chi_0` gives two constraints that when combined gives the total frequency conservation of the product :math:`P` and a reduction of the frequency summation of the product from two frequencies to one. This is achieved by using the above global reparametrizations of the four fermionic Matsubara frequencies :math:`\nu_1 ,\, \nu_2 ,\, \nu_3 ,\, \nu_4` of every response function :math:`Q(\nu_1\nu_2\nu_3\nu_4)` for the particular channel :math:`r \in \{PH, \bar{PH}, PP\}` in question.
 
+In order to map the products to matrix products in index and frequency space the following index ordering has to be done
 
+.. math::
+   PH: \,
+   \chi^{PH}_{a\bar{b}c\bar{d}}(\omega, \nu, nu') =
+   \chi^{PH}_{\{\bar{\nu}, \bar{a}b \},\{ \nu, d\bar{c} \}}(\omega)
 
+.. math::
+   \bar{PH}: \,
+   \chi^{\bar{PH}}_{a\bar{b}c\bar{d}}(\omega, \nu, nu') =
+   \chi^{\bar{PH}}_{\{\bar{\nu}, \bar{a}d \}, \{\nu', b\bar{c} \} }(\omega)
+
+.. math::
+   PP: \,
+   \chi^{PP}_{a\bar{b}c\bar{d}}(\omega, \nu, nu') =
+   \chi^{PP}_{\{ \bar{\nu}, \bar{a}\bar{c} \}, \{ \nu', bd\}}
+   (\omega)
+
+.. math::
+   PPx: \,
+   \chi^{PPx}_{a\bar{b}c\bar{d}}(\omega, \nu, nu') =
+   \chi^{PPx}_{\{ \bar{\nu}, \bar{c}\bar{a} \}, \{ \nu', bd\}}
+   (\omega)
+
+The resulting productformulas (derived below) reads,
+
+.. math::
+   P^{PH}_{a\bar{b}\bar{c}d}(\omega, \nu,\nu') =
+   \frac{1}{\beta^2} \sum_{\bar{\nu} u\bar{v}}
+   \Gamma^{PH}_{ \{ \nu, a\bar{b} \},\{ \bar{\nu}, \bar{v}u \}}(\omega)
+   \,
+   \chi^{PH}_{0, \{\bar{\nu}, \bar{v}u \},\{ \nu, d\bar{c} \}}(\omega)
+
+.. math::
+   P^{\bar{PH}}_{ab\bar{c}\bar{d}}(\omega, \nu, \nu')
+   =
+   \frac{1}{\beta^2} \sum_{\bar{\nu}, \bar{u} v}
+   \Gamma^{\bar{PH}}_{\{ \nu, a\bar{d} \}, \{ \bar{\nu}, \bar{u}v \}}(\omega)
+   \,
+   \chi^{\bar{PH}}_{0, \{\bar{\nu}, \bar{u}v \}, \{\nu', b\bar{c} \} }(\omega)
+
+.. math::
+   P^{PP}_{abcd}(\omega, \nu, \nu')
+   =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PP}_{ \{ \nu , ac \}, \{\bar{\nu}, \bar{u}\bar{v} \} }
+   (\omega)
+   \,
+   \chi^{PP}_{0, \{ \bar{\nu}, \bar{u}\bar{v} \}, \{ \nu', bd\}}
+   (\omega)
+
+.. math::
+   P^{PPx}_{abcd}(\omega, \nu, \nu')
+   =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PPx}_{ \{ \nu , ca \}, \{\bar{\nu}, \bar{u}\bar{v} \} }
+   (\omega)
+   \,
+   \chi^{PPx}_{0, \{ \bar{\nu}, \bar{u}\bar{v} \}, \{ \nu', bd\}}
+   (\omega)
+
+   
+Derivation: Product relations
+=============================
+   
 Particle-Hole channel (:math:`PH`)
 ----------------------------------
-
 
 Consider the PH product
 
@@ -311,6 +456,7 @@ Particle-Particle channel (:math:`PP`)
 --------------------------------------
 
 .. math::
+   \begin{multline}
    P(abcd) =
    \Gamma^{PP}(a\bar{u}c\bar{v}) 
    \,
@@ -321,7 +467,10 @@ Particle-Particle channel (:math:`PP`)
    \Gamma^{PP}_{a\bar{u}c\bar{v}}(\tau_a, \tau_{\bar{u}}, \tau_c, \tau_{\bar{v}}) 
    \,
    \chi^{PP}_{0, \bar{u}b\bar{v}d}(\tau_{\bar{u}}, \tau_b, \tau_{\bar{v}}, \tau_d)
+   \end{multline}
 
+Fourier transform
+   
 .. math::
    P(abcd)
    =
@@ -333,14 +482,14 @@ Particle-Particle channel (:math:`PP`)
    \frac{1}{\beta^2}
    \sum_{\bar{u} \bar{v}}
    \sum_{\nu_{\bar{u}} \nu_{\bar{v}}}
-   \Gamma^{\bar{PP}}_{a\bar{u}c\bar{v}}(\nu_a \nu_{\bar{u}} \nu_c \nu_{\bar{v}})
+   \Gamma^{PP}_{a\bar{u}c\bar{v}}(\nu_a \nu_{\bar{u}} \nu_c \nu_{\bar{v}})
    \,
-   \chi^{\bar{PP}}_{0, \bar{u}b\bar{v}d}(\nu_{\bar{u}} \nu_b \nu_{\bar{v}} \nu_d)
+   \chi^{PP}_{0, \bar{u}b\bar{v}d}(\nu_{\bar{u}} \nu_b \nu_{\bar{v}} \nu_d)
    \\ \times
    \delta_{\nu_a - \nu_{\bar{u}} + \nu_c - \nu_{\bar{v}}, 0}
    \delta_{\nu_{\bar{u}} - \nu_b + \nu_{\bar{v}} - \nu_d, 0}
 
-Inserting :eq:`PP_freq` gives
+Inserting Eq. :eq:`PP_freq` gives
    
 .. math::
    P(abcd)
@@ -354,8 +503,128 @@ Inserting :eq:`PP_freq` gives
    \frac{1}{\beta^2}
    \sum_{\bar{u} \bar{v}}
    \sum_{\bar{\nu}}
-   \Gamma^{\bar{PP}}_{a\bar{u}c\bar{v}}
+   \Gamma^{PP}_{a\bar{u}c\bar{v}}
    (\nu, \bar{\nu}, \omega - \nu, \omega - \bar{\nu})
    \,
-   \chi^{\bar{PP}}_{0, \bar{u}b\bar{v}d}
+   \chi^{PP}_{0, \bar{u}b\bar{v}d}
    (\bar{\nu}, \nu', \omega - \bar{\nu}, \omega - \nu')
+
+Collecting indices
+   
+.. math::
+   P_{abcd}(\omega, \nu, \nu')
+   =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PP}_{a\bar{u}c\bar{v}}
+   (\omega, \nu, \bar{\nu})
+   \,
+   \chi^{PP}_{0, \bar{u}b\bar{v}d}
+   (\omega, \bar{\nu}, \nu')
+   \\ =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PP}_{ \{ \nu , ac \}, \{\bar{\nu}, \bar{u}\bar{v} \} }
+   (\omega)
+   \,
+   \chi^{PP}_{0, \{ \bar{\nu}, \bar{u}\bar{v} \}, \{ \nu', bd\}}
+   (\omega)
+   
+Crossed-Particle-Particle channel (:math:`PPx`)
+-----------------------------------------------
+
+.. math::
+   \begin{multline}
+   P(abcd) =
+   \Gamma^{PPx}(a\bar{u}c\bar{v}) 
+   \
+   \chi^{PPx}_0(\bar{v}b\bar{u}d)
+   \\ =
+   \sum_{\bar{u}\bar{v}}
+   \iint_0^\beta d\tau_{\bar{u}} d\tau_{\bar{v}}
+   \Gamma^{PPx}_{a\bar{u}c\bar{v}}(\tau_a, \tau_{\bar{u}}, \tau_c, \tau_{\bar{v}}) 
+   \,
+   \chi^{PPx}_{0, \bar{v}b\bar{u}d}(\tau_{\bar{v}}, \tau_b, \tau_{\bar{u}}, \tau_d)
+   \end{multline}
+
+Fourier transform
+   
+.. math::
+   P(abcd)
+   =
+   \frac{1}{\beta^4} \sum
+   \exp \Big[
+   -i\nu_a \tau_a - i \nu_{\bar{b}} \tau_{\bar{b}} - i \nu_{\bar{c}} \tau_{\bar{c}} - i \nu_{d} \tau_d
+   \Big]
+   \\ \times
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\nu_{\bar{u}} \nu_{\bar{v}}}
+   \Gamma^{PPx}_{a\bar{u}c\bar{v}}(\nu_a \nu_{\bar{u}} \nu_c \nu_{\bar{v}})
+   \,
+   \chi^{PPx}_{0, \bar{v}b\bar{u}d}(\nu_{\bar{v}} \nu_b \nu_{\bar{u}} \nu_d)
+   \\ \times
+   \delta_{\nu_a - \nu_{\bar{u}} + \nu_c - \nu_{\bar{v}}, 0}
+   \delta_{\nu_{\bar{v}} - \nu_b + \nu_{\bar{u}} - \nu_d, 0}
+
+Inserting Eq. :eq:`PPx_freq` gives
+
+.. math::
+   \nu_a - \nu_{\bar{u}} + \nu_c - \nu_{\bar{v}}
+   =
+   \nu - \omega + \bar{\nu} + \omega - \nu - \bar{\nu}
+   = 0 \\
+   \nu_{\bar{v}} - \nu_b + \nu_{\bar{u}} - \nu_d
+   =
+   \bar{\nu} - \omega + \nu' + \omega - \bar{\nu} - \nu' = 0
+   
+.. math::
+   P(abcd)
+   =
+   \frac{1}{\beta^4} \sum
+   \exp \Big[
+   -i(\nu) \tau_a - i (\omega - \nu') \tau_{\bar{b}}
+   - i (\omega - \nu) \tau_{\bar{c}} - i (\nu') \tau_d
+   \Big]
+   \\ \times
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PPx}_{a\bar{u}c\bar{v}}
+   (\nu, \omega - \bar{\nu}, \omega - \nu, \bar{\nu})
+   \,
+   \chi^{PPx}_{0, \bar{u}b\bar{v}d}
+   (\bar{\nu}, \omega - \nu', \omega - \bar{\nu}, \nu')
+
+Collecting indices
+   
+.. math::
+   P^{PPx}_{abcd}(\omega, \nu, \nu')
+   =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PP}_{a\bar{u}c\bar{v}}
+   (\omega, \nu, \bar{\nu})
+   \,
+   \chi^{PP}_{0, \bar{v}b\bar{u}d}
+   (\omega, \bar{\nu}, \nu')
+   \\ =
+   \frac{1}{\beta^2}
+   \sum_{\bar{u} \bar{v}}
+   \sum_{\bar{\nu}}
+   \Gamma^{PPx}_{ \{ \nu , ca \}, \{\bar{\nu}, \bar{u}\bar{v} \} }
+   (\omega)
+   \,
+   \chi^{PPx}_{0, \{ \bar{\nu}, \bar{u}\bar{v} \}, \{ \nu', bd\}}
+   (\omega)
+   
+.. note::
+
+   The first index is permuted in the grouping, i.e.
+
+   .. math::
+      P^{PPx}_{abcd}(\omega, \nu, \nu')
+      = P^{PPx}_{\{\nu, ca\}, \{ \nu', bd \}}(\omega)
