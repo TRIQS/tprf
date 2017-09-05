@@ -74,6 +74,15 @@ typedef g2_iw_t::view_type g2_iw_vt;
   
 using scalar_t = g2_iw_t::scalar_t;
 
+// block greens functions
+typedef block2_gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> b_g2_iw_t;
+typedef b_g2_iw_t::view_type b_g2_iw_vt;  
+typedef b_g2_iw_t::const_view_type b_g2_iw_cvt;
+
+typedef block_gf<imfreq, matrix_valued> b_g_iw_t;
+typedef b_g_iw_t::view_type b_g_iw_vt;  
+typedef b_g_iw_t::const_view_type b_g_iw_cvt;
+  
 /// Container type of one-particle Green and Vertex functions in Matsubara
 //using g_iw_t = gf<imfreq, matrix_valued>;
 
