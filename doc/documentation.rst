@@ -7,10 +7,11 @@ Theory and notation
 -------------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
    theory/notation
    theory/vertex
+   theory/derivation_index_pairing
    theory/boundary_conditions
 
 User guide
@@ -23,7 +24,7 @@ Reference manual
 ----------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
    reference/linalg
 

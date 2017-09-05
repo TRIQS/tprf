@@ -1,7 +1,7 @@
 .. _notation:
 
-Response function notations
-===========================
+Response function notation
+==========================
 
 The notation for two-particle response functions and derived quantities such as vertex and the irreducible vertices is not settled and there are many possible notational choices. Here we establish the notation used in TPRF.
 
@@ -51,14 +51,24 @@ and use Einstein summation for repeated labels, e.g.
 Matsubara frequency transforms
 ------------------------------
 
-Operators and response functions in imaginary time $\tau$ can be Fourier transformed to imagniary Matsubara frequencies :math:`\omega_n = \frac{\pi}{\beta}(2n + \vartheta)` (with :math:`\vartheta = (1-\xi)/2` and :math:`\xi = \pm 1` for bosons/fermions) exploiting :math:`\beta` (anti)periodicity.
+Operators and response functions in imaginary time :math:`\tau` can be Fourier transformed to imagniary Matsubara frequencies
+
+.. math::
+   \nu_n = \frac{\pi}{\beta}(2n + \vartheta)
+   
+with :math:`\vartheta = (1-\xi)/2` and :math:`\xi = \pm 1` for bosons/fermions) exploiting :math:`\beta` (anti)periodicity.
 
 The second quantized operators transforms according to
 
 .. math::
-   c(i\nu) \equiv \frac{1}{\sqrt{\beta}} \int_0^\beta d\tau \, e^{i\nu \tau} c(\tau)
+   c(i\nu_n) \equiv \frac{1}{\sqrt{\beta}} \int_0^\beta d\tau \, e^{i\nu_n \tau} c(\tau)
    \, , \quad
-   c^\dagger(i\nu) \equiv \frac{1}{\sqrt{\beta}} \int_0^\beta d\tau \, e^{-i\nu \tau} c^\dagger(\tau)
+   c^\dagger(i\nu_n) \equiv \frac{1}{\sqrt{\beta}} \int_0^\beta d\tau \, e^{-i\nu_n \tau} c^\dagger(\tau)
+
+.. math::
+   c(\tau) = \frac{1}{\sqrt{\beta}} \sum_{n=-\infty}^{\infty} e^{-i\nu_n \tau} c(i\nu_n)
+   \, , \quad
+   c^\dagger(\tau) = \frac{1}{\sqrt{\beta}} \sum_{n=-\infty}^{\infty} e^{i\nu_n \tau} c^\dagger(i\nu_n)
 
 The single-particle Green's function :math:`G` transforms as
 
@@ -79,13 +89,40 @@ The two-particle Green's function :math:`G^{(2)}` transforms according to
    \\ \equiv 
    \int_0^\beta d\tau_1 d\tau_2 d\tau_3 d\tau_4
    \exp\left( -i\nu_1 \tau_1 + i \nu_2 \tau_2 - i\nu_3 \tau_3 + i \nu_4 \tau_4 \right)
-   \times
+   \\ \times
    G^{(2)}_{\bar{a}b\bar{c}d}(\tau_1, \tau_2, \tau_3, \tau_4)
 
    
 
 Generalized susceptibilities
-----------------------------
+============================
+
+.. math::
+   G^{(2)}(\bar{a}b\bar{c}d) =
+   G^{(2)}_c(\bar{a}b\bar{c}d) + G(b\bar{a})G(d\bar{c}) - G(d\bar{a})G(b\bar{c})
+
+.. math::
+   \chi^{=}_0(\bar{a}b\bar{c}d) \equiv + G(b\bar{a})G(d\bar{c})
+
+.. math::
+   \chi^{\times}_0(\bar{a}b\bar{c}d) \equiv - G(d\bar{a})G(b\bar{c})
+   
+.. math::
+   G^{(2)}_c = GG F GG
+
+The vertex BSEs defines :math:`\chi^r_0` and :math:`\stackrel{r}{*}`
+
+.. math::
+   F = \Gamma^r + \Gamma^r \stackrel{r}{*} \chi^r_0 \stackrel{r}{*} F
+
+   
+
+.. math::
+   \chi^r = \chi^r_0 + \chi^r_0 \stackrel{r}{*} F \stackrel{r}{*} \chi^r_0
+
+
+.. math::
+   \chi^r = \chi^r_0 + \chi^r_0 \stackrel{r}{*} \Gamma^r \stackrel{r}{*} \chi
 
 .. math::
    \chi_{\bar{a} b \bar{c} d}(\tau_1, \tau_2, \tau_3, \tau_4) 
@@ -98,8 +135,8 @@ Generalized susceptibilities
    \equiv
    - G_{d\bar{a}}(\tau_4, \tau_1) G_{b\bar{c}}(\tau_2, \tau_3)
 
-
-Particle-hole channel (PH)
+Particle-hole channel (:math:`PH`)
+----------------------------------
 
 .. math::
    \nu_1 = \nu 
@@ -132,7 +169,8 @@ Particle-hole channel (PH)
    G^{(2),ph}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')
    - \beta \delta_{0, \omega} G_{b\bar{a}}(\nu) G_{d\bar{c}}(\nu')
      
-Particle-particle channel (PP)
+Crossed-Particle-particle channel (:math:`PPx`)
+-----------------------------------------------
 
 .. math::
    \nu_1 = \nu
