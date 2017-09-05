@@ -37,5 +37,11 @@ target_link_libraries(chi_from_gg2 tprf_c)
 triqs_set_rpath_for_target(chi_from_gg2)
 install(TARGETS chi_from_gg2 DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+# Build the C++ extension module
+triqs_python_extension(freq_conv ${python_destination})
+target_link_libraries(freq_conv tprf_c)
+triqs_set_rpath_for_target(freq_conv)
+install(TARGETS freq_conv DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 # Install utilities
 install(FILES Dummy.py DESTINATION ${TRIQS_PYTHON_LIB_DEST_ROOT}/${python_destination})
