@@ -46,8 +46,8 @@ TEST(tprf, gf_inverse) {
  
  for( auto const & kidx : std::get<1>(G_iw.mesh()) ) {
    auto _ = var_t{};
-   auto G = G_iw[_][kidx];
-   G_iw[_][kidx] = inverse(G);
+   auto G = G_iw[_, kidx];
+   G_iw[_, kidx] = inverse(G);
   }
 
 }
