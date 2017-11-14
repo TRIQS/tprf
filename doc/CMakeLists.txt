@@ -28,35 +28,36 @@ add_custom_target(rst_copy DEPENDS ${rst_copy_tar})
 add_dependencies(doc_sphinx rst_copy) # we must first have copied the sources
 
 # use c++2doc to automatically build the documentation of C++
-option(DocWithCpp2doc "Use c++2doc to generate C++ documentation of tprf classes and functions (requires libclang)" ON)
-if (DocWithCpp2doc)
+option(DocWithC++2rst "Use c++2rst to generate C++ documentation of tprf classes and functions (requires libclang)" ON)
 
-FUNCTION(PREPEND_LIST var prefix)
-   SET(listVar "")
-   FOREACH(f ${ARGN})
-      LIST(APPEND listVar "${prefix}${f}")
-   ENDFOREACH(f)
-   SET(${var} "${listVar}" PARENT_SCOPE)
-ENDFUNCTION(PREPEND_LIST)
+if (DocWithC++2rst)
 
-PREPEND_LIST(CPP2DOC_INCLUDE_FLAGS "--includes=" ${TRIQS_INCLUDE_ALL})
+  # get include paths for the triqs target
+  get_property(TRIQS_INCLUDE_DIRS TARGET triqs PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+  foreach(I ${TRIQS_INCLUDE_DIRS})
+   set (INC  ${INC} -I ${I})
+  endforeach()
 
- FILE(GLOB_RECURSE all_header_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../c++/*.hpp ../c++/*.mhpp) 
-add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cpp2py.log DEPENDS ${all_header_files} 
-                    COMMAND export PYTHONPATH=$$PYTHONPATH:${TRIQS_PATH}/share/triqs/cpp2doc/mako &&
-		    ${PYTHON_INTERPRETER} 
-                    ${TRIQS_PATH}/bin/c++2doc.py 
-                    --namespace tprf
-                    ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp 
-                    --output_directory=${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
-                    --includes=${CMAKE_SOURCE_DIR}/ 
-		    ${CPP2DOC_INCLUDE_FLAGS}
-                    --mako_location=${TRIQS_PATH}/share/triqs
-                    #2>&1 > cpp2py.log
-                    ) 
-add_custom_target(doc_cpp2doc DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/cpp2py.log) 
-add_dependencies(doc_cpp2doc tprf_c) #
-add_dependencies(doc_sphinx doc_cpp2doc) # we must have installed the sources before building
+  message(STATUS "include paths for c++2rst")
+  message(STATUS "${INC}")
+
+  FILE(GLOB_RECURSE all_header_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../c++/*.hpp ../c++/*.mhpp)
+
+  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log
+                      DEPENDS ${all_header_files} 
+		      COMMAND c++2rst
+                      --namespace tprf
+                      ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp 
+                      --output_directory=${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
+                      --includes=${CMAKE_SOURCE_DIR}/ 
+                      ${INC}		    
+                      2>&1 > c++2rst.log
+                      )
+
+		    
+  add_custom_target(doc_cpp2doc DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log) 
+  add_dependencies(doc_cpp2doc tprf_c) #
+  add_dependencies(doc_sphinx doc_cpp2doc) # we must have installed the sources before building
 endif()
 
 # install
