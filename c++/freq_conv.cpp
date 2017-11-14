@@ -67,6 +67,30 @@ g_iw_t block_iw_AB_to_matrix_valued(b_g_iw_vt bg_AB) {
 // ----------------------------------------------------
 // AABB to ABBA
 
+/**
+
+# ABBA from AABB
+
+General expressions
+
+$$
+G(\bar{a}a\bar{b}b) = 
+\langle \bar{a} a \bar{b} b \rangle =
+- \langle \bar{a} b \bar{b} a \rangle =
+- G(\bar{a} b \bar{b} a)
+$$
+
+$$
+G(\bar{a}b\bar{c}d) = -G(\bar{a}d\bar{c}b)
+$$
+
+$$
+G_{\bar{a}b\bar{c}d}(\nu_1,\nu_2,\nu_3,\nu_1-\nu_2+\nu_3) = 
+-G(\bar{a}d\bar{c}b)(\nu_1, \nu_1-\nu_2+\nu_3, \nu_3, \nu_2)
+$$
+
+ */
+  
 void block_3nu_AABB_to_tensor_valued(b_g2_iw_vt bg2_AABB, g2_iw_vt g2) {
   
   g2 *= 0.0;
