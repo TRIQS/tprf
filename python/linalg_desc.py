@@ -1,29 +1,27 @@
-# Generated automatically using the command :
-# c++2py.py -mpytriqs.applications.tprf.linalg ../c++/linalg.hpp -I../c++ --moduledoc "Green's function linear algebra tools"
-from wrap_generator import *
+
+from cpp2py.wrap_generator import *
 
 # The module
-module = module_(full_name = "pytriqs.applications.tprf.linalg", doc = "Green's function linear algebra tools", app_name = "pytriqs.applications.tprf.linalg")
+module = module_(full_name = "linalg", doc = "Green's function linear algebra tools", app_name = "linalg")
 
 # All the triqs C++/Python modules
+import pytriqs.gf
 
 # Add here all includes beyond what is automatically included by the triqs modules
 module.add_include("../c++/linalg.hpp") # Manually added
 
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
-#include <triqs/python_tools/converters/optional.hpp>
-#include <triqs/python_tools/converters/pair.hpp>
-#include <triqs/python_tools/converters/map.hpp>
-#include <triqs/python_tools/converters/set.hpp>
-#include <triqs/python_tools/converters/vector.hpp>
-#include <triqs/python_tools/converters/optional.hpp>
-#include <triqs/python_tools/converters/variant.hpp>
-#include <triqs/python_tools/converters/tuple.hpp>
-#include <triqs/python_tools/converters/arrays.hpp>
-#include <triqs/python_tools/converters/gf.hpp>
-#include <triqs/python_tools/converters/block_gf.hpp>
-#include <triqs/python_tools/converters/block2_gf.hpp>
+#include <cpp2py/converters/map.hpp>
+#include <cpp2py/converters/optional.hpp>
+#include <cpp2py/converters/pair.hpp>
+#include <cpp2py/converters/set.hpp>
+#include <cpp2py/converters/string.hpp>
+#include <cpp2py/converters/vector.hpp>
+#include <triqs/cpp2py_converters/arrays.hpp>
+#include <triqs/cpp2py_converters/gf.hpp>
+#include <triqs/cpp2py_converters/variant.hpp>
+
 using namespace triqs::gfs;
 using namespace triqs::lattice;
 using namespace tprf;
