@@ -7,15 +7,33 @@ enable_testing()
 # We use shared libraries
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
+# Load TRIQS and Cpp2Py
+find_package(TRIQS 1.5 EXACT REQUIRED)
+find_package(Cpp2Py REQUIRED)
+
 # Load TRIQS, including all predefined variables from TRIQS installation
 # First append triqs installed files to the cmake load path
 list(APPEND CMAKE_MODULE_PATH ${TRIQS_PATH}/share/triqs/cmake)
-find_package(TRIQS REQUIRED)
+
 add_definitions(${TRIQS_CXX_DEFINITIONS})
 include_directories(${TRIQS_INCLUDE_ALL})
 
-# We want to be installed in the TRIQS tree
-set(CMAKE_INSTALL_PREFIX ${TRIQS_PATH})
+# Default Install directory to TRIQS_ROOT if not given. Checks an absolute name is given.
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR (NOT IS_ABSOLUTE ${CMAKE_INSTALL_PREFIX}))
+  message(STATUS " No install prefix given (or invalid). Defaulting to TRIQS_ROOT")
+  set(CMAKE_INSTALL_PREFIX ${TRIQS_ROOT} CACHE PATH "default install path" FORCE)
+endif()
+message(STATUS "-------- CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX} -------------")
+
+# All PRIVATE common options.
+# The std for all targets
+add_compile_options(-std=c++14 $<$<CONFIG:Release>:-march=native>)
+
+# Common to all targets (ctint, python, tests).
+include_directories(${CMAKE_SOURCE_DIR})
+
+# To be fixed!!
+triqs_set_rpath_for_all_targets()
 
 # Compile C++ code
 add_subdirectory(c++)
@@ -36,4 +54,5 @@ if (${TRIQS_WITH_PYTHON_SUPPORT})
 endif()
 
 # Add tests
+enable_testing()
 add_subdirectory(test)

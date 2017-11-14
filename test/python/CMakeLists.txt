@@ -3,8 +3,12 @@
 FILE(GLOB all_h5_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h5)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_h5_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
  
-triqs_add_python_test(g_iw_from_tau)
-triqs_add_python_test(chi4_iw_from_tau)
+# List all tests
+set(g_iw_from_tau chi4_iw_from_tau gk_to_from_gr)
 
-# lattice
-triqs_add_python_test(gk_to_from_gr)
+foreach(t ${all_tests})
+  add_test(NAME ${t} COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/${t}.py)
+endforeach()
+
+# Set the PythonPath : put the build dir first (in case there is an installed version). 
+set_property(TEST ${all_tests} PROPERTY ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/python:$ENV{PYTHONPATH} )
