@@ -34,7 +34,7 @@ namespace tprf {
   for (auto const &w : std::get<0>(g.mesh())) {
    auto _ = var_t{};
 
-   auto g_w = make_gf(g[w][_][_], chg.memory_layout());
+   auto g_w = make_gf(g[w, _, _], chg.memory_layout());
    auto g_w_inv = make_gf(g_w.mesh(), g_w.target(), g_w.memory_layout());
 
    auto mat = chg.matrix_view(g_w.data());
@@ -42,7 +42,7 @@ namespace tprf {
 
    mat_inv = inverse(mat);
 
-   g_inv[w][_][_] = g_w_inv;
+   g_inv[w, _, _] = g_w_inv;
   }
   return g_inv;
  }
@@ -60,8 +60,8 @@ namespace tprf {
   for (auto const &w : std::get<0>(A.mesh())) {
    auto _ = var_t{};
 
-   auto A_w = make_gf(A[w][_][_], chg.memory_layout());
-   auto B_w = make_gf(B[w][_][_], chg.memory_layout());
+   auto A_w = make_gf(A[w, _, _], chg.memory_layout());
+   auto B_w = make_gf(B[w, _, _], chg.memory_layout());
    auto C_w = make_gf(A_w.mesh(), A_w.target(), A_w.memory_layout());
 
    auto A_mat = chg.matrix_view(A_w.data());
@@ -70,7 +70,7 @@ namespace tprf {
 
    C_mat = A_mat * B_mat;
 
-   C[w][_][_] = C_w;
+   C[w, _, _] = C_w;
   }
   return C;
  }
@@ -85,11 +85,11 @@ namespace tprf {
 
   for (auto const &w : std::get<0>(g.mesh())) {
    auto _ = var_t{};
-   auto I_w = make_gf(I[w][_][_], chg.memory_layout());
+   auto I_w = make_gf(I[w, _, _], chg.memory_layout());
    auto I_mat = chg.matrix_view(I_w.data());
 
    I_mat = 1.0; // This sets a triqs::arrays::matrix to the identity matrix...
-   I[w][_][_] = I_w;
+   I[w, _, _] = I_w;
   }
   return I;
  }

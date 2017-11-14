@@ -47,9 +47,9 @@ void _fourier_impl(
   gf<cartesian_product<M_out, M_in>, T> G_1{{mesh_out, mesh_in},
                                             G_out.target_shape()};
   for (auto const &i : mesh_in)
-    _fourier_impl(G_1[_][i], G_in[_][i]);
+    _fourier_impl(G_1[_, i], G_in[_, i]);
   for (auto const &o : mesh_out)
-    _fourier_impl(G_out[o][_], make_const_view(G_1[o][_]));
+    _fourier_impl(G_out[o, _], make_const_view(G_1[o, _]));
 }
 
 // 3D Fourier
@@ -72,17 +72,17 @@ void _fourier_impl(
                                                   G_out.target_shape()};
   for (auto const &i1 : mesh_in)
     for (auto const &i2 : mesh_in)
-      _fourier_impl(G_1[_][i1][i2], G_in[_][i1][i2]);
+      _fourier_impl(G_1[_, i1, i2], G_in[_, i1, i2]);
 
   gf<cartesian_product<M_out, M_out, M_in>, T> G_2{
       {mesh_out, mesh_out, mesh_in}, G_out.target_shape()};
   for (auto const &o : mesh_out)
     for (auto const &i : mesh_in)
-      _fourier_impl(G_2[o][_][i], make_const_view(G_1[o][_][i]));
+      _fourier_impl(G_2[o, _, i], make_const_view(G_1[o, _, i]));
 
   for (auto const &o1 : mesh_out)
     for (auto const &o2 : mesh_out)
-      _fourier_impl(G_out[o1][o2][_], make_const_view(G_2[o1][o2][_]));
+      _fourier_impl(G_out[o1, o2, _], make_const_view(G_2[o1, o2, _]));
 }
 
 // Block fourier
@@ -146,7 +146,7 @@ _make_gf_impl_3d(typename Gf<cartesian_product<M_in, M_in, M_in>,
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<is_gf<Gf<imtime, T>>::value,
                  typename Gf<imfreq, T>::regular_type>
@@ -157,7 +157,7 @@ make_gf_from_fourier(Gf<imtime, T> const &G_tau, int n_iw = -1) {
 }
 
 // Factory to create imaginary time Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<is_gf<Gf<imfreq, T>>::value,
                  typename Gf<imtime, T>::regular_type>
@@ -168,7 +168,7 @@ make_gf_from_inverse_fourier(Gf<imfreq, T> const &G_iw, int n_tau = -1) {
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_gf<Gf<cartesian_product<imtime, imtime>, T>>::value,
@@ -179,7 +179,7 @@ make_gf_from_fourier(Gf<cartesian_product<imtime, imtime>, T> const &G_tau,
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_gf<Gf<cartesian_product<imfreq, imfreq>, T>>::value,
@@ -191,7 +191,7 @@ make_gf_from_inverse_fourier(
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_gf<Gf<cartesian_product<imtime, imtime, imtime>, T>>::value,
@@ -203,7 +203,7 @@ make_gf_from_fourier(
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of gf[_const][_view]
+// transform of gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_gf<Gf<cartesian_product<imfreq, imfreq, imfreq>, T>>::value,
@@ -215,12 +215,12 @@ make_gf_from_inverse_fourier(
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename M_out, typename M_in,
           typename T>
 typename Gf<M_out, T>::regular_type
 _make_block_gf_impl(typename Gf<M_in, T>::const_view_type const &G_in, int n) {
-  // block_gf[_const][_view]
+  // block_gf[_const, _view]
   if
     constexpr(Gf<M_in, T>::arity == 1) {
       std::vector<gf<M_out, T>> G_out_vec;
@@ -232,7 +232,7 @@ _make_block_gf_impl(typename Gf<M_in, T>::const_view_type const &G_in, int n) {
       typename Gf<M_out, T>::regular_type G_out{G_in.block_names(), G_out_vec};
       return G_out;
     }
-  // block2_gf[_const][_view]
+  // block2_gf[_const, _view]
   else if (Gf<M_in, T>::arity == 2) {
     std::vector<std::vector<gf<M_out, T>>> G_out_vecvec;
     for (int i : range(G_in.size1())) {
@@ -300,7 +300,7 @@ _make_block_gf_impl_3d(typename Gf<cartesian_product<M_in, M_in, M_in>,
   using M_prod_in = cartesian_product<M_in, M_in, M_in>;
   using M_prod_out = cartesian_product<M_out, M_out, M_out>;
 
-  // block_gf[_const][_view]
+  // block_gf[_const, _view]
   if
     constexpr(Gf<M_prod_in, T>::arity == 1) {
       std::vector<gf<M_prod_out, T>> G_out_vec;
@@ -311,7 +311,7 @@ _make_block_gf_impl_3d(typename Gf<cartesian_product<M_in, M_in, M_in>,
                                                      G_out_vec};
       return G_out;
     }
-  // block2_gf[_const][_view]
+  // block2_gf[_const, _view]
   else if (Gf<M_prod_in, T>::arity == 2) {
     std::vector<std::vector<gf<M_prod_out, T>>> G_out_vecvec;
     for (int i : range(G_in.size1())) {
@@ -328,7 +328,7 @@ _make_block_gf_impl_3d(typename Gf<cartesian_product<M_in, M_in, M_in>,
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<is_block_gf_or_view<Gf<imtime, T>>::value,
                  typename Gf<imfreq, T>::regular_type>
@@ -337,7 +337,7 @@ make_gf_from_fourier(Gf<imtime, T> const &G_tau, int n_iw = -1) {
 }
 
 // Factory to create imaginary time Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<is_block_gf_or_view<Gf<imfreq, T>>::value,
                  typename Gf<imtime, T>::regular_type>
@@ -346,7 +346,7 @@ make_gf_from_inverse_fourier(Gf<imfreq, T> const &G_iw, int n_tau = -1) {
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_block_gf_or_view<Gf<cartesian_product<imtime, imtime>, T>>::value,
@@ -357,7 +357,7 @@ make_gf_from_fourier(Gf<cartesian_product<imtime, imtime>, T> const &G_tau,
 }
 
 // Factory to create imaginary time Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_block_gf_or_view<Gf<cartesian_product<imfreq, imfreq>, T>>::value,
@@ -369,7 +369,7 @@ make_gf_from_inverse_fourier(
 }
 
 // Factory to create Matsubara frequency Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_block_gf_or_view<
@@ -383,7 +383,7 @@ make_gf_from_fourier(
 }
 
 // Factory to create imaginary time Green functions from inverse fourier
-// transform of block[2]_gf[_const][_view]
+// transform of block[2]_gf[_const, _view]
 template <template <typename, typename> class Gf, typename T>
 std::enable_if_t<
     is_block_gf_or_view<Gf<cartesian_product<imfreq, imfreq>, T>>::value,

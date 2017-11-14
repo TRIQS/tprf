@@ -48,10 +48,9 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 
   for (auto const &kidx : std::get<1>(g0k.mesh())) {
     auto _ = var_t{};
-    g0k[_][kidx] = inverse(g0k[_][kidx]);
+    g0k[_, kidx] = inverse(g0k[_, kidx]);
   }
 
-  // g0k = inverse(g0k);  // does not work, see TRIQS issue #463
   return g0k;
 }
 
@@ -65,7 +64,7 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
   for (auto const &kidx : std::get<1>(gk.mesh())) {
     auto _ = var_t{};
-    gk[_][kidx] = inverse(gk[_][kidx]);
+    gk[_, kidx] = inverse(gk[_, kidx]);
   }
 
   // gk = inverse(gk);  // does not work, see TRIQS issue #463
@@ -80,7 +79,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gk) {
 
   auto _ = var_t{};
   for (auto const &nidx : std::get<0>(gr.mesh()))
-    gr[nidx][_] = inverse_fourier(gk[nidx][_]);
+    gr[nidx, _] = inverse_fourier(gk[nidx, _]);
 
   return gr;
 }
@@ -93,7 +92,7 @@ gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz) {
 
   auto _ = var_t{};
   for (auto const &nidx : std::get<0>(gk.mesh()))
-    gk[nidx][_] = fourier(gr[nidx][_]);
+    gk[nidx,_] = fourier(gr[nidx,_]);
 
   return gk;
 }
@@ -123,7 +122,7 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
   for (auto const &widx : std::get<0>(chi0r.mesh())) {
     for (auto const &nidx : std::get<1>(chi0r.mesh())) {
       auto _ = var_t{};
-      chi0r[widx][nidx][_] = inverse_fourier(chi0q[widx][nidx][_]);
+      chi0r[widx, nidx, _] = inverse_fourier(chi0q[widx, nidx, _]);
     }
   }
   return chi0r;
@@ -140,7 +139,7 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz) {
   for (auto const &widx : std::get<0>(chi0q.mesh())) {
     for (auto const &nidx : std::get<1>(chi0q.mesh())) {
       auto _ = var_t{};
-      chi0q[widx][nidx][_] = fourier(chi0r[widx][nidx][_]);
+      chi0q[widx, nidx, _] = fourier(chi0r[widx, nidx, _]);
     }
   }
   return chi0q;
