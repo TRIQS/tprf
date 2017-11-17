@@ -100,12 +100,24 @@ namespace tprf {
  template g2_iw_t inverse<Channel_t::PH_bar>(g2_iw_cvt);
  template g2_iw_t inverse<Channel_t::PP>(g2_iw_cvt);
 
+ g2_iw_t inverse_PH(g2_iw_vt g) { return inverse<Channel_t::PH>(g); }
+ g2_iw_t inverse_PP(g2_iw_vt g) { return inverse<Channel_t::PP>(g); }
+ g2_iw_t inverse_PH_bar(g2_iw_vt g) { return inverse<Channel_t::PH_bar>(g); }
+
  template g2_iw_t product<Channel_t::PH>(g2_iw_cvt, g2_iw_cvt);
  template g2_iw_t product<Channel_t::PH_bar>(g2_iw_cvt, g2_iw_cvt);
  template g2_iw_t product<Channel_t::PP>(g2_iw_cvt, g2_iw_cvt);
 
+ g2_iw_t product_PH(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PH>(A, B); }
+ g2_iw_t product_PP(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PP>(A, B); }
+ g2_iw_t product_PH_bar(g2_iw_vt A, g2_iw_vt B) { return product<Channel_t::PH_bar>(A, B); }
+
  template g2_iw_t identity<Channel_t::PH>(g2_iw_cvt);
  template g2_iw_t identity<Channel_t::PH_bar>(g2_iw_cvt);
  template g2_iw_t identity<Channel_t::PP>(g2_iw_cvt);
+
+ g2_iw_t identity_PH(g2_iw_vt g) { return identity<Channel_t::PH>(g); }
+ g2_iw_t identity_PP(g2_iw_vt g) { return identity<Channel_t::PP>(g); }
+ g2_iw_t identity_PH_bar(g2_iw_vt g) { return identity<Channel_t::PH_bar>(g); }
   
 } // namespace tprf
