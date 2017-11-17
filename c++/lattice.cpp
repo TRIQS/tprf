@@ -19,6 +19,7 @@
  *
  ******************************************************************************/
 
+#include "linalg.hpp"
 #include "lattice.hpp"
 
 #include <triqs/clef.hpp>
@@ -40,6 +41,9 @@ placeholder<7> d;
 using triqs::arrays::inverse;
 
 namespace tprf {
+
+// ----------------------------------------------------
+// g
 
 gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
@@ -96,6 +100,9 @@ gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz) {
 
   return gk;
 }
+
+// ----------------------------------------------------
+// chi0
 
 chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
 
@@ -156,4 +163,42 @@ chi0q_sum_nu(chi0q_t chi0q) {
   return chi0q_w;
 }
 
+// ----------------------------------------------------
+// chi
+
+chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+
+  auto _ = var_t{};
+  
+  auto mb = std::get<0>(chi0q.mesh());
+  auto mf = std::get<1>(chi0q.mesh());
+  auto mbz = std::get<2>(chi0q.mesh());
+
+  auto chiq =
+    make_gf<chiq_t::mesh_t::var_t>({mbz, mb, mf, mf}, chi0q.target());
+
+  for (auto const &k : mbz) {
+
+    // -- Construct matrix version of chi0q_k
+
+    // -- If we could make this a 1,1,1 g2_iw_t function and do the PH inverse
+    // -- only in the target space we would save one global inverse! 
+    
+    auto chi0q_k =
+      make_gf<g2_iw_t::mesh_t::var_t>({mb, mf, mf}, chi0q.target());
+
+    for (auto const &w : mb) {
+      for (auto const &n : mf) {
+	chi0q_k[w, n, n] = chi0q[w, n, k];
+      }
+    }
+
+    g2_iw_t chiq_inv_k = inverse<Channel_t::PH>(chi0q_k) - gamma_ph;
+
+    chiq[k, _, _, _] = inverse<Channel_t::PH>(chiq_inv_k);
+  }
+  
+  return chiq;
+}
+  
 } // namespace tprf
