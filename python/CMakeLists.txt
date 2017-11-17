@@ -40,5 +40,13 @@ target_link_libraries(freq_conv tprf_c)
 triqs_set_rpath_for_target(freq_conv)
 install(TARGETS freq_conv DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+# Build the C++ extension module
+add_cpp2py_module(hubbard_atom)
+target_link_libraries(hubbard_atom tprf_c)
+triqs_set_rpath_for_target(hubbard_atom)
+install(TARGETS hubbard_atom DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 # Install utilities
 install(FILES Dummy.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+install(FILES __init__.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+

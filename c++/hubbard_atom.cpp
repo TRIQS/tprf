@@ -58,10 +58,10 @@ namespace hubbard_atom {
     temp_1d_t C{mb, {1, 1, 1, 1}};
     temp_1d_t D{mb, {1, 1, 1, 1}};
     
-    temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b0{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b1{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b2{{mb, mf}, {1, 1, 1, 1}};
+    temp_2d_t a0{{mf, mb}, {1, 1, 1, 1}};
+    temp_2d_t b0{{mf, mb}, {1, 1, 1, 1}};
+    temp_2d_t b1{{mf, mb}, {1, 1, 1, 1}};
+    temp_2d_t b2{{mf, mb}, {1, 1, 1, 1}};
 
     g2_iw_t chi{{mb, mf, mf}, {1, 1, 1, 1}};
     
@@ -92,7 +92,7 @@ namespace hubbard_atom {
 	for (auto const &n2 : mf) {
 	  if(n1.index() == n2.index()) chi[w, n1, n2] = b0[w, n1] + a0[w, n1];
 	  if(n1.index() == (- w - n2).n) chi[w, n1, n2] = b0[w, n1] - a0[w, n1];
-	  chi[w, n1, n2] = b1[n1, w] * b1[n2, w] + b2[n1, w] * b2[n2, w];
+	  chi[w, n1, n2] = b1[w, n1] * b1[w, n2] + b2[w, n1] * b2[w, n2];
 	}
       }
     }
