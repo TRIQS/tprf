@@ -25,9 +25,12 @@
 namespace tprf {
 namespace hubbard_atom {
   
-g_iw_t single_particle_greens_function(int nw, double beta, double U);
+  typedef std::complex<double> val_t; 
+  typedef gf<imfreq, tensor_valued<4>> temp_1d_t;
+  typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> temp_2d_t;
 
-g2_iw_t chi_ph_magnetic(int nw, int nwf, double beta, double U);
+  g_iw_t single_particle_greens_function(int nw, double beta, double U);
+  g2_iw_t chi_ph_magnetic(int nw, int nwf, double beta, double U);
   
 } // namespace hubbard_atom
 } // namespace tprf

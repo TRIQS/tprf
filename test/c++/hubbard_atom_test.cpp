@@ -44,8 +44,8 @@ TEST(hubbard_atom, chi_ph_magnetic) {
   double eps = 1e-9;
   double beta = 2.234;
   double U = 5.0;
-  int nw = 32;
-  int nwf = 61;
+  int nw = 4;
+  int nwf = 10;
   auto chi = chi_ph_magnetic(nw, nwf, beta, U);
 
   std::cerr << "Lacking reference data FIXME!\n";

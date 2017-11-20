@@ -8,7 +8,6 @@ module = module_(full_name = "hubbard_atom", doc = "Hubbard atom response functi
 import pytriqs.gf
 
 # Add here all includes beyond what is automatically included by the triqs modules
-module.add_include("../c++/types.hpp") # Manually added
 module.add_include("../c++/hubbard_atom.hpp") # Manually added
 
 # Add here anything to add in the C++ code at the start, e.g. namespace using
