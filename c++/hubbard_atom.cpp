@@ -52,43 +52,85 @@ namespace hubbard_atom {
     auto mb = gf_mesh<imfreq>{beta, Boson, nw};
     auto mf = gf_mesh<imfreq>{beta, Fermion, nwf};
 
-    temp_1d_t C{mb, {1, 1, 1, 1}};
-    temp_1d_t D{mb, {1, 1, 1, 1}};
-    
-    temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b0{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b1{{mb, mf}, {1, 1, 1, 1}};
-    temp_2d_t b2{{mb, mf}, {1, 1, 1, 1}};
-
+    temp_1d_t C{mb, {1, 1, 1, 1}}, D{mb, {1, 1, 1, 1}};
+    temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}}, b0{{mb, mf}, {1, 1, 1, 1}};
+    temp_2d_t b1{{mb, mf}, {1, 1, 1, 1}}, b2{{mb, mf}, {1, 1, 1, 1}};
     g2_iw_t chi{{mb, mf, mf}, {1, 1, 1, 1}};
 
     val_t I(0., 1.);
     
-    val_t A0 = 1.;
-    val_t A = I * U * 0.5;
-
-    val_t B0 = 1.;
-    // Modified formula assuming certain branch cut of the complex square root
-    val_t B = I * U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
+    val_t A = I*U*0.5;
+    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) ); // Modified for cplx sqrt
+    C(w) << 0.;
+    C[{mb, 0}] = -beta*U*0.5 / ( 1 + exp(-beta*U*0.5) ); // set zeroth Matsubara frequency
+    D(w) << U*U*0.25 * (1. + C(w))/(1. - C(w));
     
+    val_t B0 = 1.;
+    val_t A0 = 1.;
     val_t B1 = 1.;
     val_t B2 = I;
 
-    C(w) << 0.;
-    // set zeroth Matsubara frequency
-    C[{mb, 0}] = -beta*U*0.5 / ( 1 + exp(-beta*U*0.5) ); 
-    D(w) << U*U*0.25 * (1. + C(w))/(1. - C(w));
-
-    a0(w, n) << A0 * beta*0.5 * (-n*(n+w) - A*A) / ((-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U * 0.25) );
-    b0(w, n) << B0 * beta*0.5 * (-n*(n+w) - B*B) / ((-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U * 0.25) );
-    b1(w, n) << B1 * sqrt(U*(1-C(w))) * (-n*(n+w) - D(w)) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U * 0.25) );
-    b2(w, n) << B2 * sqrt(U*U*U*0.25) * sqrt(U*U/(1 - C(w)) - w*w) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U * 0.25) );
+    a0(w, n) << A0 * beta*0.5 * (-n*(n+w) - A*A) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+    b0(w, n) << B0 * beta*0.5 * (-n*(n+w) - B*B) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+    b1(w, n) << B1 * sqrt(U*(1-C(w))) * (-n*(n+w) - D(w)) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+    b2(w, n) << B2 * sqrt(U*U*U*0.25) * sqrt(U*U/(1-C(w)) - w*w) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
 
     chi(w, n1, n2) << kronecker(n1, n2) * (b0(w, n1) + a0(w, n1))
                     + kronecker(n1, -w - n2) * (b0(w, n1) - a0(w, n1))
                     + b1(w, n1) * b1(w, n2) + b2(w, n1) * b2(w, n2);
 
     return chi;
+  }
+
+  g2_iw_t gamma_ph_magnetic(int nw, int nwf, double beta, double U) {
+    
+    auto mb = gf_mesh<imfreq>{beta, Boson, nw};
+    auto mf = gf_mesh<imfreq>{beta, Fermion, nwf};
+
+    temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}}, b0{{mb, mf}, {1, 1, 1, 1}};
+    temp_1d_t D{mb, {1, 1, 1, 1}};
+    g2_iw_t gamma{{mb, mf, mf}, {1, 1, 1, 1}};
+
+
+    val_t I(0., 1.);
+
+    int s = 1; // Sign +1 (d,m); -1 (s,t)
+
+    val_t A = I*U*0.5;
+    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) ); // Modified for cplx sqrt
+    
+    val_t B0 = 1.;
+    val_t A0 = 1.;
+    val_t B1 = 1.;
+    val_t B2 = I;
+
+    a0(w, n) << beta*0.5*A*A/A0 *
+      (-n*n+U*U*0.25)*(-(n+s*w)*(n+s*w)+U*U*0.25) /
+      ((-n*(n+s*w)-A*A)*(-n*(n+s*w)));
+
+    b0(w, n) << beta*0.5*B*B/B0 * 
+      (-n*n+U*U*0.25)*(-(n+s*w)*(n+s*w)+U*U*0.25) /
+      ((-n*(n+s*w)-B*B)*(-n*(n+s*w)));
+
+    for( auto const & w : mb ) {
+      D[w] = -U * abs(B1)*abs(B1) / (B0*B0) *
+	U*U*0.25 * ( U*U*0.25 * std::pow( 4*B*B/(U*U) + 1, 2) - w*w) /
+	( U*tan(beta*0.25*(sqrt((4*B*B-w*w).real())-I*w)) / sqrt((4*B*B-w*w).real()) + s );
+    }
+
+    /*
+    // does not work for the sqrt() calls .. ? FIXME
+    D(w) << -U * abs(B1)*abs(B1) / (B0*B0) *
+      U*U*0.25 * ( U*U*0.25 * std::pow( 4*B*B/(U*U) + 1, 2) - w*w) /
+      ( U * tan(beta*0.25 * (sqrt(4*B*B - w*w) - I*w)) / sqrt(4*B*B - w*w) + s );
+    */
+    
+    gamma(w, n1, n2) << kronecker(n1, n2) * (b0(w, n1) + a0(w, n1))
+                      + kronecker(n1, -w - n2) * (b0(w, n1) - a0(w, n1))
+                      + D(w) / (-n1*(n1+s*w) - B*B) / (-n2*(n2+s*w) - B*B)
+                      - B1*B1 / (B0*B0) * U;
+    
+    return gamma;
   }
   
 } // namespace hubbard_atom

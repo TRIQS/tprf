@@ -29,5 +29,6 @@ using namespace tprf;
 
 module.add_function("g_iw_t single_particle_greens_function(int nw, double beta, double U)", doc = """""")
 module.add_function("g2_iw_t chi_ph_magnetic(int nw, int nwf, double beta, double U)", doc = """""")
+module.add_function("g2_iw_t gamma_ph_magnetic(int nw, int nwf, double beta, double U)", doc = """""")
 
 module.generate_code()
