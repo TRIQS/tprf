@@ -97,7 +97,10 @@ namespace hubbard_atom {
     int s = 1; // Sign +1 (d,m); -1 (s,t)
 
     val_t A = I*U*0.5;
-    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) ); // Modified for cplx sqrt
+    // Modified for cplx sqrt
+    val_t B = U*0.5 * sqrt( val_t(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
+
+    std::cout << "3. - exp(beta*U*0.5) = " << 3. - exp(beta*U*0.5) << "\n";
     
     val_t B0 = 1.;
     val_t A0 = 1.;
@@ -113,22 +116,28 @@ namespace hubbard_atom {
       ((-n*(n+s*w)-B*B)*(-n*(n+s*w)));
 
     for( auto const & w : mb ) {
-      D[w] = -U * abs(B1)*abs(B1) / (B0*B0) *
-	U*U*0.25 * ( U*U*0.25 * std::pow( 4*B*B/(U*U) + 1, 2) - w*w) /
-	( U*tan(beta*0.25*(sqrt((4*B*B-w*w).real())-I*w)) / sqrt((4*B*B-w*w).real()) + s );
-    }
+      val_t sqrtBBww = sqrt(4*B*B - w*w);
+      val_t powBBUU1 = std::pow(4.*B*B/(U*U) + 1., 2);
+      val_t UU4 = U*U*0.25;
 
+      // NB! The s factor has an additional sign cf Thunstrom expression 
+      D[w] = -U*abs(B1)*abs(B1)/(B0*B0) * UU4*(UU4*powBBUU1 - w*w) /
+	( U*tan( beta*0.25*(sqrtBBww - I*w) ) / sqrtBBww - s );
+    }
+    
     /*
     // does not work for the sqrt() calls .. ? FIXME
     D(w) << -U * abs(B1)*abs(B1) / (B0*B0) *
-      U*U*0.25 * ( U*U*0.25 * std::pow( 4*B*B/(U*U) + 1, 2) - w*w) /
-      ( U * tan(beta*0.25 * (sqrt(4*B*B - w*w) - I*w)) / sqrt(4*B*B - w*w) + s );
+      U*U*0.25 * ( U*U*0.25 * std::pow(4*B*B/(U*U) + 1, 2) - w*w) /
+      ( U*tan(beta*0.25 * (sqrt(4*B*B-w*w) - I*w)) / sqrt(4*B*B-w*w) - s );
     */
-    
+      
     gamma(w, n1, n2) << kronecker(n1, n2) * (b0(w, n1) + a0(w, n1))
                       + kronecker(n1, -w - n2) * (b0(w, n1) - a0(w, n1))
                       + D(w) / (-n1*(n1+s*w) - B*B) / (-n2*(n2+s*w) - B*B)
                       - B1*B1 / (B0*B0) * U;
+
+    gamma(w, n1, n2) << - 1/beta/beta * gamma(w, n1, n2);
     
     return gamma;
   }
