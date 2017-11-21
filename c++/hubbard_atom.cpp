@@ -60,9 +60,8 @@ namespace hubbard_atom {
     val_t I(0., 1.);
     
     val_t A = I*U*0.5;
-    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) ); // Modified for cplx sqrt
-    C(w) << 0.;
-    C[{mb, 0}] = -beta*U*0.5 / ( 1 + exp(-beta*U*0.5) ); // set zeroth Matsubara frequency
+    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
+    C(w) << 0.; C[{mb, 0}] = -beta*U*0.5 / ( 1 + exp(-beta*U*0.5) ); // set w=0
     D(w) << U*U*0.25 * (1. + C(w))/(1. - C(w));
     
     val_t B0 = 1.;
@@ -70,10 +69,17 @@ namespace hubbard_atom {
     val_t B1 = 1.;
     val_t B2 = I;
 
-    a0(w, n) << A0 * beta*0.5 * (-n*(n+w) - A*A) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
-    b0(w, n) << B0 * beta*0.5 * (-n*(n+w) - B*B) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
-    b1(w, n) << B1 * sqrt(U*(1-C(w))) * (-n*(n+w) - D(w)) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
-    b2(w, n) << B2 * sqrt(U*U*U*0.25) * sqrt(U*U/(1-C(w)) - w*w) / ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+    a0(w, n) << A0 * beta*0.5 * (-n*(n+w) - A*A) /
+      ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+
+    b0(w, n) << B0 * beta*0.5 * (-n*(n+w) - B*B) /
+      ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+
+    b1(w, n) << B1 * sqrt(U*(1-C(w))) * (-n*(n+w) - D(w)) /
+      ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
+
+    b2(w, n) << B2 * sqrt(U*U*U*0.25) * sqrt(U*U/(1-C(w)) - w*w) /
+      ( (-n*n + U*U*0.25) * (-(n+w)*(n+w) + U*U*0.25) );
 
     chi(w, n1, n2) << kronecker(n1, n2) * (b0(w, n1) + a0(w, n1))
                     + kronecker(n1, -w - n2) * (b0(w, n1) - a0(w, n1))
@@ -91,16 +97,14 @@ namespace hubbard_atom {
     temp_1d_t D{mb, {1, 1, 1, 1}};
     g2_iw_t gamma{{mb, mf, mf}, {1, 1, 1, 1}};
 
-
     val_t I(0., 1.);
 
     int s = 1; // Sign +1 (d,m); -1 (s,t)
 
     val_t A = I*U*0.5;
     // Modified for cplx sqrt
-    val_t B = U*0.5 * sqrt( val_t(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
-
-    std::cout << "3. - exp(beta*U*0.5) = " << 3. - exp(beta*U*0.5) << "\n";
+    val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
+    //std::cout << "3. - exp(beta*U*0.5) = " << 3. - exp(beta*U*0.5) << "\n";
     
     val_t B0 = 1.;
     val_t A0 = 1.;
