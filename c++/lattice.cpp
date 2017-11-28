@@ -35,6 +35,9 @@ placeholder<4> a;
 placeholder<5> b;
 placeholder<6> c;
 placeholder<7> d;
+
+placeholder<8> inup;
+
 } // namespace
 
 #include <triqs/arrays/linalg/det_and_inverse.hpp>
@@ -113,7 +116,7 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
   chi0r_t chi0r{{{beta, Boson, nw}, {beta, Fermion, nnu}, {nk, nk}},
                 {nb, nb, nb, nb}};
 
-  chi0r(iw, inu, r)(a, b, c, d) << gr(inu, r)(d, a) * gr(inu + iw, -r)(b, c);
+  chi0r(iw, inu, r)(a, b, c, d) << - beta * gr(inu, r)(d, a) * gr(inu + iw, -r)(b, c);
 
   return chi0r;
 }
@@ -159,10 +162,29 @@ chi0q_sum_nu(chi0q_t chi0q) {
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
       {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
 
-  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / mesh.size();
+  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / mesh.domain().beta;
   return chi0q_w;
 }
 
+gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q) {
+
+  auto mesh_b = std::get<0>(chi0q.mesh());
+  auto mesh_f = std::get<1>(chi0q.mesh());
+  auto mesh_k = std::get<2>(chi0q.mesh());
+  
+  auto chi0_w = make_gf<imfreq>(mesh_b, chi0q.target());
+
+  for(auto const &[w, n, k] : chi0q.mesh())
+    chi0_w[w] += chi0q[w, n, k];
+
+  double nk = mesh_k.size();
+  double beta = mesh_f.domain().beta;
+  chi0_w = chi0_w / nk / beta;
+  
+  return chi0_w;
+}
+
+  
 // ----------------------------------------------------
 // chi
 
@@ -200,5 +222,41 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
   
   return chiq;
 }
+
+gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu(chiq_t chiq) {
+
+  auto mesh_k = std::get<0>(chiq.mesh());
+  auto mesh_b = std::get<1>(chiq.mesh());
+  auto mesh_f = std::get<2>(chiq.mesh());
+  auto chiq_w = make_gf<cartesian_product<brillouin_zone, imfreq>>({mesh_k, mesh_b}, chiq.target());
+
+  // Does not compile due to treatment of the tail (singularity)
+  //chiq_w(k, iw) << sum(chiq(k, iw, inu, inup), inu=mesh, inup=mesh);
+
+  for(auto const &[k, w, n1, n2] : chiq.mesh())
+    chiq_w[k, w] += chiq[k, w, n1, n2];
+
+  double beta = mesh_f.domain().beta;
+  chiq_w = chiq_w / beta;
   
+  return chiq_w;
+}
+
+gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq) {
+
+  auto mesh_k = std::get<0>(chiq.mesh());
+  auto mesh_b = std::get<1>(chiq.mesh());
+  auto mesh_f = std::get<2>(chiq.mesh());
+  auto chi_w = make_gf<imfreq>(mesh_b, chiq.target());
+
+  for(auto const &[k, w, n1, n2] : chiq.mesh())
+    chi_w[w] += chiq[k, w, n1, n2];
+
+  double beta = mesh_f.domain().beta;
+  double nk = mesh_k.size();
+  chi_w = chi_w / nk / beta;
+  
+  return chi_w;
+}
+
 } // namespace tprf
