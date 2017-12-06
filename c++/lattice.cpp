@@ -162,7 +162,8 @@ chi0q_sum_nu(chi0q_t chi0q) {
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
       {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
 
-  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / mesh.domain().beta;
+  double beta = mesh.domain().beta;
+  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / (beta*beta);
   return chi0q_w;
 }
 
@@ -179,7 +180,7 @@ gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q) {
 
   double nk = mesh_k.size();
   double beta = mesh_f.domain().beta;
-  chi0_w = chi0_w / nk / beta;
+  chi0_w = chi0_w / nk / (beta*beta);
   
   return chi0_w;
 }
@@ -237,7 +238,7 @@ gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu(chiq
     chiq_w[k, w] += chiq[k, w, n1, n2];
 
   double beta = mesh_f.domain().beta;
-  chiq_w = chiq_w / beta;
+  chiq_w = chiq_w / (beta*beta);
   
   return chiq_w;
 }
@@ -252,9 +253,9 @@ gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq) {
   for(auto const &[k, w, n1, n2] : chiq.mesh())
     chi_w[w] += chiq[k, w, n1, n2];
 
-  double beta = mesh_f.domain().beta;
   double nk = mesh_k.size();
-  chi_w = chi_w / nk / beta;
+  double beta = mesh_f.domain().beta;
+  chi_w = chi_w / nk / (beta*beta);
   
   return chi_w;
 }

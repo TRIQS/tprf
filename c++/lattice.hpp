@@ -40,7 +40,7 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0q);
 chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, brillouin_zone bz);
 
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(chi0q_t chi0q);
-  gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q);
+gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q);
 
 chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph);
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu(chiq_t chiq);
