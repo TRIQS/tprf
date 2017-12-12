@@ -20,10 +20,13 @@ add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${doc_sources} fourier tprf_c
 add_custom_target(doc_sphinx ALL DEPENDS ${sphinx_top})
 
 # Create a temporary copy of the doc that will be completed by the automatically generated one.
+# NB! the conf.py.in -> conf.py is generated at the configure step
+# the conf.py in the repo is for readthedocs and we must take care to
+# not overwrite the generated conf.py with the one in the repo
 FILE(GLOB_RECURSE all_rst_files RELATIVE ${CMAKE_SOURCE_DIR}/doc *.rst _* *.py *.png *.cpp)
 SET(rst_copy_tar  ${CMAKE_CURRENT_BINARY_DIR}/rst_copy.tar)
 add_custom_command (OUTPUT ${rst_copy_tar} DEPENDS ${all_rst_files}
- COMMAND cd ${CMAKE_SOURCE_DIR}/doc && tar cf ${rst_copy_tar} ${all_rst_files} && cd ${CMAKE_BINARY_DIR}/doc && tar xf ${rst_copy_tar} )
+ COMMAND cd ${CMAKE_SOURCE_DIR}/doc && tar cf ${rst_copy_tar} ${all_rst_files} && cd ${CMAKE_BINARY_DIR}/doc && cp conf.py conf.py.bak && tar xf ${rst_copy_tar} && mv conf.py.bak conf.py )
 add_custom_target(rst_copy DEPENDS ${rst_copy_tar})
 add_dependencies(doc_sphinx rst_copy) # we must first have copied the sources
 
@@ -48,6 +51,7 @@ if (DocWithC++2rst)
                       --output_directory=${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
                       --includes=${CMAKE_SOURCE_DIR}/c++/
                       --includes=${TRIQS_ROOT}/include
+		      --includes=/opt/local/include/openmpi-clang50
 		      --cxxflags="-std=c++14"
                       ${INC}		    
                       2>&1 > c++2rst.log

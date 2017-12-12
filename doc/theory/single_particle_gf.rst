@@ -9,20 +9,23 @@ The imaginary time single particle Green's function is defined as
    G_{a\bar{b}}(\tau_1, \tau_2) 
    \equiv 
    - \langle \mathcal{T} c_{a}(\tau_1) c^\dagger_{\bar{b}}(\tau_2) \rangle
+   \, .
 
-it is time translational invariant and hence only depends on the time difference
+It is time translational invariant and hence only depends on the time difference
 
 .. math::
    G_{a\bar{b}}(\tau_1, \tau_2) 
    =
    G_{a\bar{b}}(\tau_1 - \tau_2)
+   \, .
 
-using the cyclicity of the trace, see the section on (anti-)periodicity, we can show that it is :math:`\beta` (anti-)periodic.
+Using the cyclicity of the trace, see the section on (anti-)periodicity, we can show that it is :math:`\beta` (anti-)periodic.
 
 .. math::
    G_{a\bar{b}}(- \tau) 
    =
-   -\xi G_{a\bar{b}}(\beta - \tau)
+   \xi G_{a\bar{b}}(\beta - \tau)
+   \, .
 
 Hence, extending the function as an (anti-)periodic function to all real valued imaginary times :math:`\tau \in (-\infty, \infty)` the Green's function can be expanded in the Matsubara Fourier series
 
@@ -30,6 +33,7 @@ Hence, extending the function as an (anti-)periodic function to all real valued 
    G_{a\bar{b}}(\tau) =
    \frac{1}{\beta} \sum_{n=-\infty}^\infty
    e^{- i\nu_n \tau} G_{a\bar{b}}(i\nu_n)
+   \, ,
 
 with Fourier coefficients
 
