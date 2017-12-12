@@ -10,6 +10,7 @@ Theory and notation
    :maxdepth: 3
 
    theory/notation
+   theory/single_particle_gf
    theory/vertex
    theory/derivation_index_pairing
    theory/boundary_conditions
