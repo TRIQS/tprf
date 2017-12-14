@@ -8,54 +8,53 @@ from pytriqs.gf import *
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.hubbard_atom import chi_ph_magnetic
-from triqs_tprf.hubbard_atom import gamma_ph_magnetic
-from triqs_tprf.hubbard_atom import single_particle_greens_function
-
-# ----------------------------------------------------------------------
-
-from triqs_tprf.linalg import inverse_PH
-from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH
-from triqs_tprf.chi_from_gg2 import chi_from_gg2_PH
-from triqs_tprf.freq_conv import block_iw_AB_to_matrix_valued
-
-# ----------------------------------------------------------------------
-class Dummy():
-     def __init__(self):
-        pass
-
-# ----------------------------------------------------------------------
-def analytic_solution(beta, U, nw, nwf):
-
-    data = Dummy()
-
-    g_iw = single_particle_greens_function(beta=beta, U=U, nw=np.max([nw, nwf])*4)
-    data.G_iw = g_iw
-
-    # make block gf of the single gf
-    G_iw_block = BlockGf(name_list=['up', 'dn'], block_list=[g_iw, g_iw])
-    g_mat = block_iw_AB_to_matrix_valued(G_iw_block)
-    
-    # CHANGE NAME of the function to g2_ph_m!
-    data.g2_ph_m = chi_ph_magnetic(beta=beta, U=U, nw=nw, nwf=nwf)
-
-    data.chi_m = chi_from_gg2_PH(g_mat, data.g2_ph_m)
-    data.chi0_m = chi0_from_gg2_PH(g_mat, data.g2_ph_m)    
-
-    data.gamma_m = gamma_ph_magnetic(beta=beta, U=U, nw=nw, nwf=nwf)
-
-    # -- Numeric BSE
-    data.inv_chi0 = inverse_PH(data.chi0_m)
-    #data.inv_chi = inverse_PH(data.chi_m)
-    data.inv_chi = inverse_PH(data.g2_ph_m) # DEBUG TEST
-
-    data.gamma_m_num = data.inv_chi0 - data.inv_chi
-    
-    data.label = r'Analytic'
-    return data
+from triqs_tprf.ParameterCollection import ParameterCollection
+from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 
 # ----------------------------------------------------------------------
 def fixed_fermionic_window(g2, nwf):
+
+     from cpp2py.compiler import compile
+
+     code = """
+
+#include <triqs/clef.hpp>
+#include <triqs/gfs.hpp>
+#include <triqs/utility/timer.hpp>
+
+using namespace triqs;   
+using namespace triqs::gfs;
+
+typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
+
+g2_iw_t fixed_fermionic_window(g2_iw_t g2_in, int nwf) {
+
+     auto mesh_b = std::get<0>(g2_in.mesh());
+
+     gf_mesh<imfreq> mesh_f{mesh_b.domain().beta, Fermion, nwf};
+
+     g2_iw_t g2_out{{mesh_b, mesh_f, mesh_f}, {1, 1, 1, 1}};
+
+     clef::placeholder<0> w;
+     clef::placeholder<1> n1;
+     clef::placeholder<2> n2;
+
+     g2_out(w, n1, n2) << g2_in(w, n1, n2);
+
+     return g2_out;
+}
+     """
+     
+     cxxflags = '-O3 -march=native -Ofast -mavx -mfma -mavx2 -g -ggdb -Wno-invalid-partial-specialization '
+     includes = ' -I /opt/local/include/ -I /opt/local/include/openmpi-clang50'
+     M = compile(code, modules = "pytriqs", cxxflags=cxxflags + includes)
+
+     g2_out = M.fixed_fermionic_window(g2, nwf)
+
+     return g2_out
+
+# ----------------------------------------------------------------------
+def fixed_fermionic_window_python(g2, nwf):
 
     nw = (g2.data.shape[0] + 1) / 2
     beta = g2.mesh.components[0].beta
@@ -74,64 +73,104 @@ def fixed_fermionic_window(g2, nwf):
     return g2_out
 
 # ----------------------------------------------------------------------
+def max_abs_diff_in_window(g2_a, g2_b, nwf):
+
+    g2_a = fixed_fermionic_window(g2_a, nwf)
+    g2_b = fixed_fermionic_window(g2_b, nwf)
+
+    print g2_a.data.shape
+    print g2_b.data.shape
+    
+    return np.max(np.abs( g2_a.data - g2_b.data ))
+     
+# ----------------------------------------------------------------------
+def window_conv_depr():
+
+    nwf_vec = np.array([5, 10, 20, 40, 80, 160, 320])
+    diff_vec = np.zeros_like(nwf_vec, dtype=np.float)
+
+    for idx, nwf in enumerate(nwf_vec):
+         d = analytic_solution(beta=2.0, U=5.0, nw=1, nwf=nwf)
+         diff = np.max(np.abs( d.gamma_m.data - d.gamma_m_num.data ))
+         diff_vec[idx] = diff
+         print 'nwf, diff =', idx, nwf, diff
+
+    print diff_vec
+         
+    from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+
+    x = 1./nwf_vec
+
+    plt.figure(figsize=(3.25, 3))
+    
+    plt.plot(x, diff_vec, 'o-', alpha=0.75)
+    plt.xlabel(r'$1/n_{w}$')
+    plt.ylabel(r'$\max|\Gamma_{ana} - \Gamma_{num}|$')
+    plt.ylim([0, diff_vec.max()])
+    plt.xlim([0, x.max()])
+
+    plt.tight_layout()
+    plt.savefig('figure_bse_hubbard_atom_convergence.pdf')
+    plt.show()
+
+
+# ----------------------------------------------------------------------
 if __name__ == '__main__':
 
-    ana = analytic_solution(beta=2.0, U=5.0, nw=10, nwf=150)
+    p = ParameterCollection(beta=20., U=5., nw=1, nwf=20, nwf_gf=80)
+    #ana = analytic_solution(**p.dict())
+    ana = analytic_hubbard_atom(**p.dict())
 
-    for key in ['gamma_m_num', 'gamma_m']:
-
-        val = getattr(ana, key)
-        val_fix = fixed_fermionic_window(val, nwf=10)
-        setattr(ana, key, val_fix)
-
-    print ana.gamma_m.data.shape
-        
-    for data in [ana.gamma_m.data, ana.gamma_m_num.data]:
-        print np.max(np.abs(data.imag))
-        np.testing.assert_array_almost_equal(data.imag, np.zeros_like(data))
+    ana.gamma_m.data[:] -= p.U
+    ana.gamma_m_num.data[:] -= p.U
     
-    idx_list = [
-        (0, 0, 0),
-        (7, 10, 10),
-        (9, 9, 9),
-    #    (5, 10, 10),
-    #    (5, 30, 30),
-        ]
-    for idx in idx_list:
-        i1, i2, i3 = idx
-        val = ana.gamma_m_num.data[i1, i2, i3]
-        val_ref = ana.gamma_m.data[i1, i2, i3]
-        print idx, val, val_ref, val - val_ref
-
-    abs_diff = np.abs( ana.gamma_m_num.data - ana.gamma_m.data )
-    diff = np.max(abs_diff)
-    print 'max(abs(diff)) =', diff
-
-    idx = np.argwhere(np.abs(abs_diff - diff) < 1e-9)
-    print idx
-    #exit()
+    #for data in [ana.gamma_m.data, ana.gamma_m_num.data]:
+    #    #print np.max(np.abs(data.imag))
+    #    np.testing.assert_array_almost_equal(data.imag, np.zeros_like(data))
     
     diff = np.max(np.abs( ana.gamma_m_num.data.imag - ana.gamma_m.data.imag ))
     print 'max(abs(Im[diff])) =', diff
+
+    diff = np.max(np.abs( ana.gamma_m_num.data.real - ana.gamma_m.data.real ))
+    print 'max(abs(Re[diff])) =', diff
         
     #exit()
     
     from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(6*2, 8))
 
-    subp = [3, 6, 1]
+    #subp = [3, 6, 1]
+    subp = [4, 1, 1]
 
     #idx = 20
-    idx = 10
+    idx = 0
 
+    vmax = np.max(np.abs(ana.gamma_m.data.real))    
+    opt = dict(vmin=-vmax, vmax=vmax, cmap='PuOr')
     #opt = dict(vmin=-10., vmax=10., cmap='PuOr')
-    opt = dict(cmap='PuOr')
+    #opt = dict(cmap='PuOr')
+
+    ax = plt.subplot(*subp); subp[-1] += 1
+    oplot(ana.G_iw)
+
     
     if True:
         g2 = ana.gamma_m
-        s = np.squeeze(g2.data[idx, :, :])
         label = 'gamma ana'
-        
+
+        s = np.squeeze(g2.data[0, :, :])
+
+        ax = plt.subplot(*subp); subp[-1] += 1
+        plt.title('Re ' + label + ' [i,:,:]')
+        plt.pcolormesh(s.real, **opt)
+        plt.colorbar()        
+
+    if False:
+        g2 = ana.gamma_m
+        label = 'gamma ana'
+
+        s = np.squeeze(g2.data[idx, :, :])
+
         ax = plt.subplot(*subp); subp[-1] += 1
         plt.title('Re ' + label + ' [i,:,:]')
         plt.pcolormesh(s.real, **opt)
@@ -168,9 +207,21 @@ if __name__ == '__main__':
         
     if True:
         g2 = ana.gamma_m_num
-        s = np.squeeze(g2.data[idx, :, :])
         label = 'gamma num'
-        
+
+        s = np.squeeze(g2.data[0, :, :])
+
+        ax = plt.subplot(*subp); subp[-1] += 1
+        plt.title('Re ' + label + ' [i,:,:]')
+        plt.pcolormesh(s.real, **opt)
+        plt.colorbar()
+
+    if False:
+        g2 = ana.gamma_m_num
+        label = 'gamma num'
+
+        s = np.squeeze(g2.data[idx, :, :])
+
         ax = plt.subplot(*subp); subp[-1] += 1
         plt.title('Re ' + label + ' [i,:,:]')
         plt.pcolormesh(s.real, **opt)
@@ -208,6 +259,22 @@ if __name__ == '__main__':
     #opt = dict(vmin=-1., vmax=1., cmap='PuOr')
     opt = dict(cmap='PuOr')
     if True:
+        g1 = ana.gamma_m
+        g2 = ana.gamma_m_num
+        s1 = np.squeeze(g1.data[0, :, :])
+        s2 = np.squeeze(g2.data[0, :, :])
+        s = s1 - s2
+        label = 'gamma diff'
+
+        vmax = np.max(np.abs(s.real))    
+        opt_diff = dict(vmin=-vmax, vmax=vmax, cmap='PuOr')
+        
+        ax = plt.subplot(*subp); subp[-1] += 1
+        plt.title('Re ' + label + ' [i,:,:]')
+        plt.pcolormesh(s.real, **opt_diff)
+        plt.colorbar()
+
+    if False:
         g1 = ana.gamma_m
         g2 = ana.gamma_m_num
         s1 = np.squeeze(g1.data[idx, :, :])

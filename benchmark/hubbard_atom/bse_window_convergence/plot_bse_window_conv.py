@@ -9,7 +9,7 @@ Author: Hugo U.R. Strand (2017), hugo.strand@gmail.com """
 
 import numpy as np
 from pytriqs.gf import *
-from analytic_hubbard_atom import analytic_hubbard_atom
+from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     diff_vec = np.zeros_like(nwf_vec, dtype=np.float)
 
     for idx, nwf in enumerate(nwf_vec):
-         d = analytic_hubbard_atom(beta=2.0, U=5.0, nw=1, nwf=nwf)
+         d = analytic_hubbard_atom(beta=2.0, U=5.0, nw=1, nwf=nwf, nwf_gf=2*nwf)
          diff_vec[idx] = np.max(np.abs( d.gamma_m.data - d.gamma_m_num.data ))
          print 'nwf, diff =', idx, nwf, diff_vec[idx]
 
