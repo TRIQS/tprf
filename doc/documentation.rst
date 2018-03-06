@@ -14,6 +14,7 @@ Theory and notation
    theory/vertex
    theory/derivation_index_pairing
    theory/boundary_conditions
+   theory/linear_response
 
 User guide
 ----------
