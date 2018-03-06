@@ -3,14 +3,16 @@
 Linear response from generalized susceptibility
 ===============================================
 
+The static linear response can be obtained from the frequency dependent generalized susceptibility :math:`\chi^{(PH)}_{\bar{a}b\bar{c}d}` or the one-time dependent bosonic propagator :math:`\langle (\bar{a}b)(\tau) (\bar{c}d) \rangle` by summing/integrating over freqiency/time
+
 .. math::
-   \chi^{(PH)}_{\bar{a}b\bar{c}}
+   \chi^{(PH)}_{\bar{a}b\bar{c}d}
    =
    \frac{1}{\beta} \int_0^\beta d\tau \, \langle (\bar{a}b)(\tau) (\bar{c}d) \rangle
    - \langle \bar{a} b \rangle \langle \bar{c} d \rangle
    =
    \frac{1}{\beta^2} \sum_{nm}
-   \chi^{(PH)}_{\bar{a}b\bar{c}}(\omega_0, \nu_n, \nu_m)
+   \chi^{(PH)}_{\bar{a}b\bar{c}d}(\omega_0, \nu_n, \nu_m)
    
 
 Linear response from applied external field
@@ -25,7 +27,27 @@ The linear response of a system is related to the systems response to the applic
 However, the central difference between the system response :math:`R_{\bar{a}b\bar{c}d}` and the static the generalized susceptibility :math:`\chi^{(PH)}_{\bar{a}b\bar{c}d}` is that the applied field has to be Hermitian. Whence, they are related by
 
 .. math::
-   R_{\bar{a}b\bar{c}d} = \chi^{(PH)}_{bar{a}b\bar{c}d} + \chi^{(PH)}_{bar{b}a\bar{c}d}
+   R_{\bar{a}b\bar{c}d} = \chi^{(PH)}_{\bar{a}b\bar{c}d} + \chi^{(PH)}_{\bar{b}a\bar{c}d}
 
 and the response :math:`R_{\bar{a}b\bar{c}d}` is symmetric in :math:`\bar{a}b` transposes :math:`R_{\bar{a}b\bar{c}d} = R_{\bar{b}a\bar{c}d}`.
    
+
+Reconstructing :math:`\chi` from :math:`R`
+------------------------------------------
+
+from the symmetry relation
+
+.. math::
+   \langle (\bar{a}b)(\tau) (\bar{c}d) \rangle
+   =
+   [ \xi \langle (\bar{d}c)(\beta - \tau) (\bar{b}a) \rangle ]^*
+
+we can compute four relations involving pair-wise permutations of :math:`\chi^{(PH)}_{\bar{a}b\bar{c}d}` from :math:`R_{\bar{a}b\bar{c}d}`
+
+.. math::
+   R_{\bar{a}b\bar{c}d} = \chi^{(PH)}_{\bar{a}b\bar{c}d} + \chi^{(PH)}_{\bar{b}a\bar{c}d} \\
+   R_{\bar{a}b\bar{d}c} = \chi^{(PH)}_{\bar{a}b\bar{d}c} + \chi^{(PH)}_{\bar{b}a\bar{d}c} \\
+   [R_{\bar{c}d\bar{a}b}]^* = \chi^{(PH)}_{\bar{b}a\bar{d}c} + \chi^{(PH)}_{\bar{b}a\bar{c}d} \\
+   [R_{\bar{c}d\bar{b}a}]^* = \chi^{(PH)}_{\bar{a}b\bar{d}c} + \chi^{(PH)}_{\bar{a}b\bar{c}d} \\
+
+However, these relations are not linearly independent and can not be solved for the :math:`\chi^{(PH)}` components.
