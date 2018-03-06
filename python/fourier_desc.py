@@ -20,7 +20,7 @@ module.add_preamble("""
 #include <cpp2py/converters/vector.hpp>
 #include <triqs/cpp2py_converters/arrays.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
-#include <triqs/cpp2py_converters/variant.hpp>
+#include <cpp2py/converters/variant.hpp>
 
 using namespace tprf::fourier;
 using namespace tprf;
