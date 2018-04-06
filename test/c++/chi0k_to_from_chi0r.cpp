@@ -51,16 +51,18 @@ TEST(lattice, chi0k_to_from_chi0r) {
 
  double mu = 0.;
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
+ auto clmesh = gf_mesh<cyclic_lattice>{nk, nk};
+ auto bzmesh = gf_mesh<brillouin_zone>{bz, nk};
 
  auto sigma = g_iw_t{mesh, {1, 1}};
  sigma(om_) << 1./om_;
  
  auto gk = gk_from_ek_sigma(mu, ek, sigma);
- auto gr = gr_from_gk(gk);
+ auto gr = gr_from_gk(gk, clmesh);
  
  auto chi0r = chi0r_from_gr_PH(nw, nnu, gr);
- auto chi0q = chi0q_from_chi0r(chi0r, bz);
- auto chi0r_ref = chi0r_from_chi0q(chi0q);
+ auto chi0q = chi0q_from_chi0r(chi0r, bzmesh);
+ auto chi0r_ref = chi0r_from_chi0q(chi0q, clmesh);
 
  EXPECT_CLOSE_ARRAY(chi0r.data(), chi0r_ref.data()); 
 }

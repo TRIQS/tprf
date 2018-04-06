@@ -49,7 +49,8 @@ TEST(lattice, g0k_to_from_g0r) {
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
  auto g0k = g0k_from_ek(mu, ek, mesh);
 
- auto g0r = gr_from_gk(g0k);
+ auto lmesh = gf_mesh<cyclic_lattice>{nk, nk};
+ auto g0r = gr_from_gk(g0k, lmesh);
  auto g0k_ref = gk_from_gr(g0r, bz);
 
  EXPECT_CLOSE_ARRAY(g0k.data(), g0k_ref.data()); 
@@ -77,7 +78,8 @@ TEST(lattice, gk_to_from_gr) {
  
  auto gk = gk_from_ek_sigma(mu, ek, sigma);
 
- auto gr = gr_from_gk(gk);
+ auto lmesh = gf_mesh<cyclic_lattice>{nk, nk};
+ auto gr = gr_from_gk(gk, lmesh);
  auto gk_ref = gk_from_gr(gr, bz);
 
  EXPECT_CLOSE_ARRAY(gk.data(), gk_ref.data()); 

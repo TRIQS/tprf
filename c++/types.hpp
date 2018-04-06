@@ -50,6 +50,9 @@ typedef gf<cartesian_product<imfreq, cyclic_lattice>, matrix_valued> gr_iw_t;
 typedef gr_iw_t::const_view_type gr_iw_cvt;
 typedef gr_iw_t::view_type gr_iw_vt;
 
+typedef gf<cartesian_product<imtime, cyclic_lattice>, matrix_valued> gr_tau_t;
+typedef gr_tau_t::const_view_type gr_tau_cvt;
+typedef gr_tau_t::view_type gr_tau_vt;  
 
 typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi0_t;
 typedef chi0_t::const_view_type chi0_cvt;
@@ -62,6 +65,28 @@ typedef chi0q_t::view_type chi0q_vt;
 typedef gf<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r_t;
 typedef chi0r_t::const_view_type chi0r_cvt;
 typedef chi0r_t::view_type chi0r_vt;
+
+  // -- New style types FIXME notation
+  
+  // bosonic freq w for "\omega"
+  // fermionic freq "n" for "\nu"
+  // imagnary time "t" for "\tau"
+  // real space "r"
+  // momentum space "k"
+  
+typedef gf<cartesian_product<imtime, cyclic_lattice>, tensor_valued<4>> chi_tr_t;
+typedef chi_tr_t::const_view_type chi_tr_cvt;
+typedef chi_tr_t::view_type chi_tr_vt;
+
+typedef gf<cartesian_product<imfreq, cyclic_lattice>, tensor_valued<4>> chi_wr_t;
+typedef chi_wr_t::const_view_type chi_wr_cvt;
+typedef chi_wr_t::view_type chi_wr_vt;
+
+typedef gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi_wk_t;
+typedef chi_wk_t::const_view_type chi_wk_cvt;
+typedef chi_wk_t::view_type chi_wk_vt;
+
+    // -- back to old style
 
 typedef gf<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq_t;
 typedef chiq_t::const_view_type chiq_cvt;
