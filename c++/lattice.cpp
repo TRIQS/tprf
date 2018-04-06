@@ -189,8 +189,6 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, doubl
     std::cout << "k = " << k << "\n";
 
     matrix<std::complex<double>> ek_mat(ek_in[k] - mu);
-
-    //std::cout << "ek - mu =" << ek_mat << "\n";
     
     auto eig_k = linalg::eigenelements(ek_mat);
     auto ek = eig_k.first;
@@ -210,20 +208,8 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, doubl
 	   double de = ekq(j) - ek(i);
 	   double dn = fermi(ek(i) * beta) - fermi(ekq(j) * beta);
 	   double tol = 1e-10;
-	   //double tol = 1e-15;
-
-	   std::cout << "----------------------------------------------\n";
-	   std::cout << "k = " << k << "\n";
-	   std::cout << "q = " << q << "\n";
-	   std::cout << "de = " << de << "\n";
-	   std::cout << "w = " << w << "\n";
 	   
 	   if( abs(std::complex<double>(w)) < tol && abs(de) < tol ) { // w=0, de=0, 2nd order pole
-
-	     std::cout << "===========================================\n";
-	     
- 	     double fek = fermi(ek(i) * beta);
-	     double dn_w0_ref = beta * fek * fek * exp(beta * ek(i));
 
 	     // -- analytic first derivative of the fermi distribution function
 	     // -- evaluated at ek(i)
@@ -231,25 +217,6 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, doubl
 	     double cosh_be = cosh(0.5 * beta * ek(i));
 	     double dn_w0 = beta / (4. * cosh_be * cosh_be);
 
-	     std::cout << "ek(i) = " << ek(i) << "\n";
-	     std::cout << "fek   = " << fek << "\n";
-	     std::cout << "dn_w0     = " << dn_w0 << "\n";
-	     std::cout << "dn_w0_ref = " << dn_w0_ref << "\n";
-	     std::cout << "Uk  = " << Uk << "\n";
-	     std::cout << "Ukq = " << Ukq << "\n";
-
-	     /*
-	     if( fek < tol ) {
-	       std::cout << "fek too small, skip accumulation\n";
-	       continue;
-	     }
-	     */
-
-	     if( abs(dn_w0 - dn_w0_ref) > tol ) {
-	       std::cerr << "ERROR: two ways of computing dn_w0 do not agree!\n";
-	       exit(0);
-	     }
-	     
 	     chi[w, q](a, b, c, d) << chi[w, q](a, b, c, d) +
 	       dagger(Uk)(a, i) * Uk(i, b) * dagger(Ukq)(c, j) * Ukq(j, d) * dn_w0;
 
