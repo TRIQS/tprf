@@ -82,8 +82,10 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
   return gk;
 }
 
-gr_iw_t gr_from_gk(gk_iw_vt gk, gf_mesh<cyclic_lattice> lmesh) {
-  int nk = std::get<1>(gk.mesh()).get_dimensions()[0];
+gr_iw_t gr_from_gk(gk_iw_vt gk) {
+
+  auto kmesh = std::get<1>(gk.mesh());
+  auto lmesh = gf_mesh<cyclic_lattice>{kmesh.domain().lattice(), kmesh.periodization_matrix};
 
   gr_iw_t gr = make_gf<gr_iw_t::mesh_t::var_t>({std::get<0>(gk.mesh()), lmesh},
                                                gk.target());
@@ -95,10 +97,11 @@ gr_iw_t gr_from_gk(gk_iw_vt gk, gf_mesh<cyclic_lattice> lmesh) {
   return gr;
 }
 
-gk_iw_t gk_from_gr(gr_iw_vt gr, gf_mesh<brillouin_zone> kmesh) {
+gk_iw_t gk_from_gr(gr_iw_vt gr) {
 
-  int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
-
+  auto lmesh = std::get<1>(gr.mesh());
+  auto kmesh = gf_mesh<brillouin_zone>{brillouin_zone{lmesh.domain()}, lmesh.periodization_matrix};
+  
   gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>(
       {std::get<0>(gr.mesh()), kmesh}, gr.target());
 
@@ -330,7 +333,7 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr) {
   return chi_wr;
 }
 
-chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr, gf_mesh<brillouin_zone> kmesh) {
+chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
 
   // auto target = chi_wr.target();
   int nb = chi_wr.target().shape()[0];
@@ -338,6 +341,8 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr, gf_mesh<brillouin_zone> kmesh) {
   auto wmesh = std::get<0>(chi_wr.mesh());
   auto rmesh = std::get<1>(chi_wr.mesh());
 
+  auto kmesh = gf_mesh<brillouin_zone>{brillouin_zone{rmesh.domain()}, rmesh.periodization_matrix};
+  
   chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
 
   auto _ = var_t{};
@@ -365,15 +370,14 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
   return chi0r;
 }
 
-chi0r_t chi0r_from_chi0q(chi0q_vt chi0q, gf_mesh<cyclic_lattice> clmesh) {
+chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
 
   auto mb = std::get<0>(chi0q.mesh());
   auto mf = std::get<1>(chi0q.mesh());
   auto bzmesh = std::get<2>(chi0q.mesh());
 
-  auto bl = bzmesh.domain().lattice();
-  auto clmesh_ref = gf_mesh<cyclic_lattice>(bl, bzmesh.periodization_matrix());
-
+  auto clmesh = gf_mesh<cyclic_lattice>{bzmesh.domain().lattice(), bzmesh.periodization_matrix};
+  
   auto chi0r =
       make_gf<chi0r_t::mesh_t::var_t>({mb, mf, clmesh}, chi0q.target());
 
@@ -386,10 +390,14 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0q, gf_mesh<cyclic_lattice> clmesh) {
   return chi0r;
 }
 
-chi0q_t chi0q_from_chi0r(chi0r_vt chi0r, gf_mesh<brillouin_zone> bzmesh) {
+chi0q_t chi0q_from_chi0r(chi0r_vt chi0r) {
+
   auto mb = std::get<0>(chi0r.mesh());
   auto mf = std::get<1>(chi0r.mesh());
 
+  auto clmesh = std::get<2>(chi0r.mesh());
+  auto bzmesh = gf_mesh<brillouin_zone>{brillouin_zone{clmesh.domain()}, clmesh.periodization_matrix};
+  
   auto chi0q =
       make_gf<chi0q_t::mesh_t::var_t>({mb, mf, bzmesh}, chi0r.target());
 

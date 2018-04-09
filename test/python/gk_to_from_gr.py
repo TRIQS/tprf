@@ -25,7 +25,7 @@ for idx, k in enumerate(bzmesh):
 mesh = MeshImFreq(beta=1.0, S='Fermion', n_max=1024)
 g0k = g0k_from_ek(mu=1.0, ek=ek, mesh=mesh)
 
-g0r = gr_from_gk(g0k, lmesh)
-g0k_ref = gk_from_gr(g0r, bzmesh)
+g0r = gr_from_gk(g0k)
+g0k_ref = gk_from_gr(g0r)
 
 np.testing.assert_array_almost_equal(g0k.data, g0k_ref.data)

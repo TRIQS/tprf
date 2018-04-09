@@ -34,15 +34,15 @@ using namespace tprf;
 module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matrix_valued> ek, gf_mesh<imfreq> mesh)", doc = """""")
 module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
 
-module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk, gf_mesh<cyclic_lattice> lmesh)", doc = """""")
-module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr,  gf_mesh<brillouin_zone> kmesh)", doc = """""")
+module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)", doc = """""")
+module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
 
 # -- Bubble in imaginary time
 
 module.add_function("gr_tau_t grt_from_grw(gf_view<cartesian_product<imfreq, cyclic_lattice>> grw)", doc = """""")
 module.add_function("chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt)", doc = """""")
 module.add_function("chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")
-module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr, gf_mesh<brillouin_zone> kmesh)", doc = """""")
+module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr)", doc = """""")
 
 # -- Bubble static analytic
 
@@ -51,8 +51,8 @@ module.add_function("chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued>
 # -- Full BSE functions
 
 module.add_function("chi0r_t chi0r_from_gr_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
-module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, gf_mesh<cyclic_lattice> clmesh)", doc = """""")
-module.add_function("chi0q_t chi0q_from_chi0r(gf_view<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r, gf_mesh<brillouin_zone> bzmesh)", doc = """""")
+module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
+module.add_function("chi0q_t chi0q_from_chi0r(gf_view<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r)", doc = """""")
 
 module.add_function ("gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
 module.add_function ("gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi0q_sum_nu_tail_corr_PH(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")

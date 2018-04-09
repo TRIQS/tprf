@@ -108,7 +108,7 @@ def test_square_lattice_chi00():
     g0k = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
 
     print '--> g0r'
-    g0r = gr_from_gk(g0k, lmesh)
+    g0r = gr_from_gk(g0k)
 
     # ------------------------------------------------------------------
     # -- anaytic chi00
@@ -129,7 +129,7 @@ def test_square_lattice_chi00():
     chi00_wr = chi_wr_from_chi_tr(chi00_tr)
 
     print '--> chi_wk_from_chi_wr'
-    chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr, bzmesh)
+    chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)
     
     # ------------------------------------------------------------------
     # -- imfreq chi00
@@ -138,7 +138,7 @@ def test_square_lattice_chi00():
     chi00r = chi0r_from_gr_PH(nw=nw, nnu=nnu, gr=g0r)
 
     print '--> chi00q'
-    chi00q = chi0q_from_chi0r(chi00r, bzmesh)
+    chi00q = chi0q_from_chi0r(chi00r)
 
     print '--> chi00wq'
     chi00wq_imfreq = chi0q_sum_nu(chi00q)
