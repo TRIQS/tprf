@@ -35,7 +35,7 @@ module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matr
 module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
 
 module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk, gf_mesh<cyclic_lattice> lmesh)", doc = """""")
-module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr, brillouin_zone bz)", doc = """""")
+module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr,  gf_mesh<brillouin_zone> kmesh)", doc = """""")
 
 # -- Bubble in imaginary time
 

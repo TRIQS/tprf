@@ -28,6 +28,7 @@
 using namespace triqs::clef;
 
 namespace {
+
 placeholder<0> iw;
 placeholder<1> inu;
 placeholder<2> k;
@@ -94,11 +95,12 @@ gr_iw_t gr_from_gk(gk_iw_vt gk, gf_mesh<cyclic_lattice> lmesh) {
   return gr;
 }
 
-gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz) {
+gk_iw_t gk_from_gr(gr_iw_vt gr, gf_mesh<brillouin_zone> kmesh) {
+
   int nk = std::get<1>(gr.mesh()).get_dimensions()[0];
 
   gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>(
-      {std::get<0>(gr.mesh()), {bz, nk}}, gr.target());
+      {std::get<0>(gr.mesh()), kmesh}, gr.target());
 
   auto _ = var_t{};
   for (auto const &nidx : std::get<0>(gk.mesh()))

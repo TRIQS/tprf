@@ -32,7 +32,7 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh);
 gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma);
 
 gr_iw_t gr_from_gk(gk_iw_vt gk, gf_mesh<cyclic_lattice> lmesh);
-gk_iw_t gk_from_gr(gr_iw_vt gr, brillouin_zone bz);
+gk_iw_t gk_from_gr(gr_iw_vt gr, gf_mesh<brillouin_zone> kmesh);
 
 gr_tau_t grt_from_grw(gr_iw_vt grw);
 
