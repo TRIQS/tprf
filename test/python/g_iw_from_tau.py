@@ -23,7 +23,7 @@ g_tau << InverseFourier(g_iw)
 
 # -- Test fourier
 
-from pytriqs.applications.tprf.fourier import g_iw_from_tau
+from triqs_tprf.fourier import g_iw_from_tau
 g_iw_ref = g_iw_from_tau(g_tau, nw)
 
 np.testing.assert_array_almost_equal(g_iw_ref.data, g_iw.data)
