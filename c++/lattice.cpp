@@ -204,7 +204,13 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
     auto ek = eig_k.first;
     auto Uk = eig_k.second;
 
-    for (auto const &q : kmesh) {
+    for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
+
+    //for (auto q_iter = kmesh.begin(); q_iter != kmesh.end(); q_iter++ ) {
+
+    //#pragma omp parallel for
+    //for (auto q_iter = kmesh.begin(); q_iter < kmesh.end(); q_iter++ ) {
+    //  auto q = *q_iter;
 
       matrix<std::complex<double>> ekq_mat(ek_in(k + q) - mu);
       auto eig_kq = linalg::eigenelements(ekq_mat);
