@@ -17,6 +17,7 @@ from pytriqs.gf import Gf, MeshImFreq, Idx
 
 from triqs_tprf.lattice import g0k_from_ek
 from triqs_tprf.lattice import gr_from_gk
+from triqs_tprf.lattice_utils import ek_tb_dispersion_on_bzmesh
 
 # ----------------------------------------------------------------------
 
@@ -35,19 +36,6 @@ from triqs_tprf.lattice import chi0r_from_gr_PH
 from triqs_tprf.lattice import chi0q_from_chi0r
 from triqs_tprf.lattice import chi0q_sum_nu
 from triqs_tprf.lattice import chi0q_sum_nu_tail_corr_PH
-
-# ----------------------------------------------------------------------
-def ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh):
-
-    """ Evaluate dispersion on bzmesh from tight binding model. """
-
-    n_orb = tb_lattice.NOrbitalsInUnitCell
-    ek = Gf(mesh=bzmesh, target_shape=[n_orb]*2)
-
-    k_vec = np.array([k.value / (2. * np.pi) for k in bzmesh])
-    ek.data[:] = tb_lattice.hopping(k_vec.T).transpose(2, 0, 1)
-
-    return ek
 
 # ----------------------------------------------------------------------
 def test_square_lattice_chi00():
