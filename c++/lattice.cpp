@@ -22,6 +22,8 @@
 #include "lattice.hpp"
 #include "linalg.hpp"
 
+#include <omp.h>
+
 #include <triqs/arrays/linalg/eigenelements.hpp>
 
 #include <triqs/clef.hpp>
@@ -197,20 +199,20 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
   for (auto const &k : kmesh) {
 
     std::cout << "k = " << k << "\n";
+	
+    //for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
 
-    matrix<std::complex<double>> ek_mat(ek_in[k] - mu);
+#pragma omp parallel for 
+    for (int qidx = 0; qidx < kmesh.size(); qidx++) {
+      auto q_iter = kmesh.begin();
+      q_iter += qidx;
+      auto q = *q_iter;
 
-    auto eig_k = linalg::eigenelements(ek_mat);
-    auto ek = eig_k.first;
-    auto Uk = eig_k.second;
-
-    for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
-
-    //for (auto q_iter = kmesh.begin(); q_iter != kmesh.end(); q_iter++ ) {
-
-    //#pragma omp parallel for
-    //for (auto q_iter = kmesh.begin(); q_iter < kmesh.end(); q_iter++ ) {
-    //  auto q = *q_iter;
+      // -- If this is moved out to the k-loop the threading breaks?!?
+      matrix<std::complex<double>> ek_mat(ek_in[k] - mu);
+      auto eig_k = linalg::eigenelements(ek_mat);
+      auto ek = eig_k.first;
+      auto Uk = eig_k.second;
 
       matrix<std::complex<double>> ekq_mat(ek_in(k + q) - mu);
       auto eig_kq = linalg::eigenelements(ekq_mat);

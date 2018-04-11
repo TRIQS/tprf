@@ -85,9 +85,10 @@ def test_square_lattice_chi00():
         orbital_positions = [(0,0,0)]*2,
         orbital_names = ['up_0', 'do_0'],
         )
-    
-    bzmesh = MeshBrillouinZone(BrillouinZone(tb_lattice.bl), periodization_matrix)
-    ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh)
+
+    bz = BrillouinZone(tb_lattice.bl)
+    bzmesh = MeshBrillouinZone(bz, periodization_matrix)
+    ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
     
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
     lmesh = MeshCyclicLattice(tb_lattice.bl, periodization_matrix)
