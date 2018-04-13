@@ -2,11 +2,8 @@
 
 .. _linalg: 
 
-**linalg.hpp** Linear-algebra operations for tprf
-=================================================
-
-Free functions
----------------------
+**linalg.hpp** Two-particle response function linear-algebra operations
+=======================================================================
 
 .. toctree::
   :maxdepth: 1
