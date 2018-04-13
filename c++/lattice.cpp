@@ -52,16 +52,68 @@ using triqs::arrays::inverse;
 namespace tprf {
 
 // ----------------------------------------------------
+// fourier interpolation
+
+array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi) {
+
+  int nk = k_vecs.shape()[0];
+  int nb = chi.target().shape()[0];
+  int nw = std::get<0>(chi.mesh()).size();
+
+  auto wmesh = std::get<0>(chi.mesh());
+  auto rmesh = std::get<1>(chi.mesh());
+
+  array<std::complex<double>, 6> chi_out(nw, nk, nb, nb, nb, nb);
+
+#pragma omp parallel for
+  for(int kidx = 0; kidx < nk; kidx++) {
+    
+    chi_out(range(), kidx, range(), range(), range(), range()) *= 0.;
+
+    auto k = k_vecs(kidx, range());
+    
+    for (auto const &r : rmesh ) {
+
+    /*
+#pragma omp parallel for
+    for (int idx = 0; idx < rmesh.size(); idx++) {
+      auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+    */
+
+      auto dot_prod = k(0)*r(0) + k(1)*r(1) + k(2)*r(2);
+      auto exponent = exp( - std::complex<double>(0., dot_prod) );
+
+      for (auto const &w : wmesh) {
+	int widx = w.linear_index();
+	for( int a : range(nb) )
+	for( int b : range(nb) )
+	for( int c : range(nb) )
+	for( int d : range(nb) )
+	  chi_out(widx, kidx, a, b, c, d) += exponent * chi[w, r](a, b, c, d);
+      }
+    }
+  }
+  return chi_out;
+}
+
+// ----------------------------------------------------
 // g
 
 gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
+
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
 
-  g0k(inu, k)(a, b) << kronecker(a, b) * (inu + mu) - ek(k)(a, b);
+  //  for (auto const &k : ek.mesh()) {
 
-  for (auto const &kidx : std::get<1>(g0k.mesh())) {
+#pragma omp parallel for 
+    for (int idx = 0; idx < ek.mesh().size(); idx++) {
+      auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
+    
+    for (auto const &w : mesh)
+      g0k[w, k](a, b) << kronecker(a, b) * (w + mu) - ek(k)(a, b);
+
     auto _ = var_t{};
-    g0k[_, kidx] = inverse(g0k[_, kidx]);
+    g0k[_, k] = inverse(g0k[_, k]);
   }
 
   return g0k;
@@ -72,12 +124,20 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
   gk_iw_t gk =
       make_gf<gk_iw_t::mesh_t::var_t>({sigma.mesh(), ek.mesh()}, ek.target());
 
-  gk(inu, k)(a, b) << kronecker(a, b) * (inu + mu) - ek(k)(a, b) -
-                          sigma(inu)(a, b);
+  //  gk(inu, k)(a, b) << kronecker(a, b) * (inu + mu) - ek(k)(a, b) -
+  //                       sigma(inu)(a, b);
 
-  for (auto const &kidx : std::get<1>(gk.mesh())) {
+  //  for (auto const &k : ek.mesh()) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < ek.mesh().size(); idx++) {
+    auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
+    
+    for (auto const &w : sigma.mesh())
+      gk[w, k](a, b) << kronecker(a, b) * (w + mu) - ek(k)(a, b) - sigma[w](a, b);
+
     auto _ = var_t{};
-    gk[_, kidx] = inverse(gk[_, kidx]);
+    gk[_, k] = inverse(gk[_, k]);
   }
 
   // gk = inverse(gk);  // does not work, see TRIQS issue #463
@@ -86,30 +146,39 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
 gr_iw_t gr_from_gk(gk_iw_vt gk) {
 
+  auto wmesh = std::get<0>(gk.mesh());
   auto kmesh = std::get<1>(gk.mesh());
   auto lmesh = gf_mesh<cyclic_lattice>{kmesh.domain().lattice(), kmesh.periodization_matrix};
 
-  gr_iw_t gr = make_gf<gr_iw_t::mesh_t::var_t>({std::get<0>(gk.mesh()), lmesh},
-                                               gk.target());
+  gr_iw_t gr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, lmesh}, gk.target());
 
-  auto _ = var_t{};
-  for (auto const &nidx : std::get<0>(gr.mesh()))
-    gr[nidx, _] = inverse_fourier(gk[nidx, _]);
+  for (auto const &w : wmesh) {
+
+  /*
+#pragma omp parallel for 
+  for (int idx = 0; idx < wmesh.size(); idx++) {
+    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
+  */
+
+    auto _ = var_t{};
+    gr[w, _] = inverse_fourier(gk[w, _]);
+  }
 
   return gr;
 }
 
 gk_iw_t gk_from_gr(gr_iw_vt gr) {
 
+  auto wmesh = std::get<0>(gr.mesh());
   auto lmesh = std::get<1>(gr.mesh());
   auto kmesh = gf_mesh<brillouin_zone>{brillouin_zone{lmesh.domain()}, lmesh.periodization_matrix};
   
-  gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>(
-      {std::get<0>(gr.mesh()), kmesh}, gr.target());
+  gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, gr.target());
 
-  auto _ = var_t{};
-  for (auto const &nidx : std::get<0>(gk.mesh()))
-    gk[nidx, _] = fourier(gr[nidx, _]);
+  for (auto const &w : wmesh) {
+    auto _ = var_t{};
+    gk[w, _] = fourier(gr[w, _]);
+  }
 
   return gk;
 }
@@ -198,7 +267,7 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
 
   for (auto const &k : kmesh) {
 
-    std::cout << "k = " << k << "\n";
+    std::cout << "kidx, k = " << k.linear_index() << ", " << k << "\n";
 	
     //for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
 
@@ -275,7 +344,12 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
   // -- gt(beta) == gt(beta + 0^+)
   // chi0_tr(tau, r)(a, b, c, d) << grt(tau, r)(d, a) * grt(-tau, -r)(b, c);
 
-  for (auto const &r : rmesh) {
+  //for (auto const &r : rmesh) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < rmesh.size(); idx++) {
+    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+
     for (auto const &t : tmesh) {
 
       // -- This does not work on the boundaries!! The eval wraps to the other
@@ -286,8 +360,8 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
       // -- Ugly hack to evaluate within the range of t in [0, beta] and -t in
       // [-beta, 0] respectively
 
-      double t_p = float(+t);
-      double t_m = float(-t);
+      double t_p = double(+t);
+      double t_m = double(-t);
 
       double eps = 1e-9;
 
@@ -310,7 +384,45 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
   return chi0_tr;
 }
 
-chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr) {
+
+// -- specialized calc for w=0
+chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
+
+  int nb = chi_tr.target().shape()[0];
+
+  auto tmesh = std::get<0>(chi_tr.mesh());
+  auto rmesh = std::get<1>(chi_tr.mesh());
+
+  int nw = 1;
+  int ntau = tmesh.size();
+  double beta = tmesh.domain().beta;
+
+  chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+
+  //for (auto const &r : rmesh) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < rmesh.size(); idx++) {
+    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+
+    chi_wr[0, r] *= 0.;
+    
+    // -- Trapetzoidal integration by hand
+    for (auto const &t : tmesh)
+      chi_wr[0, r] += chi_tr[t, r];
+
+    auto boundary_iter = tmesh.begin();
+    chi_wr[0, r] -= 0.5 * chi_tr[*boundary_iter, r];
+    boundary_iter += ntau - 1;
+    chi_wr[0, r] -= 0.5 * chi_tr[*boundary_iter, r];
+
+    chi_wr[0, r] *= beta / (ntau-1);
+  }
+
+  return chi_wr;
+}
+
+chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
 
   int nb = chi_tr.target().shape()[0];
   // auto target = chi_tr.target();
@@ -319,15 +431,23 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr) {
   auto rmesh = std::get<1>(chi_tr.mesh());
 
   int ntau = tmesh.size();
-  int nw = ntau / 4;
+  //int nw = ntau / 4;
   double beta = tmesh.domain().beta;
 
   // chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, target};
   chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
-  auto _ = var_t{};
   for (auto const &r : rmesh) {
-    std::cout << "r = " << r << "\n";
+  /*
+#pragma omp parallel for 
+  for (int idx = 0; idx < rmesh.size(); idx++) {
+    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  */
+
+    //std::cout << "r = " << r << "\n";
+
+    /*
+    auto _ = var_t{};
     auto chi_t = chi_tr[_, r];
 
     auto s = chi_t.singularity();
@@ -335,12 +455,15 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr) {
     // s(1) = 1.;
 
     chi_wr[_, r] = fourier(chi_t);
-    // chi_wr[_, r] = fourier(chi_tr[_, r]);
+    */
+
+    auto _ = var_t{};
+    chi_wr[_, r] = fourier(chi_tr[_, r]);
   }
 
   return chi_wr;
 }
-
+  
 chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
 
   // auto target = chi_wr.target();

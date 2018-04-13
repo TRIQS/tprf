@@ -12,12 +12,7 @@ from pytriqs.archive import HDFArchive
 from pytriqs.gf import MeshBrillouinZone, Idx
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
-
-    filename = 'data_ek_and_chi00wq.h5'
-    
-    with HDFArchive(filename, 'r') as arch:
-        chi = arch['chi00wq']
+def plot_chi(chi):
 
     bzmesh = chi.mesh.components[1]
 
@@ -61,6 +56,26 @@ if __name__ == '__main__':
     plt.ylabel(r'$\frac{a}{2\pi} \cdot k_y$')
     plt.colorbar()
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+
+    filename = 'data_ek_and_chi00wq.h5'
+    
+    with HDFArchive(filename, 'r') as arch:
+        chi = arch['chi00wq']
+        chi_imtime = arch['chi00wq_imtime']
+
+    plt.figure(figsize=(6, 3))
+
+    subp = [1, 2, 1]
+
+    plt.subplot(*subp); subp[-1] += 1
+    plot_chi(chi)
+
+    plt.subplot(*subp); subp[-1] += 1
+    plot_chi(chi_imtime)
+    
     plt.tight_layout()
     plt.savefig('figure_lindhardt_SzSz_square_latt.pdf')
     plt.show()
+

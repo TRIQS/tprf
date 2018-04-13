@@ -31,6 +31,9 @@ using namespace triqs::lattice;
 using namespace tprf;
 """)
 
+module.add_function("array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi)", doc = """""")
+
+
 module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matrix_valued> ek, gf_mesh<imfreq> mesh)", doc = """""")
 module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
 
@@ -41,7 +44,8 @@ module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic
 
 module.add_function("gr_tau_t grt_from_grw(gf_view<cartesian_product<imfreq, cyclic_lattice>> grw)", doc = """""")
 module.add_function("chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt)", doc = """""")
-module.add_function("chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")
+module.add_function("chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")
+module.add_function("chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw)", doc = """""")
 module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr)", doc = """""")
 
 # -- Bubble static analytic

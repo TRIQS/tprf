@@ -28,7 +28,39 @@
 
 namespace tprf {
 
+array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi);
+
+/** Construct a non-interacting Matsubara frequency lattice Green's function 
+
+    Using a discretized dispersion $\epsilon(\mathbf{k})$, chemical potential $\mu$,
+    and a Matsubara frequency Green's function mesh.
+
+ .. math::
+    G_{a\bar{b}}(k, i\omega_n) = \left[ 
+        (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k} 
+	\right]^{-1}_{a\bar{b}}
+
+ @param mu chemical potential
+ @param ek discretized lattice dispersion $\epsilon_{\bar{c}d}(\mathbf{k})$
+ @param mesh imaginary frequency mesh
+ */
 gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh);
+  
+/** Construct an interacting Matsubara frequency lattice Green's function 
+
+    Using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
+    chemical potential $\mu$, and a momentum independent Matsubara frequency 
+    self energy $\Sigma_{\bar{a}b}(i\omega_n)$.
+
+ .. math::
+    G_{a\bar{b}}(k, i\omega_n) = \left[ 
+        (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n)
+	\right]^{-1}_{a\bar{b}}
+
+ @param mu chemical potential
+ @param ek discretized lattice dispersion $\epsilon_{\bar{c}d}(\mathbf{k})$
+ @param sigma imaginary frequency self-energy $\Sigma_{\bar{a}b}(i\omega_n)$
+ */
 gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma);
 
 gr_iw_t gr_from_gk(gk_iw_vt gk);
@@ -37,7 +69,8 @@ gk_iw_t gk_from_gr(gr_iw_vt gr);
 gr_tau_t grt_from_grw(gr_iw_vt grw);
 
 chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt);
-chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr);
+chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr);
+chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw);
 chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr);
 
 chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, double beta, double mu);

@@ -27,8 +27,11 @@ from triqs_tprf.lattice import chi00_wk_from_ek
 
 from triqs_tprf.lattice import grt_from_grw
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
+from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
+
+from triqs_tprf.lattice_utils import chi_w0r_from_chi_tr_np_trapz
 
 # ----------------------------------------------------------------------
 
@@ -115,7 +118,25 @@ def test_square_lattice_chi00():
     chi00_tr = chi0_tr_from_grt_PH(g0rt)
 
     print '--> chi_wr_from_chi_tr'
-    chi00_wr = chi_wr_from_chi_tr(chi00_tr)
+    chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1)
+
+    print '--> chi_w0r_from_chi_tr'
+    chi00_wr_ref1 = chi_w0r_from_chi_tr(chi00_tr)
+
+    print '--> chi_wr_from_chi_tr using np.trapz'
+    chi00_wr_ref2 = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
+
+    def comp(chi):
+        return np.squeeze(chi[:, Idx(0, 0, 0)].data).reshape((4, 4))
+    
+    #print comp(chi00_wr).real
+    #print comp(chi00_wr_ref1).real
+    #print comp(chi00_wr_ref1).real
+    
+    #print comp(chi00_wr).real - comp(chi00_wr_ref1).real
+    
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data)
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data)
 
     print '--> chi_wk_from_chi_wr'
     chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)

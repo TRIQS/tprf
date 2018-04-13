@@ -52,7 +52,7 @@ if (DocWithC++2rst)
                       --includes=${CMAKE_SOURCE_DIR}/c++/
                       --includes=${TRIQS_ROOT}/include
 		      --includes=/opt/local/include/openmpi-clang50
-		      --cxxflags="-std=c++14"
+		      --cxxflags="-std=c++17"
                       ${INC}		    
                       2>&1 > c++2rst.log
                       )
