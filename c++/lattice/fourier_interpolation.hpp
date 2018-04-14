@@ -20,12 +20,10 @@
  ******************************************************************************/
 #pragma once
 
-#include "types.hpp"
+#include "../types.hpp"
 
-#include "./lattice/gf.hpp"
-#include "./lattice/lindhardt_chi00.hpp"
-#include "./lattice/fourier_interpolation.hpp"
+namespace tprf {
 
-#include "./lattice/chi_imtime.hpp"
-#include "./lattice/chi_imfreq.hpp"
+array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi);
 
+} // namespace tprf

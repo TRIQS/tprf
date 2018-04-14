@@ -20,12 +20,24 @@
  ******************************************************************************/
 #pragma once
 
-#include "types.hpp"
+#include <omp.h>
 
-#include "./lattice/gf.hpp"
-#include "./lattice/lindhardt_chi00.hpp"
-#include "./lattice/fourier_interpolation.hpp"
+#include <triqs/clef.hpp>
+using namespace triqs::clef;
 
-#include "./lattice/chi_imtime.hpp"
-#include "./lattice/chi_imfreq.hpp"
+namespace {
 
+placeholder<0> iw;
+placeholder<1> inu;
+placeholder<2> k;
+placeholder<3> r;
+
+placeholder<4> a;
+placeholder<5> b;
+placeholder<6> c;
+placeholder<7> d;
+
+placeholder<8> inup;
+placeholder<9> tau;
+
+} // namespace
