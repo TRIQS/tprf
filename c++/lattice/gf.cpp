@@ -34,17 +34,16 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
 
-  //  for (auto const &k : ek.mesh()) {
+  matrix<ek_vt::scalar_t> I(ek.target_shape());
+  I(a, b) << kronecker(a, b);
+  
+  //for (auto const &k : ek.mesh()) {
 
 #pragma omp parallel for 
-    for (int idx = 0; idx < ek.mesh().size(); idx++) {
-      auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
+  for (int idx = 0; idx < ek.mesh().size(); idx++) {
+    auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
     
-    for (auto const &w : mesh)
-      g0k[w, k](a, b) << kronecker(a, b) * (w + mu) - ek(k)(a, b);
-
-    auto _ = var_t{};
-    g0k[_, k] = inverse(g0k[_, k]);
+    for (auto const &w : mesh) g0k[w, k] = inverse((w + mu)*I - ek(k));
   }
 
   return g0k;
@@ -52,29 +51,26 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 
 gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
+  auto mesh = sigma.mesh();
+  
   gk_iw_t gk =
-      make_gf<gk_iw_t::mesh_t::var_t>({sigma.mesh(), ek.mesh()}, ek.target());
+      make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
 
-  //  gk(inu, k)(a, b) << kronecker(a, b) * (inu + mu) - ek(k)(a, b) -
-  //                       sigma(inu)(a, b);
+  matrix<ek_vt::scalar_t> I(ek.target_shape());
+  I(a, b) << kronecker(a, b);
 
-  //  for (auto const &k : ek.mesh()) {
+  //for (auto const &k : ek.mesh()) {
 
 #pragma omp parallel for 
   for (int idx = 0; idx < ek.mesh().size(); idx++) {
     auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
     
-    for (auto const &w : sigma.mesh())
-      gk[w, k](a, b) << kronecker(a, b) * (w + mu) - ek(k)(a, b) - sigma[w](a, b);
-
-    auto _ = var_t{};
-    gk[_, k] = inverse(gk[_, k]);
+    for (auto const &w : mesh) gk[w, k] = inverse((w + mu)*I - ek(k) - sigma[w]);
   }
 
-  // gk = inverse(gk);  // does not work, see TRIQS issue #463
   return gk;
 }
-
+  
 gr_iw_t gr_from_gk(gk_iw_vt gk) {
 
   auto wmesh = std::get<0>(gk.mesh());
@@ -92,6 +88,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gk) {
   */
 
     auto _ = var_t{};
+#pragma omp single
     gr[w, _] = inverse_fourier(gk[w, _]);
   }
 
@@ -108,6 +105,7 @@ gk_iw_t gk_from_gr(gr_iw_vt gr) {
 
   for (auto const &w : wmesh) {
     auto _ = var_t{};
+#pragma omp single
     gk[w, _] = fourier(gr[w, _]);
   }
 
