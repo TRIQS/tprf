@@ -37,12 +37,12 @@ def plot_chi(chi):
     k_vec = np.vstack(k_vec_ext)
     values = np.hstack(values_ext)
 
-    k = np.linspace(-0.75, 0.75, num=400)
+    k = np.linspace(-0.75, 0.75, num=1000)
     Kx, Ky = np.meshgrid(k, k)
     
-    #interp = griddata(k_vec, values, (Kx, Ky), method='nearest')
+    interp = griddata(k_vec, values, (Kx, Ky), method='nearest')
     #interp = griddata(k_vec, values, (Kx, Ky), method='linear')
-    interp = griddata(k_vec, values, (Kx, Ky), method='cubic')
+    #interp = griddata(k_vec, values, (Kx, Ky), method='cubic')
 
     plt.imshow(
         interp, cmap=plt.get_cmap('magma'),

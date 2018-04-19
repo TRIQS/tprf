@@ -25,6 +25,7 @@ from triqs_tprf.lattice import g0k_from_ek
 from triqs_tprf.lattice import gr_from_gk
 from triqs_tprf.lattice import grt_from_grw
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
+from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
 
@@ -37,6 +38,7 @@ if __name__ == '__main__':
     # -- Discretizations
     
     #n_k = (128, 128, 1) # need some parallelisation for this... FIXME
+    #n_k = (96, 96, 1)
     n_k = (64, 64, 1)
     #n_k = (32, 32, 1)
     #n_k = (16, 16, 1)
@@ -80,7 +82,7 @@ if __name__ == '__main__':
     bzmesh = MeshBrillouinZone(bz, periodization_matrix)
     ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
     
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=5)
+    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=100)
 
     print '--> g0k'
     g0k = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
@@ -91,14 +93,17 @@ if __name__ == '__main__':
     print '--> grt from grw' 
     g0rt = grt_from_grw(g0r)
 
-    print '--> chi0_tr_from_grt_PH'
-    chi00_tr = chi0_tr_from_grt_PH(g0rt)
+    print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
+    chi00_wr = chi0_w0r_from_grt_PH(g0rt)
 
-    print '--> chi_wr_from_chi_tr'
+    #print '--> chi0_tr_from_grt_PH'
+    #chi00_tr = chi0_tr_from_grt_PH(g0rt)
+
+    #print '--> chi_wr_from_chi_tr'
     #chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1) # this could be replaced by integral over tau only.
 
-    print '--> chi_wr_from_chi_tr using np.trapz'
-    chi00_wr = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
+    #print '--> chi_wr_from_chi_tr using np.trapz'
+    #chi00_wr = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
     
     print '--> chi_wk_from_chi_wr'
     chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)

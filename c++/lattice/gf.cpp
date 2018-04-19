@@ -32,12 +32,8 @@ namespace tprf {
 
 gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 
+  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
-
-  matrix<ek_vt::scalar_t> I(ek.target_shape());
-  I(a, b) << kronecker(a, b);
-
-  //auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape());
   
   //for (auto const &k : ek.mesh()) {
 
@@ -54,12 +50,9 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
   auto mesh = sigma.mesh();
-  
+  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
   gk_iw_t gk =
       make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
-
-  matrix<ek_vt::scalar_t> I(ek.target_shape());
-  I(a, b) << kronecker(a, b);
 
   //for (auto const &k : ek.mesh()) {
 
