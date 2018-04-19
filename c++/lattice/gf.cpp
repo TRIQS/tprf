@@ -237,6 +237,7 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
     auto gw = make_gf<imfreq>({beta, Fermion, nw}, grw.target());
     auto gt = make_gf<imtime>({beta, Fermion, ntau}, grw.target());
 
+#pragma omp critical
     gw = set_gf_tail(grw[_, r], s_1);
 
     // ----------------------------------------------------
