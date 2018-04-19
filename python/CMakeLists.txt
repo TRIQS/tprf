@@ -47,6 +47,8 @@ triqs_set_rpath_for_target(hubbard_atom)
 install(TARGETS hubbard_atom DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 # Install utilities
+install(FILES logo.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 install(FILES lattice_utils.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES ParameterCollection.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
