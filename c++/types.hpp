@@ -74,6 +74,10 @@ typedef chi0r_t::view_type chi0r_vt;
   // real space "r"
   // momentum space "k"
   
+typedef gf<imtime, tensor_valued<4>> chi_t_t;
+typedef chi_t_t::const_view_type chi_t_cvt;
+typedef chi_t_t::view_type chi_t_vt;
+
 typedef gf<cartesian_product<imtime, cyclic_lattice>, tensor_valued<4>> chi_tr_t;
 typedef chi_tr_t::const_view_type chi_tr_cvt;
 typedef chi_tr_t::view_type chi_tr_vt;

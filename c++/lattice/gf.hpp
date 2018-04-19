@@ -81,6 +81,6 @@ gr_iw_t gr_from_gk(gk_iw_vt gk);
  */
 gk_iw_t gk_from_gr(gr_iw_vt gr);
 
-gr_tau_t grt_from_grw(gr_iw_vt grw);
+gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau=-1);
 
 } // namespace tprf

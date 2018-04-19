@@ -42,8 +42,9 @@ module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic
 
 # -- Bubble in imaginary time
 
-module.add_function("gr_tau_t grt_from_grw(gf_view<cartesian_product<imfreq, cyclic_lattice>> grw)", doc = """""")
+module.add_function("gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau=-1)", doc = """""")
 module.add_function("chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt)", doc = """""")
+module.add_function("chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt)", doc = """""")
 module.add_function("chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")
 module.add_function("chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw)", doc = """""")
 module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr)", doc = """""")

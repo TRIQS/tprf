@@ -83,6 +83,80 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
   return chi0_tr;
 }
 
+// -- optimized version for w=0
+chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
+
+  auto tmesh = std::get<0>(grt.mesh());
+  auto rmesh = std::get<1>(grt.mesh());
+
+  int nw = 1;
+  int nb = grt.target().shape()[0];
+  int ntau = tmesh.size();
+  double beta = tmesh.domain().beta;
+
+  chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+
+  //for (auto const &r : rmesh) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < rmesh.size(); idx++) {
+    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+
+    chi_t_t chi0_t{{beta, Boson, ntau}, {nb, nb, nb, nb}};
+
+    for (auto const &t : tmesh) {
+
+      // -- Ugly hack to evaluate within the range of t in [0, beta] and -t in
+      // [-beta, 0] respectively
+
+      double t_p = double(+t);
+      double t_m = double(-t);
+
+      double eps = 1e-9;
+
+      // -- Shift any point on the boundary by eps inside the boundary... :P
+
+      if (abs(t_p) < eps)
+        t_p = eps;
+      if (abs(t_p - beta) < eps)
+        t_p = +beta - eps;
+
+      if (abs(t_m) < eps)
+        t_m = -eps;
+      if (abs(t_m + beta) < eps)
+        t_m = -beta + eps;
+
+      chi0_t[t](a, b, c, d) << -grt(t_p, r)(d, a) * grt(t_m, -r)(b, c);
+    }
+    
+    chi0_wr[0, r] = chi_trapz_tau(chi0_t);
+  }
+
+  return chi0_wr;
+}  
+
+chi_t_t::zero_t chi_trapz_tau(chi_t_vt chi_t) {
+
+  auto tmesh = chi_t.mesh();
+  int ntau = tmesh.size();
+  double beta = tmesh.domain().beta;
+
+  chi_t_t::zero_t I(chi_t.target_shape());
+  I *= 0.;
+    
+  // -- Trapetzoidal integration
+
+  for (auto const &t : tmesh) I += chi_t[t];
+
+  auto boundary_iter = tmesh.begin();
+  I -= 0.5 * chi_t[*boundary_iter];
+
+  boundary_iter += ntau - 1;
+  I -= 0.5 * chi_t[*boundary_iter];
+
+  I *= beta / (ntau-1);
+  return I;  
+}
 
 // -- specialized calc for w=0
 chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
@@ -104,6 +178,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
+    /*
     chi_wr[0, r] *= 0.;
     
     // -- Trapetzoidal integration by hand
@@ -116,6 +191,10 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
     chi_wr[0, r] -= 0.5 * chi_tr[*boundary_iter, r];
 
     chi_wr[0, r] *= beta / (ntau-1);
+    */
+
+    auto _ = var_t{};
+    chi_wr[0, r] = chi_trapz_tau(chi_tr[_, r]);
   }
 
   return chi_wr;

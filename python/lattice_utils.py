@@ -166,9 +166,16 @@ def extend_data_on_boundary(values, periodization_matrix):
 
     nk = np.diag(periodization_matrix)
 
-    nk_ext = nk + 1
+    # -- this adds points on the boundary
 
+    # Add extra points in the positive index directions
+    nk_ext = nk + 1
     coords = [ np.arange(0, n) for n in nk_ext ]
+
+    # This adds two extra points in both positive and negative directions
+    #nk_ext = nk + 4
+    #coords = [ np.arange(-2, n+2) for n in nk ]
+    
     Coords = np.meshgrid(*coords, indexing='ij')
     Coords_mod = [ np.mod(x, n) for x, n in zip(Coords, nk) ]
 

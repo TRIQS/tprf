@@ -27,6 +27,7 @@ from triqs_tprf.lattice import chi00_wk_from_ek
 
 from triqs_tprf.lattice import grt_from_grw
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
+from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
@@ -117,6 +118,9 @@ def test_square_lattice_chi00():
     print '--> chi0_tr_from_grt_PH'
     chi00_tr = chi0_tr_from_grt_PH(g0rt)
 
+    print '--> chi0_tr_from_grt_PH'
+    chi00_wr_opt = chi0_w0r_from_grt_PH(g0rt)
+    
     print '--> chi_wr_from_chi_tr'
     chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1)
 
@@ -135,6 +139,7 @@ def test_square_lattice_chi00():
     
     #print comp(chi00_wr).real - comp(chi00_wr_ref1).real
     
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_opt.data)
     np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data)
     np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data)
 
