@@ -26,6 +26,8 @@ from triqs_tprf.logo import tprf_banner
 from triqs_tprf.lattice import chi00_wk_from_ek
 
 from triqs_tprf.lattice import g0k_from_ek
+from triqs_tprf.lattice import gk_from_ek_sigma
+
 from triqs_tprf.lattice import gr_from_gk
 from triqs_tprf.lattice import grt_from_grw
 
@@ -71,7 +73,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
     print
 
     ntau = 4 * nw
-    ntot = np.prod(nk) * ntau * norb**4 + np.prod(nk) * ntau * norb**2
+    ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw + ntau) * norb**2
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
     print 'Approx. Memory Utilization: %2.2f GB\n' % ngb
@@ -90,8 +92,9 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
         wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
         gwk = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
     else:
+        print '--> gk'
         sigma = strip_sigma(nw, beta, sigma)
-        gwk = gk_from_ek_sigma(mu=mu, ek=ek, sigma=p.Sigmalatt_iw)
+        gwk = gk_from_ek_sigma(mu=mu, ek=ek, sigma=sigma)
 
     print '--> gr_from_gk (k->r)'
     gwr = gr_from_gk(gwk)
@@ -101,12 +104,18 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
     grt = grt_from_grw(gwr)
     del gwr
 
-    return grt
+    if sigma is None:
+        return grt
+    else:
+        return grt, sigma
 
 # ----------------------------------------------------------------------
 def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma=None):
 
-    grt = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=sigma)
+    if sigma is None:
+        grt = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=sigma)
+    else:
+        grt, sigma_cut = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=sigma)
     
     print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
     chi0_wr = chi0_w0r_from_grt_PH(grt)
@@ -116,7 +125,10 @@ def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma=None):
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
     del chi0_wr
 
-    return chi0_wk
+    if sigma is None:
+        return chi0_wk
+    else:
+        return chi0_wk, sigma_cut
 
 # ----------------------------------------------------------------------
 def ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz):
@@ -198,13 +210,10 @@ def cluster_mesh_fourier_interpolation(k, chiwr):
     return chi00wk_data
 
 # ----------------------------------------------------------------------
-def get_abs_k_chi_interpolator(chi, w, bz, extend_bz=[0]):
+def get_abs_k_chi_interpolator(values, bzmesh, bz, extend_bz=[0]):
 
     k_mat = bz.units()
-    bzmesh = chi.mesh.components[1]
-
     k_vec = np.array([k.value for k in bzmesh])
-    values = np.squeeze(chi[w, :].data.real)
     
     # -- Extend with points beyond the first bz
 
@@ -223,15 +232,11 @@ def get_abs_k_chi_interpolator(chi, w, bz, extend_bz=[0]):
     return interp
     
 # ----------------------------------------------------------------------
-def get_rel_k_chi_interpolator(chi, w, bz, nk,
+def get_rel_k_chi_interpolator(values, bzmesh, bz, nk,
                                extend_boundary=True, interpolator='regular'):
 
     k_mat = bz.units()
-    bzmesh = chi.mesh.components[1]
-    #nk = np.diag(periodization_matrix)
-
     k_vec = np.array([k.value for k in bzmesh])
-    values = np.squeeze(chi[w, :].data.real)
 
     k_vec_rel = get_relative_k_from_absolute(k_vec, bz.units())
     k_idx = get_kidx_from_k_vec_relative(k_vec_rel, nk)
