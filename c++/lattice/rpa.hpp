@@ -2,7 +2,8 @@
  *
  * TRIQS: a Toolbox for Research in Interacting Quantum Systems
  *
- * Copyright (C) 2017, H. U.R. Strand
+ * Copyright (C) 2018, The Simons Foundation
+ * Author: Hugo U. R. Strand
  *
  * TRIQS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -20,13 +21,10 @@
  ******************************************************************************/
 #pragma once
 
-#include "types.hpp"
+#include "../types.hpp"
 
-#include "./lattice/gf.hpp"
-#include "./lattice/lindhardt_chi00.hpp"
-#include "./lattice/rpa.hpp"
-#include "./lattice/fourier_interpolation.hpp"
+namespace tprf {
 
-#include "./lattice/chi_imtime.hpp"
-#include "./lattice/chi_imfreq.hpp"
-
+  chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U);
+  
+}
