@@ -41,7 +41,7 @@ public:
 };
 
 // ----------------------------------------------------
-// Index grouping defintitions
+// Index grouping definitions
 // ----------------------------------------------------
 
 // The standard layout is:

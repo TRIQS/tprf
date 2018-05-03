@@ -29,6 +29,8 @@ namespace tprf {
 
 chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 
+  auto _ = var_t{};
+
   auto tmesh = std::get<0>(grt.mesh());
   auto rmesh = std::get<1>(grt.mesh());
 
@@ -38,6 +40,9 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 
   chi_tr_t chi0_tr{{{beta, Boson, ntau}, rmesh}, {nb, nb, nb, nb}};
 
+  auto g_target = grt.target();
+  auto chi_target = chi0_tr.target();
+  
   // -- This does not work on the boundaries!! The eval wraps to the other
   // regime!
   // -- gt(beta) == gt(beta + 0^+)
@@ -49,6 +54,16 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
+    auto chi0_t = make_gf<imtime>(tmesh, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = grt[_, r];
+      g_mr_t = grt[_, -r];
+    }
+    
     for (auto const &t : tmesh) {
 
       // -- This does not work on the boundaries!! The eval wraps to the other
@@ -76,8 +91,14 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
       if (abs(t_m + beta) < eps)
         t_m = -beta + eps;
 
-      chi0_tr[t, r](a, b, c, d) << -grt(t_p, r)(d, a) * grt(t_m, -r)(b, c);
+      //chi0_tr[t, r](a, b, c, d) << -grt(t_p, r)(d, a) * grt(t_m, -r)(b, c);
+      
+      chi0_t[t](a, b, c, d) << -g_pr_t(t_p)(d, a) * g_mr_t(t_m)(b, c);
     }
+
+#pragma omp critical
+    chi0_tr[_, r] = chi0_t;
+    
   }
 
   return chi0_tr;
