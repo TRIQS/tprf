@@ -8,21 +8,21 @@ Vertex functions
 Fully reducible vertex :math:`F`
 --------------------------------
 
-The fully recucible vertex function :math:`F(a\bar{a}b\bar{b})` is defined as the aputation of the connected two-particle Green's function :math:`G^{(2)}_c` by four single-particle Green's functions :math:`G`, one for each leg.
+The fully recucible vertex function :math:`F(a\bar{a}b\bar{b})` is defined as the amputation of the connected two-particle Green's function :math:`G^{(2)}_c` by four single-particle Green's functions :math:`G`, one for each leg.
 
 .. math::
-   G^{(2)}_c(\bar{a}b\bar{c}d) =
    G(a\bar{a}) G(b\bar{b}) F(a\bar{b}c\bar{d}) G(c\bar{c}) G(d\bar{d})
+   \equiv G^{(2)}_c(\bar{a}b\bar{c}d)
 
-Bethe-Salpeter equations
-========================
+Bethe-Salpeter equations for the fully reducible vertext :math:`F`
+==================================================================
    
 The Bethe-Salpeter equations for the fully reducible vertex :math:`F` is defined for any given channel :math:`r` as
 
 .. math::
    F = \Gamma^{r} + \Gamma^{r} GG F
 
-The possible pairings of indices in the right-hand side prodict produces three non-equivalent equations labeled :math:`r \in \{ PH, \bar{PH}, PP\}` standing for, particle-hole, vertical-particle-hole, and particle-particle.
+The possible pairings of indices in the right-hand side prodict produces three non-equivalent equations labeled :math:`r \in \{ PH, \bar{PH}, PP\}` standing for, the particle-hole (:math:`PH`), vertical-particle-hole (:math:`\bar{PH}`), and particle-particle (:math:`PP`) channel, respectively.
 
 Each equation and index pairing is associated with one "channel" within which the :math:`r`-channel-irreducible vertex :math:`\Gamma^r`.
 
