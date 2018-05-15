@@ -54,7 +54,7 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-    auto chi0_t = make_gf<imtime>(tmesh, chi_target);
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
     auto g_mr_t = make_gf<imtime>(tmesh, g_target);
 
@@ -69,8 +69,11 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
       // -- This does not work on the boundaries!! The eval wraps to the other
       // regime!
       // -- gt(beta) == gt(beta + 0^+)
-      // chi0_tr[t, r](a, b, c, d) << grt(t, r)(d, a) * grt(-t, -r)(b, c);
+      //chi0_tr[t, r](a, b, c, d) << grt(t, r)(d, a) * grt(-t, -r)(b, c);
 
+      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+      /*
       // -- Ugly hack to evaluate within the range of t in [0, beta] and -t in
       // [-beta, 0] respectively
 
@@ -94,6 +97,7 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
       //chi0_tr[t, r](a, b, c, d) << -grt(t_p, r)(d, a) * grt(t_m, -r)(b, c);
       
       chi0_t[t](a, b, c, d) << -g_pr_t(t_p)(d, a) * g_mr_t(t_m)(b, c);
+      */
     }
 
 #pragma omp critical
@@ -107,6 +111,8 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 // -- optimized version for w=0
 chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
 
+  auto _ = var_t{};
+
   auto tmesh = std::get<0>(grt.mesh());
   auto rmesh = std::get<1>(grt.mesh());
 
@@ -117,40 +123,34 @@ chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
 
   chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
+  auto g_target = grt.target();
+  auto chi_target = chi0_wr.target();
+  
   //for (auto const &r : rmesh) {
 
 #pragma omp parallel for 
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-    chi_t_t chi0_t{{beta, Boson, ntau}, {nb, nb, nb, nb}};
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
 
-    for (auto const &t : tmesh) {
-
-      // -- Ugly hack to evaluate within the range of t in [0, beta] and -t in
-      // [-beta, 0] respectively
-
-      double t_p = double(+t);
-      double t_m = double(-t);
-
-      double eps = 1e-9;
-
-      // -- Shift any point on the boundary by eps inside the boundary... :P
-
-      if (abs(t_p) < eps)
-        t_p = eps;
-      if (abs(t_p - beta) < eps)
-        t_p = +beta - eps;
-
-      if (abs(t_m) < eps)
-        t_m = -eps;
-      if (abs(t_m + beta) < eps)
-        t_m = -beta + eps;
-
-      chi0_t[t](a, b, c, d) << -grt(t_p, r)(d, a) * grt(t_m, -r)(b, c);
+#pragma omp critical
+    {
+      g_pr_t = grt[_, r];
+      g_mr_t = grt[_, -r];
     }
     
-    chi0_wr[0, r] = chi_trapz_tau(chi0_t);
+    for (auto const &t : tmesh) {
+      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+    }
+
+    auto int_chi0 = chi_trapz_tau(chi0_t);
+    
+#pragma omp critical
+    chi0_wr[0, r] = int_chi0;
+
   }
 
   return chi0_wr;
@@ -162,8 +162,7 @@ chi_t_t::zero_t chi_trapz_tau(chi_t_vt chi_t) {
   int ntau = tmesh.size();
   double beta = tmesh.domain().beta;
 
-  chi_t_t::zero_t I(chi_t.target_shape());
-  I *= 0.;
+  chi_t_t::zero_t I = chi_t.get_zero();
     
   // -- Trapetzoidal integration
 

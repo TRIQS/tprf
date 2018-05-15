@@ -22,6 +22,8 @@
 
 #include "types.hpp"
 
+/*
+
 // can not do: using chi4_tau_view_t = gf_view<cartesian_product<imtime, imtime,
 // imtime>, tensor_valued<4>>
 // see issue: https://github.com/TRIQS/triqs/issues/421
@@ -41,9 +43,12 @@
   gf_view<cartesian_product<imfreq, imfreq>, tensor_valued<4>>
 #define chi2_iw_view_t gf_view<imfreq, tensor_valued<4>>
 #define g_iw_view_t gf_view<imfreq, matrix_valued>
+*/
 
 namespace tprf {
 namespace fourier {
+
+  /*
 
 chi4_iw_t chi4_iw_from_tau(chi4_tau_view_t chi4_tau, int n_iw);
 chi3_iw_t chi3_iw_from_tau(chi3_tau_view_t chi3_tau, int n_iw);
@@ -55,5 +60,8 @@ chi3_tau_t chi3_tau_from_iw(chi3_iw_view_t chi3_iw, int n_tau);
 chi2_tau_t chi2_tau_from_iw(chi2_iw_view_t chi2_iw, int n_tau);
 g_tau_t g_tau_from_iw(g_iw_view_t g_iw, int n_tau);
 
+  */  
+
 } // namespace fourier
 } // namespace tprf
+

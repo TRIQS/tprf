@@ -52,7 +52,7 @@ TEST(lattice, g0k_to_from_g0r) {
  auto g0r = gr_from_gk(g0k);
  auto g0k_ref = gk_from_gr(g0r);
 
- EXPECT_CLOSE_ARRAY(g0k.data(), g0k_ref.data()); 
+ EXPECT_ARRAY_NEAR(g0k.data(), g0k_ref.data()); 
 }
 
 TEST(lattice, gk_to_from_gr) {
@@ -80,7 +80,7 @@ TEST(lattice, gk_to_from_gr) {
  auto gr = gr_from_gk(gk);
  auto gk_ref = gk_from_gr(gr);
 
- EXPECT_CLOSE_ARRAY(gk.data(), gk_ref.data()); 
+ EXPECT_ARRAY_NEAR(gk.data(), gk_ref.data()); 
 }
 
 MAKE_MAIN;

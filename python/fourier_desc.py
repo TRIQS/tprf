@@ -26,14 +26,14 @@ using namespace tprf::fourier;
 using namespace tprf;
 """)
 
-module.add_function ("chi4_iw_t chi4_iw_from_tau (gf_view<cartesian_product<imtime, imtime, imtime>, tensor_valued<4>> chi4_tau, int n_iw)", doc = """""")
-module.add_function ("chi3_iw_t chi3_iw_from_tau (gf_view<cartesian_product<imtime, imtime>, tensor_valued<4>> chi3_tau, int n_iw)", doc = """""")
-module.add_function ("chi2_iw_t chi2_iw_from_tau (gf_view<imtime, tensor_valued<4>> chi2_tau, int n_iw)", doc = """""")
-module.add_function ("g_iw_t g_iw_from_tau (gf_view<imtime, matrix_valued> g_tau, int n_iw)", doc = """""")
+#module.add_function ("chi4_iw_t chi4_iw_from_tau (gf_view<cartesian_product<imtime, imtime, imtime>, tensor_valued<4>> chi4_tau, int n_iw)", doc = """""")
+#module.add_function ("chi3_iw_t chi3_iw_from_tau (gf_view<cartesian_product<imtime, imtime>, tensor_valued<4>> chi3_tau, int n_iw)", doc = """""")
+#module.add_function ("chi2_iw_t chi2_iw_from_tau (gf_view<imtime, tensor_valued<4>> chi2_tau, int n_iw)", doc = """""")
+#module.add_function ("g_iw_t g_iw_from_tau (gf_view<imtime, matrix_valued> g_tau, int n_iw)", doc = """""")
 
-module.add_function ("chi4_tau_t chi4_tau_from_iw (gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> chi4_iw, int n_tau)", doc = """""")
-module.add_function ("chi3_tau_t chi3_tau_from_iw (gf_view<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi3_iw, int n_tau)", doc = """""")
-module.add_function ("chi2_tau_t chi2_tau_from_iw (gf_view<imfreq, tensor_valued<4>> chi2_iw, int n_tau)", doc = """""")
-module.add_function ("g_tau_t g_tau_from_iw (gf_view<imfreq, matrix_valued> g_iw, int n_tau)", doc = """""")
+#module.add_function ("chi4_tau_t chi4_tau_from_iw (gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> chi4_iw, int n_tau)", doc = """""")
+#module.add_function ("chi3_tau_t chi3_tau_from_iw (gf_view<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi3_iw, int n_tau)", doc = """""")
+#module.add_function ("chi2_tau_t chi2_tau_from_iw (gf_view<imfreq, tensor_valued<4>> chi2_iw, int n_tau)", doc = """""")
+#module.add_function ("g_tau_t g_tau_from_iw (gf_view<imfreq, matrix_valued> g_iw, int n_tau)", doc = """""")
 
 module.generate_code()

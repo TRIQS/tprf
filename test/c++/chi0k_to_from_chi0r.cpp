@@ -62,7 +62,7 @@ TEST(lattice, chi0k_to_from_chi0r) {
  auto chi0q = chi0q_from_chi0r(chi0r);
  auto chi0r_ref = chi0r_from_chi0q(chi0q);
 
- EXPECT_CLOSE_ARRAY(chi0r.data(), chi0r_ref.data()); 
+ EXPECT_ARRAY_NEAR(chi0r.data(), chi0r_ref.data()); 
 }
 
 MAKE_MAIN;

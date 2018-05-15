@@ -66,40 +66,6 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
   return gk;
 }
 
-  /*
-gr_iw_t gr_from_gk(gk_iw_vt gk) {
-
-  auto wmesh = std::get<0>(gk.mesh());
-  auto kmesh = std::get<1>(gk.mesh());
-  auto lmesh = gf_mesh<cyclic_lattice>{kmesh.domain().lattice(), kmesh.periodization_matrix};
-
-  gr_iw_t gr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, lmesh}, gk.target());
-
-  for (auto const &w : wmesh) {
-    auto _ = var_t{};
-    gr[w, _] = inverse_fourier(gk[w, _]);
-  }
-
-  return gr;
-}
-
-gk_iw_t gk_from_gr(gr_iw_vt gr) {
-
-  auto wmesh = std::get<0>(gr.mesh());
-  auto lmesh = std::get<1>(gr.mesh());
-  auto kmesh = gf_mesh<brillouin_zone>{brillouin_zone{lmesh.domain()}, lmesh.periodization_matrix};
-  
-  gk_iw_t gk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, gr.target());
-
-  for (auto const &w : wmesh) {
-    auto _ = var_t{};
-    gk[w, _] = fourier(gr[w, _]);
-  }
-
-  return gk;
-}
- */
-
 gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
   auto _ = var_t{};
@@ -112,7 +78,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
   gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, lmesh}, target);
 
   auto w0 = *wmesh.begin();
-  void * p = _fourier_impl_plan(gwr[w0, _], gwk[w0, _]);
+  void * p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
   
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
@@ -124,14 +90,14 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 #pragma omp critical
     gk = gwk[w, _];
 
-    _fourier_impl(gr, gk, p);
+    _fourier_with_plan<0>(gf_const_view(gk), gf_view(gr), p);
 
 #pragma omp critical
     gwr[w, _] = gr;
 
   }
 
-  _fourier_impl_destroy_plan(p);
+  _fourier_destroy_plan(p);
 
   return gwr;
 }
@@ -148,7 +114,7 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
 
   auto w0 = *wmesh.begin();
-  void * p = _fourier_impl_plan(gwk[w0, _], gwr[w0, _]);
+  void * p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
@@ -160,46 +126,20 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
 #pragma omp critical
     gr = gwr[w, _];
 
-    _fourier_impl(gk, gr, p);
+    _fourier_with_plan<0>(gf_const_view(gr), gf_view(gk), p);
 
 #pragma omp critical
     gwk[w, _] = gk;
 
   }
 
-  _fourier_impl_destroy_plan(p);
+  _fourier_destroy_plan(p);
   
   return gwk;
 }
 
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
-
-/** Set the two lowest order tail coefficients
-
-    for a single-particle Green's function.
-    using the 1/w first order coefficient
-    and fitting the second order coefficient
-    from the value at the lowest Matsubara frequency.
- */
-
-g_iw_vt set_gf_tail(g_iw_vt gw, double s_1 = 1.) {
-
-  auto s = gw.singularity();
-
-  s.zero();
-
-  s(1) = s_1; // set order 1 to the unit matrix
-
-  // get approx of 2nd order from lowest G(w) value
-
-  for (auto const &w : gw.mesh()) {
-    s(2) = w * w * (gw[w] - s(1) / w);
-    break;
-  }
-
-  return gw;
-}
 
 gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
@@ -219,9 +159,7 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
   void * p;
   {
     auto r0 = *rmesh.begin();
-    auto gw_ab = slice_target_to_scalar(grw[_, r0], 0, 0);
-    auto gt_ab = slice_target_to_scalar(grt[_, r0], 0, 0);
-    p = _fourier_impl_plan(gt_ab, gw_ab);
+    p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
   }
   
   //  for (auto const &r : rmesh) {
@@ -230,41 +168,19 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-    double s_1 = 0.;
-    if (r.linear_index() == 0)
-      s_1 = 1.; // only r=0 has a fermi jump and a 1/i\omega_n tail
-
     auto gw = make_gf<imfreq>({beta, Fermion, nw}, grw.target());
     auto gt = make_gf<imtime>({beta, Fermion, ntau}, grw.target());
 
 #pragma omp critical
-    gw = set_gf_tail(grw[_, r], s_1);
+    gw = grw[_, r];
 
-    // ----------------------------------------------------
-    for(int a = 0; a < gw.target_shape()[0]; a++) {
-      for(int b = 0; b < gw.target_shape()[1]; b++) {
-	auto gw_ab = slice_target_to_scalar(gw, a, b);
-	auto gt_ab = slice_target_to_scalar(gt, a, b);
-	_fourier_impl(gt_ab, gw_ab, p);
-      }
-    }
-    // ----------------------------------------------------
-     
-    // ----------------------------------------------------
-    // serial replacement
-    
-    //grt[_, r] = inverse_fourier(
-    //    set_gf_tail(grw[_, r], s_1)); // Using on the fly tail coeff FIXME
-    // ----------------------------------------------------
-
-    // grt[_, r] = inverse_fourier(set_gf_tail(grw[_, r])); // Using on the fly
-    // tail coeff FIXME
+    _fourier_with_plan<0>(gf_const_view(gw), gf_view(gt), p);
 
 #pragma omp critical
     grt[_, r] = gt;
   }
 
-  _fourier_impl_destroy_plan(p);
+  _fourier_destroy_plan(p);
 
   return grt;
 }

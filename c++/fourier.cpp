@@ -21,10 +21,12 @@
 
 #include "fourier.hpp"
 
-#include "fourier_impl.hpp"
+//#include "fourier_impl.hpp"
 
 namespace tprf {
 namespace fourier {
+
+  /*
 
 chi4_iw_t chi4_iw_from_tau(chi4_tau_view_t chi4_tau, int n_iw) {
   return make_gf_from_fourier(chi4_tau, n_iw, n_iw, n_iw);
@@ -52,5 +54,7 @@ g_tau_t g_tau_from_iw(g_iw_view_t g_iw, int n_tau) {
   return make_gf_from_inverse_fourier(g_iw, n_tau);
 }
 
+  */
+  
 } // namespace fourier
 } // namespace tprf

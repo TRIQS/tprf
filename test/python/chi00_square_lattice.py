@@ -98,10 +98,10 @@ def test_square_lattice_chi00():
     lmesh = MeshCyclicLattice(tb_lattice.bl, periodization_matrix)
 
     print '--> g0k'
-    g0k = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
+    g0_wk = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
 
     print '--> g0r'
-    g0r = gr_from_gk(g0k)
+    g0_wr = gr_from_gk(g0_wk)
 
     # ------------------------------------------------------------------
     # -- anaytic chi00
@@ -113,13 +113,13 @@ def test_square_lattice_chi00():
     # -- imtime chi00
 
     print '--> grt from grw' 
-    g0rt = grt_from_grw(g0r)
+    g0_tr = grt_from_grw(g0_wr)
 
     print '--> chi0_tr_from_grt_PH'
-    chi00_tr = chi0_tr_from_grt_PH(g0rt)
+    chi00_tr = chi0_tr_from_grt_PH(g0_tr)
 
     print '--> chi0_tr_from_grt_PH'
-    chi00_wr_opt = chi0_w0r_from_grt_PH(g0rt)
+    chi00_wr_opt = chi0_w0r_from_grt_PH(g0_tr)
     
     print '--> chi_wr_from_chi_tr'
     chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1)
@@ -139,10 +139,12 @@ def test_square_lattice_chi00():
     
     #print comp(chi00_wr).real - comp(chi00_wr_ref1).real
     
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_opt.data)
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data)
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data)
+    #print np.max(np.abs(chi00_wr.data - chi00_wr_ref1.data))
 
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_opt.data, decimal=4)
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data, decimal=4)
+    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data, decimal=4)
+    
     print '--> chi_wk_from_chi_wr'
     chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)
     
@@ -150,7 +152,7 @@ def test_square_lattice_chi00():
     # -- imfreq chi00
     
     print '--> chi00r'
-    chi00r = chi0r_from_gr_PH(nw=nw, nnu=nnu, gr=g0r)
+    chi00r = chi0r_from_gr_PH(nw=nw, nnu=nnu, gr=g0_wr)
 
     print '--> chi00q'
     chi00q = chi0q_from_chi0r(chi00r)

@@ -58,7 +58,8 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
   for (auto const &widx : std::get<0>(chi0r.mesh())) {
     for (auto const &nidx : std::get<1>(chi0r.mesh())) {
       auto _ = var_t{};
-      chi0r[widx, nidx, _] = inverse_fourier(chi0q[widx, nidx, _]);
+      //chi0r[widx, nidx, _] = inverse_fourier(chi0q[widx, nidx, _]);
+      chi0r[widx, nidx, _] = fourier(chi0q[widx, nidx, _]);
     }
   }
   return chi0r;
@@ -127,10 +128,12 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
 
               auto chi_abcd = slice_target_to_scalar(chi, a, b, c, d);
 
+	      /*
               auto s = chi_abcd.singularity();
               s.zero();
               if (a == d && b == c)
                 s(2) = 1.;
+	      */
 
               chi0q_w[w, q](a, b, c, d) = density(chi_abcd) / beta;
             }
