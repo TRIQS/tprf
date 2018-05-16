@@ -77,27 +77,30 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
   gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, lmesh}, target);
 
-  auto w0 = *wmesh.begin();
-  void * p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
+  //auto w0 = *wmesh.begin();
+  //void * p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
+
+  for (auto const &w : wmesh) {
   
-#pragma omp parallel for 
-  for (int idx = 0; idx < wmesh.size(); idx++) {
-    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
+    //#pragma omp parallel for 
+    //for (int idx = 0; idx < wmesh.size(); idx++) {
+    //auto iter = wmesh.begin(); iter += idx; auto w = *iter;
 
     auto gr = make_gf<cyclic_lattice>(lmesh, target);
     auto gk = make_gf<brillouin_zone>(kmesh, target);
 
-#pragma omp critical
+    //#pragma omp critical
     gk = gwk[w, _];
 
-    _fourier_with_plan<0>(gf_const_view(gk), gf_view(gr), p);
+    //_fourier_with_plan<0>(gf_const_view(gk), gf_view(gr), p);
+    _fourier<0>(gf_const_view(gk), gf_view(gr));
 
-#pragma omp critical
+    //#pragma omp critical
     gwr[w, _] = gr;
 
   }
 
-  _fourier_destroy_plan(p);
+  //_fourier_destroy_plan(p);
 
   return gwr;
 }
@@ -113,27 +116,30 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   
   gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
 
-  auto w0 = *wmesh.begin();
-  void * p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
+  //auto w0 = *wmesh.begin();
+  //void * p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
 
-#pragma omp parallel for 
-  for (int idx = 0; idx < wmesh.size(); idx++) {
-    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
+  for (auto const &w : wmesh) {
+
+    //#pragma omp parallel for 
+    //for (int idx = 0; idx < wmesh.size(); idx++) {
+    //auto iter = wmesh.begin(); iter += idx; auto w = *iter;
 
     auto gr = make_gf<cyclic_lattice>(lmesh, target);
     auto gk = make_gf<brillouin_zone>(kmesh, target);
 
-#pragma omp critical
+    //#pragma omp critical
     gr = gwr[w, _];
 
-    _fourier_with_plan<0>(gf_const_view(gr), gf_view(gk), p);
+    //_fourier_with_plan<0>(gf_const_view(gr), gf_view(gk), p);
+    _fourier<0>(gf_const_view(gr), gf_view(gk));
 
-#pragma omp critical
+    //#pragma omp critical
     gwk[w, _] = gk;
 
   }
 
-  _fourier_destroy_plan(p);
+  //_fourier_destroy_plan(p);
   
   return gwk;
 }
@@ -156,31 +162,65 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   auto _ = var_t{};
 
-  void * p;
-  {
-    auto r0 = *rmesh.begin();
-    p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
-  }
-  
-  //  for (auto const &r : rmesh) {
+  auto nb = grw.target_shape()[0];
 
-#pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  auto known_moments_zero = array<dcomplex, 3>(2, nb, nb);
+  known_moments_zero() = 0.;
+
+  auto known_moments = array<dcomplex, 3>(2, nb, nb);
+  known_moments(0, range(), range()) = 0.;
+  known_moments(1, range(), range()) = make_unit_matrix<dcomplex>(nb);
+  
+  for (auto const &r : rmesh) {
 
     auto gw = make_gf<imfreq>({beta, Fermion, nw}, grw.target());
     auto gt = make_gf<imtime>({beta, Fermion, ntau}, grw.target());
 
-#pragma omp critical
     gw = grw[_, r];
 
-    _fourier_with_plan<0>(gf_const_view(gw), gf_view(gt), p);
+    if(r.linear_index() == 0) {
+      auto [tail, err] = get_tail(gw);
+      std::cout << "0\n";
+      std::cout << tail(0, range(), range()) << "\n";
+      std::cout << known_moments(0, range(), range()) << "\n";
+      std::cout << "1\n";
+      std::cout << tail(1, range(), range()) << "\n";
+      std::cout << known_moments(1, range(), range()) << "\n";
+      std::cout << "2\n";
+      std::cout << tail(2, range(), range()) << "\n";
+      std::cout << "3\n";
+      std::cout << tail(3, range(), range()) << "\n";
+    }
 
-#pragma omp critical
+    if(r.linear_index() == 0) {
+      auto [tail, err] = get_tail(gw, known_moments);
+      std::cout << "0\n";
+      std::cout << tail(0, range(), range()) << "\n";
+      std::cout << known_moments(0, range(), range()) << "\n";
+      std::cout << "1\n";
+      std::cout << tail(1, range(), range()) << "\n";
+      std::cout << known_moments(1, range(), range()) << "\n";
+      std::cout << "2\n";
+      std::cout << tail(2, range(), range()) << "\n";
+      std::cout << "3\n";
+      std::cout << tail(3, range(), range()) << "\n";
+    }
+    
+    //gt = fourier(gw, known_moments);
+
+    _fourier<0>(gf_const_view(gw), gf_view(gt));
+
+    /*
+    {
+    if(r.linear_index() == 0)
+      _fourier<0>(gf_const_view(gw), gf_view(gt), array_const_view<dcomplex, 3>(known_moments));
+    else
+      _fourier<0>(gf_const_view(gw), gf_view(gt), array_const_view<dcomplex, 3>(known_moments_zero));
+    }
+    */
+
     grt[_, r] = gt;
   }
-
-  _fourier_destroy_plan(p);
 
   return grt;
 }
