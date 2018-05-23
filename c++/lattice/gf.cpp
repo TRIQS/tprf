@@ -71,7 +71,9 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
   auto _ = var_t{};
   auto target = gwk.target();
 
-  auto [wmesh, kmesh] = gwk.mesh();
+  //const auto & [ wmesh, kmesh ] = gwk.mesh();
+  auto wmesh = std::get<0>(gwk.mesh());
+  auto kmesh = std::get<1>(gwk.mesh());
   auto rmesh = make_adjoint_mesh(kmesh);
 
   gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
@@ -119,7 +121,9 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   auto _ = var_t{};
   auto target = gwr.target();
 
-  auto [wmesh, rmesh] = gwr.mesh();
+  //auto [wmesh, rmesh] = gwr.mesh();
+  auto wmesh = std::get<0>(gwr.mesh());
+  auto rmesh = std::get<1>(gwr.mesh());
   auto kmesh = make_adjoint_mesh(rmesh);
   
   gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
@@ -171,76 +175,61 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
   auto rmesh = std::get<1>(grw.mesh());
 
   double beta = wmesh.domain().beta;
+  auto S = wmesh.domain().statistic;
 
   int nw = wmesh.last_index() + 1;
   if( ntau <= 0 ) ntau = 4 * nw;
 
   gr_tau_t grt = make_gf<gr_tau_t::mesh_t::var_t>(
-      {{beta, Fermion, ntau}, rmesh}, grw.target());
+      {{beta, S, ntau}, rmesh}, grw.target());
+
+  auto tmesh = std::get<0>(grt.mesh());
 
   auto _ = var_t{};
 
-  auto nb = grw.target_shape()[0];
+  void * p;
+  {
+    auto r0 = *rmesh.begin();
+    p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
+  }
 
-  auto known_moments_zero = array<dcomplex, 3>(2, nb, nb);
-  known_moments_zero() = 0.;
+#pragma omp parallel for 
+  for (int idx = 0; idx < rmesh.size(); idx++) {
+    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-  auto known_moments = array<dcomplex, 3>(2, nb, nb);
-  known_moments(0, range(), range()) = 0.;
-  known_moments(1, range(), range()) = make_unit_matrix<dcomplex>(nb);
-  
-  for (auto const &r : rmesh) {
+    auto gw = make_gf<imfreq>(wmesh, grw.target());
+    auto gt = make_gf<imtime>(tmesh, grw.target());
 
-    auto gw = make_gf<imfreq>({beta, Fermion, nw}, grw.target());
-    auto gt = make_gf<imtime>({beta, Fermion, ntau}, grw.target());
-
+#pragma omp critical
     gw = grw[_, r];
 
-    if(r.linear_index() == 0) {
-      auto [tail, err] = fit_tail(gw);
-      std::cout << "0\n";
-      std::cout << tail(0, range(), range()) << "\n";
-      std::cout << known_moments(0, range(), range()) << "\n";
-      std::cout << "1\n";
-      std::cout << tail(1, range(), range()) << "\n";
-      std::cout << known_moments(1, range(), range()) << "\n";
-      std::cout << "2\n";
-      std::cout << tail(2, range(), range()) << "\n";
-      std::cout << "3\n";
-      std::cout << tail(3, range(), range()) << "\n";
-    }
+    _fourier_with_plan<0>(gf_const_view(gw), gf_view(gt), p);
 
-    if(r.linear_index() == 0) {
-      auto [tail, err] = fit_tail(gw, known_moments);
-      std::cout << "0\n";
-      std::cout << tail(0, range(), range()) << "\n";
-      std::cout << known_moments(0, range(), range()) << "\n";
-      std::cout << "1\n";
-      std::cout << tail(1, range(), range()) << "\n";
-      std::cout << known_moments(1, range(), range()) << "\n";
-      std::cout << "2\n";
-      std::cout << tail(2, range(), range()) << "\n";
-      std::cout << "3\n";
-      std::cout << tail(3, range(), range()) << "\n";
-    }
-    
-    gt() = fourier<0>(gw);
-    
-    //_fourier<0>(gf_const_view(gw), gf_view(gt));
-
-    //gt = fourier(gw, known_moments);
-
-    /*
-    {
-    if(r.linear_index() == 0)
-      _fourier<0>(gf_const_view(gw), gf_view(gt), array_const_view<dcomplex, 3>(known_moments));
-    else
-      _fourier<0>(gf_const_view(gw), gf_view(gt), array_const_view<dcomplex, 3>(known_moments_zero));
-    }
-    */
-
+#pragma omp critical
     grt[_, r] = gt;
+
   }
+
+  _fourier_destroy_plan(p);
+  
+  return grt;
+}
+
+gr_tau_t grt_from_grw_serial(gr_iw_vt grw, int ntau) {
+
+  auto wmesh = std::get<0>(grw.mesh());
+  auto rmesh = std::get<1>(grw.mesh());
+
+  double beta = wmesh.domain().beta;
+
+  int nw = wmesh.last_index() + 1;
+  if( ntau <= 0 ) ntau = 4 * nw;
+
+  gr_tau_t grt = make_gf<gr_tau_t::mesh_t::var_t>(
+    {{beta, wmesh.domain().statistic, ntau}, rmesh}, grw.target());
+
+  auto _ = var_t{};
+  for (auto const &r : rmesh) grt[_, r]() = fourier<0>(grw[_, r]);
 
   return grt;
 }
