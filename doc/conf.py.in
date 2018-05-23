@@ -23,7 +23,8 @@ version = '@TPRF_VERSION@'
 release = '@TPRF_RELEASE@'
 
 math_number_all = True
-mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
+#mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
+mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=default"
 templates_path = ['@CMAKE_SOURCE_DIR@/doc/_templates']
 
 html_theme = 'triqs'
