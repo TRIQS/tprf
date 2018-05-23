@@ -30,13 +30,13 @@ namespace tprf {
 // ----------------------------------------------------
 // g
 
+#ifdef TPRF_OMP
+
 gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
   gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
   
-  //for (auto const &k : ek.mesh()) {
-
 #pragma omp parallel for 
   for (int idx = 0; idx < ek.mesh().size(); idx++) {
     auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
@@ -47,14 +47,31 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
   return g0k;
 }
 
+#else
+  
+gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
+
+  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
+  gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+  
+  for (auto const &k : ek.mesh())
+    for (auto const &w : mesh) g0k[w, k] = inverse((w + mu)*I - ek(k));
+
+  return g0k;
+}
+
+#endif
+
+// ----------------------------------------------------
+  
+#ifdef TPRF_OMP
+
 gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
   auto mesh = sigma.mesh();
   auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
   gk_iw_t gk =
       make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
-
-  //for (auto const &k : ek.mesh()) {
 
 #pragma omp parallel for 
   for (int idx = 0; idx < ek.mesh().size(); idx++) {
@@ -65,6 +82,27 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
   return gk;
 }
+
+#else
+  
+gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
+
+  auto mesh = sigma.mesh();
+  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
+  gk_iw_t gk =
+      make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+
+  for (auto const &k : ek.mesh())
+    for (auto const &w : mesh) gk[w, k] = inverse((w + mu)*I - ek(k) - sigma[w]);
+
+  return gk;
+}
+
+#endif
+
+// ----------------------------------------------------
+  
+#ifdef TPRF_OMP
 
 gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
@@ -103,7 +141,9 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
   return gwr;
 }
 
-gr_iw_t gr_from_gk_serial(gk_iw_vt gwk) {
+#else
+  
+gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
   auto [wmesh, kmesh] = gwk.mesh();
   auto rmesh = make_adjoint_mesh(kmesh);
@@ -116,6 +156,12 @@ gr_iw_t gr_from_gk_serial(gk_iw_vt gwk) {
   return gwr;
 }
 
+#endif
+
+// ----------------------------------------------------
+
+#ifdef TPRF_OMP
+  
 gk_iw_t gk_from_gr(gr_iw_vt gwr) {
 
   auto _ = var_t{};
@@ -153,7 +199,9 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   return gwk;
 }
 
-gk_iw_t gk_from_gr_serial(gr_iw_vt gwr) {
+#else
+  
+gk_iw_t gk_from_gr(gr_iw_vt gwr) {
 
   auto [wmesh, rmesh] = gwr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
@@ -165,10 +213,14 @@ gk_iw_t gk_from_gr_serial(gr_iw_vt gwr) {
   
   return gwk;
 }
+
+#endif
   
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
 
+#ifdef TPRF_OMP
+  
 gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   auto wmesh = std::get<0>(grw.mesh());
@@ -215,7 +267,9 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
   return grt;
 }
 
-gr_tau_t grt_from_grw_serial(gr_iw_vt grw, int ntau) {
+#else
+  
+gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   auto wmesh = std::get<0>(grw.mesh());
   auto rmesh = std::get<1>(grw.mesh());
@@ -234,4 +288,6 @@ gr_tau_t grt_from_grw_serial(gr_iw_vt grw, int ntau) {
   return grt;
 }
 
+#endif
+  
 } // namespace tprf
