@@ -12,46 +12,27 @@ from pytriqs.archive import HDFArchive
 from pytriqs.gf import MeshBrillouinZone, Idx
 
 # ----------------------------------------------------------------------
-def plot_chi(chi):
+def plot_chi(chi, title):
 
-    bzmesh = chi.mesh.components[1]
-
-    k_vec = np.array([k.value / (2. * np.pi) for k in bzmesh])
-    k_vec = k_vec[:, :2]
-
+    chi = chi[Idx(0), :] # zero frequency
+    
     # -- Contract Sz Sz response
     Sz = np.diag([+0.5, -0.5])
-    chi_SzSz = chi[0, 0, 0, 0].copy()
-    chi_SzSz.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, Sz, Sz)[:, :, None, None, None, None]
+    chi_k = chi[0, 0, 0, 0].copy()
+    chi_k.data[:] = np.einsum('qabcd,ab,cd->q', chi.data, Sz, Sz)
 
-    values = np.squeeze(chi_SzSz[Idx(0), :].data.real)
-    print values.shape
-
-    # -- Extend with points beyond the first bz
-    k_vec_ext = []
-    values_ext = []
-    for k_shift in [(0,0), (-1,0), (0, -1), (-1, -1)]:
-        k_vec_ext.append( k_vec + np.array(k_shift)[None, :] )
-        values_ext.append(values)
-
-    k_vec = np.vstack(k_vec_ext)
-    values = np.hstack(values_ext)
-
-    k = np.linspace(-0.75, 0.75, num=1000)
+    k = np.linspace(-0.75, 0.75, num=100) * 2. * np.pi
     Kx, Ky = np.meshgrid(k, k)
-    
-    interp = griddata(k_vec, values, (Kx, Ky), method='nearest')
-    #interp = griddata(k_vec, values, (Kx, Ky), method='linear')
-    #interp = griddata(k_vec, values, (Kx, Ky), method='cubic')
+
+    interp = np.vectorize(lambda kx, ky : chi_k([kx, ky, 0]).real)    
+    interp = interp(Kx, Ky)
 
     plt.imshow(
         interp, cmap=plt.get_cmap('magma'),
         extent=(k.min(), k.max(), k.min(), k.max()),
-        origin='lower',
-        vmin=0, vmax=interp.max(),
-        )
+        origin='lower', vmin=0, vmax=interp.max())
 
-    plt.title(r'Lindhardt spin-response $\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$')
+    plt.title(title)
     plt.xlabel(r'$\frac{a}{2\pi} \cdot k_x$')
     plt.ylabel(r'$\frac{a}{2\pi} \cdot k_y$')
     plt.colorbar()
@@ -59,21 +40,21 @@ def plot_chi(chi):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
 
-    filename = 'data_ek_and_chi00wq.h5'
+    filename = 'data_e_k_and_chi00_wk.h5'
     
     with HDFArchive(filename, 'r') as arch:
-        chi = arch['chi00wq']
-        chi_imtime = arch['chi00wq_imtime']
+        chi00_wk = arch['chi00_wk']
+        chi00_wk_analytic = arch['chi00_wk_analytic']
 
-    plt.figure(figsize=(6, 3))
+    plt.figure(figsize=(8, 3))
 
     subp = [1, 2, 1]
 
     plt.subplot(*subp); subp[-1] += 1
-    plot_chi(chi)
+    plot_chi(chi00_wk, title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (imtime)')
 
     plt.subplot(*subp); subp[-1] += 1
-    plot_chi(chi_imtime)
+    plot_chi(chi00_wk_analytic, title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (analytic)')
     
     plt.tight_layout()
     plt.savefig('figure_lindhardt_SzSz_square_latt.pdf')

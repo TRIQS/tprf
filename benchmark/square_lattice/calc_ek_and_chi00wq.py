@@ -37,14 +37,8 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- Discretizations
     
-    #n_k = (128, 128, 1) # need some parallelisation for this... FIXME
-    #n_k = (96, 96, 1)
-    n_k = (64, 64, 1)
-    #n_k = (32, 32, 1)
-    #n_k = (16, 16, 1)
-    #n_k = (6, 6, 1)
-    #n_k = (2, 2, 1)
-    nw = 1
+    n_k = (32, 32, 1)
+    nw = 100
     
     # ------------------------------------------------------------------
     # -- tight binding parameters
@@ -80,42 +74,23 @@ if __name__ == '__main__':
     n_orb = tb_lattice.NOrbitalsInUnitCell
     bz = BrillouinZone(tb_lattice.bl)
     bzmesh = MeshBrillouinZone(bz, periodization_matrix)
-    ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
+    e_k = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
     
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=100)
+    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
 
-    print '--> g0k'
-    g0k = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
+    g0_wk = g0k_from_ek(mu=mu, ek=e_k, mesh=wmesh)
+    g0_wr = gr_from_gk(g0_wk)
+    g0_tr = grt_from_grw(g0_wr)
 
-    print '--> g0r'
-    g0r = gr_from_gk(g0k)
-
-    print '--> grt from grw' 
-    g0rt = grt_from_grw(g0r)
-
-    print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
-    chi00_wr = chi0_w0r_from_grt_PH(g0rt)
-
-    #print '--> chi0_tr_from_grt_PH'
-    #chi00_tr = chi0_tr_from_grt_PH(g0rt)
-
-    #print '--> chi_wr_from_chi_tr'
-    #chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1) # this could be replaced by integral over tau only.
-
-    #print '--> chi_wr_from_chi_tr using np.trapz'
-    #chi00_wr = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
-    
-    print '--> chi_wk_from_chi_wr'
-    chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)
+    chi00_wr = chi0_w0r_from_grt_PH(g0_tr)
+    chi00_wk = chi_wk_from_chi_wr(chi00_wr)
 
     # -- Analytic form
-    
-    print '--> chi00wq'
-    chi00wq = chi00_wk_from_ek(ek, nw, beta, mu)
+    chi00_wk_analytic = chi00_wk_from_ek(ek_in=e_k, nw=1, beta=beta, mu=mu)
 
-    filename = 'data_ek_and_chi00wq.h5'
+    filename = 'data_e_k_and_chi00_wk.h5'
     
     with HDFArchive(filename, 'w') as arch:
-        arch['ek'] = ek
-        arch['chi00wq'] = chi00wq
-        arch['chi00wq_imtime'] = chi00wq_imtime
+        arch['e_k'] = e_k
+        arch['chi00_wk'] = chi00_wk
+        arch['chi00_wk_analytic'] = chi00_wk_analytic
