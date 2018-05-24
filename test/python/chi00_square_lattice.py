@@ -97,23 +97,23 @@ def test_square_lattice_chi00():
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
     lmesh = MeshCyclicLattice(tb_lattice.bl, periodization_matrix)
 
-    print '--> g0k'
+    print '--> g0_wk'
     g0_wk = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
 
-    print '--> g0r'
+    print '--> g0_wr'
     g0_wr = gr_from_gk(g0_wk)
 
+    print '--> g0_tr' 
+    g0_tr = grt_from_grw(g0_wr)
+    
     # ------------------------------------------------------------------
     # -- anaytic chi00
     
     print '--> chi00wq analytic'
-    chi00wq_analytic = chi00_wk_from_ek(ek, nw, beta, mu)
+    chi00_wk_analytic = chi00_wk_from_ek(ek, nw, beta, mu)
 
     # ------------------------------------------------------------------
     # -- imtime chi00
-
-    print '--> grt from grw' 
-    g0_tr = grt_from_grw(g0_wr)
 
     print '--> chi0_tr_from_grt_PH'
     chi00_tr = chi0_tr_from_grt_PH(g0_tr)
@@ -130,35 +130,31 @@ def test_square_lattice_chi00():
     print '--> chi_wr_from_chi_tr using np.trapz'
     chi00_wr_ref2 = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
 
-    def comp(chi):
-        return np.squeeze(chi[:, Idx(0, 0, 0)].data).reshape((4, 4))
-    
-    #print comp(chi00_wr).real
-    #print comp(chi00_wr_ref1).real
-    #print comp(chi00_wr_ref1).real
-    
-    #print comp(chi00_wr).real - comp(chi00_wr_ref1).real
-    
+    #print np.max(np.abs(chi00_wr.data - chi00_wr_opt.data))
     #print np.max(np.abs(chi00_wr.data - chi00_wr_ref1.data))
+    #print np.max(np.abs(chi00_wr.data - chi00_wr_ref2.data))
 
     np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_opt.data, decimal=4)
     np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data, decimal=4)
     np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data, decimal=4)
     
     print '--> chi_wk_from_chi_wr'
-    chi00wq_imtime = chi_wk_from_chi_wr(chi00_wr)
+    chi00_wk_imtime = chi_wk_from_chi_wr(chi00_wr)
     
     # ------------------------------------------------------------------
     # -- imfreq chi00
     
-    print '--> chi00r'
-    chi00r = chi0r_from_gr_PH(nw=nw, nnu=nnu, gr=g0_wr)
+    print '--> chi00_wnr'
+    chi00_wnr = chi0r_from_gr_PH(nw=1, nnu=nnu, gr=g0_wr)
 
-    print '--> chi00q'
-    chi00q = chi0q_from_chi0r(chi00r)
+    print '--> chi00_wnk'
+    chi00_wnk = chi0q_from_chi0r(chi00_wnr)
 
-    print '--> chi00wq'
-    chi00wq_imfreq = chi0q_sum_nu(chi00q)
+    print '--> chi00_wk_imfreq'
+    chi00_wk_imfreq = chi0q_sum_nu(chi00_wnk)
+
+    print '--> chi00_wk_imfreq_tail_corr'
+    chi00_wk_imfreq_tail_corr = chi0q_sum_nu_tail_corr_PH(chi00_wnk)
 
     # ------------------------------------------------------------------
     # -- Compare results
@@ -170,10 +166,13 @@ def test_square_lattice_chi00():
         np.testing.assert_array_almost_equal(chi1, chi2, decimal=decimal)
     
     print '--> Cf analytic with imtime'
-    cf_chi_w0(chi00wq_analytic, chi00wq_imtime, decimal=4)
+    cf_chi_w0(chi00_wk_analytic, chi00_wk_imtime, decimal=7)
 
     print '--> Cf analytic with imfreq'
-    cf_chi_w0(chi00wq_analytic, chi00wq_imfreq, decimal=2)
+    cf_chi_w0(chi00_wk_analytic, chi00_wk_imfreq, decimal=2)
+
+    print '--> Cf analytic with imfreq (tail corr)'
+    cf_chi_w0(chi00_wk_analytic, chi00_wk_imfreq_tail_corr, decimal=5)
     
 # ----------------------------------------------------------------------
 if __name__ == '__main__':

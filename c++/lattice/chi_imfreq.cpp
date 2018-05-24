@@ -102,9 +102,6 @@ chi0q_sum_nu(chi0q_t chi0q) {
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
 
-  std::cout << "--> chi0q_sum_nu_tail_corr_PH: NOT GIVING BETTER CONVERGENCE, "
-               "CHECK ME!\n";
-
   auto mesh = std::get<1>(chi0q.mesh());
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
       {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
@@ -125,16 +122,7 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
         for (auto b : range(nb)) {
           for (auto c : range(nb)) {
             for (auto d : range(nb)) {
-
               auto chi_abcd = slice_target_to_scalar(chi, a, b, c, d);
-
-	      /*
-              auto s = chi_abcd.singularity();
-              s.zero();
-              if (a == d && b == c)
-                s(2) = 1.;
-	      */
-
               chi0q_w[w, q](a, b, c, d) = density(chi_abcd) / beta;
             }
           }
