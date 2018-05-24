@@ -38,24 +38,24 @@ if (DocWithC++2rst)
   # get include paths for the triqs target
   get_property(TRIQS_INCLUDE_DIRS TARGET triqs PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
   foreach(I ${TRIQS_INCLUDE_DIRS})
-   set (INC  ${INC} -I ${I})
+   set (INC  ${INC} --includes ${I})
   endforeach()
 
-  FILE(GLOB_RECURSE all_header_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../c++/*.hpp ../c++/*.mhpp)
+  FILE(GLOB_RECURSE all_header_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../c++/*.hpp ../c++/lattice/*.hpp)
 
   add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log
                       DEPENDS ${all_header_files} 
 		      COMMAND c++2rst
+		      ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp
+                      --output_directory ${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
                       --namespace tprf
-                      ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp 
-                      --output_directory=${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
-                      --includes=${CMAKE_SOURCE_DIR}/c++/
-                      --includes=${TRIQS_ROOT}/include
-		      --includes=/opt/local/include/openmpi-clang50
-		      --cxxflags="-std=c++17"
                       ${INC}		    
+                      --includes ${TRIQS_ROOT}/include
+                      --includes ${CMAKE_SOURCE_DIR}/c++/
+                      --includes ${CMAKE_SOURCE_DIR}/c++/lattice
+		      --cxxflags "-std=c++17 -DFOOBAR"
                       2>&1 > c++2rst.log
-                      )
+		      VERBATIM)
 
   add_custom_target(doc_cpp2doc DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log) 
   add_dependencies(doc_cpp2doc tprf_c) #

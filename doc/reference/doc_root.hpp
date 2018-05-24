@@ -1,3 +1,3 @@
 
-#include <linalg.hpp>
-#include <lattice.hpp>
+#include "../../c++/linalg.hpp"
+#include "../../c++/lattice.hpp"
