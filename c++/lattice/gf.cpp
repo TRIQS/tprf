@@ -117,7 +117,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
   gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
 
   auto w0 = *wmesh.begin();
-  void * p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
+  auto p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
@@ -135,8 +135,6 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
     gwr[w, _] = gr;
 
   }
-
-  _fourier_destroy_plan(p);
 
   return gwr;
 }
@@ -175,7 +173,7 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
 
   auto w0 = *wmesh.begin();
-  void * p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
+  auto p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
@@ -193,8 +191,6 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
     gwk[w, _] = gk;
 
   }
-
-  _fourier_destroy_plan(p);
   
   return gwk;
 }
@@ -239,11 +235,8 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   auto _ = var_t{};
 
-  void * p;
-  {
-    auto r0 = *rmesh.begin();
-    p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
-  }
+  auto r0 = *rmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < rmesh.size(); idx++) {
@@ -262,8 +255,6 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   }
 
-  _fourier_destroy_plan(p);
-  
   return grt;
 }
 
