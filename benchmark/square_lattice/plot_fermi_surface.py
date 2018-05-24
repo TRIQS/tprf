@@ -15,47 +15,26 @@ from pytriqs.gf import MeshBrillouinZone
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
 
-    filename = 'data_ek_and_chi00wq.h5'
+    filename = 'data_e_k_and_chi00_wk.h5'
     
     with HDFArchive(filename, 'r') as arch:
-        ek = arch['ek']
-
-    bzmesh = ek.mesh
-
-    k_vec = np.array([k.value / (2. * np.pi) for k in bzmesh])
-    k_vec = k_vec[:, :2]
-    
-    values = ek.data[:, 0, 0].real
-
-    # -- Extend with points beyond the first bz
-    k_vec_ext = []
-    values_ext = []
-    for k_shift in [(0,0), (-1,0), (0, -1), (-1, -1)]:
-        k_vec_ext.append( k_vec + np.array(k_shift)[None, :] )
-        values_ext.append(values)
-
-    k_vec = np.vstack(k_vec_ext)
-    values = np.hstack(values_ext)
-
-    #k = np.linspace(k_vec.min(), k_vec.max(), num=400)
-    k = np.linspace(-0.5, 0.5, num=400)
+        e_k = arch['e_k']
+            
+    k = np.linspace(-0.5, 0.5, num=200) * 2. * np.pi
     Kx, Ky = np.meshgrid(k, k)
     
-    ek_interp = griddata(k_vec, values, (Kx, Ky), method='cubic')
-
-    fermi_surfs = find_contours(ek_interp, 0.0)
+    e_k_interp = np.vectorize(lambda kx, ky : e_k([kx, ky, 0])[0,0].real)    
+    e_k_interp = e_k_interp(Kx, Ky)
 
     plt.imshow(
-        ek_interp, cmap=plt.get_cmap('RdBu'),
+        e_k_interp, cmap=plt.get_cmap('RdBu'),
         extent=(k.min(), k.max(), k.min(), k.max()),
         origin='lower',
         )
-
-    for fidx, fs in enumerate(fermi_surfs):
-        fs /= ek_interp.shape[0]
-        fs += np.array([k.min()]*2)[None, :]
-        plt.plot(fs[:, 0], fs[:, 1], '-k', lw=0.5)
-
+    plt.colorbar()
+    
+    plt.contour(Kx, Ky, e_k_interp, levels=[0])
+    
     plt.xlabel(r'$\frac{a}{2\pi} \cdot k_x$')
     plt.ylabel(r'$\frac{a}{2\pi} \cdot k_y$')
 
