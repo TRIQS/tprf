@@ -1,0 +1,90 @@
+
+################################################################################
+#
+# TRIQS: a Toolbox for Research in Interacting Quantum Systems
+#
+# Copyright (C) 2011 by M. Ferrero, O. Parcollet
+# Copyright (C) 2018 The Simons Foundation
+# Author: Hugo U. R. Strand
+#
+# TRIQS is free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# TRIQS is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# TRIQS. If not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
+
+import numpy as np
+
+from pytriqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
+from pytriqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
+from pytriqs.lattice.lattice_tools import TightBinding as TightBinding
+
+from pytriqs.lattice.lattice_tools import dos as dos_c
+from pytriqs.lattice.lattice_tools import dos_patch as dos_patch_c
+
+from pytriqs.lattice.lattice_tools import energies_on_bz_grid, energies_on_bz_path, hopping_stack, energy_matrix_on_bz_path
+
+from pytriqs.dos import DOS
+from pytriqs.gf import Gf, MeshBrillouinZone, MeshCyclicLattice
+
+class TBLattice:
+
+    def __init__ (self, units, hopping, orbital_positions = [ (0, 0, 0) ], orbital_names = [""]):
+
+        # the k are int32 which boost python does like to convert 
+        def reg(k) : return tuple( int(x) for x in k) 
+        self._hop = dict ( ( reg(k), np.array(v)) for k, v in hopping.items())
+        orb = dict ( (str(i), orb) for (i, orb) in enumerate(orbital_positions ))
+        self.bl = BravaisLattice(units, orbital_positions)
+        self.bz = BrillouinZone(self.bl)
+        self.tb = TightBinding(self.bl, self._hop) #, orbital_positions )
+        self.dim = self.bl.dim
+        self.NOrbitalsInUnitCell = self.bl.n_orbitals
+        self.Units = units
+        self.OrbitalPositions = orbital_positions 
+        self.OrbitalNames = orbital_names
+        self.MuPattern = np.identity(self.NOrbitalsInUnitCell)
+
+    def latt_to_real_x(self, p) : 
+        return self.bl.lattice_to_real_coordinates (np.array(p, np.float64))
+
+    def hopping_dict(self) : return self._hop
+
+    def hopping(self, k_stack) :
+        return hopping_stack(self.tb, k_stack)
+
+    def periodization_matrix(self, n_k):
+        n_k = np.array(n_k)
+        assert( len(n_k) == 3 )
+        assert( n_k.dtype == np.int )
+        periodization_matrix = np.diag(np.array(list(n_k), dtype=np.int32))
+        return periodization_matrix
+    
+    def get_kmesh(self, n_k):
+        return MeshBrillouinZone(self.bz, self.periodization_matrix(n_k))
+
+    def get_rmesh(self, n_k):
+        return MeshCyclicLattice(self.bl, self.periodization_matrix(n_k))
+    
+    def on_mesh_brillouin_zone(self, n_k):
+
+        target_shape = [self.NOrbitalsInUnitCell] * 2
+
+        kmesh = self.get_kmesh(n_k)
+
+        e_k = Gf(mesh=kmesh, target_shape=target_shape)
+
+        k_vec = np.array([k.value for k in kmesh])
+        k_vec_rel = np.dot(np.linalg.inv(self.bz.units()).T, k_vec.T).T   
+        e_k.data[:] = self.hopping(k_vec_rel.T).transpose(2, 0, 1)
+
+        return e_k
