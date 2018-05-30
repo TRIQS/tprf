@@ -6,8 +6,8 @@ from pytriqs.gf import MeshBrillouinZone, MeshCyclicLattice
 from pytriqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice import gr_from_gk
-from triqs_tprf.lattice import gk_from_gr
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_wk
 
 bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
 
@@ -24,7 +24,7 @@ for k in bzmesh:
 mesh = MeshImFreq(beta=1.0, S='Fermion', n_max=1024)
 g0_wk = lattice_dyson_g0_wk(mu=1.0, e_k=e_k, mesh=mesh)
 
-g0_wr = gr_from_gk(g0_wk)
-g0_wk_ref = gk_from_gr(g0_wr)
+g0_wr = fourier_wk_to_wr(g0_wk)
+g0_wk_ref = fourier_wr_to_wk(g0_wr)
 
 np.testing.assert_array_almost_equal(g0_wk.data, g0_wk_ref.data)

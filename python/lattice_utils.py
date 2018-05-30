@@ -28,8 +28,8 @@ from triqs_tprf.lattice import chi00_wk_from_ek
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
-from triqs_tprf.lattice import gr_from_gk
-from triqs_tprf.lattice import grt_from_grw
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_tr
 
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
 from triqs_tprf.lattice import chi0_w0r_from_grt_PH
@@ -58,7 +58,7 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
     return sigma
 
 # ----------------------------------------------------------------------
-def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
+def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
     print tprf_banner(), "\n"
 
@@ -97,28 +97,28 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
         g_wk = lattice_dyson_g_wk(mu=mu, e_k=e_k, sigma_w=sigma_w)
 
     print '--> gr_from_gk (k->r)'
-    g_wr = gr_from_gk(g_wk)
+    g_wr = fourier_wk_to_wr(g_wk)
     del g_wk
 
     print '--> grt_from_grw (w->tau)' 
-    g_rt = grt_from_grw(g_wr)
+    g_tr = fourier_wr_to_tr(g_wr)
     del g_wr
 
     if sigma is None:
-        return g_rt
+        return g_tr
     else:
-        return g_rt, sigma_w
+        return g_tr, sigma_w
 
 # ----------------------------------------------------------------------
-def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma=None):
+def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
-    if sigma is None:
-        grt = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=sigma)
+    if sigma_w is None:
+        g_tr = bubble_setup(beta, mu, tb_lattice, nk, nw)
     else:
-        grt, sigma_cut = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=sigma)
+        g_tr, sigma_w_cut = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=sigma_w)
     
     print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
-    chi0_wr = chi0_w0r_from_grt_PH(grt)
+    chi0_wr = chi0_w0r_from_grt_PH(g_tr)
     del grt
 
     print '--> chi_wk_from_chi_wr (r->k)'
@@ -128,7 +128,7 @@ def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma=None):
     if sigma is None:
         return chi0_wk
     else:
-        return chi0_wk, sigma_cut
+        return chi0_wk, sigma_w_cut
 
 # ----------------------------------------------------------------------
 def ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz):

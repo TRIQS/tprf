@@ -32,32 +32,32 @@ namespace tprf {
 
 #ifdef TPRF_OMP
 
-gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
+gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 
-  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
-  gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
   
 #pragma omp parallel for 
   for (int idx = 0; idx < ek.mesh().size(); idx++) {
-    auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
+    auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
     
-    for (auto const &w : mesh) g0k[w, k] = inverse((w + mu)*I - ek(k));
+    for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
   }
 
-  return g0k;
+  return g0_wk;
 }
 
 #else
   
-gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
+gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 
-  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
-  gk_iw_t g0k = make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
   
-  for (auto const &k : ek.mesh())
-    for (auto const &w : mesh) g0k[w, k] = inverse((w + mu)*I - ek(k));
+  for (auto const &k : e_k.mesh())
+    for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
 
-  return g0k;
+  return g0_wk;
 }
 
 #endif
@@ -66,36 +66,36 @@ gk_iw_t g0k_from_ek(double mu, ek_vt ek, g_iw_t::mesh_t mesh) {
   
 #ifdef TPRF_OMP
 
-gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
+gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
 
-  auto mesh = sigma.mesh();
-  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
-  gk_iw_t gk =
-      make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+  auto mesh = sigma_w.mesh();
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g_wk =
+      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
 
 #pragma omp parallel for 
   for (int idx = 0; idx < ek.mesh().size(); idx++) {
-    auto iter = ek.mesh().begin(); iter += idx; auto k = *iter;
+    auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
     
-    for (auto const &w : mesh) gk[w, k] = inverse((w + mu)*I - ek(k) - sigma[w]);
+    for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
   }
 
-  return gk;
+  return g_wk;
 }
 
 #else
   
-gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
+gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
 
-  auto mesh = sigma.mesh();
-  auto I = make_unit_matrix<ek_vt::scalar_t>(ek.target_shape()[0]);
-  gk_iw_t gk =
-      make_gf<gk_iw_t::mesh_t::var_t>({mesh, ek.mesh()}, ek.target());
+  auto mesh = sigma_w.mesh();
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g_wk =
+      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
 
-  for (auto const &k : ek.mesh())
-    for (auto const &w : mesh) gk[w, k] = inverse((w + mu)*I - ek(k) - sigma[w]);
+  for (auto const &k : e_k.mesh())
+    for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
 
-  return gk;
+  return g_wk;
 }
 
 #endif
@@ -104,54 +104,54 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
   
 #ifdef TPRF_OMP
 
-gr_iw_t gr_from_gk(gk_iw_vt gwk) {
+gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
   auto _ = all_t{};
-  auto target = gwk.target();
+  auto target = g_wk.target();
 
-  //const auto & [ wmesh, kmesh ] = gwk.mesh();
-  auto wmesh = std::get<0>(gwk.mesh());
-  auto kmesh = std::get<1>(gwk.mesh());
+  //const auto & [ wmesh, kmesh ] = g_wk.mesh();
+  auto wmesh = std::get<0>(g_wk.mesh());
+  auto kmesh = std::get<1>(g_wk.mesh());
   auto rmesh = make_adjoint_mesh(kmesh);
 
-  gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
+  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
 
   auto w0 = *wmesh.begin();
-  auto p = _fourier_plan<0>(gf_const_view(gwk[w0, _]), gf_view(gwr[w0, _]));
+  auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
     auto iter = wmesh.begin(); iter += idx; auto w = *iter;
 
-    auto gr = make_gf<cyclic_lattice>(rmesh, target);
-    auto gk = make_gf<brillouin_zone>(kmesh, target);
+    auto g_r = make_gf<cyclic_lattice>(rmesh, target);
+    auto g_k = make_gf<brillouin_zone>(kmesh, target);
 
 #pragma omp critical
-    gk = gwk[w, _];
+    g_k = g_wk[w, _];
 
-    _fourier_with_plan<0>(gf_const_view(gk), gf_view(gr), p);
+    _fourier_with_plan<0>(gf_const_view(g_k), gf_view(g_r), p);
 
 #pragma omp critical
-    gwr[w, _] = gr;
+    g_wr[w, _] = g_r;
 
   }
 
-  return gwr;
+  return g_wr;
 }
 
 #else
   
-gr_iw_t gr_from_gk(gk_iw_vt gwk) {
+gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
-  auto [wmesh, kmesh] = gwk.mesh();
+  auto [wmesh, kmesh] = g_wk.mesh();
   auto rmesh = make_adjoint_mesh(kmesh);
 
-  gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, gwk.target());
+  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, g_wk.target());
 
   auto _ = all_t{};
-  for (auto const &w : wmesh) gwr[w, _]() = fourier(gwk[w, _]);
+  for (auto const &w : wmesh) g_wr[w, _]() = fourier(g_wk[w, _]);
 
-  return gwr;
+  return g_wr;
 }
 
 #endif
@@ -160,54 +160,54 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
 #ifdef TPRF_OMP
   
-gk_iw_t gk_from_gr(gr_iw_vt gwr) {
+gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
 
   auto _ = all_t{};
-  auto target = gwr.target();
+  auto target = g_wr.target();
 
-  //auto [wmesh, rmesh] = gwr.mesh();
-  auto wmesh = std::get<0>(gwr.mesh());
-  auto rmesh = std::get<1>(gwr.mesh());
+  //auto [wmesh, rmesh] = g_wr.mesh();
+  auto wmesh = std::get<0>(g_wr.mesh());
+  auto rmesh = std::get<1>(g_wr.mesh());
   auto kmesh = make_adjoint_mesh(rmesh);
   
-  gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
+  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
 
   auto w0 = *wmesh.begin();
-  auto p = _fourier_plan<0>(gf_const_view(gwr[w0, _]), gf_view(gwk[w0, _]));
+  auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
     auto iter = wmesh.begin(); iter += idx; auto w = *iter;
 
-    auto gr = make_gf<cyclic_lattice>(rmesh, target);
-    auto gk = make_gf<brillouin_zone>(kmesh, target);
+    auto g_r = make_gf<cyclic_lattice>(rmesh, target);
+    auto g_k = make_gf<brillouin_zone>(kmesh, target);
 
 #pragma omp critical
-    gr = gwr[w, _];
+    g_r = g_wr[w, _];
 
-    _fourier_with_plan<0>(gf_const_view(gr), gf_view(gk), p);
+    _fourier_with_plan<0>(gf_const_view(g_r), gf_view(g_k), p);
 
 #pragma omp critical
-    gwk[w, _] = gk;
+    g_wk[w, _] = g_k;
 
   }
   
-  return gwk;
+  return g_wk;
 }
 
 #else
   
-gk_iw_t gk_from_gr(gr_iw_vt gwr) {
+gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
 
-  auto [wmesh, rmesh] = gwr.mesh();
+  auto [wmesh, rmesh] = g_wr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
   
-  gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, gwr.target());
+  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
 
   auto _ = all_t{};
-  for (auto const &w : wmesh) gwk[w, _]() = fourier(gwr[w, _]);
+  for (auto const &w : wmesh) g_wk[w, _]() = fourier(g_wr[w, _]);
   
-  return gwk;
+  return g_wk;
 }
 
 #endif
@@ -217,66 +217,66 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
 
 #ifdef TPRF_OMP
   
-gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
+gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
 
-  auto wmesh = std::get<0>(grw.mesh());
-  auto rmesh = std::get<1>(grw.mesh());
+  auto wmesh = std::get<0>(g_wr.mesh());
+  auto rmesh = std::get<1>(g_wr.mesh());
 
   double beta = wmesh.domain().beta;
   auto S = wmesh.domain().statistic;
 
   int nw = wmesh.last_index() + 1;
-  if( ntau <= 0 ) ntau = 4 * nw;
+  if( nt <= 0 ) nt = 4 * nw;
 
-  gr_tau_t grt = make_gf<gr_tau_t::mesh_t::var_t>(
-      {{beta, S, ntau}, rmesh}, grw.target());
+  gr_tau_t g_tr = make_gf<gr_tau_t::mesh_t::var_t>(
+      {{beta, S, nt}, rmesh}, g_wr.target());
 
-  auto tmesh = std::get<0>(grt.mesh());
+  auto tmesh = std::get<0>(g_rt.mesh());
 
   auto _ = all_t{};
 
   auto r0 = *rmesh.begin();
-  auto p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
+  auto p = _fourier_plan<0>(gf_const_view(g_wr[_, r0]), gf_view(g_tr[_, r0]));
 
 #pragma omp parallel for 
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-    auto gw = make_gf<imfreq>(wmesh, grw.target());
-    auto gt = make_gf<imtime>(tmesh, grw.target());
+    auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
+    auto g_t = make_gf<imtime>(tmesh, g_wr.target());
 
 #pragma omp critical
-    gw = grw[_, r];
+    g_w = g_wr[_, r];
 
-    _fourier_with_plan<0>(gf_const_view(gw), gf_view(gt), p);
+    _fourier_with_plan<0>(gf_const_view(g_w), gf_view(g_t), p);
 
 #pragma omp critical
-    grt[_, r] = gt;
+    g_tr[_, r] = g_t;
 
   }
 
-  return grt;
+  return g_tr;
 }
 
 #else
   
-gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
+gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
 
-  auto wmesh = std::get<0>(grw.mesh());
-  auto rmesh = std::get<1>(grw.mesh());
+  auto wmesh = std::get<0>(g_wr.mesh());
+  auto rmesh = std::get<1>(g_wr.mesh());
 
   double beta = wmesh.domain().beta;
 
   int nw = wmesh.last_index() + 1;
-  if( ntau <= 0 ) ntau = 4 * nw;
+  if( nt <= 0 ) nt = 4 * nw;
 
-  gr_tau_t grt = make_gf<gr_tau_t::mesh_t::var_t>(
-    {{beta, wmesh.domain().statistic, ntau}, rmesh}, grw.target());
+  gr_tau_t g_tr = make_gf<gr_tau_t::mesh_t::var_t>(
+    {{beta, wmesh.domain().statistic, nt}, rmesh}, g_wr.target());
 
   auto _ = all_t{};
-  for (auto const &r : rmesh) grt[_, r]() = fourier<0>(grw[_, r]);
+  for (auto const &r : rmesh) g_tr[_, r]() = fourier<0>(g_wr[_, r]);
 
-  return grt;
+  return g_tr;
 }
 
 #endif

@@ -56,7 +56,7 @@ TEST(lattice, chi0_wk_to_from_chi0_wr) {
  sigma_w(om_) << 1./om_;
  
  auto g_wk = lattice_dyson_g_wk(mu, e_k, sigma_w);
- auto g_wr = gr_from_gk(g_wk);
+ auto g_wr = fourier_wk_to_wr(g_wk);
  
  auto chi0_wr = chi0r_from_gr_PH(nw, nnu, g_wr);
  auto chi0_wk = chi0q_from_chi0r(chi0_wr);

@@ -37,12 +37,13 @@ module.add_function("array<std::complex<double>, 6> cluster_mesh_fourier_interpo
 module.add_function("gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh)", doc = """""")
 module.add_function("gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, gf_view<imfreq, matrix_valued> sigma_w)", doc = """""")
 
-module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)", doc = """""")
-module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
+module.add_function("gr_iw_t fourier_wk_to_wr(gf_view<cartesian_product<imfreq, brillouin_zone>> g_k)", doc = """""")
+module.add_function("gk_iw_t fourier_wr_to_wk(gf_view<cartesian_product<imfreq, cyclic_lattice>> g_r)", doc = """""")
+module.add_function("gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int ntau=-1)", doc = """""")
+
 
 # -- Bubble in imaginary time
 
-module.add_function("gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau=-1)", doc = """""")
 module.add_function("chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt)", doc = """""")
 module.add_function("chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt)", doc = """""")
 module.add_function("chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")

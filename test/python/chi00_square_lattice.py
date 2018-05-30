@@ -14,8 +14,9 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.lattice import gr_from_gk
-from triqs_tprf.lattice import grt_from_grw
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_tr
+
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
 from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
@@ -87,10 +88,10 @@ def test_square_lattice_chi00():
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     print '--> g0_wr'
-    g0_wr = gr_from_gk(g0_wk)
+    g0_wr = fourier_wk_to_wr(g0_wk)
 
     print '--> g0_tr' 
-    g0_tr = grt_from_grw(g0_wr)
+    g0_tr = fourier_wr_to_tr(g0_wr)
     
     # ------------------------------------------------------------------
     # -- anaytic chi00

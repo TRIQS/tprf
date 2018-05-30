@@ -49,8 +49,8 @@ TEST(lattice, g0_wk_to_from_g0_wr) {
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
  auto g0_wk = lattice_dyson_g0_wk(mu, e_k, mesh);
 
- auto g0_wr = gr_from_gk(g0_wk);
- auto g0_wk_ref = gk_from_gr(g0_wr);
+ auto g0_wr = fourier_wk_to_wr(g0_wk);
+ auto g0_wk_ref = fourier_wr_to_wk(g0_wr);
 
  EXPECT_ARRAY_NEAR(g0_wk.data(), g0_wk_ref.data()); 
 }
@@ -77,8 +77,8 @@ TEST(lattice, g_wk_to_from_g_wr) {
  
  auto g_wk = lattice_dyson_g_wk(mu, e_k, sigma_w);
 
- auto g_wr = gr_from_gk(g_wk);
- auto g_wk_ref = gk_from_gr(g_wr);
+ auto g_wr = fourier_wk_to_wr(g_wk);
+ auto g_wk_ref = fourier_wr_to_wk(g_wr);
 
  EXPECT_ARRAY_NEAR(g_wk.data(), g_wk_ref.data()); 
 }
