@@ -23,7 +23,7 @@ if __name__ == '__main__':
     k = np.linspace(-0.5, 0.5, num=200) * 2. * np.pi
     Kx, Ky = np.meshgrid(k, k)
     
-    e_k_interp = np.vectorize(lambda kx, ky : e_k([kx, ky, 0])[0,0].real)    
+    e_k_interp = np.vectorize(lambda kx, ky : e_k([kx, ky, 0])[0, 0].real)    
     e_k_interp = e_k_interp(Kx, Ky)
 
     plt.imshow(

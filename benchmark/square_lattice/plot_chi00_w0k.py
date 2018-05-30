@@ -14,13 +14,8 @@ from pytriqs.gf import MeshBrillouinZone, Idx
 # ----------------------------------------------------------------------
 def plot_chi(chi, title):
 
-    chi = chi[Idx(0), :] # zero frequency
+    chi_k = chi[Idx(0), :][0, 0, 0, 0] # zero frequency, and scalar
     
-    # -- Contract Sz Sz response
-    Sz = np.diag([+0.5, -0.5])
-    chi_k = chi[0, 0, 0, 0].copy()
-    chi_k.data[:] = np.einsum('qabcd,ab,cd->q', chi.data, Sz, Sz)
-
     k = np.linspace(-0.75, 0.75, num=100) * 2. * np.pi
     Kx, Ky = np.meshgrid(k, k)
 
@@ -51,10 +46,12 @@ if __name__ == '__main__':
     subp = [1, 2, 1]
 
     plt.subplot(*subp); subp[-1] += 1
-    plot_chi(chi00_wk, title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (imtime)')
+    plot_chi(chi00_wk,
+             title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (imtime)')
 
     plt.subplot(*subp); subp[-1] += 1
-    plot_chi(chi00_wk_analytic, title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (analytic)')
+    plot_chi(chi00_wk_analytic,
+             title=r'$\chi^{00}_{S_z S_z}(\mathbf{q}, \omega=0)$ (analytic)')
     
     plt.tight_layout()
     plt.savefig('figure_lindhardt_SzSz_square_latt.pdf')
