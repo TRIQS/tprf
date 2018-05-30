@@ -31,7 +31,7 @@ using namespace triqs::lattice;
 #include "lattice.hpp"
 using namespace tprf;
 
-TEST(lattice, g0k_to_from_g0r) {
+TEST(lattice, g0_wk_to_from_g0_wr) {
  double beta = 100.0;
  int n_iw = 1025;
 
@@ -42,20 +42,20 @@ TEST(lattice, g0k_to_from_g0r) {
  triqs::clef::placeholder<0> om_;
  triqs::clef::placeholder<1> k_;
 
- auto ek = ek_t{{bz, nk}, {1, 1}};
- ek(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
+ auto e_k = ek_t{{bz, nk}, {1, 1}};
+ e_k(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
 
  double mu = 0.;
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
- auto g0k = g0k_from_ek(mu, ek, mesh);
+ auto g0_wk = lattice_dyson_g0_wk(mu, e_k, mesh);
 
- auto g0r = gr_from_gk(g0k);
- auto g0k_ref = gk_from_gr(g0r);
+ auto g0_wr = gr_from_gk(g0_wk);
+ auto g0_wk_ref = gk_from_gr(g0_wr);
 
- EXPECT_ARRAY_NEAR(g0k.data(), g0k_ref.data()); 
+ EXPECT_ARRAY_NEAR(g0_wk.data(), g0_wk_ref.data()); 
 }
 
-TEST(lattice, gk_to_from_gr) {
+TEST(lattice, g_wk_to_from_g_wr) {
  double beta = 100.0;
  int n_iw = 1025;
 
@@ -66,21 +66,21 @@ TEST(lattice, gk_to_from_gr) {
  triqs::clef::placeholder<0> om_;
  triqs::clef::placeholder<1> k_;
 
- auto ek = ek_t{{bz, nk}, {1, 1}};
- ek(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
+ auto e_k = ek_t{{bz, nk}, {1, 1}};
+ e_k(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
 
  double mu = 0.;
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
 
- auto sigma = g_iw_t{mesh, {1, 1}};
- sigma(om_) << 1./om_;
+ auto sigma_w = g_iw_t{mesh, {1, 1}};
+ sigma_w(om_) << 1./om_;
  
- auto gk = gk_from_ek_sigma(mu, ek, sigma);
+ auto g_wk = lattice_dyson_g_wk(mu, e_k, sigma_w);
 
- auto gr = gr_from_gk(gk);
- auto gk_ref = gk_from_gr(gr);
+ auto g_wr = gr_from_gk(g_wk);
+ auto g_wk_ref = gk_from_gr(g_wr);
 
- EXPECT_ARRAY_NEAR(gk.data(), gk_ref.data()); 
+ EXPECT_ARRAY_NEAR(g_wk.data(), g_wk_ref.data()); 
 }
 
 MAKE_MAIN;

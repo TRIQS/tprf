@@ -25,8 +25,8 @@ from triqs_tprf.logo import tprf_banner
 
 from triqs_tprf.lattice import chi00_wk_from_ek
 
-from triqs_tprf.lattice import g0k_from_ek
-from triqs_tprf.lattice import gk_from_ek_sigma
+from triqs_tprf.lattice import lattice_dyson_g0_wk
+from triqs_tprf.lattice import lattice_dyson_g_wk
 
 from triqs_tprf.lattice import gr_from_gk
 from triqs_tprf.lattice import grt_from_grw
@@ -85,29 +85,29 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma=None):
     bzmesh = MeshBrillouinZone(bz, periodization_matrix)
 
     print '--> ek'
-    ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
+    e_k = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
 
     if sigma is None:
         print '--> g0k'
         wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
-        gwk = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
+        g_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
     else:
         print '--> gk'
-        sigma = strip_sigma(nw, beta, sigma)
-        gwk = gk_from_ek_sigma(mu=mu, ek=ek, sigma=sigma)
+        sigma_w = strip_sigma(nw, beta, sigma)
+        g_wk = lattice_dyson_g_wk(mu=mu, e_k=e_k, sigma_w=sigma_w)
 
     print '--> gr_from_gk (k->r)'
-    gwr = gr_from_gk(gwk)
-    del gwk
+    g_wr = gr_from_gk(g_wk)
+    del g_wk
 
     print '--> grt_from_grw (w->tau)' 
-    grt = grt_from_grw(gwr)
-    del gwr
+    g_rt = grt_from_grw(g_wr)
+    del g_wr
 
     if sigma is None:
-        return grt
+        return g_rt
     else:
-        return grt, sigma
+        return g_rt, sigma_w
 
 # ----------------------------------------------------------------------
 def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma=None):

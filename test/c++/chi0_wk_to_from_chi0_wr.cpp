@@ -31,7 +31,7 @@ using namespace triqs::lattice;
 #include "lattice.hpp"
 using namespace tprf;
 
-TEST(lattice, chi0k_to_from_chi0r) {
+TEST(lattice, chi0_wk_to_from_chi0_wr) {
 
  double beta = 100.0;
  int n_iw = 1028;
@@ -46,23 +46,23 @@ TEST(lattice, chi0k_to_from_chi0r) {
  triqs::clef::placeholder<0> om_;
  triqs::clef::placeholder<1> k_;
 
- auto ek = ek_t{{bz, nk}, {1, 1}};
- ek(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
+ auto e_k = ek_t{{bz, nk}, {1, 1}};
+ e_k(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
 
  double mu = 0.;
  auto mesh = g_iw_t::mesh_t{beta, Fermion, n_iw};
 
- auto sigma = g_iw_t{mesh, {1, 1}};
- sigma(om_) << 1./om_;
+ auto sigma_w = g_iw_t{mesh, {1, 1}};
+ sigma_w(om_) << 1./om_;
  
- auto gk = gk_from_ek_sigma(mu, ek, sigma);
- auto gr = gr_from_gk(gk);
+ auto g_wk = lattice_dyson_g_wk(mu, e_k, sigma_w);
+ auto g_wr = gr_from_gk(g_wk);
  
- auto chi0r = chi0r_from_gr_PH(nw, nnu, gr);
- auto chi0q = chi0q_from_chi0r(chi0r);
- auto chi0r_ref = chi0r_from_chi0q(chi0q);
+ auto chi0_wr = chi0r_from_gr_PH(nw, nnu, g_wr);
+ auto chi0_wk = chi0q_from_chi0r(chi0_wr);
+ auto chi0_wr_ref = chi0r_from_chi0q(chi0_wk);
 
- EXPECT_ARRAY_NEAR(chi0r.data(), chi0r_ref.data()); 
+ EXPECT_ARRAY_NEAR(chi0_wr.data(), chi0_wr_ref.data()); 
 }
 
 MAKE_MAIN;

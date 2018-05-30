@@ -23,7 +23,3 @@ r"""
 DOC
 
 """
-
-from lattice import g0k_from_ek
-
-__all__ = ['g0k_from_ek']

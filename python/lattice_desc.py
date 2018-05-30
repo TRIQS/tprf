@@ -34,8 +34,8 @@ using namespace tprf;
 module.add_function("array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi)", doc = """""")
 
 
-module.add_function("gk_iw_t g0k_from_ek(double mu, gf_view<brillouin_zone, matrix_valued> ek, gf_mesh<imfreq> mesh)", doc = """""")
-module.add_function("gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, gf_view<imfreq, matrix_valued> sigma)", doc = """""")
+module.add_function("gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh)", doc = """""")
+module.add_function("gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, gf_view<imfreq, matrix_valued> sigma_w)", doc = """""")
 
 module.add_function("gr_iw_t gr_from_gk(gf_view<cartesian_product<imfreq, brillouin_zone>> gk)", doc = """""")
 module.add_function("gk_iw_t gk_from_gr(gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")

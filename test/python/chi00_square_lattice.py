@@ -5,26 +5,16 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.lattice import BrillouinZone, BravaisLattice
-from pytriqs.lattice.tight_binding import TBLattice
-
-from pytriqs.gf import MeshBrillouinZone
-from pytriqs.gf import MeshCyclicLattice
-from pytriqs.gf import MeshProduct
-from pytriqs.gf import Gf, MeshImFreq, Idx
+from pytriqs.gf import MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.lattice import g0k_from_ek
+from triqs_tprf.tight_binding import TBLattice
+from triqs_tprf.lattice import lattice_dyson_g0_wk
+
+# ----------------------------------------------------------------------
+
 from triqs_tprf.lattice import gr_from_gk
-from triqs_tprf.lattice_utils import ek_tb_dispersion_on_bzmesh
-
-# ----------------------------------------------------------------------
-
-from triqs_tprf.lattice import chi00_wk_from_ek
-
-# ----------------------------------------------------------------------
-
 from triqs_tprf.lattice import grt_from_grw
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
 from triqs_tprf.lattice import chi0_w0r_from_grt_PH
@@ -33,6 +23,8 @@ from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
 
 from triqs_tprf.lattice_utils import chi_w0r_from_chi_tr_np_trapz
+
+from triqs_tprf.lattice import chi00_wk_from_ek
 
 # ----------------------------------------------------------------------
 
@@ -72,11 +64,8 @@ def test_square_lattice_chi00():
     # ------------------------------------------------------------------
     # -- tight binding
     
-    periodization_matrix = np.diag(np.array(list(n_k), dtype=np.int32))
-    print 'periodization_matrix =\n', periodization_matrix
-
     print '--> tight binding model'
-    tb_lattice = TBLattice(
+    t_r = TBLattice(
         units = [(1, 0, 0), (0, 1, 0)],
         hopping = {
             # nearest neighbour hopping -t
@@ -90,15 +79,12 @@ def test_square_lattice_chi00():
         orbital_names = ['up_0', 'do_0'],
         )
 
-    bz = BrillouinZone(tb_lattice.bl)
-    bzmesh = MeshBrillouinZone(bz, periodization_matrix)
-    ek = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
+    e_k = t_r.on_mesh_brillouin_zone(n_k)
     
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
-    lmesh = MeshCyclicLattice(tb_lattice.bl, periodization_matrix)
 
     print '--> g0_wk'
-    g0_wk = g0k_from_ek(mu=mu, ek=ek, mesh=wmesh)
+    g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     print '--> g0_wr'
     g0_wr = gr_from_gk(g0_wk)
@@ -110,7 +96,7 @@ def test_square_lattice_chi00():
     # -- anaytic chi00
     
     print '--> chi00wq analytic'
-    chi00_wk_analytic = chi00_wk_from_ek(ek, nw, beta, mu)
+    chi00_wk_analytic = chi00_wk_from_ek(e_k, nw, beta, mu)
 
     # ------------------------------------------------------------------
     # -- imtime chi00
