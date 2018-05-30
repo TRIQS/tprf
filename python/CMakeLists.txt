@@ -49,6 +49,8 @@ install(TARGETS hubbard_atom DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python
 # Install utilities
 install(FILES logo.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+install(FILES wannier90.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+
 install(FILES lattice_utils.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES ParameterCollection.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
