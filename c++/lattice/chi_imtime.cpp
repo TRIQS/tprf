@@ -221,4 +221,22 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
   return chi_wk;
 }
 
+chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
+
+  int nb = chi_wk.target().shape()[0];
+
+  auto wmesh = std::get<0>(chi_wk.mesh());
+  auto kmesh = std::get<1>(chi_wk.mesh());
+
+  auto rmesh = gf_mesh<cyclic_lattice>{bravais_lattice{kmesh.domain()}, kmesh.periodization_matrix};
+  
+  chi_wr_t chi_wr{{wmesh, rmesh}, {nb, nb, nb, nb}};
+
+  auto _ = all_t{};
+  for (auto const &w : wmesh)
+    chi_wr[w, _] = fourier(chi_wk[w, _]);
+
+  return chi_wr;
+}
+  
 } // namespace tprf

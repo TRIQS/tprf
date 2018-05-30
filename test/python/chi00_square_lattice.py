@@ -22,10 +22,10 @@ from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
-
-from triqs_tprf.lattice_utils import chi_w0r_from_chi_tr_np_trapz
+from triqs_tprf.lattice import chi_wr_from_chi_wk
 
 from triqs_tprf.lattice import lindhard_chi00_wk
+from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 # ----------------------------------------------------------------------
 
@@ -96,38 +96,48 @@ def test_square_lattice_chi00():
     # ------------------------------------------------------------------
     # -- anaytic chi00
     
-    print '--> chi00wq analytic'
+    print '--> chi00_wk analytic'
     chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
 
+    print '--> chi00_wr analytic'
+    chi00_wr_analytic = chi_wr_from_chi_wk(chi00_wk_analytic)
+    
     # ------------------------------------------------------------------
     # -- imtime chi00
 
     print '--> chi0_tr_from_grt_PH'
     chi00_tr = chi0_tr_from_grt_PH(g0_tr)
-
-    print '--> chi0_tr_from_grt_PH'
-    chi00_wr_opt = chi0_w0r_from_grt_PH(g0_tr)
     
     print '--> chi_wr_from_chi_tr'
     chi00_wr = chi_wr_from_chi_tr(chi00_tr, nw=1)
 
     print '--> chi_w0r_from_chi_tr'
-    chi00_wr_ref1 = chi_w0r_from_chi_tr(chi00_tr)
+    chi00_wr_ref = chi_w0r_from_chi_tr(chi00_tr)
 
-    print '--> chi_wr_from_chi_tr using np.trapz'
-    chi00_wr_ref2 = chi_w0r_from_chi_tr_np_trapz(chi00_tr)
+    print '--> chi0_w0r_from_grt_PH'
+    chi00_wr_opt = chi0_w0r_from_grt_PH(g0_tr)
 
-    #print np.max(np.abs(chi00_wr.data - chi00_wr_opt.data))
-    #print np.max(np.abs(chi00_wr.data - chi00_wr_ref1.data))
-    #print np.max(np.abs(chi00_wr.data - chi00_wr_ref2.data))
+    print 'dchi00_wr     =', np.max(np.abs(chi00_wr_analytic.data - chi00_wr.data))
+    print 'dchi00_wr_ref =', np.max(np.abs(chi00_wr_analytic.data - chi00_wr_ref.data))
+    print 'dchi00_wr_opt =', np.max(np.abs(chi00_wr_analytic.data - chi00_wr_opt.data))
 
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_opt.data, decimal=4)
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref1.data, decimal=4)
-    np.testing.assert_array_almost_equal(chi00_wr.data, chi00_wr_ref2.data, decimal=4)
-    
+    np.testing.assert_array_almost_equal(
+        chi00_wr_analytic.data, chi00_wr.data, decimal=8)
+
+    np.testing.assert_array_almost_equal(
+        chi00_wr_analytic.data, chi00_wr_ref.data, decimal=4)
+
+    np.testing.assert_array_almost_equal(
+        chi00_wr_analytic.data, chi00_wr_opt.data, decimal=4)
+
     print '--> chi_wk_from_chi_wr'
     chi00_wk_imtime = chi_wk_from_chi_wr(chi00_wr)
     
+    # ------------------------------------------------------------------
+    # -- imtime chi00 helper function
+
+    chi00_wk_imtime_2 = imtime_bubble_chi0_wk(g0_wk, nw=1)    
+
     # ------------------------------------------------------------------
     # -- imfreq chi00
     
@@ -155,6 +165,9 @@ def test_square_lattice_chi00():
     print '--> Cf analytic with imtime'
     cf_chi_w0(chi00_wk_analytic, chi00_wk_imtime, decimal=7)
 
+    print '--> Cf analytic with imtime 2'
+    cf_chi_w0(chi00_wk_analytic, chi00_wk_imtime_2, decimal=4)
+    
     print '--> Cf analytic with imfreq'
     cf_chi_w0(chi00_wk_analytic, chi00_wk_imfreq, decimal=2)
 

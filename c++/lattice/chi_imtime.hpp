@@ -63,6 +63,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr);
 chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw);
 
 chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr);
+chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk);
 
 chi_t_t::zero_t chi_trapz_tau(chi_t_vt chi_t);
 

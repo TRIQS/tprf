@@ -49,6 +49,7 @@ module.add_function("chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt)", doc = """"""
 module.add_function("chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr)", doc = """""")
 module.add_function("chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw)", doc = """""")
 module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr)", doc = """""")
+module.add_function("chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk)", doc = """""")
 
 # -- Bubble static analytic
 
