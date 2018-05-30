@@ -23,7 +23,7 @@
 #include "types.hpp"
 
 #include "./lattice/gf.hpp"
-#include "./lattice/lindhardt_chi00.hpp"
+#include "./lattice/lindhard_chi00.hpp"
 #include "./lattice/rpa.hpp"
 #include "./lattice/fourier_interpolation.hpp"
 

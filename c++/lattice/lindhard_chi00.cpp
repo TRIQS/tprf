@@ -22,7 +22,7 @@
 #include <triqs/arrays/linalg/eigenelements.hpp>
 
 #include "common.hpp"
-#include "lindhardt_chi00.hpp"
+#include "lindhard_chi00.hpp"
 
 namespace tprf {
 
@@ -31,21 +31,21 @@ namespace tprf {
 
 double fermi(double e) { return 1. / (exp(e) + 1.); }
 
-chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
+chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued> e_k, int nw,
                           double beta, double mu) {
 
-  auto kmesh = ek_in.mesh();
-  int nb = ek_in.target().shape()[0];
+  auto kmesh = e_k.mesh();
+  int nb = e_k.target().shape()[0];
 
-  chi_wk_t chi{{{beta, Boson, nw}, kmesh}, {nb, nb, nb, nb}};
-  for (auto const & [ w, k ] : chi.mesh())
-    chi[w, k] = 0.;
+  chi_wk_t chi_wk{{{beta, Boson, nw}, kmesh}, {nb, nb, nb, nb}};
+  for (auto const & [ w, k ] : chi_wk.mesh())
+    chi_wk[w, k] = 0.;
 
-  auto wmesh = std::get<0>(chi.mesh());
+  auto wmesh = std::get<0>(chi_wk.mesh());
 
   for (auto const &k : kmesh) {
 
-    std::cout << "kidx, k = " << k.linear_index() << ", " << k << "\n";
+    //std::cout << "kidx, k = " << k.linear_index() << ", " << k << "\n";
 	
     //for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
 
@@ -56,13 +56,13 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
       auto q = *q_iter;
 
       // -- If this is moved out to the k-loop the threading breaks?!?
-      matrix<std::complex<double>> ek_mat(ek_in[k] - mu);
-      auto eig_k = linalg::eigenelements(ek_mat);
+      matrix<std::complex<double>> e_k_mat(e_k[k] - mu);
+      auto eig_k = linalg::eigenelements(e_k_mat);
       auto ek = eig_k.first;
       auto Uk = eig_k.second;
 
-      matrix<std::complex<double>> ekq_mat(ek_in(k + q) - mu);
-      auto eig_kq = linalg::eigenelements(ekq_mat);
+      matrix<std::complex<double>> e_kq_mat(e_k(k + q) - mu);
+      auto eig_kq = linalg::eigenelements(e_kq_mat);
       auto ekq = eig_kq.first;
       auto Ukq = eig_kq.second;
 
@@ -88,8 +88,8 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
               total_factor = beta / (4. * cosh_be * cosh_be);
             }
 
-            chi[w, q](a, b, c, d)
-                << chi[w, q](a, b, c, d) + Uk(i, a) * dagger(Uk)(d, i) *
+            chi_wk[w, q](a, b, c, d)
+                << chi_wk[w, q](a, b, c, d) + Uk(i, a) * dagger(Uk)(d, i) *
                                                Ukq(j, c) * dagger(Ukq)(b, j) *
                                                total_factor;
           } // w
@@ -98,9 +98,9 @@ chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw,
     }       // q
   }         // k
 
-  chi /= kmesh.size();
+  chi_wk /= kmesh.size();
 
-  return chi;
+  return chi_wk;
 } 
 
 } // namespace tprf

@@ -25,7 +25,7 @@ from triqs_tprf.lattice import chi_wk_from_chi_wr
 
 from triqs_tprf.lattice_utils import chi_w0r_from_chi_tr_np_trapz
 
-from triqs_tprf.lattice import chi00_wk_from_ek
+from triqs_tprf.lattice import lindhard_chi00_wk
 
 # ----------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ def test_square_lattice_chi00():
     # -- anaytic chi00
     
     print '--> chi00wq analytic'
-    chi00_wk_analytic = chi00_wk_from_ek(e_k, nw, beta, mu)
+    chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
 
     # ------------------------------------------------------------------
     # -- imtime chi00

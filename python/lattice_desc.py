@@ -52,7 +52,7 @@ module.add_function("chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr)", doc = """""
 
 # -- Bubble static analytic
 
-module.add_function("chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, double beta, double mu)", doc = """""")
+module.add_function("chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued> e_k, int nw, double beta, double mu)", doc = """""")
 
 # -- RPA
 

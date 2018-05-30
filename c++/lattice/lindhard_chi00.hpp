@@ -90,6 +90,6 @@ namespace tprf {
       contribution (the last term on the last row).
 
    */
-chi_wk_t chi00_wk_from_ek(gf<brillouin_zone, matrix_valued> ek_in, int nw, double beta, double mu);
+chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued> e_k, int nw, double beta, double mu);
   
 } // namespace tprf

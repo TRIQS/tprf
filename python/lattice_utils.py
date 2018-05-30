@@ -23,8 +23,6 @@ from pytriqs.lattice import BrillouinZone
 
 from triqs_tprf.logo import tprf_banner
 
-from triqs_tprf.lattice import chi00_wk_from_ek
-
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
