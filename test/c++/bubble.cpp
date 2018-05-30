@@ -20,7 +20,7 @@ placeholder<7> c;
 placeholder<8> d;
 
 
-auto _ = var_t{};
+auto _ = all_t{};
 
 auto bz     = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
 auto eps_k_ = -2 * (cos(k_(0)) + cos(k_(1)));

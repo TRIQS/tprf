@@ -45,7 +45,7 @@ TEST(tprf, gf_inverse) {
  //G_iw = inverse(G_iw); // does not work, see TRIQS issue #463
  
  for( auto const & kidx : std::get<1>(G_iw.mesh()) ) {
-   auto _ = var_t{};
+   auto _ = all_t{};
    auto G = G_iw[_, kidx];
    G_iw[_, kidx] = inverse(G);
   }

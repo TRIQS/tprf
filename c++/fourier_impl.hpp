@@ -42,7 +42,7 @@ void _fourier_impl(
 
   TRIQS_ASSERT(G_out.target_shape() == G_in.target_shape());
 
-  var_t _{};
+  all_t _{};
 
   gf<cartesian_product<M_out, M_in>, T> G_1{{mesh_out, mesh_in},
                                             G_out.target_shape()};
@@ -66,7 +66,7 @@ void _fourier_impl(
 
   TRIQS_ASSERT(G_out.target_shape() == G_in.target_shape());
 
-  var_t _{};
+  all_t _{};
 
   gf<cartesian_product<M_out, M_in, M_in>, T> G_1{{mesh_out, mesh_in, mesh_in},
                                                   G_out.target_shape()};

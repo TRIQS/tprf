@@ -106,7 +106,7 @@ gk_iw_t gk_from_ek_sigma(double mu, ek_vt ek, g_iw_vt sigma) {
 
 gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   auto target = gwk.target();
 
   //const auto & [ wmesh, kmesh ] = gwk.mesh();
@@ -148,7 +148,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
 
   gr_iw_t gwr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, gwk.target());
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   for (auto const &w : wmesh) gwr[w, _]() = fourier(gwk[w, _]);
 
   return gwr;
@@ -162,7 +162,7 @@ gr_iw_t gr_from_gk(gk_iw_vt gwk) {
   
 gk_iw_t gk_from_gr(gr_iw_vt gwr) {
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   auto target = gwr.target();
 
   //auto [wmesh, rmesh] = gwr.mesh();
@@ -204,7 +204,7 @@ gk_iw_t gk_from_gr(gr_iw_vt gwr) {
   
   gk_iw_t gwk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, gwr.target());
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   for (auto const &w : wmesh) gwk[w, _]() = fourier(gwr[w, _]);
   
   return gwk;
@@ -233,7 +233,7 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
 
   auto tmesh = std::get<0>(grt.mesh());
 
-  auto _ = var_t{};
+  auto _ = all_t{};
 
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(grw[_, r0]), gf_view(grt[_, r0]));
@@ -273,7 +273,7 @@ gr_tau_t grt_from_grw(gr_iw_vt grw, int ntau) {
   gr_tau_t grt = make_gf<gr_tau_t::mesh_t::var_t>(
     {{beta, wmesh.domain().statistic, ntau}, rmesh}, grw.target());
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   for (auto const &r : rmesh) grt[_, r]() = fourier<0>(grw[_, r]);
 
   return grt;

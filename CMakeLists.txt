@@ -8,8 +8,8 @@ enable_testing()
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 # Load TRIQS and Cpp2Py
-find_package(TRIQS 1.5 EXACT REQUIRED)
-find_package(Cpp2Py REQUIRED)
+find_package(TRIQS 2.0 REQUIRED)
+find_package(Cpp2Py 1.5 REQUIRED)
 
 # Load TRIQS, including all predefined variables from TRIQS installation
 # First append triqs installed files to the cmake load path

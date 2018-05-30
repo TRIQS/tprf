@@ -57,7 +57,7 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
 
   for (auto const &widx : std::get<0>(chi0r.mesh())) {
     for (auto const &nidx : std::get<1>(chi0r.mesh())) {
-      auto _ = var_t{};
+      auto _ = all_t{};
       //chi0r[widx, nidx, _] = inverse_fourier(chi0q[widx, nidx, _]);
       chi0r[widx, nidx, _] = fourier(chi0q[widx, nidx, _]);
     }
@@ -78,7 +78,7 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0r) {
 
   for (auto const &widx : std::get<0>(chi0q.mesh())) {
     for (auto const &nidx : std::get<1>(chi0q.mesh())) {
-      auto _ = var_t{};
+      auto _ = all_t{};
       chi0q[widx, nidx, _] = fourier(chi0r[widx, nidx, _]);
     }
   }
@@ -114,7 +114,7 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
 
   for (auto const &w : wmesh) {
     for (auto const &q : qmesh) {
-      auto _ = var_t{};
+      auto _ = all_t{};
 
       auto chi = chi0q[w, _, q];
 
@@ -156,7 +156,7 @@ gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q) {
 
 chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
-  auto _ = var_t{};
+  auto _ = all_t{};
 
   auto mb = std::get<0>(chi0q.mesh());
   auto mf = std::get<1>(chi0q.mesh());

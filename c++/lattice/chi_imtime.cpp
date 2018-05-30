@@ -29,7 +29,7 @@ namespace tprf {
 
 chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 
-  auto _ = var_t{};
+  auto _ = all_t{};
 
   auto tmesh = std::get<0>(grt.mesh());
   auto rmesh = std::get<1>(grt.mesh());
@@ -78,7 +78,7 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 // -- optimized version for w=0
 chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
 
-  auto _ = var_t{};
+  auto _ = all_t{};
 
   auto tmesh = std::get<0>(grt.mesh());
   auto rmesh = std::get<1>(grt.mesh());
@@ -162,7 +162,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
-    auto _ = var_t{};
+    auto _ = all_t{};
     auto I = chi_trapz_tau(chi_tr[_, r]);
 
 #pragma omp critical
@@ -194,7 +194,7 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
   */
 
-    auto _ = var_t{};
+    auto _ = all_t{};
     chi_wr[_, r] = fourier(chi_tr[_, r]);
   }
 
@@ -213,7 +213,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
   
   chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
 
-  auto _ = var_t{};
+  auto _ = all_t{};
   for (auto const &w : wmesh)
     chi_wk[w, _] = fourier(chi_wr[w, _]);
 

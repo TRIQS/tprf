@@ -32,7 +32,7 @@ namespace tprf {
   auto g_inv = make_gf(g.mesh(), g.target(), g.memory_layout());
 
   for (auto const &w : std::get<0>(g.mesh())) {
-   auto _ = var_t{};
+   auto _ = all_t{};
 
    auto g_w = make_gf(g[w, _, _], chg.memory_layout());
    auto g_w_inv = make_gf(g_w.mesh(), g_w.target(), g_w.memory_layout());
@@ -58,7 +58,7 @@ namespace tprf {
   auto C = make_gf(A.mesh(), A.target(), A.memory_layout());
 
   for (auto const &w : std::get<0>(A.mesh())) {
-   auto _ = var_t{};
+   auto _ = all_t{};
 
    auto A_w = make_gf(A[w, _, _], chg.memory_layout());
    auto B_w = make_gf(B[w, _, _], chg.memory_layout());
@@ -84,7 +84,7 @@ namespace tprf {
   auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
 
   for (auto const &w : std::get<0>(g.mesh())) {
-   auto _ = var_t{};
+   auto _ = all_t{};
    auto I_w = make_gf(I[w, _, _], chg.memory_layout());
    auto I_mat = chg.matrix_view(I_w.data());
 
