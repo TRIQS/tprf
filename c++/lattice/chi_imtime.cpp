@@ -188,7 +188,8 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
   chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
   for (auto const &r : rmesh) {
-  /*
+
+ /*
 #pragma omp parallel for 
   for (int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;

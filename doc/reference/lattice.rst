@@ -13,7 +13,7 @@
   /cpp2doc_generated/tprf/gr_from_gk
   /cpp2doc_generated/tprf/gk_from_gr
 
-**lattice.hpp** Lindhardt non-interacting generalized susceptibility
+**lattice.hpp** Lindhard non-interacting generalized susceptibility
 ====================================================================
 
 .. toctree::

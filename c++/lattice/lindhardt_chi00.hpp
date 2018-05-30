@@ -24,9 +24,9 @@
 
 namespace tprf {
 
-  /** Generalized Lindhardt susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
+  /** Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
    
-   Analytic calculation of the generalized (non-interacting) Lindhardt susceptibility 
+   Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
    in the particle-hole channel. The analytic expression is obtained using residue calculus 
    to explicitly evaluate the matsubara sum of the fourier transformed imaginary time
    bubble product of two non-interacting single-particle Green's functions.
@@ -85,7 +85,7 @@ namespace tprf {
    .. note::
       Care must be taken when evaluating the fermionic Matsubara frequency sum of the
       product of two simple poles. By extending the sum to an integral over the complex 
-      plane the standard expression for the Lindhardt response is obtained when the 
+      plane the standard expression for the Lindhard response is obtained when the 
       poles are non-degenerate. The degenerate case produces an additional frequency independent
       contribution (the last term on the last row).
 
