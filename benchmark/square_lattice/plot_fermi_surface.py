@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
     
 # ----------------------------------------------------------------------
 
-from scipy.interpolate import griddata
-from skimage.measure import find_contours
-
-# ----------------------------------------------------------------------
-
 from pytriqs.archive import HDFArchive
 from pytriqs.gf import MeshBrillouinZone
 

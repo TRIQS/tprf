@@ -20,10 +20,10 @@ from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
     
-    n_k = (32, 32, 1)
+    n_k = (64, 64, 1)
     nw = 100
     
-    beta = 20.0
+    beta = 5.0
     mu = 0.0
     t = 1.0
     
@@ -54,6 +54,8 @@ if __name__ == '__main__':
 
     # -- Analytic reference (Lindhard formula in momentum space)
     print '--> lindhard_chi00_wk'
+    n_k = (32, 32, 1)
+    e_k = t_r.on_mesh_brillouin_zone(n_k)
     chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=1, beta=beta, mu=mu)
 
     filename = 'data_e_k_and_chi00_wk.h5'

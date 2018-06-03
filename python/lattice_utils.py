@@ -337,3 +337,42 @@ def extend_data_on_boundary(values, nk):
     kxe, kye, kze = get_k_components_from_k_vec(k_vec_rel_ext, nk_ext)
 
     return values_ext, k_vec_rel_ext, (kxe, kye, kze)
+
+# ----------------------------------------------------------------------
+def k_space_path(paths, num=100):
+
+    """ High symmetry path k-vector generator.
+
+    Input:
+    paths : list of tuples of pairs of 3-vectors of k-points to
+    make the path in between 
+    num (optional) : number of k-vectors along each segment of the path
+
+    Returns:
+    k_vecs: ndarray.shape = (n_k, 3) with all k-vectors. 
+    k_plot: ndarray.shape = (n_k) one dimensional vector for plotting
+    K_plot: ndarray.shape = (n_paths) positions of the start and end of each path 
+    """
+
+    k_vecs = []
+
+    for path in paths:
+        ki, kf = path
+        x = np.linspace(0., 1., num=num)[:, None]
+        k_vec = (1. - x) * ki[None, :] + x * kf[None, :]
+
+        k_vecs.append(k_vec)
+
+    k_plot = np.linalg.norm(k_vecs[0] - k_vecs[0][0][None, :], axis=1)
+
+    K_plot = [0.]
+    for kidx, k_vec in enumerate(k_vecs[1:]):
+        k_plot_new = np.linalg.norm(k_vec - k_vec[0][None, :], axis=1) + k_plot[-1]
+        K_plot.append(k_plot[-1])
+        k_plot = np.concatenate((k_plot, k_plot_new))
+
+    K_plot.append(k_plot[-1])
+    K_plot = np.array(K_plot)
+    k_vecs = np.vstack(k_vecs)
+    
+    return k_vecs, k_plot, K_plot
