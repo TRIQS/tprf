@@ -274,7 +274,19 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
     {{beta, wmesh.domain().statistic, nt}, rmesh}, g_wr.target());
 
   auto _ = all_t{};
-  for (auto const &r : rmesh) g_tr[_, r]() = fourier<0>(g_wr[_, r]);
+  auto r0 = *rmesh.begin();
+  auto zero_tail = make_zero_tail(g_wr[_, r0], 2);
+  auto zero_tail_r0 = make_zero_tail(g_wr[_, r0], 2);
+
+  zero_tail_r0(1, range(), range()) =
+    make_unit_matrix<dcomplex>(g_wr.target_shape()[0]);
+  
+  for (auto const &r : rmesh) {
+    if(r.linear_index() == 0)
+      g_tr[_, r]() = fourier<0>(g_wr[_, r], make_const_view(zero_tail_r0));
+    else
+      g_tr[_, r]() = fourier<0>(g_wr[_, r], make_const_view(zero_tail));
+  }
 
   return g_tr;
 }
