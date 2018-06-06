@@ -38,13 +38,15 @@ from triqs_tprf.lattice import chi_wk_from_chi_wr
 # ----------------------------------------------------------------------
 def put_gf_on_mesh(g_in, wmesh):
 
-    assert( wmesh.size() <= g_in.mesh().size() )
+    assert( len(wmesh) <= len(g_in.mesh) )
     
     g_out = Gf(mesh=wmesh, target_shape=g_in.target_shape)
 
     for w in wmesh:
         index = w.linear_index + wmesh.first_index() # absolute index
         g_out[w] = g_in[Idx(index)]
+
+    return g_out
 
 # ----------------------------------------------------------------------
 def strip_sigma(nw, beta, sigma_in, debug=False):
