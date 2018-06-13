@@ -20,42 +20,46 @@
  *
  ******************************************************************************/
 
-#include "common.hpp"
 #include "rpa.hpp"
+#include "common.hpp"
 
 namespace tprf {
 
-  chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk, array_view<std::complex<double>, 4> U_arr) {
+chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
+                      array_view<std::complex<double>, 4> U_arr) {
 
-    using scalar_t = chi_wk_t::scalar_t;
+  using scalar_t = chi_wk_t::scalar_t;
 
-    size_t nb = chi0_wk.target_shape()[0];
-    auto wmesh = std::get<0>(chi0_wk.mesh());
-    auto kmesh = std::get<1>(chi0_wk.mesh());
+  size_t nb = chi0_wk.target_shape()[0];
+  auto wmesh = std::get<0>(chi0_wk.mesh());
+  auto kmesh = std::get<1>(chi0_wk.mesh());
 
-    chi_wk_t chi_wk{{wmesh, kmesh}, chi0_wk.target_shape()};
+  chi_wk_t chi_wk{{wmesh, kmesh}, chi0_wk.target_shape()};
 
-    auto U = make_matrix_view(group_indices_view(U_arr, {0, 1}, {3, 2})); // PH grouping, from c+c+cc
-    auto I = make_unit_matrix<scalar_t>(U.shape()[0]);
-    
-    for (auto const &w : wmesh) {
-      for (auto const &k : kmesh) {
+  // PH grouping, from c+c+cc
+  auto U = make_matrix_view(group_indices_view(U_arr, {0, 1}, {3, 2}));
 
-	array<scalar_t, 4> chi_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
-	array<scalar_t, 4> chi0_arr{chi0_wk[w, k], memory_layout_t<4>{0, 1, 2, 3}};
-	
-	auto chi = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2})); // PH grouping FIXME!
-	auto chi0 = make_matrix_view(group_indices_view(chi0_arr, {0, 1}, {3, 2})); // PH grouping FIXME!
+  auto I = make_unit_matrix<scalar_t>(U.shape()[0]);
 
-	chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
+  for (auto const &w : wmesh) {
+    for (auto const &k : kmesh) {
 
-	chi_wk[w, k] = chi_arr; // assign back using the array_view
-	
-      }
+      array<scalar_t, 4> chi_arr{nb, nb, nb, nb,
+                                 memory_layout_t<4>{0, 1, 2, 3}};
+      array<scalar_t, 4> chi0_arr{chi0_wk[w, k],
+                                  memory_layout_t<4>{0, 1, 2, 3}};
+
+      // PH grouping FIXME!
+      auto chi = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2}));
+      auto chi0 =
+          make_matrix_view(group_indices_view(chi0_arr, {0, 1}, {3, 2}));
+
+      chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
+
+      chi_wk[w, k] = chi_arr; // assign back using the array_view
     }
-
-    return chi_wk;
-    
   }
-  
+
+  return chi_wk;
 }
+} // namespace tprf

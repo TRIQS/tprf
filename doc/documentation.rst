@@ -15,6 +15,7 @@ Theory and notation
    theory/derivation_index_pairing
    theory/boundary_conditions
    theory/linear_response
+   theory/rpa
 
 User guide
 ----------
@@ -22,6 +23,8 @@ User guide
 .. toctree::
    :maxdepth: 1
 
+   user_guide/Square lattice susceptibility.ipynb
+	      
 Reference manual
 ----------------
 

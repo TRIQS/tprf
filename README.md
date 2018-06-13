@@ -8,6 +8,8 @@ two particle respnse functions.
 
 NB! TPRF is an early-stage development project use with care
 
+For more information see the Documentation https://hugostrand.github.io/tprf/
+
 ## License
 
 This application is free software: you can redistribute it and/or modify it
