@@ -3,6 +3,25 @@
 Documentation
 =============
 
+Tutorials
+---------
+
+.. toctree::
+   :maxdepth: 1
+
+   user_guide/Square lattice susceptibility.ipynb
+   user_guide/Bethe-Salpeter Equation on the Hubbard atom.ipynb
+   user_guide/Lattice BSE on Hubbard atom.ipynb
+   
+Reference manual
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   reference/linalg
+   reference/lattice
+
 Theory and notation
 -------------------
 
@@ -16,23 +35,6 @@ Theory and notation
    theory/boundary_conditions
    theory/linear_response
    theory/rpa
-
-User guide
-----------
-
-.. toctree::
-   :maxdepth: 1
-
-   user_guide/Square lattice susceptibility.ipynb
-	      
-Reference manual
-----------------
-
-.. toctree::
-   :maxdepth: 2
-
-   reference/linalg
-   reference/lattice
 
 FAQs
 ----
