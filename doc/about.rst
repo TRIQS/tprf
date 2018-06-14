@@ -3,7 +3,7 @@
 Authors
 =======
 
-These two-particle response function routines has been written by H. U.R. Strand, N. Wentzell, with TRIQS-library support from O. Parcollet.
+TPRF has been written by Hugo U.R. Strand with TRIQS-library support from N. Wentzell and O. Parcollet.
 
 License
 =======

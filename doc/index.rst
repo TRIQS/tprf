@@ -1,9 +1,13 @@
 .. _welcome:
 
-The Two-Particle Response Function tool box
-===========================================
+The Two-Particle Response Function tool box (TPRF)
+==================================================
 
-The :ref:`TRIQS-based <triqslibs:welcome>` two-particle response function tool box implements basic operations such as inversion, products, etc., in the different two-particle channels (particle-hole, particle-particle). Learn how to use it in the :ref:`documentation`.
+TPRF is a :ref:`TRIQS-based <triqslibs:welcome>` two-particle response function tool box that implements basic operations for higher order response functions such as inversion, products, the random phase approximation, the bethe salpeter equation (in the local vertex approximation), etc..
+
+The aim is to provide **efficient** (C++/OpenMP/MPI) implementations of the basic operations needed to compute the two-particle response in the different two-particle channels (particle-hole, particle-particle).
+
+Learn how to use it in the :ref:`documentation`.
 
 .. toctree::
    :maxdepth: 2
