@@ -43,24 +43,32 @@ placeholder<11> b2;
 } // namespace
 
 namespace tprf {
-
+  
 // ----------------------------------------------------
 // AB matrix_valued from block_gf
 
 g_iw_t block_iw_AB_to_matrix_valued(b_g_iw_vt bg_AB) {
 
-  gf<imfreq, matrix_valued> g{bg_AB(0).mesh(), {2, 2}};
-  
-  g *= 0.0;
-  //g(n)(a, b) << kronecker(a, b) * bg_AB(a)(n)(0,0); // This fails trying to pass on tail info
-
+  int n = 0;
   for( auto bidx : range(bg_AB.size()) ) {
     auto g_AB = bg_AB(bidx);
-    g.data()(range(), bidx, bidx) = g_AB.data()(range(), 0, 0);
+    n += g_AB.target_shape()[0];
+  }
+
+  gf<imfreq, matrix_valued> g{bg_AB(0).mesh(), {n, n}};
+  g *= 0.0;
+
+  int idx = 0;
+  for( auto bidx : range(bg_AB.size()) ) {
+    auto g_AB = bg_AB(bidx);
+    int size = g_AB.target_shape()[0];
+    
+    g.data()(range(), range(idx, idx+size), range(idx, idx+size))
+      = g_AB.data()(range(), range(), range());
+
+    idx += size;
   }
   
-  //g.data()(n, a, b) << kronecker(a, b) * bg_AB(a)(n)(0, 0); // broken to index matsubara and raw idx
-
   return g;
 }
   
