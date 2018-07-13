@@ -50,6 +50,7 @@ install(TARGETS hubbard_atom DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python
 install(FILES logo.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES plot.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+install(FILES rpa_tensor.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES tight_binding.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
