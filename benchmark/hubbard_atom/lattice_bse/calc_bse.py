@@ -70,24 +70,24 @@ def solve_lattice_bse(parm, momsus=False):
     # ------------------------------------------------------------------
     # -- Non-interacting generalized lattice susceptibility
 
-    chi0r = chi0r_from_gr_PH(nw=parm.nw, nnu=parm.nwf, gr=gr) 
-    chi0q = chi0q_from_chi0r(chi0r)
+    chi0_wr = chi0r_from_gr_PH(nw=parm.nw, nnu=parm.nwf, gr=g_wr) 
+    chi0_wk = chi0q_from_chi0r(chi0_wr)
 
     # ------------------------------------------------------------------
     # -- Solve lattice BSE
 
-    parm.chiq = chiq_from_chi0q_and_gamma_PH(chi0q, parm.gamma_m)
+    parm.chi_wk = chiq_from_chi0q_and_gamma_PH(chi0_wk, parm.gamma_m)
 
     # ------------------------------------------------------------------
     # -- Store results and static results
     
-    num = np.squeeze(parm.chiq.data.real)
+    num = np.squeeze(parm.chi_wk.data.real)
     ref = np.squeeze(parm.chi_m.data.real)
     
     diff = np.max(np.abs(num - ref))
     print 'diff =', diff
     
-    parm.chi_w = chiq_sum_nu_q(parm.chiq) # static suscept
+    parm.chi_w = chiq_sum_nu_q(parm.chi_wk) # static suscept
     
     return parm
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     p.chi_w_analytic = np.sum(p.chi_m.data) / p.beta**2    
 
     # -- Tracing the numerical generalized susceptibility
-    p.chi_w_ref = np.sum(p.chiq.data) / p.beta**2
+    p.chi_w_ref = np.sum(p.chi_wk.data) / p.beta**2
 
     print 'chi_w_analytic =', p.chi_w_analytic
     print 'chi_w.data     =', p.chi_w.data.flatten()
