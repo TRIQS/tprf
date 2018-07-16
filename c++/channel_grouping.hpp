@@ -60,13 +60,13 @@ public:
 template <>
 inline memory_layout_t<6>
 channel_grouping<Channel_t::PH>::memory_layout() const {
-  return make_memory_layout(0, 2, 3, 1, 4, 5);
+  return make_memory_layout(0, 2, 3, 1, 5, 4);
 }
 
 template <>
 inline matrix_view<scalar_t> channel_grouping<Channel_t::PH>::matrix_view(
     array_view<scalar_t, 6> arr) const {
-  return make_matrix_view(group_indices_view(arr, {0, 2, 3}, {1, 4, 5}));
+  return make_matrix_view(group_indices_view(arr, {0, 2, 3}, {1, 5, 4}));
 }
 
 // ----------------------------------------------------
