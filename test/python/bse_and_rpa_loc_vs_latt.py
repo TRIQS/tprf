@@ -190,7 +190,7 @@ def make_calc():
     np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
 
     from triqs_tprf.bse import solve_lattice_bse
-    lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn, nw=1, nwf=p.nwf)
+    lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn)
     
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]
