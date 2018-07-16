@@ -31,6 +31,14 @@ using namespace triqs::arrays;
 
 namespace tprf {
 
+using g2_n_t = gf<cartesian_product<imfreq>, tensor_valued<4>>;
+using g2_n_vt = g2_n_t::view_type;
+using g2_n_cvt = g2_n_t::const_view_type;
+
+using g2_nn_t = gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>>;
+using g2_nn_vt = g2_nn_t::view_type;
+using g2_nn_cvt = g2_nn_t::const_view_type;
+
 /** Two-particle response-function inversion $[g]^{-1}$.
  
  The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
@@ -56,6 +64,11 @@ g2_iw_t inverse_PH(g2_iw_vt g);
 g2_iw_t inverse_PP(g2_iw_vt g);
 g2_iw_t inverse_PH_bar(g2_iw_vt g);
   
+template <Channel_t CH> g2_nn_t inverse(g2_nn_cvt g);
+
+g2_nn_t inverse_PH(g2_nn_vt g);
+g2_nn_t inverse_PP(g2_nn_vt g);
+g2_nn_t inverse_PH_bar(g2_nn_vt g);
   
 /** Two-particle response-function product :math:`A * B`
  
@@ -81,12 +94,19 @@ g2_iw_t inverse_PH_bar(g2_iw_vt g);
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
+
 template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
 
 g2_iw_t product_PH(g2_iw_vt A, g2_iw_vt B);
 g2_iw_t product_PP(g2_iw_vt A, g2_iw_vt B);
 g2_iw_t product_PH_bar(g2_iw_vt A, g2_iw_vt B);
- 
+
+template <Channel_t CH> g2_nn_t product(g2_nn_cvt A, g2_nn_cvt B);
+
+g2_nn_t product_PH(g2_nn_vt A, g2_nn_vt B);
+g2_nn_t product_PP(g2_nn_vt A, g2_nn_vt B);
+g2_nn_t product_PH_bar(g2_nn_vt A, g2_nn_vt B);
+  
 /** Two-particle response-function identity operator :math:`\mathbf{1}`
  
  Constructs the unity-operator in the given channel
@@ -114,4 +134,10 @@ g2_iw_t identity_PH(g2_iw_vt g);
 g2_iw_t identity_PP(g2_iw_vt g);
 g2_iw_t identity_PH_bar(g2_iw_vt g);
 
+template <Channel_t CH> g2_nn_t identity(g2_nn_cvt g);
+
+g2_nn_t identity_PH(g2_nn_vt g);
+g2_nn_t identity_PP(g2_nn_vt g);
+g2_nn_t identity_PH_bar(g2_nn_vt g);
+  
 } // namespace tprf
