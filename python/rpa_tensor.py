@@ -40,3 +40,17 @@ def get_rpa_tensor(H_int, fundamental_operators):
         U_abcd[a, b, c, d] = U_int[b, d, a, c]
 
     return U_abcd
+
+# ----------------------------------------------------------------------
+def get_gamma_rpa(chi0_wnn, U_abcd):
+
+    # -- Build constant gamma
+
+    gamma_wnn = chi0_wnn.copy()
+    
+    # Nb! In the three frequency form $\Gamma \propto U/\beta^2$
+
+    beta = chi0_wnn.mesh.components[0].beta
+    gamma_wnn.data[:] = U_abcd[None, None, None, ...] / beta**2
+    
+    return gamma_wnn

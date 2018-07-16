@@ -82,6 +82,12 @@ def make_calc():
 
     np.testing.assert_array_almost_equal(
         loc_bse.chi_wnn.data, loc_bse.chi_wnn_ref.data)
+
+    from triqs_tprf.bse import solve_local_bse
+    loc_bse.gamma_wnn_ref = solve_local_bse(loc_bse.chi0_wnn, loc_bse.chi_wnn)
+
+    np.testing.assert_array_almost_equal(
+        loc_bse.gamma_wnn.data, loc_bse.gamma_wnn_ref.data)
     
     loc_bse.chi0_w = trace_nn(loc_bse.chi0_wnn)
     loc_bse.chi_w = trace_nn(loc_bse.chi_wnn)
@@ -90,16 +96,15 @@ def make_calc():
     # -- RPA, using BSE inverses and constant Gamma
 
     loc_rpa = ParameterCollection()
-    loc_rpa.U_abcd = p.U_abcd
-    
-    # -- Build constant gamma
-    loc_rpa.gamma_wnn = loc_bse.gamma_wnn.copy()
-    loc_rpa.gamma_wnn.data[:] = loc_rpa.U_abcd[None, None, None, ...]
-    # Nb! In the three frequency form $\Gamma \propto U/\beta^2$
-    loc_rpa.gamma_wnn.data[:] /= p.beta**2 
 
     loc_rpa.chi0_wnn = loc_bse.chi0_wnn
     loc_rpa.chi0_w = loc_bse.chi0_w
+
+    loc_rpa.U_abcd = p.U_abcd
+    
+    # -- Build constant gamma
+    from triqs_tprf.rpa_tensor import get_gamma_rpa
+    loc_rpa.gamma_wnn = get_gamma_rpa(loc_rpa.chi0_wnn, loc_rpa.U_abcd)
     
     # -- Solve RPA
     loc_rpa.chi_wnn = inverse_PH( inverse_PH(loc_rpa.chi0_wnn) - loc_rpa.gamma_wnn )
@@ -183,9 +188,13 @@ def make_calc():
     lat_bse.chi_kw = chiq_sum_nu(lat_bse.chi_kwnn)
 
     np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
+
+    from triqs_tprf.bse import solve_lattice_bse
+    lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn, nw=1, nwf=p.nwf)
     
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]
+    lat_bse.chi_w_tail_corr = lat_bse.chi_kw_tail_corr[Idx(0, 0, 0), :]
     lat_bse.chi_w = lat_bse.chi_kw[Idx(0, 0, 0), :]
 
     print '--> cf Tr[chi0_wnk] and chi0_wk'
@@ -201,7 +210,7 @@ def make_calc():
     
     print 'ok!'
     
-    print '--> cf Tr[chi_kwnn] and chi_wk'
+    print '--> cf Tr[chi_kwnn] and chi_wk (without chi0 tail corr)'
     print lat_bse.chi_w.data.reshape((4, 4)).real
     print loc_bse.chi_w.data.reshape((4, 4)).real
 
@@ -209,7 +218,36 @@ def make_calc():
         lat_bse.chi_w.data, loc_bse.chi_w.data)
 
     print 'ok!'
+
+    # ------------------------------------------------------------------
+    # -- Use chi0 tail corrected trace to correct chi_rpa cf bubble
+
+    dchi_wk = lat_bse.chi0_wk_tail_corr - lat_bse.chi0_wk
+    dchi_w = dchi_wk[:, Idx(0, 0, 0)]
     
+    loc_rpa.chi_w_tail_corr = loc_rpa.chi_w + dchi_w
+
+    # -- this will be the same, but it will be close to the real physical value
+    lat_bse.chi_w_tail_corr_ref = lat_bse.chi_w + dchi_w
+    loc_bse.chi_w_tail_corr_ref = loc_bse.chi_w + dchi_w
+    
+    print '--> cf Tr[chi_rpa] and chi_wk_rpa'
+    print loc_rpa.chi_w.data.reshape((4, 4)).real
+    print loc_rpa.chi_w_tail_corr.data.reshape((4, 4)).real
+    print lat_rpa.chi_w.data.reshape((4, 4)).real
+
+    np.testing.assert_array_almost_equal(
+        loc_rpa.chi_w_tail_corr.data, lat_rpa.chi_w.data, decimal=3)
+
+    print '--> cf Tr[chi_kwnn] with tail corr (from chi0_wnk)'
+    print lat_bse.chi_w_tail_corr.data.reshape((4, 4)).real
+    print lat_bse.chi_w_tail_corr_ref.data.reshape((4, 4)).real
+
+    np.testing.assert_array_almost_equal(
+        lat_bse.chi_w_tail_corr.data, lat_bse.chi_w_tail_corr_ref.data)
+    
+    print 'ok!'
+
     # ------------------------------------------------------------------
     # -- Store to hdf5
     
