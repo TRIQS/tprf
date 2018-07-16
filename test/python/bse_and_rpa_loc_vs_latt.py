@@ -168,6 +168,10 @@ def make_calc():
     # -- Lattice BSE calc
     from triqs_tprf.lattice import chiq_from_chi0q_and_gamma_PH
     lat_bse.chi_kwnn = chiq_from_chi0q_and_gamma_PH(lat_bse.chi0_wnk, loc_bse.gamma_wnn)
+
+    # -- Lattice BSE calc with built in trace
+    from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
+    lat_bse.chi_kw_ref = chiq_sum_nu_from_chi0q_and_gamma_PH(lat_bse.chi0_wnk, loc_bse.gamma_wnn)
     
     # -- Trace results
     from triqs_tprf.lattice import chi0q_sum_nu_tail_corr_PH
@@ -177,6 +181,8 @@ def make_calc():
 
     from triqs_tprf.lattice import chiq_sum_nu, chiq_sum_nu_q
     lat_bse.chi_kw = chiq_sum_nu(lat_bse.chi_kwnn)
+
+    np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
     
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]

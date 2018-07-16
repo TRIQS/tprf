@@ -203,10 +203,15 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto chiq = make_gf<chiq_t::mesh_t::var_t>({mbz, mb, mf, mf}, chi0q.target());
 
-  auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
-  auto I = identity<Channel_t::PH>(chi0);
 
-  for (auto const &k : mbz) {
+  //for (auto const &k : mbz) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < mbz.size(); idx++) {
+    auto iter = mbz.begin(); iter += idx; auto k = *iter;
+    
+    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
+    auto I = identity<Channel_t::PH>(chi0);
 
     for (auto const &w : mb) {
 
@@ -216,14 +221,72 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
       }
 
       // this step could be optimized, using the diagonality of chi0 and I
-      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]); 
+      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]);
+
+      // also the last product here
+      g2_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
+
+#pragma omp critical      
+      chiq[k, w, _, _] = chi;
       
-      chiq[k, w, _, _] = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0); // also the last product here
     }
   }
 
   return chiq;
-}  
+}
+
+gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+
+  auto _ = all_t{};
+
+  auto mb = std::get<0>(chi0q.mesh());
+  auto mf = std::get<1>(chi0q.mesh());
+  auto mbz = std::get<2>(chi0q.mesh());
+
+  double beta = mf.domain().beta;
+  
+  auto chi_kw = make_gf<cartesian_product<brillouin_zone, imfreq>>({mbz, mb}, chi0q.target());
+  
+  //for (auto const &k : mbz) {
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < mbz.size(); idx++) {
+    auto iter = mbz.begin(); iter += idx; auto k = *iter;
+    
+    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
+    auto I = identity<Channel_t::PH>(chi0);
+
+    array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
+    
+    for (auto const &w : mb) {
+
+      chi0 *= 0.;
+      for (auto const &n : mf) {
+        chi0[n, n] = chi0q[w, n, k];
+      }
+
+      // this step could be optimized, using the diagonality of chi0 and I
+      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]);
+
+      // also the last product here
+      g2_nn_t chi =product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
+
+      // trace out fermionic frequencies
+      tr_chi *= 0.0;
+      for ( auto const &n1 : mf )
+	for ( auto const &n2 : mf )
+	  tr_chi += chi[n1, n2];
+
+      tr_chi /= beta * beta;
+
+#pragma omp critical      
+      chi_kw[k, w] = tr_chi;
+      
+    }
+  }
+
+  return chi_kw;
+} 
 
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu(chiq_t chiq) {
