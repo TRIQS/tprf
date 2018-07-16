@@ -13,6 +13,7 @@ from pytriqs.operators import n, c, c_dag, Operator, dagger
 # ----------------------------------------------------------------------
 
 from pyed.OperatorUtils import quartic_tensor_from_operator
+from pyed.OperatorUtils import quartic_permutation_symmetrize
 
 # ----------------------------------------------------------------------
 
@@ -28,8 +29,8 @@ if __name__ == '__main__':
     # -- Discretizations
     
     #n_k = (128, 128, 1) # need some parallelisation for this... FIXME
-    n_k = (96, 96, 1)
-    #n_k = (64, 64, 1)
+    #n_k = (96, 96, 1)
+    n_k = (64, 64, 1)
     #n_k = (32, 32, 1)
     #n_k = (16, 16, 1)
     #n_k = (6, 6, 1)
@@ -88,6 +89,11 @@ if __name__ == '__main__':
         H_int = u * n(0, 0) * n(0, 1)
         U_int_abcd = quartic_tensor_from_operator(H_int, fundamental_operators)
 
+        print U_int_abcd.reshape((4, 4)).real
+        
+        U_int_abcd = quartic_permutation_symmetrize(U_int_abcd)
+        print U_int_abcd.reshape((4, 4)).real
+        
         # -- Group in Gamma order cc^+cc^+ ( from c^+c^+cc )
 
         U_abcd = np.zeros_like(U_int_abcd)

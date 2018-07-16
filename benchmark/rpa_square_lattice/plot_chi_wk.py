@@ -18,13 +18,28 @@ from triqs_tprf.lattice_utils import k_space_path
 from triqs_tprf.lattice_utils import get_relative_k_from_absolute
 
 # ----------------------------------------------------------------------
-def plot_chi(chi, label=None):
+def get_chi_SzSz(chi):
 
     # -- Contract Sz Sz response
+    Sx = 0.5 * np.array([[0., 1.], [1., 0]])
+    Sy = 0.5 * np.array([[0., -1.j], [1.j, 0]])
     Sz = np.diag([+0.5, -0.5])
+    N = np.eye(2)
+
+    #Op1, Op2 = Sx, Sx
+    #Op1, Op2 = Sy, Sy
+    Op1, Op2 = Sz, Sz
+    #Op1, Op2 = N, N
+    
     chi_SzSz = chi[0, 0, 0, 0].copy()
-    chi_SzSz.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, Sz, Sz)[:, :]
+    chi_SzSz.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, Op1, Op2)[:, :]
     chi_SzSz = chi_SzSz[Idx(0), :]
+    return chi_SzSz
+
+# ----------------------------------------------------------------------
+def plot_chi(chi, label=None):
+
+    chi_SzSz = get_chi_SzSz(chi)
 
     k = np.linspace(-0.75, 0.75, num=100) * 2.*np.pi
     Kx, Ky = np.meshgrid(k, k)
@@ -54,11 +69,7 @@ def plot_chi(chi, label=None):
 # ----------------------------------------------------------------------
 def plot_chi_1D(chi, label=None):
 
-    # -- Contract Sz Sz response
-    Sz = np.diag([+0.5, -0.5])
-    chi_SzSz = chi[0, 0, 0, 0].copy()
-    chi_SzSz.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, Sz, Sz)[:, :]
-    chi_SzSz = chi_SzSz[Idx(0), :]
+    chi_SzSz = get_chi_SzSz(chi)
 
     bz = chi_SzSz.mesh.domain
 
@@ -98,6 +109,8 @@ if __name__ == '__main__':
         chi_wk_vec = arch['chi_wk_vec']
         U_vec = arch['U_vec']
 
+    # -- band path plot
+    
     plt.figure(figsize=(6, 5))
 
     plot_chi_1D(chi00_wk)
@@ -107,6 +120,27 @@ if __name__ == '__main__':
 
     plt.legend(loc='best')
     plt.savefig('figure_RPA_SzSz_square_latt_bandpath.pdf')
+
+    # -- Extrapolate critical U_c
+    
+    plt.figure(figsize=(6, 5))
+
+    inv_chi_vec = []
+    
+    for U, chi_wk in zip(U_vec, chi_wk_vec):
+        chi_SzSz = get_chi_SzSz(chi_wk)
+        inv_chi = np.min(1./chi_SzSz.data.real)
+        plt.plot(U, inv_chi, 'kx')
+        inv_chi_vec.append(inv_chi)
+
+    p = np.polyfit(U_vec, inv_chi_vec, 1)
+    Uc = np.roots(p)
+    plt.plot(Uc, 0, 'rx', label=r'$U_c = %2.2f$' % Uc)
+    plt.legend()
+    plt.xlabel(r'$U$')
+    plt.ylabel(r'min[$\chi_{RPA}^{-1}$]')
+    
+    # -- k-xy plane chi plot
 
     plt.figure(figsize=(8, 3))
 
