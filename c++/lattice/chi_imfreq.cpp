@@ -188,6 +188,45 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
   return chiq;
 }
 
+// ----------------------------------------------------
+// chi
+
+chiq_t chiq_from_chi0q_and_gamma_PH_new(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+
+  auto _ = all_t{};
+
+  auto mb = std::get<0>(chi0q.mesh());
+  auto mf = std::get<1>(chi0q.mesh());
+  auto mbz = std::get<2>(chi0q.mesh());
+
+  auto chiq = make_gf<chiq_t::mesh_t::var_t>({mbz, mb, mf, mf}, chi0q.target());
+
+  auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
+  auto I = identity<Channel_t::PH>(chi0);
+
+  for (auto const &k : mbz) {
+
+    for (auto const &w : mb) {
+
+      chi0 *= 0.;
+      for (auto const &n : mf) {
+        chi0[n, n] = chi0q[w, n, k];
+      }
+
+      g2_nn_t denom = I - product<Channel_t::PH>(gamma_ph[w, _, _], chi0);
+      g2_nn_t inv_denom = inverse<Channel_t::PH>(denom);
+      chiq[k, w, _, _] = product<Channel_t::PH>(inv_denom, chi0);
+
+      /*
+      g2_nn_t chi_inv = inverse<Channel_t::PH>(chi0) - gamma_ph[w, _, _];
+      chiq[k, w, _, _] = inverse<Channel_t::PH>(chi_inv);
+      */
+    }
+  }
+
+  return chiq;
+}  
+
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu(chiq_t chiq) {
 
