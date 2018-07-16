@@ -177,11 +177,11 @@ def make_calc():
 
     from triqs_tprf.lattice import chiq_sum_nu, chiq_sum_nu_q
     lat_bse.chi_kw = chiq_sum_nu(lat_bse.chi_kwnn)
-
+    
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]
     lat_bse.chi_w = lat_bse.chi_kw[Idx(0, 0, 0), :]
-    
+
     print '--> cf Tr[chi0_wnk] and chi0_wk'
     print lat_bse.chi0_w_tail_corr.data.reshape((4, 4)).real
     print lat_bse.chi0_w.data.reshape((4, 4)).real

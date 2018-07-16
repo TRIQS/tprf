@@ -154,6 +154,7 @@ gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q) {
 // ----------------------------------------------------
 // chi
 
+/*
 chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto _ = all_t{};
@@ -187,11 +188,12 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   return chiq;
 }
+*/
 
 // ----------------------------------------------------
 // chi
 
-chiq_t chiq_from_chi0q_and_gamma_PH_new(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto _ = all_t{};
 
@@ -213,14 +215,10 @@ chiq_t chiq_from_chi0q_and_gamma_PH_new(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
         chi0[n, n] = chi0q[w, n, k];
       }
 
-      g2_nn_t denom = I - product<Channel_t::PH>(gamma_ph[w, _, _], chi0);
-      g2_nn_t inv_denom = inverse<Channel_t::PH>(denom);
-      chiq[k, w, _, _] = product<Channel_t::PH>(inv_denom, chi0);
-
-      /*
-      g2_nn_t chi_inv = inverse<Channel_t::PH>(chi0) - gamma_ph[w, _, _];
-      chiq[k, w, _, _] = inverse<Channel_t::PH>(chi_inv);
-      */
+      // this step could be optimized, using the diagonality of chi0 and I
+      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]); 
+      
+      chiq[k, w, _, _] = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0); // also the last product here
     }
   }
 

@@ -72,8 +72,6 @@ module.add_function ("gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q)
 
 module.add_function("chiq_t chiq_from_chi0q_and_gamma_PH(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> gamma_ph)", doc = """""")
 
-module.add_function("chiq_t chiq_from_chi0q_and_gamma_PH_new(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> gamma_ph)", doc = """""")
-
 module.add_function ("gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu(gf_view<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq)", doc = """""")
 
 module.add_function ("gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(gf_view<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq)", doc = """""")
