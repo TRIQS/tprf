@@ -81,7 +81,8 @@ def test_square_lattice_chi00():
         )
 
     e_k = t_r.on_mesh_brillouin_zone(n_k)
-    
+    kmesh = e_k.mesh
+
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
 
     print '--> g0_wk'
@@ -147,6 +148,13 @@ def test_square_lattice_chi00():
     print '--> chi00_wnk'
     chi00_wnk = chi0q_from_chi0r(chi00_wnr)
 
+    # -- Test per k and w calculator for chi0_wnk
+    print '--> chi00_wnk_ref'
+    from triqs_tprf.lattice import chi0q_from_g_wk_PH
+    chi00_wnk_ref = chi0q_from_g_wk_PH(nw=1, nnu=nnu, g_wk=g0_wk)
+
+    np.testing.assert_array_almost_equal(chi00_wnk.data, chi00_wnk_ref.data)
+    
     print '--> chi00_wk_imfreq'
     chi00_wk_imfreq = chi0q_sum_nu(chi00_wnk)
 

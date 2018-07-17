@@ -10,6 +10,8 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import os
 import numpy as np
 
+import pytriqs.utility.mpi as mpi
+
 from pytriqs.gf import Gf, Idx
 from pytriqs.operators import c, c_dag
 from pytriqs.archive import HDFArchive
@@ -177,6 +179,10 @@ def make_calc():
     # -- Lattice BSE calc with built in trace
     from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
     lat_bse.chi_kw_ref = chiq_sum_nu_from_chi0q_and_gamma_PH(lat_bse.chi0_wnk, loc_bse.gamma_wnn)
+
+    # -- Lattice BSE calc with built in trace using g_wk
+    from triqs_tprf.lattice import chiq_sum_nu_from_g_wk_and_gamma_PH
+    lat_bse.chi_kw_tail_corr_ref = chiq_sum_nu_from_g_wk_and_gamma_PH(lat_bse.g_wk, loc_bse.gamma_wnn)
     
     # -- Trace results
     from triqs_tprf.lattice import chi0q_sum_nu_tail_corr_PH
@@ -186,11 +192,13 @@ def make_calc():
 
     from triqs_tprf.lattice import chiq_sum_nu, chiq_sum_nu_q
     lat_bse.chi_kw = chiq_sum_nu(lat_bse.chi_kwnn)
-
+    
     np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
 
     from triqs_tprf.bse import solve_lattice_bse
     lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn)
+
+    np.testing.assert_array_almost_equal(lat_bse.chi_kw_tail_corr.data, lat_bse.chi_kw_tail_corr_ref.data)
     
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]

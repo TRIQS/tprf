@@ -3,6 +3,10 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
+import pytriqs.utility.mpi as mpi
+
+# ----------------------------------------------------------------------
+
 from triqs_tprf.logo import tprf_banner
 
 from triqs_tprf.linalg import inverse_PH
@@ -42,8 +46,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     return chi0_wnk    
         
 # ----------------------------------------------------------------------
-def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=False):
-
+def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=False):
 
     kmesh = g_wk.mesh.components[1]
     bmesh = gamma_wnn.mesh.components[0]
@@ -102,3 +105,32 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=False)
         return chi_kw, chi0_wk_tail_corr
     else:
         return chi_kw
+
+# ----------------------------------------------------------------------
+def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
+
+    kmesh = g_wk.mesh.components[1]
+    bmesh = gamma_wnn.mesh.components[0]
+    fmesh = gamma_wnn.mesh.components[1]
+
+    nk = len(kmesh)
+    nw = (len(bmesh) + 1) / 2
+    nwf = len(fmesh) / 2
+
+    if mpi.is_master_node():    
+        print tprf_banner(), "\n"
+
+        print 'Lattcie BSE with local vertex approximation.\n'
+        print 'nk  = ', nk
+        print 'nw  = ', nw
+        print 'nwf = ', nwf
+        print 'nwf = ', tail_corr_nwf, ' (gf)'
+        print    
+
+    # -- Lattice BSE calc with built in trace using g_wk
+    from triqs_tprf.lattice import chiq_sum_nu_from_g_wk_and_gamma_PH
+
+    chi_kw = chiq_sum_nu_from_g_wk_and_gamma_PH(g_wk, gamma_wnn, tail_corr_nwf=tail_corr_nwf)
+    
+    return chi_kw
+    

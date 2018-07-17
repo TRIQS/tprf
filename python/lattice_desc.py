@@ -62,6 +62,8 @@ module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::compl
 # -- Full BSE functions
 
 module.add_function("chi0r_t chi0r_from_gr_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
+module.add_function("chi0q_t chi0q_from_g_wk_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, brillouin_zone>> g_wk)", doc = """""")
+
 module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
 module.add_function("chi0q_t chi0q_from_chi0r(gf_view<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r)", doc = """""")
 
@@ -73,6 +75,8 @@ module.add_function ("gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q)
 module.add_function("chiq_t chiq_from_chi0q_and_gamma_PH(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> gamma_ph)", doc = """""")
 
 module.add_function("gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from_chi0q_and_gamma_PH(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> gamma_ph)", doc = """""")
+
+module.add_function("gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf=-1)", doc = """""")
 
 module.add_function ("gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu(gf_view<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq)", doc = """""")
 
