@@ -1,4 +1,4 @@
-/*******************************************************************************
+ /*******************************************************************************
  *
  * TRIQS: a Toolbox for Research in Interacting Quantum Systems
  *
@@ -18,10 +18,11 @@
  * TRIQS. If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
-
+ 
 #include <triqs/arrays/linalg/det_and_inverse.hpp>
 using triqs::arrays::inverse;
 
+#include "../mpi.hpp"
 #include "common.hpp"
 #include "gf.hpp"
 
@@ -54,12 +55,26 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
   
+  for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
+      g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
+  g0_wk = mpi_all_reduce(g0_wk);
+
+  return g0_wk;
+}
+
+  /*
+gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
+
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+  
   for (auto const &k : e_k.mesh())
     for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
 
   return g0_wk;
 }
-
+  */
+  
 #endif
 
 // ----------------------------------------------------
@@ -92,12 +107,27 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
   gk_iw_t g_wk =
       make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
 
+  for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
+    g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
+  g_wk = mpi_all_reduce(g_wk);
+
+  return g_wk;
+}
+
+  /*
+gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
+
+  auto mesh = sigma_w.mesh();
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g_wk =
+      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+
   for (auto const &k : e_k.mesh())
     for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
 
   return g_wk;
 }
-
+  */  
 #endif
 
 // ----------------------------------------------------
@@ -140,7 +170,22 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 }
 
 #else
+
+gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
+
+  auto [wmesh, kmesh] = g_wk.mesh();
+  auto rmesh = make_adjoint_mesh(kmesh);
+
+  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, g_wk.target());
+
+  auto _ = all_t{};
+  for ( auto const &w : mpi_view(wmesh) ) g_wr[w, _]() = fourier(g_wk[w, _]);  
+  g_wr = mpi_all_reduce(g_wr);
   
+  return g_wr;
+}
+
+  /*
 gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
   auto [wmesh, kmesh] = g_wk.mesh();
@@ -153,7 +198,8 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
   return g_wr;
 }
-
+  */
+  
 #endif
 
 // ----------------------------------------------------
@@ -205,10 +251,26 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
   gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
 
   auto _ = all_t{};
+  for (auto const &w : mpi_view(wmesh)) g_wk[w, _]() = fourier(g_wr[w, _]);
+  g_wk = mpi_all_reduce(g_wk);
+  
+  return g_wk;
+}
+
+  /*
+gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
+
+  auto [wmesh, rmesh] = g_wr.mesh();
+  auto kmesh = make_adjoint_mesh(rmesh);
+  
+  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
+
+  auto _ = all_t{};
   for (auto const &w : wmesh) g_wk[w, _]() = fourier(g_wr[w, _]);
   
   return g_wk;
 }
+  */
 
 #endif
   
