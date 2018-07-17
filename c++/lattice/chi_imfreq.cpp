@@ -19,7 +19,10 @@
  *
  ******************************************************************************/
 
+#include <triqs/utility/timer.hpp>
+
 #include "../linalg.hpp"
+#include "../mpi.hpp"
 
 #include "common.hpp"
 #include "chi_imfreq.hpp"
@@ -44,45 +47,85 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
   return chi0r;
 }
 
-chi0r_t chi0r_from_chi0q(chi0q_vt chi0q) {
+gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w, mesh_point<cluster_mesh> q,
+						 gf_mesh<imfreq> fmesh, gk_iw_vt g_wk) {
 
-  auto mb = std::get<0>(chi0q.mesh());
-  auto mf = std::get<1>(chi0q.mesh());
-  auto bzmesh = std::get<2>(chi0q.mesh());
-
-  auto clmesh = gf_mesh<cyclic_lattice>{bzmesh.domain().lattice(), bzmesh.periodization_matrix};
+  int nb = g_wk.target().shape()[0];
+  auto [fmesh_large, kmesh] = g_wk.mesh();
   
-  auto chi0r =
-      make_gf<chi0r_t::mesh_t::var_t>({mb, mf, clmesh}, chi0q.target());
+  double beta = fmesh.domain().beta;
 
-  for (auto const &widx : std::get<0>(chi0r.mesh())) {
-    for (auto const &nidx : std::get<1>(chi0r.mesh())) {
-      auto _ = all_t{};
-      //chi0r[widx, nidx, _] = inverse_fourier(chi0q[widx, nidx, _]);
-      chi0r[widx, nidx, _] = fourier(chi0q[widx, nidx, _]);
+  gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
+
+  // 100x times slower
+  //chi0_n(inu)(a, b, c, d) << -beta/kmesh.size() * sum(g_wk(inu, k)(d, a) * g_wk(inu + w, k - q)(b, c), k=kmesh);
+
+  for( auto const & n : fmesh ) {
+    for( auto const & k : kmesh ) {
+      auto g_da = g_wk[n, k];
+      auto g_bc = g_wk[n + w, k - q];
+      for (auto a : range(nb))
+        for (auto b : range(nb))
+          for (auto c : range(nb))
+            for (auto d : range(nb))
+	      chi0_n[n](a, b, c, d) -= g_da(d, a) * g_bc(b, c);
     }
   }
-  return chi0r;
+
+  chi0_n *= beta / kmesh.size();
+
+  return chi0_n;
 }
 
-chi0q_t chi0q_from_chi0r(chi0r_vt chi0r) {
+chi0q_t chi0q_from_g_wk_PH(int nw, int nnu, gk_iw_vt g_wk) {
 
-  auto mb = std::get<0>(chi0r.mesh());
-  auto mf = std::get<1>(chi0r.mesh());
+  auto [fmesh_large, kmesh] = g_wk.mesh();
 
-  auto clmesh = std::get<2>(chi0r.mesh());
-  auto bzmesh = gf_mesh<brillouin_zone>{brillouin_zone{clmesh.domain()}, clmesh.periodization_matrix};
+  int nb = g_wk.target().shape()[0];
+  double beta = std::get<0>(g_wk.mesh()).domain().beta;
+
+  gf_mesh<imfreq> bmesh{beta, Boson, nw};
+  gf_mesh<imfreq> fmesh{beta, Fermion, nnu};
+
+  assert( fmesh.size() < fmesh_large.size() );
   
-  auto chi0q =
-      make_gf<chi0q_t::mesh_t::var_t>({mb, mf, bzmesh}, chi0r.target());
+  chi0q_t chi0_wnk({bmesh, fmesh, kmesh}, {nb, nb, nb, nb});
 
-  for (auto const &widx : std::get<0>(chi0q.mesh())) {
-    for (auto const &nidx : std::get<1>(chi0q.mesh())) {
-      auto _ = all_t{};
-      chi0q[widx, nidx, _] = fourier(chi0r[widx, nidx, _]);
-    }
+  auto _ = all_t{};
+  for( auto const &[w, q] : gf_mesh{bmesh, kmesh} ) {
+    chi0_wnk[w, _, q] = chi0_n_from_g_wk_PH(w, q, fmesh, g_wk);
   }
-  return chi0q;
+
+  return chi0_wnk;
+}
+  
+chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
+
+  auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh();
+  auto rmesh = make_adjoint_mesh(kmesh);
+  
+  auto chi0_wnr = make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
+
+  auto _ = all_t{};
+  for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}) ) chi0_wnr[w, n, _] = fourier(chi0_wnk[w, n, _]);
+  chi0_wnr = mpi_all_reduce(chi0_wnr);
+
+  return chi0_wnr;
+}
+
+chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
+
+  auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
+  auto kmesh = make_adjoint_mesh(rmesh);
+
+  auto chi0_wnk = make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
+
+  auto _ = all_t{};
+  for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}) )
+    chi0_wnk[w, n, _] = fourier(chi0_wnr[w, n, _]);
+  chi0_wnk = mpi_all_reduce(chi0_wnk);
+  
+  return chi0_wnk;
 }
 
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
@@ -99,6 +142,8 @@ chi0q_sum_nu(chi0q_t chi0q) {
   return chi0q_w;
 }
 
+  //  array<std::complex<double>, 4> chi0_n_sum_nu_tail_corr(gf<imfreq> chi0_n)
+  
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
 
@@ -288,6 +333,112 @@ gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from
   return chi_kw;
 } 
 
+  gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf) {
+
+  auto _ = all_t{};
+
+  auto target = gamma_ph_wnn.target();
+  auto [fmesh_large, kmesh] = g_wk.mesh();
+  auto [bmesh, fmesh, fmesh2] = gamma_ph_wnn.mesh();
+
+  double beta = fmesh.domain().beta;
+  
+  auto chi_kw = make_gf<cartesian_product<brillouin_zone, imfreq>>({kmesh, bmesh}, target);
+  
+  auto chi0_n = make_gf<imfreq>(fmesh, target);
+  auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+  auto I = identity<Channel_t::PH>(chi0_nn);
+
+  int nb = gamma_ph_wnn.target_shape()[0];
+
+  gf_mesh<imfreq> fmesh_tail;
+  if( tail_corr_nwf > 0 ) fmesh_tail = gf_mesh<imfreq>{beta, Fermion, tail_corr_nwf};
+  else fmesh_tail = fmesh;
+
+  if( fmesh_tail.size() < fmesh.size() )
+    TRIQS_RUNTIME_ERROR << "BSE: tail size has to be larger than gamma fermi mesh.\n";
+  
+  array<std::complex<double>, 4> tr_chi(gamma_ph_wnn.target_shape());
+  array<std::complex<double>, 4> tr_chi0(gamma_ph_wnn.target_shape());
+  array<std::complex<double>, 4> tr_chi0_tail_corr(gamma_ph_wnn.target_shape());
+
+  
+  for (auto const &[k, w] : mpi_view(gf_mesh{kmesh, bmesh})) {
+
+    triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3, t_chi_tr;
+    
+    // ----------------------------------------------------
+    // Build the bare bubble at k, w
+
+    t_chi0_n.start(); std::cout << "BSE: chi0_n ";
+
+    auto chi0_n_tail = chi0_n_from_g_wk_PH(w, k, fmesh_tail, g_wk);
+    for ( auto const &n : fmesh ) chi0_n[n] = chi0_n_tail(n);
+  
+    std::cout << double(t_chi0_n) << " s\n";
+        
+    // ----------------------------------------------------
+    // trace the bare bubble with and without tail corrections
+
+    t_chi0_tr.start(); std::cout << "BSE: Tr[chi0_n] ";
+    
+    //tr_chi0_tail_corr(a, b, c, d) << density(slice_target_to_scalar(chi0_n, a, b, c, d)) / beta; // does not compile
+    
+    for (auto a : range(nb)) {
+      for (auto b : range(nb)) {
+	for (auto c : range(nb)) {
+	  for (auto d : range(nb)) {
+	    tr_chi0_tail_corr(a, b, c, d) = density(slice_target_to_scalar(chi0_n_tail, a, b, c, d)) / beta;
+	  }
+	}
+      }
+    }
+
+    tr_chi0(a, b, c, d) << sum(chi0_n(inu)(a, b, c, d), inu=fmesh) / (beta * beta);
+
+    std::cout << double(t_chi0_tr) << " s\n";
+
+    // ----------------------------------------------------    
+    // Make two frequency object
+    
+    t_bse_1.start(); std::cout << "BSE: chi0_nn ";
+
+    for (auto const &n : fmesh) chi0_nn[n, n] = chi0_n[n];
+
+    std::cout << double(t_bse_1) << " s\n";
+    
+    // ----------------------------------------------------    
+
+    t_bse_2.start(); std::cout << "BSE: I - chi0 * gamma ";
+    
+    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph_wnn[w, _, _]);
+
+    std::cout << double(t_bse_2) << " s\n";
+    
+    t_bse_3.start(); std::cout << "BSE: chi = [I - chi0 * gamma]^{-1} chi0 ";
+
+    g2_nn_t chi_nn =product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+
+    std::cout << double(t_bse_3) << " s\n";
+
+    // trace out fermionic frequencies
+    std::cout << "BSE: Tr[chi] \n";
+    tr_chi *= 0.0;
+    for ( auto const &[n1, n2] : chi_nn.mesh() ) tr_chi += chi_nn[n1, n2];
+    tr_chi /= beta * beta;
+
+    // 0th order high frequency correction using the bare bubble chi0
+    tr_chi += tr_chi0_tail_corr - tr_chi0;
+    
+    chi_kw[k, w] = tr_chi;
+  }
+
+  chi_kw = mpi_all_reduce(chi_kw);
+
+  return chi_kw;
+} 
+
+  
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu(chiq_t chiq) {
 
