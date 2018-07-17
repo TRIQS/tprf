@@ -1,6 +1,8 @@
 
 import numpy as np
 
+import pytriqs.utility.mpi as mpi
+
 from pytriqs.gf import Gf, MeshImFreq, MeshProduct
 from pytriqs.gf import MeshBrillouinZone, MeshCyclicLattice
 from pytriqs.lattice import BrillouinZone, BravaisLattice
