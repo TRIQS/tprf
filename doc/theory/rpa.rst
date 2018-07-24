@@ -6,46 +6,22 @@ Random phase approximation (RPA)
 Interaction
 -----------
 
+In `triqs` the interaction Hamiltonian is represented as a sum of monomials of quartic operators
+
 .. math::
    H_{int} =
-   \sum_{abcd} V(\bar{a}\bar{b}cd) \,\, \bar{a} \bar{b} c d
+   \sum_{ \{\bar{a}\bar{b}cd \}_s} V(\bar{a}\bar{b}cd) \,\, \bar{a} \bar{b} c d
 
-Hermicity
-   
-.. math::
-   H_{int} = H_{int}^{\dagger}
-
-.. math::
-   \Big[ V(\bar{a}\bar{b}cd) \,\, \bar{a}\bar{b}cd  \Big]^\dagger
-   =
-   V^*(\bar{a}\bar{b}cd) \,\, \bar{d} \bar{c} b a
-   =
-   V(\bar{d}\bar{c}ba) \,\, \bar{d} \bar{c} b a
-   
-.. math::
-   V^*(\bar{a}\bar{b}cd) = V(\bar{d}\bar{c}ba)
-
-.. math::
-   V(\bar{a}\bar{b}cd) = V^*(\bar{d}\bar{c}ba)
+where the sum runs over all unique sets of :math:`\bar{a}\bar{b}cd` of normal ordered and lexicographically ordered operators.
 
 .. note::
 
-   **Techincal detail:** In TRIQS :math:`H_{int}` is represented with normal ordered operators where the indices of the operators are sorted in lexicographical order for the creation operators and reverse lexicographical order for the annihilation operators.
+   This is a unique representation of the Hamiltonian and a unique representation of the prefactor :math:`V(\bar{a}\bar{b}cd)`, in contrast to representations where we allow any permutation of :math:`\bar{a}\bar{b}` and :math:`cd`.
 
-   For this reason the interaction tensor :math:`\tilde{V}(\bar{a}\bar{b}cd)` obtained from :math:`H_{int}` has to be "up-folded" to all permutations of annihilation and creation operator pairs, respectively
+RPA tensor
+----------
 
-   .. math::
-      V(\bar{a}\bar{b}cd) =
-      \frac{1}{4}
-      \Big[
-        \tilde{V}(\bar{a}\bar{b}cd)
-        - \tilde{V}(\bar{b}\bar{a}cd)
-	+ \tilde{V}(\bar{b}\bar{a}dc)
-	- \tilde{V}(\bar{a}\bar{b}dc)
-      \Big]
-
-RPA susceptibility in the particle-hole channel (PH)
-----------------------------------------------------
+In RPA we approximate the vertex :math:`\Gamma` in the Bethe-Salpeter equation
 
 .. math::
    \chi^{(PH)}(\bar{a}b\bar{c}d) =
@@ -54,58 +30,72 @@ RPA susceptibility in the particle-hole channel (PH)
      \Gamma^{(PH)}(q\bar{p}s\bar{r}) \,
      \chi^{(PH)}(\bar{r}s\bar{c}d)
 
-RPA approximation in the particle hole channel (PH)
-
-.. math::
-   \Gamma^{(PH)}(q\bar{p}s\bar{r}) \approx \pm V(\bar{p}\bar{r}qs)
-
-.. note::
-   Figure out the sign in the prefactor of the RPA approximation for :math:`\Gamma^{(PH)}`.
-   
-.. math::
-   \chi^{(PH)}_{RPA}(\bar{a}b\bar{c}d) =
-   \chi_0(\bar{a}b\bar{c}d)
-   + \chi_0(\bar{a}b\bar{p}q) \,
-     V(\bar{p}\bar{r}qs) \,
-     \chi^{(PH)}_{RPA}(\bar{r}s\bar{c}d)
-
-**Alternative 1**
-
-.. math::
-   \chi = \chi_0 + \chi_0 V \chi
+by a constant rank 4 tensor :math:`U(\bar{a}b\bar{c}d)`
      
 .. math::
-   \chi_0^{-1} = \chi^{-1} + V
+   \Gamma^{(PH)}(q\bar{p}s\bar{r}) \approx U(q\bar{p}s\bar{r})
+
+To determine the relation between :math:`U(\bar{a}b\bar{c}d)` and :math:`V(\bar{a}\bar{b}cd)` we expand :math:`\chi` to first order in :math:`V`
+
+The generalized susceptibility is defined as
 
 .. math::
-   \chi_0^{-1} - V = \chi^{-1} 
+   \chi(\bar{a}b\bar{c}d) =
+   \langle \bar{a}b\bar{c}d \rangle
+   - \langle b \bar{a} \rangle \langle d \bar{c} \rangle
 
+to zeroth order in :math:`V` we get the bare susceptibility
+     
 .. math::
-   [1 - V \chi_0] \, \chi_0^{-1} = \chi^{-1} 
+   [\chi]_0 = \chi_0 = - \langle d\bar{a} \rangle \langle b \bar{c} \rangle
 
-.. math::
-   \chi_0 \, [1 - V \chi_0]^{-1} = \chi
-
-
-**Alternative start** (becomes equivalent in 2nd step, ok)
-
-.. math::
-   \chi = \chi_0 + \chi V \chi_0
-
-.. math::
-   \chi_0^{-1} = \chi^{-1} + V
-
-
-**Alternative ending** 
-
-.. math::
-   \chi_0^{-1} - V = \chi^{-1} 
-
-.. math::
-   \chi_0^{-1} \, [ 1 - \chi_0 V ] = \chi^{-1}
+the first order is given by
    
 .. math::
-   [ 1 - \chi_0 V ]^{-1} \, \chi_0 = \chi
-   
+   [\chi]_1 =
+   - \langle \bar{a}b\bar{c}d H_{int} \rangle
+   + \langle b \bar{a} H_{int} \rangle \langle d \bar{c} \rangle
+   + \langle b \bar{a} \rangle \langle d \bar{c} H_{int} \rangle
+   \\ =
+   \sum_{ \{\bar{A}\bar{B}CD \}_s }
+   V(\bar{A}\bar{B}CD)
+   \langle \bar{a}\bar{c} CD \rangle \langle bd \bar{A}\bar{B} \rangle
 
-\Tr[ V ... V ]
+where we in the last step perform the restricted summation over unique interaction terms, as defined above, and use the fact that all contractions of :math:`d\bar{c}` and :math:`b\bar{a}` in the first term are canceled by the two last terms.
+
+Performing the Wick contraction of the result and pairing the quadratic expectation values into :math:`\chi_0` terms gives
+
+.. math::
+   [\chi]_1 =
+   \sum_{ \{ \bar{A}\bar{B}CD \}_s}
+   V(\bar{A}\bar{B}CD)
+   \Big[
+     \chi_0(\bar{a}b \bar{A}C) \chi_0(\bar{B}D\bar{c}d) 
+   - \chi_0(\bar{a}b \bar{A}D) \chi_0(\bar{B}C\bar{c}d) \\
+   - \chi_0(\bar{a}b \bar{B}C) \chi_0(\bar{A}D\bar{c}d)
+   + \chi_0(\bar{a}b \bar{B}D) \chi_0(\bar{A}C\bar{c}d)
+   \Big]
+
+by defining the tensor :math:`U` as
+
+.. math::
+   U(\bar{A}C\bar{B}D) = + V(\bar{A}\bar{B}CD)\\
+   U(\bar{A}D\bar{B}C) = - V(\bar{A}\bar{B}CD)\\
+   U(\bar{B}C\bar{A}D) = - V(\bar{A}\bar{B}CD)\\
+   U(\bar{B}D\bar{A}C) = + V(\bar{A}\bar{B}CD)
+
+we can rewrite the above equation as an unrestricted sum over :math:`U(\bar{A}B\bar{C}D)`
+   
+.. math::
+   [\chi]_1 =
+   \sum_{ \bar{A}B\bar{C}D }
+     \chi_0(\bar{a}b\bar{A}B)
+     U(\bar{A}B\bar{C}D)
+     \chi_0(\bar{C}D\bar{c}d)
+
+which determines that the RPA :math:`U(\bar{A}C\bar{B}D)` tensor transforms as the prefactor of
+
+.. math::
+   -V(\bar{A}\bar{B}CD) \bar{A}\bar{B}CD
+
+under permutations of the indices.
