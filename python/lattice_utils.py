@@ -341,7 +341,7 @@ def extend_data_on_boundary(values, nk):
     return values_ext, k_vec_rel_ext, (kxe, kye, kze)
 
 # ----------------------------------------------------------------------
-def k_space_path(paths, num=100):
+def k_space_path(paths, num=100, bz=None):
 
     """ High symmetry path k-vector generator.
 
@@ -349,6 +349,7 @@ def k_space_path(paths, num=100):
     paths : list of tuples of pairs of 3-vectors of k-points to
     make the path in between 
     num (optional) : number of k-vectors along each segment of the path
+    bz (optional) : Brillouin zone, used to rescale from reative to absolute k-space lengths
 
     Returns:
     k_vecs: ndarray.shape = (n_k, 3) with all k-vectors. 
@@ -356,6 +357,11 @@ def k_space_path(paths, num=100):
     K_plot: ndarray.shape = (n_paths) positions of the start and end of each path 
     """
 
+    if bz is None:
+        cell = np.eye(3)
+    else:
+        cell = bz.units()
+    
     k_vecs = []
 
     for path in paths:
@@ -365,11 +371,17 @@ def k_space_path(paths, num=100):
 
         k_vecs.append(k_vec)
 
-    k_plot = np.linalg.norm(k_vecs[0] - k_vecs[0][0][None, :], axis=1)
+    def rel_to_abs(k_vec, cell):
+        return np.einsum('ba,ib->ia', cell, k_vec)
+
+    k_vec = k_vecs[0]
+    k_vec_abs = rel_to_abs(k_vec, cell)
+    k_plot = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1)
 
     K_plot = [0.]
     for kidx, k_vec in enumerate(k_vecs[1:]):
-        k_plot_new = np.linalg.norm(k_vec - k_vec[0][None, :], axis=1) + k_plot[-1]
+        k_vec_abs = rel_to_abs(k_vec, cell)
+        k_plot_new = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1) + k_plot[-1]
         K_plot.append(k_plot[-1])
         k_plot = np.concatenate((k_plot, k_plot_new))
 
