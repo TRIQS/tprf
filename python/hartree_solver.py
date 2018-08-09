@@ -457,6 +457,7 @@ class BaseResponse(object):
         self.norb = self.e_k.target_shape[0]
         self.shape_ab = self.e_k.target_shape
         self.shape_abcd = list(self.shape_ab) + list(self.shape_ab)
+        self.shape_AB = (self.norb**2, self.norb**2)
 
         I_ab = np.eye(self.norb)
         self.e_k.data[:] -= self.solver.mu * I_ab
@@ -478,23 +479,23 @@ class BaseResponse(object):
         rho_m = np.einsum('kab,kb,kcb->kac', U_m, fermi(e_m, beta), np.conj(U_m))
 
         drho = (rho_p - rho_m) / (2. * eps)
-        drho = np.sum(drho, axis=0) / len(e_k.mesh)
+        drho = np.sum(drho, axis=0) / len(self.e_k.mesh)
 
         return drho
 
     # ----------------------------------------------------------------------
-    def _compute_R_ab(self):
+    def _compute_chi0_ab(self):
 
-        R_ab = np.zeros(self.shape_ab, dtype=np.complex)
+        chi0_ab = np.zeros(self.shape_ab, dtype=np.complex)
 
         for a in range(self.norb):
-            F_a = np.zeros(shape)
+            F_a = np.zeros(self.shape_ab)
             F_a[a, a] = 1.
 
-            R_b = -np.diag(self._drho_dop(F_a))
-            R_ab[a] = R_b
+            chi0_b = -np.diag(self._compute_drho_dop(F_a))
+            chi0_ab[a] = chi0_b
 
-        return R_ab
+        return chi0_ab
 
     # ----------------------------------------------------------------------
     def _compute_R_abcd(self, field_prefactor=1.):
@@ -503,11 +504,11 @@ class BaseResponse(object):
 
         for a, b in itertools.product(range(self.norb), repeat=2):
 
-            F_ab = np.zeros(shape, dtype=np.complex)
-            F_ab[a, b] += scale
-            F_ab[b, a] += np.conj(scale)
+            F_ab = np.zeros(self.shape_ab, dtype=np.complex)
+            F_ab[a, b] += field_prefactor
+            F_ab[b, a] += np.conj(field_prefactor)
 
-            R_cd = -self._drho_dop(F_ab)
+            R_cd = -self._compute_drho_dop(F_ab)
             R_abcd[b, a, :, :] = R_cd
 
         return R_abcd
@@ -521,7 +522,6 @@ class BaseResponse(object):
         chi0_abcd = 0.5 * (R_r_abcd + R_i_abcd.imag)
 
         return chi0_abcd
-    
 
 # ----------------------------------------------------------------------
 class HartreeResponse(BaseResponse):
@@ -532,7 +532,7 @@ class HartreeResponse(BaseResponse):
         
         I_ab = np.eye(self.norb)
         U_ab = np.mat(self.solver.U_ab)
-        chi0_ab = np.mat(chi0_mat(self.e_k, self.beta, eps=self.eps))        
+        chi0_ab = np.mat(self._compute_chi0_ab())
         chi_ab = chi0_ab * np.linalg.inv(I_ab - U_ab * chi0_ab)
 
         self.chi0_ab = np.array(chi0_ab)
@@ -564,48 +564,32 @@ class HartreeResponse(BaseResponse):
         return chi_op1op2        
 
 # ----------------------------------------------------------------------
-class HartreeFockResponse(object):
+class HartreeFockResponse(BaseResponse):
 
     def __init__(self, hartree_fock_solver, eps=1e-9):
 
-        self.hfs = hartree_fock_solver
-        self.eps = eps
-
-        I_ab = np.eye(self.hfs.norb)
+        super(HartreeFockResponse, self).__init__(hartree_fock_solver)
+        self.hfs = self.solver
         
-        self.beta = self.hfs.beta
-        
-        self.e_k = self.hfs.e_k_MF.copy()
-        self.e_k.data[:] -= self.hfs.mu * I_ab
-
-        # -- RPA full rank 4 tensor calculation
-        
-        U_abcd = self.hfs.U_abcd
-        chi0_abcd = chi0_tensor(self.e_k, self.beta, eps=self.eps)  
-
-        n = self.hfs.norb
-        shape = (n**2, n**2)
-        tensor_shape = (n, n, n, n)
-
-        to_matrix = lambda T : np.matrix(T.reshape(shape))
-        to_tensor = lambda M : np.array(M).reshape(tensor_shape)
-                
-        I_AB = np.matrix(np.eye(n**2))
-        U_AB = to_matrix(U_abcd)
-
-        chi0_AB = to_matrix(chi0_abcd)
+        I_AB = np.matrix(np.eye(self.shape_AB[0]))
+        U_AB = self._to_matrix_AB(self.hfs.U_abcd)
+        chi0_AB = self._to_matrix_AB(self._compute_chi0_abcd())
         
         chi_AB = np.linalg.inv(I_AB - chi0_AB * U_AB) * chi0_AB
 
-        chi_abcd = to_tensor(chi_AB)
+        self.chi0_abcd = self._to_tensor_abcd(chi0_AB)
+        self.chi_abcd = self._to_tensor_abcd(chi_AB)
 
-        self.chi0_abcd = chi0_abcd
-        self.chi_abcd = chi_abcd
+    def _to_matrix_AB(self, tensor_abcd):
+        matrix_AB = np.matrix(tensor_abcd.reshape(self.shape_AB))
+        return matrix_AB
 
+    def _to_tensor_abcd(self, matrix_AB):
+        tensor_abcd = np.array(matrix_AB).reshape(self.shape_abcd)
+        return tensor_abcd
+    
     def __check_op(self, op):
-        """ Operators have to be diagonal in the Hartree approx """
-        
-        assert( op.shape == self.e_k.target_shape )
+        assert( op.shape == self.shape_ab )
         
     def bare_response(self, op1, op2):
 
