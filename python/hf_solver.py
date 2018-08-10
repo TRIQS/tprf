@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-""" TRIQS: Density-Density Mean-Field solver
+""" TRIQS: Hartree-Fock Solver
+
+for systems with general dispersion and local interaction
 
 Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 """
@@ -21,37 +23,25 @@ from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
 # ----------------------------------------------------------------------
-def extract_dens_dens(chi_abcd):
-    norb = chi_abcd.shape[0]
-    chi_ab = np.zeros((norb, norb), dtype=np.complex)
-    for i1, i2 in itertools.product(range(norb), repeat=2):
-        chi_ab[i1, i2] = chi_abcd[i1, i1, i2, i2]
+class HartreeFockSolver(object):
 
-    return chi_ab
-
-# ----------------------------------------------------------------------
-class HartreeSolver(object):
-
+    """ TRIQS: Hartree-Fock solver """
+        
     # ------------------------------------------------------------------
     def __init__(self, e_k, beta, H_int=None, gf_struct=None,
                  mu0=0., mu_max=10, mu_min=-10.):
-        """ TRIQS: Hartree solver (density-density)
-
+        """
         Parameters:
 
         e_k : single-particle dispersion
-        U_mat : density-density interaction matrix
+        beta : inverse temperature
+        H_int : Local interaction Hamiltonian
+        gf_struct : gf_struct fixing orbital order between e_k and H_int
+        mu0 : chemical potential
         mu_min, mu_max : range for chemical potential search
-        
         """
 
-        logo = """
-╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐
- ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤ 
- ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└  
-TRIQS: Hartree-Fock solver
-"""
-        print logo
+        print self.logo()
         
         self.mu = mu0
         self.beta = beta
@@ -68,7 +58,11 @@ TRIQS: Hartree-Fock solver
         self.shape_abcd = list(self.shape_ab) * 2
 
         self.norb = self.target_shape[0]
+        self.triu_idxs = np.triu_indices(self.norb, k=1)
 
+        print 'H_int =', H_int
+        print 'beta =', self.beta
+        print 'mu =', self.mu
         print 'bands =', self.norb
         print 'n_k =', len(self.e_k.mesh)
         print
@@ -83,13 +77,9 @@ TRIQS: Hartree-Fock solver
 
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
             self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
-            self.U_ab = extract_dens_dens(self.U_abcd)
 
         else:
             self.U_abcd = np.zeros(self.shape_abcd)
-            self.U_ab = np.zeros(self.shape_ab)
-
-        assert( self.e_k.target_shape == self.U_ab.shape )
         
     # ------------------------------------------------------------------
     def update_mean_field(self, rho_ab):
@@ -380,60 +370,64 @@ TRIQS: Hartree-Fock solver
 
     # ------------------------------------------------------------------
     def mat2vec(self, mat):
+        """ Converts a unitary matrix to a vector representation
+        with the order
+
+        i) the real diagonal entries
+        ii) the real part of the upper triangular entries
+        ii) the imaginary part of the upper triangular entries
+        """
+        
+        assert( len(mat.shape) == 2 )
+
+        diag = np.diag(mat).real
+        up_tri = mat[self.triu_idxs]
+
+        vec = np.concatenate((diag, up_tri.real, up_tri.imag))        
+
+        return vec
+
+    # ------------------------------------------------------------------
+    def vec2mat(self, vec):
+        """ Converts from vector representation to a unitary matrix
+        see mat2vec(...) for details. """
+
+        assert( len(vec.shape) == 1 )
+
+        mat = np.zeros(self.shape_ab, dtype=np.complex)
+
+        diag, up_tri = vec[:self.norb], vec[self.norb:]
+        re, im = np.split(up_tri, 2)
+        
+        mat[self.triu_idxs] = re + 1.j * im
+
+        mat += np.conj(mat).T # reconstruct lower triangle
+        mat += np.diag(diag) # add diagonal
+
+        return mat
+    
+    # ------------------------------------------------------------------
+    def logo(self):
+        
+        logo = """
+╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐
+ ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤ 
+ ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└  
+TRIQS: Hartree-Fock solver
+"""
+        return logo
+    
+# ----------------------------------------------------------------------
+class HartreeSolver(HartreeFockSolver):
+
+    # ------------------------------------------------------------------
+    def mat2vec(self, mat):
         assert( len(mat.shape) == 2 )
         return np.diag(mat).real
 
     # ------------------------------------------------------------------
     def vec2mat(self, vec):
         assert( len(vec.shape) == 1 )
-        return np.diag(vec.real)    
-    
-# ----------------------------------------------------------------------
-class HartreeFockSolver(HartreeSolver):
+        return np.diag(vec.real)
 
-    # ------------------------------------------------------------------
-    def mat2vec(self, mat):
-        assert( len(mat.shape) == 2 )
-
-        diag = np.diag(mat).real
-
-        idx = np.triu_indices(mat.shape[0], k=1)
-        up_tri = mat[idx]
-
-        vec = np.concatenate((diag, up_tri.real, up_tri.imag))        
-
-        if False:
-            print '-'*72
-            print 'vec =', vec
-            print 'mat =\n', mat
-            print '-'*72
-        
-        return vec
-
-    # ------------------------------------------------------------------
-    def vec2mat(self, vec):
-
-        assert( len(vec.shape) == 1 )
-
-        n = self.norb
-        diag, up_tri = vec[:n], vec[n:]
-
-        mat = np.zeros((n, n), dtype=np.complex)
-
-        re, im = np.split(up_tri, 2)
-
-        idx = np.triu_indices(mat.shape[0], k=1)
-        mat[idx] = re + 1.j * im
-
-        mat = mat + np.conj(mat).T
-        mat += np.diag(diag)
-
-        if False:
-            print '-'*72
-            print 'vec =', vec
-            print 'mat =\n', mat
-            print '-'*72
-        
-        return mat
-    
 # ----------------------------------------------------------------------

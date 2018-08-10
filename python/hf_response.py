@@ -8,7 +8,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 import itertools
 import numpy as np
-        
+
 # ----------------------------------------------------------------------
 class BaseResponse(object):
 
@@ -91,46 +91,6 @@ class BaseResponse(object):
         return chi0_abcd
 
 # ----------------------------------------------------------------------
-class HartreeResponse(BaseResponse):
-
-    def __init__(self, hartree_solver, eps=1e-9):
-
-        super(HartreeResponse, self).__init__(hartree_solver)
-        
-        I_ab = np.eye(self.norb)
-        U_ab = np.mat(self.solver.U_ab)
-        chi0_ab = np.mat(self._compute_chi0_ab())
-        chi_ab = chi0_ab * np.linalg.inv(I_ab - U_ab * chi0_ab)
-
-        self.chi0_ab = np.array(chi0_ab)
-        self.chi_ab = np.array(chi_ab)
-
-    def __check_op(self, op):
-        """ Operators have to be diagonal in the Hartree approx """
-        
-        assert( op.shape == self.e_k.target_shape )
-        np.testing.assert_almost_equal(
-            op - np.diag(np.diag(op)), np.zeros_like(op))
-        
-    def bare_response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi0_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi0_ab, op2)
-
-        return chi0_op1op2
-
-    def response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi_ab, op2)
-
-        return chi_op1op2        
-
-# ----------------------------------------------------------------------
 class HartreeFockResponse(BaseResponse):
 
     def __init__(self, hartree_fock_solver, eps=1e-9):
@@ -175,5 +135,53 @@ class HartreeFockResponse(BaseResponse):
         chi_op1op2 = np.einsum('ab,abcd,cd->', op1, self.chi_abcd, op2)
 
         return chi_op1op2
+
+# ----------------------------------------------------------------------
+class HartreeResponse(BaseResponse):
+
+    def __init__(self, hartree_solver, eps=1e-9):
+
+        super(HartreeResponse, self).__init__(hartree_solver)
+        
+        I_ab = np.eye(self.norb)
+        U_ab = np.mat(self.extract_dens_dens(self.solver.U_abcd))
+        chi0_ab = np.mat(self._compute_chi0_ab())
+        chi_ab = chi0_ab * np.linalg.inv(I_ab - U_ab * chi0_ab)
+
+        self.chi0_ab = np.array(chi0_ab)
+        self.chi_ab = np.array(chi_ab)
+
+    def __check_op(self, op):
+        """ Operators have to be diagonal in the Hartree approx """
+        
+        assert( op.shape == self.e_k.target_shape )
+        np.testing.assert_almost_equal(
+            op - np.diag(np.diag(op)), np.zeros_like(op))
+        
+    def bare_response(self, op1, op2):
+
+        self.__check_op(op1)
+        self.__check_op(op2)
+        
+        chi0_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi0_ab, op2)
+
+        return chi0_op1op2
+
+    def response(self, op1, op2):
+
+        self.__check_op(op1)
+        self.__check_op(op2)
+        
+        chi_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi_ab, op2)
+
+        return chi_op1op2
+
+    def extract_dens_dens(self, chi_abcd):
+        norb = chi_abcd.shape[0]
+        chi_ab = np.zeros((norb, norb), dtype=np.complex)
+        for i1, i2 in itertools.product(range(norb), repeat=2):
+            chi_ab[i1, i2] = chi_abcd[i1, i1, i2, i2]
+
+        return chi_ab    
 
 # ----------------------------------------------------------------------

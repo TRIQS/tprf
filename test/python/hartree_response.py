@@ -27,7 +27,7 @@ from triqs_tprf.lattice import solve_rpa_PH
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.hf_solver import HartreeSolver, extract_dens_dens
+from triqs_tprf.hf_solver import HartreeSolver
 from triqs_tprf.hf_response import HartreeResponse, HartreeFockResponse
 
 # ----------------------------------------------------------------------
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
 
     chi0_abcd = chi0_wk[Idx(0), Idx(0,0,0)].copy()
-    chi0_ab = extract_dens_dens(chi0_abcd)
+    chi0_ab = hr.extract_dens_dens(chi0_abcd)
     chi0_SzSz = np.einsum('ab,abcd,cd->', Sz, chi0_abcd, Sz)
 
     print 'chi0_abcd diff =', np.max(np.abs(chi0_abcd - hfr.chi0_abcd))
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     chi_wk = solve_rpa_PH(chi0_wk, hs.U_abcd)
 
     chi_abcd = chi_wk[Idx(0), Idx(0,0,0)].copy()
-    chi_ab = extract_dens_dens(chi_abcd)
+    chi_ab = hr.extract_dens_dens(chi_abcd)
 
     chi_SzSz = np.einsum('aa,ab,bb->', Sz, chi_ab, Sz)
     chi_SzSz_2 = np.einsum('ab,abcd,cd->', Sz, chi_abcd, Sz)
