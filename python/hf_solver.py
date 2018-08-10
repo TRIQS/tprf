@@ -21,130 +21,6 @@ from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
 # ----------------------------------------------------------------------
-def fermi_distribution_function(E, beta):
-    I = np.eye(E.shape[0], dtype=np.complex)
-    return np.mat(np.linalg.inv(expm(beta * E) + I))
-
-# ----------------------------------------------------------------------
-def local_density_matrix_g_wk(g_wk):
-
-    # -- Local Gf
-    g0_w = g0_wk[:, Idx(0,0,0)].copy()
-    g0_w << 0.
-
-    kmesh = g_wk.mesh.components[1]
-
-    for k in kmesh:
-        g0_w += g0_wk[:, k]
-    g0_w /= len(kmesh)
-
-    rho = g0_w.density()
-
-    return rho
-
-# ----------------------------------------------------------------------
-def chi0_op_accurate(e_k, beta, op, eps=1e-9):
-
-    shape = e_k.target_shape
-    drho = np.zeros(shape, dtype=np.complex)
-
-    for k in kmesh:
-
-        e = e_k[k]
-
-        rho_p = fermi_distribution_function(e + eps*op, beta)
-        rho_m = fermi_distribution_function(e - eps*op, beta)
-        drho += (rho_p - rho_m) / (2. * eps)
-        
-    drho /= len(kmesh)
-
-    return -drho
-
-# ----------------------------------------------------------------------
-def rho_mf(e_k, beta, M=None, mu=None):
-
-    if M is None:
-        M = np.zeros(e_k.target_shape)
-    if mu is None:
-        mu = 0.
-
-    I = np.eye(e_k.target_shape[0])
-        
-    E = e_k.data.copy() + M[None, ...] - mu * I[None, ...]
-
-    e, V = np.linalg.eigh(E)
-
-    fermi = lambda e, beta: 1./(np.exp(beta * e) + 1)
-
-    rho = np.einsum('kab,kb,kcb->ac', V, fermi(e, beta), np.conj(V))
-    rho /= len(e_k.mesh)
-
-    return rho
-
-# ----------------------------------------------------------------------
-def fix_chemical_potential(e_k, beta, N, mu0=0.):
-
-    def target_function(mu):
-        norb = e_k.target_shape[0]
-        rho = rho_mf(e_k, beta, -mu * np.eye(norb))
-        n = np.sum(np.diag(rho)).real
-        return n - N
-
-    #from scipy.optimize import fsolve
-    #mu = fsolve(target_function, mu0)
-
-    from scipy.optimize import brentq
-    mu = brentq(target_function, -10., 10.)
-    #print 'fzero, result=', mu
-
-    return [mu]
-
-# ----------------------------------------------------------------------
-def local_density_matrix(e_k, beta):
-
-    shape = e_k.target_shape
-    rho = np.zeros(shape, dtype=np.complex)
-
-    for k in kmesh:
-        rho += fermi_distribution_function(e_k[k], beta)
-    rho /= len(kmesh)
-
-    return rho
-
-# ----------------------------------------------------------------------
-def tr_op_chi_wk_op(op1, chi_wk, op2):
-    
-    chi_O1O2 = chi_wk[0, 0, 0, 0].copy()
-    chi_O1O2.data[:] = np.einsum(
-        'wqabcd,ab,cd->wq', chi_wk.data, op1, op2)[:, :]
-
-    return chi_O1O2
-
-# ----------------------------------------------------------------------
-def U_matrix_kanamori_dens_dens(norb, U, J):
-
-    Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb/2))
-
-    Oidx = np.diag(np.kron(np.eye(2), np.diag(range(norb/2))))
-    Sidx = np.diag(Sz)
-
-    U_mat = np.zeros((norb, norb))
-    for i1, i2 in itertools.product(range(norb), repeat=2):
-        s1, s2 = Sidx[i1], Sidx[i2]
-        o1, o2 = Oidx[i1], Oidx[i2]
-
-        if o1 == o2:
-            if s1 != s2:
-                U_mat[i1, i2] = U
-        else:
-            if s1 == s2:
-                U_mat[i1, i2] = U - 3*J
-            else:
-                U_mat[i2, i1] = U - 2*J
-
-    return U_mat
-
-# ----------------------------------------------------------------------
 def extract_dens_dens(chi_abcd):
     norb = chi_abcd.shape[0]
     chi_ab = np.zeros((norb, norb), dtype=np.complex)
@@ -170,10 +46,10 @@ class HartreeSolver(object):
         """
 
         logo = """
-╔╦╗╦═╗╦╔═╗ ╔═╗  ┌┬┐┌─┐
- ║ ╠╦╝║║═╬╗╚═╗  │││├┤ 
+╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐
+ ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤ 
  ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└  
-TRIQS: Mean-Field solver
+TRIQS: Hartree-Fock solver
 """
         print logo
         
@@ -197,10 +73,12 @@ TRIQS: Mean-Field solver
         print
 
         if gf_struct is None:
-            assert( H_int is None )
+            assert( H_int is None ), \
+                'Error: gf_struct = None, but H_int is not None'
 
         if H_int is not None:
-            assert( gf_struct is not None )
+            assert( gf_struct is not None ), \
+                'Error: H_int = None, but gf_struct is not None'
 
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
             self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
@@ -215,6 +93,7 @@ TRIQS: Mean-Field solver
     # ------------------------------------------------------------------
     def update_mean_field(self, rho_diag):
         self.M = np.diag( np.dot( -self.U_ab, rho_diag) )
+        return self.M
     
     # ------------------------------------------------------------------
     def update_mean_field_dispersion(self):
@@ -240,15 +119,22 @@ TRIQS: Mean-Field solver
         self.mu = mu        
 
     # ------------------------------------------------------------------
-    def update_density_matrix(self):
+    def update_momentum_density_matrix(self):
 
         e, V = np.linalg.eigh(self.e_k_MF.data)
         e -= self.mu
         
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
 
-        rho = np.einsum('kab,kb,kcb->ac', V, fermi(e), np.conj(V))
-        rho /= len(self.e_k_MF.mesh)
+        self.rho_k = np.einsum('kab,kb,kcb->kac', V, fermi(e), np.conj(V))
+
+        return self.rho_k
+
+    # ------------------------------------------------------------------
+    def update_density_matrix(self):
+
+        rho_k = self.update_momentum_density_matrix()
+        rho = np.sum(rho_k, axis=0) / len(self.e_k_MF.mesh)
 
         self.rho = rho
         self.N_tot = np.sum(np.diag(self.rho))
@@ -256,11 +142,52 @@ TRIQS: Mean-Field solver
         return np.diag(self.rho).real
 
     # ------------------------------------------------------------------
-    def density_matrix_step(self, rho_diag):
+    def update_non_int_free_energy(self):
+
+        e = np.linalg.eigvalsh(self.e_k_MF.data)
+        e -= self.mu
+        
+        self.Omega0 = -1./self.beta * np.sum( np.log(1. + np.exp(-self.beta*e)) )
+        self.Omega0 /= len(self.e_k_MF.mesh)
+        
+        return self.Omega0
+
+    # ------------------------------------------------------------------
+    def update_kinetic_energy(self):
+
+        rho_k = self.update_momentum_density_matrix()
+        self.E_kin = np.einsum('kab,kba->', self.e_k.data, self.rho_k)
+        self.E_kin /= len(self.e_k.mesh)
+
+        return self.E_kin
+        
+    # ------------------------------------------------------------------
+    def update_interaction_energy(self):
+
+        self.E_int = 0.5 * np.einsum('aa,ab,bb->', self.rho, self.U_ab, self.rho)
+
+        return self.E_int        
+        
+    # ------------------------------------------------------------------
+    def update_total_energy(self):
+        E_kin = self.update_kinetic_energy()
+        E_int = self.update_interaction_energy()
+        self.E_tot = E_kin + E_int
+
+        self.update_non_int_free_energy()
+        self.Omega = self.Omega0 + self.E_int
+
+        return self.E_tot
+        
+    # ------------------------------------------------------------------
+    def density_matrix_step(self, rho_diag, N_target=None):
         
         self.update_mean_field(rho_diag)
         self.update_mean_field_dispersion()
-        self.update_chemical_potential(self.N_target, mu0=self.mu)
+
+        if N_target is not None:
+            self.update_chemical_potential(N_target, mu0=self.mu)
+            
         rho_diag = self.update_density_matrix()
 
         return rho_diag
@@ -323,7 +250,7 @@ TRIQS: Mean-Field solver
             rho_vec.append(rho_diag)
 
             rho_diag_old = np.copy(rho_diag)
-            rho_diag_new = self.density_matrix_step(rho_diag)
+            rho_diag_new = self.density_matrix_step(rho_diag, N_target)
 
             drho = np.linalg.norm(rho_diag_old - rho_diag_new) / np.linalg.norm(rho_diag_old)
             print 'MF: iter, drho = %3i, %2.2E' % (idx, drho)
@@ -335,8 +262,10 @@ TRIQS: Mean-Field solver
 
             rho_diag = (1. - mixing) * rho_diag_old + mixing * rho_diag_new
 
+        self.update_total_energy()
+        print self.__str__()
+
         rho_vec = np.array(rho_vec)
-        
         return rho_vec
 
     # ------------------------------------------------------------------
@@ -356,15 +285,51 @@ TRIQS: Mean-Field solver
         rho0_diag = self.solve_setup(N_target, M0, mu0)
         
         def target_function(rho_diag):
+            rho_diag_new = self.density_matrix_step(rho_diag, N_target)
+            return rho_diag_new - rho_diag
+            
+        rho_diag = fsolve(target_function, rho0_diag)
+
+        self.update_total_energy()
+        print self.__str__()
+        
+        self.density_matrix_step(rho_diag)
+
+    # ------------------------------------------------------------------
+    def solve_newton_mu(self, mu, M0=None):
+        """
+        Parameters:
+
+        beta : Inverse temperature
+        N_tot : total density
+        M0 : Initial mean-field (0 if None)
+        mu0 : Initial chemical potential
+        """
+
+        print 'MF: Newton solver'
+        print
+
+        self.mu = mu
+        #rho0_diag = self.solve_setup(N_target, M0, mu0)
+
+        if M0 is None:
+            M0 = np.zeros(self.target_shape)
+            
+        self.M = np.copy(M0)
+        self.update_mean_field_dispersion()
+        rho0_diag = self.update_density_matrix()
+        
+        def target_function(rho_diag):
             rho_diag_new = self.density_matrix_step(rho_diag)
             return rho_diag_new - rho_diag
             
         rho_diag = fsolve(target_function, rho0_diag)
 
+        self.update_total_energy()
         print self.__str__()
         
         self.density_matrix_step(rho_diag)
-
+        
     # ------------------------------------------------------------------
     def __str__(self):
 
@@ -372,6 +337,10 @@ TRIQS: Mean-Field solver
             'beta = ' + str(self.beta) + '\n' + \
             'N_target = ' + str(self.N_tot) + '\n' + \
             'N_tot    = ' + str(np.sum(np.diag(self.rho.real))) + '\n' + \
+            'E_tot    = ' + str(self.E_tot) + '\n' + \
+            'E_int    = ' + str(self.E_int) + '\n' + \
+            'E_kin    = ' + str(self.E_kin) + '\n' + \
+            'Omega0   = ' + str(self.Omega0) + '\n' + \
             'rho =\n' + str(self.rho) + '\n' + \
             'mu = ' + str(self.mu) + '\n' + \
             'M =\n' + str(self.M) + '\n' + \
@@ -459,91 +428,5 @@ class BaseResponse(object):
         chi0_abcd = 0.5 * (R_r_abcd + R_i_abcd.imag)
 
         return chi0_abcd
-
-# ----------------------------------------------------------------------
-class HartreeResponse(BaseResponse):
-
-    def __init__(self, hartree_solver, eps=1e-9):
-
-        super(HartreeResponse, self).__init__(hartree_solver)
-        
-        I_ab = np.eye(self.norb)
-        U_ab = np.mat(self.solver.U_ab)
-        chi0_ab = np.mat(self._compute_chi0_ab())
-        chi_ab = chi0_ab * np.linalg.inv(I_ab - U_ab * chi0_ab)
-
-        self.chi0_ab = np.array(chi0_ab)
-        self.chi_ab = np.array(chi_ab)
-
-    def __check_op(self, op):
-        """ Operators have to be diagonal in the Hartree approx """
-        
-        assert( op.shape == self.e_k.target_shape )
-        np.testing.assert_almost_equal(
-            op - np.diag(np.diag(op)), np.zeros_like(op))
-        
-    def bare_response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi0_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi0_ab, op2)
-
-        return chi0_op1op2
-
-    def response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi_op1op2 = np.einsum('aa,ab,bb->', op1, self.chi_ab, op2)
-
-        return chi_op1op2        
-
-# ----------------------------------------------------------------------
-class HartreeFockResponse(BaseResponse):
-
-    def __init__(self, hartree_fock_solver, eps=1e-9):
-
-        super(HartreeFockResponse, self).__init__(hartree_fock_solver)
-        self.hfs = self.solver
-        
-        I_AB = np.matrix(np.eye(self.shape_AB[0]))
-        U_AB = self._to_matrix_AB(self.hfs.U_abcd)
-        chi0_AB = self._to_matrix_AB(self._compute_chi0_abcd())
-        
-        chi_AB = np.linalg.inv(I_AB - chi0_AB * U_AB) * chi0_AB
-
-        self.chi0_abcd = self._to_tensor_abcd(chi0_AB)
-        self.chi_abcd = self._to_tensor_abcd(chi_AB)
-
-    def _to_matrix_AB(self, tensor_abcd):
-        matrix_AB = np.matrix(tensor_abcd.reshape(self.shape_AB))
-        return matrix_AB
-
-    def _to_tensor_abcd(self, matrix_AB):
-        tensor_abcd = np.array(matrix_AB).reshape(self.shape_abcd)
-        return tensor_abcd
-    
-    def __check_op(self, op):
-        assert( op.shape == self.shape_ab )
-        
-    def bare_response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi0_op1op2 = np.einsum('ab,abcd,cd->', op1, self.chi0_abcd, op2)
-
-        return chi0_op1op2
-
-    def response(self, op1, op2):
-
-        self.__check_op(op1)
-        self.__check_op(op2)
-        
-        chi_op1op2 = np.einsum('ab,abcd,cd->', op1, self.chi_abcd, op2)
-
-        return chi_op1op2
 
 # ----------------------------------------------------------------------

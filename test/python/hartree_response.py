@@ -1,11 +1,7 @@
 
 # ----------------------------------------------------------------------
 
-import time
-import itertools
 import numpy as np
-
-from scipy.linalg import expm
 
 # ----------------------------------------------------------------------
 
@@ -31,12 +27,13 @@ from triqs_tprf.lattice import solve_rpa_PH
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.hartree_solver import *
+from triqs_tprf.hf_solver import HartreeSolver, extract_dens_dens
+from triqs_tprf.hf_response import HartreeResponse, HartreeFockResponse
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
 
-    mu = 0.0    
+    mu = 0.0
     beta, n_w, n_k = 1.0, 100, 16
 
     U, J = 2.3, 0.4
@@ -102,10 +99,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- Hartree solver
 
-    hs = DensityDensityMeanFieldSolver(e_k, H_int, gf_struct)
-    hs.beta = beta
-    hs.mu = 0.
-
+    hs = HartreeSolver(e_k, beta, H_int, gf_struct)
     eps = 1e-9
 
     hr = HartreeResponse(hs, eps=eps)
