@@ -61,11 +61,7 @@ if __name__ == '__main__':
     # -- Sweep in interaction U
     
     U_vec = np.arange(9., -0.5, -1.5)
-    #U_vec = np.arange(9., -0.5, -0.5)
-    #U_vec = np.array([0.])
     h_vec = 1e-3 * np.linspace(-1., 1., num=11)
-    #h_vec = 1e-4 * np.linspace(-1., 1., num=5)
-    #h_vec = 1.0 * np.linspace(-1., 1., num=50)
     
     res = []
 
@@ -109,7 +105,7 @@ if __name__ == '__main__':
             hsh = HartreeSolver(e_k_mag, beta, H_int=H_int, gf_struct=gf_struct)
             hsh.solve_newton(N_target=N_tot, M0=hs.M, mu0=hs.mu)
 
-            hsh.m = 0.5*(hsh.rho[0,0] - hsh.rho[1, 1])
+            hsh.m = hsh.expectation_value(Sz)
             hs.m_vec.append(hsh.m)
 
             hs.E_vec.append(hsh.E_tot)
@@ -146,7 +142,7 @@ if __name__ == '__main__':
         mu = hs.mu
         M = hs.M.copy()
 
-        hs.m = 0.5*(hs.rho[0,0] - hs.rho[1, 1])
+        hs.m = hs.expectation_value(Sz)
         hs.U = U
         
         res.append(hs)            

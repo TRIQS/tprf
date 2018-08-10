@@ -60,6 +60,7 @@ TRIQS: Hartree-Fock solver
         
         self.e_k = e_k.copy()
         self.e_k_MF = e_k.copy()
+        self.n_k = len(self.e_k.mesh)
 
         self.target_shape = self.e_k.target_shape
 
@@ -91,8 +92,9 @@ TRIQS: Hartree-Fock solver
         assert( self.e_k.target_shape == self.U_ab.shape )
         
     # ------------------------------------------------------------------
-    def update_mean_field(self, rho_diag):
-        self.M = np.diag( np.dot( -self.U_ab, rho_diag) )
+    def update_mean_field(self, rho_ab):
+
+        self.M = np.einsum('abcd,cd->ba', -self.U_abcd, rho_ab)
         return self.M
     
     # ------------------------------------------------------------------
@@ -105,13 +107,12 @@ TRIQS: Hartree-Fock solver
         if mu0 is None:
             mu0 = self.mu
             
-        n_k = len(self.e_k_MF.mesh)
         e = np.linalg.eigvalsh(self.e_k_MF.data)
 
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
 
         def target_function(mu):
-            n = np.sum(fermi(e - mu)) / n_k
+            n = np.sum(fermi(e - mu)) / self.n_k
             return n - N_target
 
         mu = brentq(target_function, self.mu_min, self.mu_max)
@@ -125,21 +126,18 @@ TRIQS: Hartree-Fock solver
         e -= self.mu
         
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
+        self.rho_kab = np.einsum('kab,kb,kcb->kac', V, fermi(e), np.conj(V))
 
-        self.rho_k = np.einsum('kab,kb,kcb->kac', V, fermi(e), np.conj(V))
-
-        return self.rho_k
+        return self.rho_kab
 
     # ------------------------------------------------------------------
     def update_density_matrix(self):
 
-        rho_k = self.update_momentum_density_matrix()
-        rho = np.sum(rho_k, axis=0) / len(self.e_k_MF.mesh)
-
-        self.rho = rho
-        self.N_tot = np.sum(np.diag(self.rho))
+        rho_kab = self.update_momentum_density_matrix()
+        self.rho_ab = np.sum(rho_kab, axis=0) / self.n_k
+        self.N_tot = np.sum(np.diag(self.rho_ab))
         
-        return np.diag(self.rho).real
+        return self.rho_ab
 
     # ------------------------------------------------------------------
     def update_non_int_free_energy(self):
@@ -155,8 +153,8 @@ TRIQS: Hartree-Fock solver
     # ------------------------------------------------------------------
     def update_kinetic_energy(self):
 
-        rho_k = self.update_momentum_density_matrix()
-        self.E_kin = np.einsum('kab,kba->', self.e_k.data, self.rho_k)
+        rho_kab = self.update_momentum_density_matrix()
+        self.E_kin = np.einsum('kab,kba->', self.e_k.data, rho_kab)
         self.E_kin /= len(self.e_k.mesh)
 
         return self.E_kin
@@ -164,33 +162,39 @@ TRIQS: Hartree-Fock solver
     # ------------------------------------------------------------------
     def update_interaction_energy(self):
 
-        self.E_int = 0.5 * np.einsum('aa,ab,bb->', self.rho, self.U_ab, self.rho)
-
+        #self.E_int = 0.5 * np.einsum('aa,ab,bb->', self.rho, self.U_ab, self.rho)
+        self.E_int = 0.5 * np.einsum(
+            'ab,abcd,cd->', self.rho_ab, self.U_abcd, self.rho_ab)
         return self.E_int        
         
     # ------------------------------------------------------------------
     def update_total_energy(self):
+
         E_kin = self.update_kinetic_energy()
         E_int = self.update_interaction_energy()
         self.E_tot = E_kin + E_int
 
-        self.update_non_int_free_energy()
-        self.Omega = self.Omega0 + self.E_int
+        Omega0 = self.update_non_int_free_energy()
+        self.Omega = Omega0 + E_int
 
         return self.E_tot
         
     # ------------------------------------------------------------------
-    def density_matrix_step(self, rho_diag, N_target=None):
+    def density_matrix_step(self, rho_vec, N_target=None):
+
+        rho_ab = self.vec2mat(rho_vec)
         
-        self.update_mean_field(rho_diag)
+        self.update_mean_field(rho_ab)
         self.update_mean_field_dispersion()
 
         if N_target is not None:
             self.update_chemical_potential(N_target, mu0=self.mu)
             
-        rho_diag = self.update_density_matrix()
+        rho_ab = self.update_density_matrix()
 
-        return rho_diag
+        rho_vec = self.mat2vec(rho_ab)
+
+        return rho_vec
 
     # ------------------------------------------------------------------
     def solve_setup(self, N_target, M0=None, mu0=None):
@@ -205,12 +209,16 @@ TRIQS: Hartree-Fock solver
         if M0 is None:
             M0 = np.zeros(self.target_shape)
 
+        M0 = np.array(M0, dtype=np.complex)
+
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
         self.update_chemical_potential(self.N_target)
-        rho0_diag = self.update_density_matrix()
+        rho0_ab = self.update_density_matrix()
 
-        return rho0_diag
+        rho0_vec = self.mat2vec(rho0_ab)
+        
+        return rho0_vec
 
     # ------------------------------------------------------------------
     def solve_iter(self, N_target, M0=None, mu0=None,
@@ -241,32 +249,33 @@ TRIQS: Hartree-Fock solver
         self.mixing = mixing
         self.nitermax = nitermax
         
-        rho_diag = self.solve_setup(N_target, M0, mu0)
+        rho_vec = self.solve_setup(N_target, M0, mu0)
 
-        rho_vec = []
+        rho_iter = []
         
         for idx in xrange(self.nitermax):
 
-            rho_vec.append(rho_diag)
+            rho_iter.append(rho_vec)
 
-            rho_diag_old = np.copy(rho_diag)
-            rho_diag_new = self.density_matrix_step(rho_diag, N_target)
+            rho_vec_old = np.copy(rho_vec)
+            rho_vec_new = self.density_matrix_step(rho_vec, N_target)
 
-            drho = np.linalg.norm(rho_diag_old - rho_diag_new) / np.linalg.norm(rho_diag_old)
+            norm = np.linalg.norm(rho_vec_old)
+            drho = np.linalg.norm(rho_vec_old - rho_vec_new) / norm
+            
             print 'MF: iter, drho = %3i, %2.2E' % (idx, drho)
             
             if drho < tol:
                 print 'MF: Converged drho = %3.3E\n' % drho
-                print self.__str__()
                 break
 
-            rho_diag = (1. - mixing) * rho_diag_old + mixing * rho_diag_new
+            rho_vec = (1. - mixing) * rho_vec_old + mixing * rho_vec_new
 
         self.update_total_energy()
         print self.__str__()
 
-        rho_vec = np.array(rho_vec)
-        return rho_vec
+        rho_iter = np.array(rho_iter)
+        return rho_iter
 
     # ------------------------------------------------------------------
     def solve_newton(self, N_target, M0=None, mu0=None):
@@ -282,18 +291,18 @@ TRIQS: Hartree-Fock solver
         print 'MF: Newton solver'
         print
         
-        rho0_diag = self.solve_setup(N_target, M0, mu0)
+        rho0_vec = self.solve_setup(N_target, M0, mu0)
         
-        def target_function(rho_diag):
-            rho_diag_new = self.density_matrix_step(rho_diag, N_target)
-            return rho_diag_new - rho_diag
+        def target_function(rho_vec):
+            rho_vec_new = self.density_matrix_step(rho_vec, N_target)
+            return rho_vec_new - rho_vec
             
-        rho_diag = fsolve(target_function, rho0_diag)
+        rho_vec = fsolve(target_function, rho0_vec)
 
         self.update_total_energy()
         print self.__str__()
         
-        self.density_matrix_step(rho_diag)
+        self.density_matrix_step(rho_vec)
 
     # ------------------------------------------------------------------
     def solve_newton_mu(self, mu, M0=None):
@@ -310,123 +319,121 @@ TRIQS: Hartree-Fock solver
         print
 
         self.mu = mu
-        #rho0_diag = self.solve_setup(N_target, M0, mu0)
 
         if M0 is None:
             M0 = np.zeros(self.target_shape)
+
+        M0 = np.array(M0, dtype=np.complex)
             
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
-        rho0_diag = self.update_density_matrix()
+        rho0_ab = self.update_density_matrix()
+        rho0_vec = self.mat2vec(rho0_ab)
         
-        def target_function(rho_diag):
-            rho_diag_new = self.density_matrix_step(rho_diag)
-            return rho_diag_new - rho_diag
+        def target_function(rho_vec):
+            rho_vec_new = self.density_matrix_step(rho_vec)
+            return rho_vec_new - rho_vec
             
-        rho_diag = fsolve(target_function, rho0_diag)
+        rho_vec = fsolve(target_function, rho0_vec)
 
         self.update_total_energy()
         print self.__str__()
         
-        self.density_matrix_step(rho_diag)
+        self.density_matrix_step(rho_vec)
         
+    # ------------------------------------------------------------------
+    def total_density(self):
+        return self.N_tot
+
+    # ------------------------------------------------------------------
+    def density_matrix(self):
+        return self.rho_ab
+
+    # ------------------------------------------------------------------
+    def mean_field_matrix(self):
+        return self.M
+
+    # ------------------------------------------------------------------
+    def chemical_potential(self):
+        return self.mu
+
+    # ------------------------------------------------------------------
+    def expectation_value(self, op_ab):
+        return np.einsum('ab,ba->', op_ab, self.rho_ab)
+    
     # ------------------------------------------------------------------
     def __str__(self):
 
         txt = 'MF: Solver state\n' + \
             'beta = ' + str(self.beta) + '\n' + \
-            'N_target = ' + str(self.N_tot) + '\n' + \
-            'N_tot    = ' + str(np.sum(np.diag(self.rho.real))) + '\n' + \
+            'N_tot = ' + str(self.N_tot) + '\n' + \
             'E_tot    = ' + str(self.E_tot) + '\n' + \
             'E_int    = ' + str(self.E_int) + '\n' + \
             'E_kin    = ' + str(self.E_kin) + '\n' + \
             'Omega0   = ' + str(self.Omega0) + '\n' + \
-            'rho =\n' + str(self.rho) + '\n' + \
+            'rho_ab =\n' + str(self.rho_ab) + '\n' + \
             'mu = ' + str(self.mu) + '\n' + \
             'M =\n' + str(self.M) + '\n' + \
             'M - mu =\n' + str(self.M - self.mu * np.eye(self.norb)) + '\n'
 
         return txt
-        
-# ----------------------------------------------------------------------
-class BaseResponse(object):
 
-    def __init__(self, solver, eps=1e-9):
-
-        self.solver = solver
-        self.eps = eps
-
-        self.beta = self.solver.beta
-        
-        self.e_k = self.solver.e_k_MF.copy()
-        
-        self.norb = self.e_k.target_shape[0]
-        self.shape_ab = self.e_k.target_shape
-        self.shape_abcd = list(self.shape_ab) + list(self.shape_ab)
-        self.shape_AB = (self.norb**2, self.norb**2)
-
-        I_ab = np.eye(self.norb)
-        self.e_k.data[:] -= self.solver.mu * I_ab
-        
     # ------------------------------------------------------------------
-    def _compute_drho_dop(self, op):
+    def mat2vec(self, mat):
+        assert( len(mat.shape) == 2 )
+        return np.diag(mat).real
 
-        beta, eps = self.beta, self.eps
+    # ------------------------------------------------------------------
+    def vec2mat(self, vec):
+        assert( len(vec.shape) == 1 )
+        return np.diag(vec.real)    
+    
+# ----------------------------------------------------------------------
+class HartreeFockSolver(HartreeSolver):
+
+    # ------------------------------------------------------------------
+    def mat2vec(self, mat):
+        assert( len(mat.shape) == 2 )
+
+        diag = np.diag(mat).real
+
+        idx = np.triu_indices(mat.shape[0], k=1)
+        up_tri = mat[idx]
+
+        vec = np.concatenate((diag, up_tri.real, up_tri.imag))        
+
+        if False:
+            print '-'*72
+            print 'vec =', vec
+            print 'mat =\n', mat
+            print '-'*72
         
-        E_p = self.e_k.data.copy() + eps*op[None, ...]
-        E_m = self.e_k.data.copy() - eps*op[None, ...]
+        return vec
 
-        e_p, U_p = np.linalg.eigh(E_p)
-        e_m, U_m = np.linalg.eigh(E_m)
+    # ------------------------------------------------------------------
+    def vec2mat(self, vec):
 
-        fermi = lambda e, beta: 1./(np.exp(beta * e) + 1)
+        assert( len(vec.shape) == 1 )
 
-        rho_p = np.einsum('kab,kb,kcb->kac', U_p, fermi(e_p, beta), np.conj(U_p))
-        rho_m = np.einsum('kab,kb,kcb->kac', U_m, fermi(e_m, beta), np.conj(U_m))
+        n = self.norb
+        diag, up_tri = vec[:n], vec[n:]
 
-        drho = (rho_p - rho_m) / (2. * eps)
-        drho = np.sum(drho, axis=0) / len(self.e_k.mesh)
+        mat = np.zeros((n, n), dtype=np.complex)
 
-        return drho
+        re, im = np.split(up_tri, 2)
 
-    # ----------------------------------------------------------------------
-    def _compute_chi0_ab(self):
+        idx = np.triu_indices(mat.shape[0], k=1)
+        mat[idx] = re + 1.j * im
 
-        chi0_ab = np.zeros(self.shape_ab, dtype=np.complex)
+        mat = mat + np.conj(mat).T
+        mat += np.diag(diag)
 
-        for a in range(self.norb):
-            F_a = np.zeros(self.shape_ab)
-            F_a[a, a] = 1.
-
-            chi0_b = -np.diag(self._compute_drho_dop(F_a))
-            chi0_ab[a] = chi0_b
-
-        return chi0_ab
-
-    # ----------------------------------------------------------------------
-    def _compute_R_abcd(self, field_prefactor=1.):
-
-        R_abcd = np.zeros(self.shape_abcd, dtype=np.complex)
-
-        for a, b in itertools.product(range(self.norb), repeat=2):
-
-            F_ab = np.zeros(self.shape_ab, dtype=np.complex)
-            F_ab[a, b] += field_prefactor
-            F_ab[b, a] += np.conj(field_prefactor)
-
-            R_cd = -self._compute_drho_dop(F_ab)
-            R_abcd[b, a, :, :] = R_cd
-
-        return R_abcd
-
-    # ----------------------------------------------------------------------
-    def _compute_chi0_abcd(self):
-
-        R_r_abcd = self._compute_R_abcd(field_prefactor=1.0) 
-        R_i_abcd = self._compute_R_abcd(field_prefactor=1.j)
-
-        chi0_abcd = 0.5 * (R_r_abcd + R_i_abcd.imag)
-
-        return chi0_abcd
-
+        if False:
+            print '-'*72
+            print 'vec =', vec
+            print 'mat =\n', mat
+            print '-'*72
+        
+        return mat
+    
 # ----------------------------------------------------------------------
