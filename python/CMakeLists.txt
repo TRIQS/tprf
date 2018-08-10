@@ -57,6 +57,7 @@ install(FILES hf_solver.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_d
 install(FILES hf_response.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES tight_binding.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+install(FILES super_lattice.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES wannier90.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
