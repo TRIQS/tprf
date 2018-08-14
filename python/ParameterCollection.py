@@ -22,6 +22,7 @@
 import inspect
 import numpy as np
 
+# ----------------------------------------------------------------------
 class ParameterCollection(object):
 
     def __init__(self, **kwargs):
@@ -109,3 +110,41 @@ class ParameterCollection(object):
 
 from pytriqs.archive.hdf_archive_schemes import register_class 
 register_class(ParameterCollection)
+
+# ----------------------------------------------------------------------
+class ParameterCollections(object):
+
+    def __init__(self, objects=[]):
+        self.objects = objects
+
+    def append(self, obj):
+        self.objects.append(obj)
+        
+    def sort_on(self, attr):
+        val = self.getattr_from_objects(attr)
+        sidx = np.argsort(val)
+        self.set_sorted_order(sidx)
+
+    def set_sorted_order(self, sorted_idx):
+        sidx = np.array(sorted_idx)
+        self.objects = list(np.array(self.objects)[sidx])
+
+    def getattr_from_objects(self, attr):
+        return np.array([getattr(o, attr) for o in self.objects ])
+    
+    def __getattr__(self, attr):
+        return self.getattr_from_objects(attr)
+
+    def __reduce_to_dict__(self):
+        return self.__dict__
+
+    @classmethod
+    def __factory_from_dict__(cls, name, d):
+        ret = cls(d['objects'])
+        return ret    
+
+# ----------------------------------------------------------------------
+# -- Register ParameterCollection in Triqs hdf_archive_schemes
+
+from pytriqs.archive.hdf_archive_schemes import register_class 
+register_class(ParameterCollections)
