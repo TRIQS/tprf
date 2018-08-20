@@ -24,6 +24,8 @@ import numpy as np
 from StringIO import StringIO
 from collections import OrderedDict
 
+import ase.units as units
+
 # ----------------------------------------------------------------------
 def parse_hopping_from_wannier90_hr_dat(filename):
 
@@ -100,12 +102,23 @@ def parse_lattice_vectors_from_wannier90_wout(filename):
     # -- Find start of data in text file
     
     for idx, line in enumerate(lines):
-        if 'Lattice Vectors (Ang)' in line:
+        if 'Lattice Vectors' in line:
+            if '(Ang)' in line:
+                unit = units.Angstrom
+            elif '(Bohr)' in line:
+                unit = units.Bohr
+            else:
+                raise NotImplementedError
             break
+
+    if not 'Lattice Vectors' in line:
+        raise IOError
 
     lines = "".join(lines[idx+1:idx+4])
     array = np.loadtxt(StringIO(lines), usecols=(1, 2, 3))
 
+    array *= unit
+    
     # -- convert 3x3 array to list of tuples
     
     vectors = []
