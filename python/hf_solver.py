@@ -78,6 +78,9 @@ class HartreeFockSolver(object):
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
             self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
+            print 'gf_struct =', gf_struct
+            print 'fundamental_operators =', fundamental_operators
+
         else:
             self.U_abcd = np.zeros(self.shape_abcd)
         
@@ -85,6 +88,7 @@ class HartreeFockSolver(object):
     def update_mean_field(self, rho_ab):
 
         self.M = np.einsum('abcd,cd->ba', -self.U_abcd, rho_ab)
+        
         return self.M
     
     # ------------------------------------------------------------------
@@ -361,6 +365,7 @@ class HartreeFockSolver(object):
             'E_int    = ' + str(self.E_int) + '\n' + \
             'E_kin    = ' + str(self.E_kin) + '\n' + \
             'Omega0   = ' + str(self.Omega0) + '\n' + \
+            'Omega    = ' + str(self.Omega) + '\n' + \
             'rho_ab =\n' + str(self.rho_ab) + '\n' + \
             'mu = ' + str(self.mu) + '\n' + \
             'M =\n' + str(self.M) + '\n' + \

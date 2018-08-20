@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 """ TRIQS, TPRF: Hartree-Fock static response function calculator
 
@@ -14,23 +15,41 @@ class BaseResponse(object):
 
     def __init__(self, solver, eps=1e-9):
 
+        print self.logo()
+        
         self.solver = solver
         self.eps = eps
 
         self.beta = self.solver.beta
         
         self.e_k = self.solver.e_k_MF.copy()
+        self.n_k = len(self.e_k.mesh)
         
         self.norb = self.e_k.target_shape[0]
         self.shape_ab = self.e_k.target_shape
         self.shape_abcd = list(self.shape_ab) + list(self.shape_ab)
-        self.shape_AB = (self.norb**2, self.norb**2)
+        self.shape_AB = [self.norb**2, self.norb**2]
+        self.shape_kabcd = [self.n_k] + self.shape_abcd
+        self.shape_kAB = [self.n_k] + self.shape_AB
 
         I_ab = np.eye(self.norb)
         self.e_k.data[:] -= self.solver.mu * I_ab
+
+        print 'norb =', self.norb
+        print 'shape_abcd =', self.shape_abcd
+        print 'shape_AB =', self.shape_AB
+        print 'beta =', self.beta
         
     # ------------------------------------------------------------------
     def _compute_drho_dop(self, op):
+
+        drho_k = self._compute_drho_k_dop(op)
+        drho = np.sum(drho_k, axis=0) / self.n_k
+
+        return drho
+
+    # ------------------------------------------------------------------
+    def _compute_drho_k_dop(self, op):
 
         beta, eps = self.beta, self.eps
         
@@ -42,13 +61,12 @@ class BaseResponse(object):
 
         fermi = lambda e, beta: 1./(np.exp(beta * e) + 1)
 
-        rho_p = np.einsum('kab,kb,kcb->kac', U_p, fermi(e_p, beta), np.conj(U_p))
-        rho_m = np.einsum('kab,kb,kcb->kac', U_m, fermi(e_m, beta), np.conj(U_m))
+        rho_k_p = np.einsum('kab,kb,kcb->kac', U_p, fermi(e_p, beta), np.conj(U_p))
+        rho_k_m = np.einsum('kab,kb,kcb->kac', U_m, fermi(e_m, beta), np.conj(U_m))
 
-        drho = (rho_p - rho_m) / (2. * eps)
-        drho = np.sum(drho, axis=0) / len(self.e_k.mesh)
+        drho_k = (rho_k_p - rho_k_m) / (2. * eps)
 
-        return drho
+        return drho_k
 
     # ----------------------------------------------------------------------
     def _compute_chi0_ab(self):
@@ -81,14 +99,48 @@ class BaseResponse(object):
         return R_abcd
 
     # ----------------------------------------------------------------------
+    def _compute_R_kabcd(self, field_prefactor=1.):
+
+        R_kabcd = np.zeros(self.shape_kabcd, dtype=np.complex)
+
+        for a, b in itertools.product(range(self.norb), repeat=2):
+
+            F_ab = np.zeros(self.shape_ab, dtype=np.complex)
+            F_ab[a, b] += field_prefactor
+            F_ab[b, a] += np.conj(field_prefactor)
+
+            R_kcd = -self._compute_drho_k_dop(F_ab)
+            R_kabcd[:, b, a, :, :] = R_kcd
+
+        return R_kabcd
+    
+    # ----------------------------------------------------------------------
     def _compute_chi0_abcd(self):
 
-        R_r_abcd = self._compute_R_abcd(field_prefactor=1.0) 
-        R_i_abcd = self._compute_R_abcd(field_prefactor=1.j)
-
-        chi0_abcd = 0.5 * (R_r_abcd + R_i_abcd.imag)
+        chi0_kabcd = self._compute_chi0_kabcd()
+        chi0_abcd = np.sum(chi0_kabcd, axis=0) / self.n_k
 
         return chi0_abcd
+
+    # ----------------------------------------------------------------------
+    def _compute_chi0_kabcd(self):
+
+        R_r_kabcd = self._compute_R_kabcd(field_prefactor=1.0) 
+        R_i_kabcd = self._compute_R_kabcd(field_prefactor=1.j)
+
+        chi0_kabcd = 0.5 * (R_r_kabcd + R_i_kabcd.imag)
+
+        return chi0_kabcd
+    
+    # ----------------------------------------------------------------------
+    def logo(self):
+        txt = """
+╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐  ┬─┐┌─┐┌─┐
+ ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤───├┬┘├─┘├─┤
+ ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└    ┴└─┴  ┴ ┴
+Triqs: Hartree-Fock Random Phase Approximation susceptibility
+"""
+        return txt
 
 # ----------------------------------------------------------------------
 class HartreeFockResponse(BaseResponse):
@@ -101,12 +153,29 @@ class HartreeFockResponse(BaseResponse):
         I_AB = np.matrix(np.eye(self.shape_AB[0]))
         U_AB = self._to_matrix_AB(self.hfs.U_abcd)
         chi0_AB = self._to_matrix_AB(self._compute_chi0_abcd())
-        
+
         chi_AB = np.linalg.inv(I_AB - chi0_AB * U_AB) * chi0_AB
 
         self.chi0_abcd = self._to_tensor_abcd(chi0_AB)
         self.chi_abcd = self._to_tensor_abcd(chi_AB)
 
+        #self.chi0_kabcd = self._compute_chi0_kabcd()
+        #np.testing.assert_array_almost_equal(
+        #    self.chi0_abcd, np.sum(self.chi0_kabcd, axis=0)/self.n_k)
+
+    def mode_decomposition(self):
+        
+        U_AB = self._to_matrix_AB(self.hfs.U_abcd)
+        chi0_AB = self._to_matrix_AB(self.chi0_abcd)
+
+        e = np.linalg.eigvals(np.mat(chi0_AB) * np.mat(U_AB))
+        
+        idx = np.argsort(e.real)
+        e = e[idx]
+        e = 1./(1. - e.real)
+
+        return e
+        
     def _to_matrix_AB(self, tensor_abcd):
         matrix_AB = np.matrix(tensor_abcd.reshape(self.shape_AB))
         return matrix_AB
@@ -135,6 +204,15 @@ class HartreeFockResponse(BaseResponse):
         chi_op1op2 = np.einsum('ab,abcd,cd->', op1, self.chi_abcd, op2)
 
         return chi_op1op2
+
+    def compute_chi0_k(self):
+
+        from pytriqs.gf import Gf
+
+        chi0_k = Gf(mesh=self.e_k.mesh, target_shape=self.shape_abcd)
+        chi0_k.data[:] = self.chi0_kabcd
+
+        return chi0_k
 
 # ----------------------------------------------------------------------
 class HartreeResponse(BaseResponse):
