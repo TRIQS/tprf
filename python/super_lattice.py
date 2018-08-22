@@ -87,7 +87,7 @@ class TBSuperLattice(TBLattice):
             #Minv = Ncluster_sites*numpy.linalg.inverse(M)  #+0.5  # +0.5 is for the round
             #Mtilde = Minv.astype(numpy.Int)  # now is integer.
             Mtilde = nint_strict(Ncluster_sites*numpy.linalg.inv(M))
-            print 'Mtilde (inside cluster sites) =\n', Mtilde.__repr__()
+            #print 'Mtilde (inside cluster sites) =\n', Mtilde.__repr__()
             # round to the closest integer, with assert that precision is <1.e-9
             if dim==1:  a=(max(M[0,:]), 0, 0 )
             elif dim==2:  a=(2*max(M[0,:]), 2*max(M[1,:]), 0 )
@@ -108,12 +108,12 @@ class TBSuperLattice(TBLattice):
         # creating a dictionnary position_of_sites -> number e.g. (1, 0): 2 etc...
         # self._clustersites_hash =  dict ([ (tuple(pos), n) for n, pos in enumerate(self.cluster_sites)])
 
-        print 'Ns = ', self.Ncluster_sites
-        print 'cluster_sites =', self.__cluster_sites
-        print 'M =\n', self._M.__repr__()
-        print 'Mtilde =\n', self._Mtilde.__repr__()
-        import numpy as np
-        print 'M*Mtilde =\n', np.dot(self._M, self._Mtilde)
+        #print 'Ns = ', self.Ncluster_sites
+        #print 'cluster_sites =', self.__cluster_sites
+        #print 'M =\n', self._M.__repr__()
+        #print 'Mtilde =\n', self._Mtilde.__repr__()
+        #import numpy as np
+        #print 'M*Mtilde =\n', np.dot(self._M, self._Mtilde)
         #exit()
         
         # Compute the new Hopping in the supercell
