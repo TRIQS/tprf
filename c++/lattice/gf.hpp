@@ -62,6 +62,7 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh);
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(\mathbf{k}, i\omega_n)$
  */
 gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w);
+  g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w);
 
 /** Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
