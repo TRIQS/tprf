@@ -12,7 +12,7 @@ import numpy as np
 
 import pytriqs.utility.mpi as mpi
 
-from pytriqs.gf import Gf, Idx
+from pytriqs.gf import Gf, Idx, inverse, iOmega_n
 from pytriqs.operators import c, c_dag
 from pytriqs.archive import HDFArchive
 
@@ -163,6 +163,23 @@ def make_calc():
 
     lat_bse.g_wk = lat_rpa.g_wk
     
+    lat_bse.mu = p.mu
+
+    lat_bse.e_k = Gf(mesh=kmesh, target_shape=p.G_iw.target_shape)
+    lat_bse.e_k[Idx(0,0,0)] = np.eye(2)
+
+    lat_bse.sigma_w = p.G_iw.copy()
+    lat_bse.sigma_w << iOmega_n + lat_bse.mu * np.eye(2) - lat_bse.e_k[Idx(0,0,0)] - inverse(p.G_iw)
+
+    lat_bse.g_wk_ref = lat_bse.g_wk.copy()
+    lat_bse.g_wk_ref[:,Idx(0,0,0)] << inverse(
+        iOmega_n + lat_bse.mu * np.eye(2) - lat_bse.e_k[Idx(0,0,0)] - lat_bse.sigma_w)
+
+    np.testing.assert_array_almost_equal(lat_bse.g_wk.data, lat_bse.g_wk_ref.data)
+
+    #for w in lat_bse.g_wk.mesh.components[0]:
+    #    print w, lat_bse.g_wk[w, Idx(0,0,0)][0, 0]
+
     from triqs_tprf.lattice import fourier_wk_to_wr
     lat_bse.g_wr = fourier_wk_to_wr(lat_bse.g_wk)
 
@@ -171,6 +188,9 @@ def make_calc():
 
     from triqs_tprf.lattice import chi0q_from_chi0r
     lat_bse.chi0_wnk = chi0q_from_chi0r(lat_bse.chi0_wnr)
+
+    for n in lat_bse.chi0_wnk.mesh.components[1]:
+        print n.value, lat_bse.chi0_wnk[Idx(0), n, Idx(0,0,0)][0,0,0,0]
 
     # -- Lattice BSE calc
     from triqs_tprf.lattice import chiq_from_chi0q_and_gamma_PH
@@ -195,10 +215,15 @@ def make_calc():
     
     np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
 
+    from triqs_tprf.bse import solve_lattice_bse_g_wk
+    lat_bse.chi_kw_tail_corr = solve_lattice_bse_g_wk(lat_bse.g_wk, loc_bse.gamma_wnn)
+
     from triqs_tprf.bse import solve_lattice_bse
-    lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn)
+    lat_bse.chi_kw_tail_corr_new = solve_lattice_bse(lat_bse.mu, lat_bse.e_k, lat_bse.sigma_w, loc_bse.gamma_wnn)
 
     np.testing.assert_array_almost_equal(lat_bse.chi_kw_tail_corr.data, lat_bse.chi_kw_tail_corr_ref.data)
+
+    np.testing.assert_array_almost_equal(lat_bse.chi_kw_tail_corr.data, lat_bse.chi_kw_tail_corr_new.data)
     
     lat_bse.chi0_w_tail_corr = lat_bse.chi0_wk_tail_corr[:, Idx(0, 0, 0)]
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]

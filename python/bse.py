@@ -107,15 +107,16 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
         return chi_kw
 
 # ----------------------------------------------------------------------
-def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
+def solve_lattice_bse_g_wk(g_wk, gamma_wnn, tail_corr_nwf=-1):
 
-    kmesh = g_wk.mesh.components[1]
+    fmesh_huge, kmesh = g_wk.mesh.components
     bmesh = gamma_wnn.mesh.components[0]
     fmesh = gamma_wnn.mesh.components[1]
 
     nk = len(kmesh)
     nw = (len(bmesh) + 1) / 2
     nwf = len(fmesh) / 2
+    nwf_sigma = len(fmesh_huge) / 2
 
     if mpi.is_master_node():    
         print tprf_banner(), "\n"
@@ -124,6 +125,7 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
         print 'nk  = ', nk
         print 'nw  = ', nw
         print 'nwf = ', nwf
+        print 'nwf_sigma = ', nwf_sigma
         print 'nwf = ', tail_corr_nwf, ' (gf)'
         print    
 
@@ -131,6 +133,37 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
     from triqs_tprf.lattice import chiq_sum_nu_from_g_wk_and_gamma_PH
 
     chi_kw = chiq_sum_nu_from_g_wk_and_gamma_PH(g_wk, gamma_wnn, tail_corr_nwf=tail_corr_nwf)
+    
+    return chi_kw
+    
+# ----------------------------------------------------------------------
+def solve_lattice_bse(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1):
+
+    kmesh = e_k.mesh
+    fmesh_huge = sigma_w.mesh
+    bmesh = gamma_wnn.mesh.components[0]
+    fmesh = gamma_wnn.mesh.components[1]
+
+    nk = len(kmesh)
+    nw = (len(bmesh) + 1) / 2
+    nwf = len(fmesh) / 2
+    nwf_sigma = len(fmesh_huge) / 2
+
+    if mpi.is_master_node():    
+        print tprf_banner(), "\n"
+
+        print 'Lattcie BSE with local vertex approximation.\n'
+        print 'nk  =', nk
+        print 'nw  =', nw
+        print 'nwf           =', nwf
+        print 'nwf_sigma     =', nwf_sigma
+        print 'nwf_chi0_tail =', tail_corr_nwf
+        print    
+
+    # -- Lattice BSE calc with built in trace using g_wk
+    from triqs_tprf.lattice import chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH
+
+    chi_kw = chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=tail_corr_nwf)
     
     return chi_kw
     
