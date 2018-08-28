@@ -60,15 +60,6 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w, 
   // 100x times slower
   //chi0_n(inu)(a, b, c, d) << -beta/kmesh.size() * sum(g_wk(inu, k)(d, a) * g_wk(inu + w, k - q)(b, c), k=kmesh);
 
-  std::cout << "-->chi0_n_from_g_wk_PH\n";
-  std::cout << fmesh_large << "\n";
-  std::cout << fmesh << "\n";
-  /*
-  for( auto const & k : kmesh )
-    for( auto const & n : fmesh_large )
-      std::cout << k << ", " << n << ", " << g_wk[n, k](0, 0) << "\n";
-  */
-  
   for( auto const & n : fmesh ) {
     for( auto const & k : kmesh ) {
       auto g_da = g_wk[n, k];
@@ -101,30 +92,11 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfre
   gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
 
   for( auto const & k : kmesh ) {
-    
-    g_iw_t g_k{fmesh_large, e_k.target_shape()};
-    g_iw_t g_kq{fmesh_large, e_k.target_shape()};
-
-    for (auto const &n : fmesh_large) {
-      g_k[n]  = inverse((n + mu)*I - e_k[k    ] - sigma_w[n]);
-      g_kq[n] = inverse((n + mu)*I - e_k[k - q] - sigma_w[n]);
-    }
-
-    std::cout << "-->chi0_n_from_e_k_sigma_w_PH\n";
-    std::cout << fmesh_large << "\n";
-    std::cout << fmesh << "\n";
-    std::cout << "w = " << w << "\n";
-    for( auto const & n : fmesh_large )
-      std::cout << k << ", " << n << ", " << g_k[n](0, 0) << ", " << g_kq[n](0,0) << "\n";
-
-    std::cout << "chi0_n calc:\n";
     for( auto const & n : fmesh ) {
 
-      auto g_da = g_k[matsubara_freq(n)];
-      auto g_bc = g_kq[n + w];
+      auto g_da = inverse((n + mu)*I - e_k[k    ] - sigma_w[matsubara_freq(n)]);
+      auto g_bc = inverse((n + mu)*I - e_k[k - q] - sigma_w[n + w]);
 
-      std::cout << n << ", " << g_da(0,0) << ", " << g_bc(0,0) << "\n";
-      
       for (auto a : range(nb))
         for (auto b : range(nb))
           for (auto c : range(nb))
@@ -437,10 +409,6 @@ gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from
     auto chi0_n_tail = chi0_n_from_g_wk_PH(w, k, fmesh_tail, g_wk);
     for ( auto const &n : fmesh ) chi0_n[n] = chi0_n_tail(n);
 
-    for ( auto const &n : fmesh ) {
-      std::cout << n << ", " << chi0_n[n](0, 0, 0, 0) << "\n";
-    }
-    
     std::cout << double(t_chi0_n) << " s\n";
         
     // ----------------------------------------------------
@@ -547,13 +515,11 @@ gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from
     t_chi0_n.start(); std::cout << "BSE: chi0_n ";
 
     //auto chi0_n_tail = chi0_n_from_g_wk_PH(w, k, fmesh_tail, g_wk);
+
     auto chi0_n_tail = chi0_n_from_e_k_sigma_w_PH(w, k, fmesh_tail, mu, e_k, sigma_w);
+    
     for ( auto const &n : fmesh ) chi0_n[n] = chi0_n_tail(n);
 
-    for ( auto const &n : fmesh ) {
-      std::cout << n << ", " << chi0_n[n](0, 0, 0, 0) << "\n";
-    }
-    
     std::cout << double(t_chi0_n) << " s\n";
         
     // ----------------------------------------------------
