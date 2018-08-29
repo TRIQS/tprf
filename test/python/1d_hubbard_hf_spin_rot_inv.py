@@ -102,7 +102,8 @@ if __name__ == '__main__':
 
         np.testing.assert_almost_equal(si_exp, sz_exp)
 
-        for attr in ['N_tot', 'E_tot', 'E_int', 'E_kin', 'Omega0', 'Omega']:
+        for attr in ['N_tot', 'E_int', 'E_kin', 'Omega0', 'E_tot', 'Omega']:
             v1 = getattr(hs_z, attr)
             v2 = getattr(hs, attr)
+            print attr, v1, v2 
             np.testing.assert_almost_equal(v1, v2)

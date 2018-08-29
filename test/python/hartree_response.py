@@ -34,14 +34,14 @@ from triqs_tprf.hf_response import HartreeResponse, HartreeFockResponse
 if __name__ == '__main__':
 
     mu = 0.0
-    beta, n_w, n_k = 1.0, 100, 16
+    beta, n_w, n_k = 1.0, 100, 4
 
     U, J = 2.3, 0.4
     print 'U, J =', U, J
 
     spin_names = ['up', 'do']
-    orb_names = [0, 1, 2]
-    #orb_names = [0]
+    #orb_names = [0, 1, 2]
+    orb_names = [0]
     norb = 2*len(orb_names)
 
     gf_struct = set_operator_structure(spin_names, orb_names, False) # orbital diag    
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb/2))
 
-    if False:
+    if True:
         h_loc = np.kron(np.eye(2), np.diag([0.]))
         T = - t * np.kron(np.eye(2), np.diag([1.0]))
 
@@ -111,7 +111,8 @@ if __name__ == '__main__':
 
     hfr.chi0_SzSz = hfr.bare_response(Sz, Sz)
     hfr.chi_SzSz = hfr.response(Sz, Sz)
-
+    #hfr.chi0_k = hfr.compute_chi0_k()
+    
     np.testing.assert_almost_equal(hr.chi0_SzSz, hfr.chi0_SzSz)
     np.testing.assert_almost_equal(hr.chi_SzSz, hfr.chi_SzSz)
     
@@ -134,6 +135,28 @@ if __name__ == '__main__':
     np.testing.assert_almost_equal(chi0_ab, hr.chi0_ab)
     
     np.testing.assert_almost_equal(chi0_SzSz, hr.chi0_SzSz)
+
+    if False:
+        chi0_k = chi0_wk[Idx(0), :]
+
+        np.set_printoptions(
+            precision=3, linewidth=10000,
+            threshold=1000000, suppress=True)
+
+        for k in e_k.mesh:
+            A = chi0_k[k].reshape(4, 4)
+            B = hfr.chi0_k[k].reshape(4, 4)
+            a = hr.extract_dens_dens(chi0_k[k])
+            b = hr.extract_dens_dens(hfr.chi0_k[k])
+            print '-'*72
+            print k
+            print a.real
+            print b.real
+            print A.real
+            print B.real
+
+        print 'chi0_k diff =', np.max(np.abs(chi0_k.data - hfr.chi0_k.data))
+        np.testing.assert_almost_equal(chi0_k.data, hfr.chi0_k.data)
         
     # ------------------------------------------------------------------
 

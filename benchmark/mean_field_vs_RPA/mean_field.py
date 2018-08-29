@@ -1,11 +1,21 @@
+""" Mean field and ferro magnetic q=0 response for the one dimensional 
+Hubbard model. 
+
+Comparing numerical calculation with rank 4 tensor and analytical 
+results from Fazekas (Ch. 7.4)
+
+Author: Hugo U. R. Strand (2018) """
+
 # ----------------------------------------------------------------------
 
 import numpy as np
 
+from scipy.integrate import quad
+from scipy.optimize import brentq
+    
 # ----------------------------------------------------------------------
 
 from pytriqs.gf import MeshImFreq, Idx
-from pytriqs.archive import HDFArchive
 
 # ----------------------------------------------------------------------
 
@@ -25,7 +35,6 @@ def get_kinetic_energy_ref(t, beta):
         f = 1./( np.exp(beta * e) + 1 )
         return e * f
 
-    from scipy.integrate import quad
     E_kin, err = quad(integrand, -np.pi, np.pi)
 
     n_spin = 2.
@@ -52,7 +61,6 @@ def get_kinetic_energy_mf_ref(t, beta, U, mu, n, m):
         f = 1./( np.exp(beta * (e - mu)) + 1 )
         return e * f
 
-    from scipy.integrate import quad
     E_kin_up, err = quad(integrand, -np.pi, np.pi, args=(U, mu, n, m, +1.))
     E_kin_do, err = quad(integrand, -np.pi, np.pi, args=(U, mu, n, m, -1.))
 
@@ -202,8 +210,6 @@ def test_tb_model(verbose=False):
 # ----------------------------------------------------------------------
 def chi0_q0_integral(t, beta):
 
-    from scipy.integrate import quad
-
     def integrand(eps):
         rho = get_density_of_states(eps, t)
         df = fermi_distribution_derivative(beta, eps)
@@ -215,9 +221,7 @@ def chi0_q0_integral(t, beta):
 
 # ----------------------------------------------------------------------
 def find_Uc(t, beta):
-
-    from scipy.optimize import brentq
-
+    
     def root_function(U):
         chi0_q0 = chi0_q0_integral(t, beta)
         return 1 - U * chi0_q0
@@ -347,7 +351,8 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- Mean field results for E[m] and Uc
     
-    if True:
+    if False:
+        
         import matplotlib.pyplot as plt
         plt.figure(figsize=(3.25*2, 7))
         
