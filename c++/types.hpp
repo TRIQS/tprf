@@ -22,10 +22,11 @@
 
 #include <triqs/gfs.hpp>
 #include <triqs/arrays.hpp>
-using namespace triqs::gfs;
-using namespace triqs::arrays;
 
 namespace tprf {
+
+using namespace triqs::gfs;
+using namespace triqs::arrays;
 
 /// Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)
 enum class Channel_t { PP, PH, PH_bar };

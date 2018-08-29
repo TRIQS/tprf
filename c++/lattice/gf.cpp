@@ -26,9 +26,13 @@ using triqs::arrays::inverse;
 #include "common.hpp"
 #include "gf.hpp"
 
-//#include "../fourier/fourier.hpp"
+#include "../fourier/fourier.hpp"
 
 namespace tprf {
+
+  namespace {
+    using namespace fourier;
+  }
   
 // ----------------------------------------------------
 // g
@@ -41,7 +45,7 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
   gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
   
 #pragma omp parallel for 
-  for (int idx = 0; idx < ek.mesh().size(); idx++) {
+  for (int idx = 0; idx < e_k.mesh().size(); idx++) {
     auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
     
     for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
@@ -91,7 +95,7 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
       make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < ek.mesh().size(); idx++) {
+  for (int idx = 0; idx < e_k.mesh().size(); idx++) {
     auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
     
     for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
@@ -153,43 +157,6 @@ g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w) {
 
   
 // ----------------------------------------------------
-
-  /*
-gr_iw_t fourier_wk_to_wr_test(gk_iw_vt g_wk) {
-
-  auto _ = all_t{};
-  auto target = g_wk.target();
-
-  //const auto & [ wmesh, kmesh ] = g_wk.mesh();
-  auto wmesh = std::get<0>(g_wk.mesh());
-  auto kmesh = std::get<1>(g_wk.mesh());
-  auto rmesh = make_adjoint_mesh(kmesh);
-
-  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
-
-  auto w0 = *wmesh.begin();
-  auto p = fourier::_fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
-
-#pragma omp parallel for 
-  for (int idx = 0; idx < wmesh.size(); idx++) {
-    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
-
-    auto g_r = make_gf<cyclic_lattice>(rmesh, target);
-    auto g_k = make_gf<brillouin_zone>(kmesh, target);
-
-#pragma omp critical
-    g_k = g_wk[w, _];
-
-    fourier::_fourier_with_plan<0>(gf_const_view(g_k), gf_view(g_r), p);
-
-#pragma omp critical
-    g_wr[w, _] = g_r;
-
-  }
-
-  return g_wr;
-}
-  */
   
 #ifdef TPRF_OMP
 
@@ -238,7 +205,9 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, g_wk.target());
 
   auto _ = all_t{};
-  for ( auto const &w : mpi_view(wmesh) ) g_wr[w, _]() = fourier(g_wk[w, _]);  
+  for ( auto const &w : mpi_view(wmesh) )
+    g_wr[w, _]() = triqs::gfs::fourier(g_wk[w, _]);  
+
   g_wr = mpi_all_reduce(g_wr);
   
   return g_wr;
@@ -310,7 +279,9 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
   gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
 
   auto _ = all_t{};
-  for (auto const &w : mpi_view(wmesh)) g_wk[w, _]() = fourier(g_wr[w, _]);
+  for (auto const &w : mpi_view(wmesh))
+    g_wk[w, _]() = triqs::gfs::fourier(g_wr[w, _]);
+
   g_wk = mpi_all_reduce(g_wk);
   
   return g_wk;
@@ -352,7 +323,7 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
   gr_tau_t g_tr = make_gf<gr_tau_t::mesh_t::var_t>(
       {{beta, S, nt}, rmesh}, g_wr.target());
 
-  auto tmesh = std::get<0>(g_rt.mesh());
+  auto tmesh = std::get<0>(g_tr.mesh());
 
   auto _ = all_t{};
 
@@ -404,9 +375,9 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
   
   for (auto const &r : rmesh) {
     if(r.linear_index() == 0)
-      g_tr[_, r]() = fourier<0>(g_wr[_, r], make_const_view(zero_tail_r0));
+      g_tr[_, r]() = triqs::gfs::fourier<0>(g_wr[_, r], make_const_view(zero_tail_r0));
     else
-      g_tr[_, r]() = fourier<0>(g_wr[_, r], make_const_view(zero_tail));
+      g_tr[_, r]() = triqs::gfs::fourier<0>(g_wr[_, r], make_const_view(zero_tail));
   }
 
   return g_tr;

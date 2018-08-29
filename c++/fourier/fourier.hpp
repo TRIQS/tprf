@@ -49,7 +49,7 @@ using fourier_plan = std::unique_ptr<fourier_plan_base>;
 /*------------------------------------------------------------------------------------------------------
  *                                  Mesh calculator
  *-----------------------------------------------------------------------------------------------------*/
-
+/*
 // general form. NB : options MUST have defaults (for traits later)
 // gf_mesh<Y> make_adjoint_mesh( gf_mesh<X> const &, options ...);
 
@@ -98,7 +98,7 @@ make_adjoint_mesh(gf_mesh<brillouin_zone> const &m) {
 template <typename V>
 using _mesh_fourier_image =
     typename decltype(make_adjoint_mesh(gf_mesh<V>()))::var_t;
-
+*/
 /*------------------------------------------------------------------------------------------------------
           Implementation
 *-----------------------------------------------------------------------------------------------------*/
@@ -108,12 +108,15 @@ template <typename V> using gf_vec_vt = gf_view<V, tensor_valued<1>>;
 template <typename V> using gf_vec_cvt = gf_const_view<V, tensor_valued<1>>;
 
 // matsubara
+  /*
 gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
                                gf_vec_cvt<imtime> gt,
                                array_const_view<dcomplex, 2> mom_23 = {});
 gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                                gf_vec_cvt<imfreq> gw,
                                array_const_view<dcomplex, 2> mom_123 = {});
+  */
+  
 gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
                                gf_vec_cvt<imtime> gt, fourier_plan &p,
                                array_const_view<dcomplex, 2> mom_23 = {});
@@ -138,10 +141,12 @@ gf_vec_t<retime> _fourier_impl(gf_mesh<retime> const &t_mesh,
   */
 
 // lattice
+  /*
 gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh,
                                        gf_vec_cvt<brillouin_zone> gk);
 gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh,
                                        gf_vec_cvt<cyclic_lattice> gr);
+  */
 gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh,
                                        gf_vec_cvt<brillouin_zone> gk,
                                        fourier_plan &p);
@@ -165,6 +170,7 @@ void _fourier_destroy_plan(void *p);
  *
  *-----------------------------------------------------------------------------------------------------*/
 
+  /*
 // this function just regroups the function, and calls the vector_valued gf core
 // implementation
 template <int N, typename V1, typename V2, typename T, typename... OptArgs>
@@ -195,6 +201,7 @@ void _fourier(gf_const_view<V1, T> gin, gf_view<V2, T> gout,
     }
   }
 }
+  */
 
 // this function just regroups the function, and calls the vector_valued gf core
 // implementation
@@ -226,7 +233,7 @@ void _fourier_with_plan(gf_const_view<V1, T> gin, gf_view<V2, T> gout,
     }
   }
 }
-
+  
 // this function just regroups the function, and calls the vector_valued gf core
 // implementation
 template <int N, typename V1, typename V2, typename T, typename... OptArgs>
@@ -243,7 +250,7 @@ fourier_plan _fourier_plan(gf_const_view<V1, T> gin, gf_view<V2, T> gout,
  * make_gf_from_fourier (g, mesh, options)  -> fourier_transform of g
  *
  * *-----------------------------------------------------------------------------------------------------*/
-
+/*
 // FIXME DOC
 // split : No N for 1 mesh ...
 template <int N = 0, typename V1, typename V2, typename T, typename... OptArgs>
@@ -276,12 +283,14 @@ auto make_gf_from_fourier(gf_const_view<V1, T> gin, gf_mesh<V2> const &mesh,
   }
 }
 
+*/
 /* *-----------------------------------------------------------------------------------------------------
  *
  * make_gf_from_fourier : Specialized makers for different meshes
  *
  * *-----------------------------------------------------------------------------------------------------*/
 
+  /*
 template <int N = 0, typename T>
 auto make_gf_from_fourier(gf_const_view<brillouin_zone, T> gin) {
   return make_gf_from_fourier(gin, make_adjoint_mesh(gin.mesh()));
@@ -303,6 +312,7 @@ gf<imfreq, T> make_gf_from_fourier(gf_const_view<imtime, T> gin,
                                    int n_tau = -1) {
   return make_gf_from_fourier(gin, make_adjoint_mesh(gin.mesh(), n_tau));
 }
+  */
 
   /*
 template <int N = 0, typename T>
@@ -321,7 +331,7 @@ gf<refreq, T> make_gf_from_fourier(gf_const_view<retime, T> gin) {
  * make_gf_from_fourier : Fourier transform multiple meshes
  *
  * *-----------------------------------------------------------------------------------------------------*/
-
+/*
 // FIXME : a generic implementation
 template <int N> struct _fou_wk {};
 template <int N, typename G> auto operator&(G &&gin, _fou_wk<N> const &) {
@@ -351,13 +361,13 @@ auto make_gf_from_fourier(gf_const_view<V, T> gin) {
   } else
     return std::move(g2);
 }
-
+*/
 /* *-----------------------------------------------------------------------------------------------------
  *
  * make_gf_from_fourier : Block / Block2 Gf
  *
  * *-----------------------------------------------------------------------------------------------------*/
-
+/*
 template <int N = 0, int... Ns, typename V, typename T, typename... Args>
 auto make_gf_from_fourier(block_gf_const_view<V, T> gin, Args &&... args) {
   auto l = [&](gf_const_view<V, T> g_bl) {
@@ -375,13 +385,13 @@ auto make_gf_from_fourier(block2_gf_const_view<V, T> gin, Args &&... args) {
   };
   return map_block_gf(l, gin);
 }
-
+*/
 /* *-----------------------------------------------------------------------------------------------------
  *
  * make_gf_from_fourier : Give proper overloads for gf and gf_view
  *
  * *-----------------------------------------------------------------------------------------------------*/
-
+  /*
 template <int N = 0, int... Ns, typename V, typename T, typename... Args>
 auto make_gf_from_fourier(gf_view<V, T> gin, Args &&... args) {
   return make_gf_from_fourier<N, Ns...>(make_const_view(gin),
@@ -418,9 +428,11 @@ auto make_gf_from_fourier(block2_gf<V, T> const &gin, Args &&... args) {
                                         std::forward<Args>(args)...);
 }
 
+  */
 /*------------------------------------------------------------------------------------------------------
  *                                  Lazy transformation
  *-----------------------------------------------------------------------------------------------------*/
+/*
 
 // internal. Keep a view on a, and the argument of the call
 template <int N, typename GCV, typename... Args> struct _fourier_lazy {
@@ -464,10 +476,11 @@ void triqs_gf_view_assign_delegation(
              rhs.args); // calls _fourier( rhs.g, lhs_g, rhs.args...)
 }
 
+*/
 } // namespace tprf::fourier
-
-// declares the function to accept the clef lazy expressions
 /*
+// declares the function to accept the clef lazy expressions
+
 namespace triqs::clef {
 TRIQS_CLEF_MAKE_FNT_LAZY(fourier);
 } // namespace triqs::clef
