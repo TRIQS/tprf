@@ -189,8 +189,8 @@ def make_calc():
     from triqs_tprf.lattice import chi0q_from_chi0r
     lat_bse.chi0_wnk = chi0q_from_chi0r(lat_bse.chi0_wnr)
 
-    for n in lat_bse.chi0_wnk.mesh.components[1]:
-        print n.value, lat_bse.chi0_wnk[Idx(0), n, Idx(0,0,0)][0,0,0,0]
+    #for n in lat_bse.chi0_wnk.mesh.components[1]:
+    #    print n.value, lat_bse.chi0_wnk[Idx(0), n, Idx(0,0,0)][0,0,0,0]
 
     # -- Lattice BSE calc
     from triqs_tprf.lattice import chiq_from_chi0q_and_gamma_PH

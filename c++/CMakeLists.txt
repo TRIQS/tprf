@@ -5,6 +5,7 @@
 # Find all the .cpp files in the current directory
 FILE(GLOB cpp_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 FILE(GLOB cpp_sources_lattice RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} lattice/*.cpp)
+FILE(GLOB cpp_sources_lattice RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} fourier/*.cpp)
 
 # Set up the compilation of those files into a shared library
 add_library(tprf_c ${cpp_sources} ${cpp_sources_lattice})
