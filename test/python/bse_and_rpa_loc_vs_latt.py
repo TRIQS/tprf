@@ -215,11 +215,11 @@ def make_calc():
     
     np.testing.assert_array_almost_equal(lat_bse.chi_kw.data, lat_bse.chi_kw_ref.data)
 
-    from triqs_tprf.bse import solve_lattice_bse_g_wk
-    lat_bse.chi_kw_tail_corr = solve_lattice_bse_g_wk(lat_bse.g_wk, loc_bse.gamma_wnn)
-
     from triqs_tprf.bse import solve_lattice_bse
-    lat_bse.chi_kw_tail_corr_new = solve_lattice_bse(lat_bse.mu, lat_bse.e_k, lat_bse.sigma_w, loc_bse.gamma_wnn)
+    lat_bse.chi_kw_tail_corr = solve_lattice_bse(lat_bse.g_wk, loc_bse.gamma_wnn)
+
+    from triqs_tprf.bse import solve_lattice_bse_e_k_sigma_w
+    lat_bse.chi_kw_tail_corr_new = solve_lattice_bse_e_k_sigma_w(lat_bse.mu, lat_bse.e_k, lat_bse.sigma_w, loc_bse.gamma_wnn)
 
     np.testing.assert_array_almost_equal(lat_bse.chi_kw_tail_corr.data, lat_bse.chi_kw_tail_corr_ref.data)
 

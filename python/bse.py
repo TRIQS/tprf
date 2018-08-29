@@ -107,7 +107,7 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
         return chi_kw
 
 # ----------------------------------------------------------------------
-def solve_lattice_bse_g_wk(g_wk, gamma_wnn, tail_corr_nwf=-1):
+def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
 
     fmesh_huge, kmesh = g_wk.mesh.components
     bmesh = gamma_wnn.mesh.components[0]
@@ -137,7 +137,7 @@ def solve_lattice_bse_g_wk(g_wk, gamma_wnn, tail_corr_nwf=-1):
     return chi_kw
     
 # ----------------------------------------------------------------------
-def solve_lattice_bse(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1):
+def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1):
 
     kmesh = e_k.mesh
     fmesh_huge = sigma_w.mesh
