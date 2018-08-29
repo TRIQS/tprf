@@ -175,20 +175,22 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
 
-#pragma omp parallel for 
+  #pragma omp parallel for 
   for (int idx = 0; idx < wmesh.size(); idx++) {
     auto iter = wmesh.begin(); iter += idx; auto w = *iter;
 
     auto g_r = make_gf<cyclic_lattice>(rmesh, target);
     auto g_k = make_gf<brillouin_zone>(kmesh, target);
 
-#pragma omp critical
+    #pragma omp critical
     g_k = g_wk[w, _];
 
     _fourier_with_plan<0>(gf_const_view(g_k), gf_view(g_r), p);
 
-#pragma omp critical
+    #pragma omp critical
     g_wr[w, _] = g_r;
+    
+    //g_wr[w, _]() = triqs::gfs::fourier(g_wk[w, _]);   // WORKS
 
   }
 

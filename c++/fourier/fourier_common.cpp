@@ -20,11 +20,12 @@
  * TRIQS. If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
+
 #include "./fourier_common.hpp"
-#include <triqs/gfs.hpp>
 
 namespace tprf::fourier {
 
+  /*
 void _fourier_base(array_const_view<dcomplex, 2> in,
                    array_view<dcomplex, 2> out, int rank, int *dims,
                    int fftw_count, int fftw_backward_forward) {
@@ -49,27 +50,44 @@ void _fourier_base(array_const_view<dcomplex, 2> in,
   fftw_execute(p);
   fftw_destroy_plan(p);
 }
+  */
 
 fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
                                 array_const_view<dcomplex, 2> out, int rank,
                                 int *dims, int fftw_count,
                                 int fftw_backward_forward) {
 
+  auto in_fft  = reinterpret_cast<fftw_complex *>(in.data_start());
+  auto out_fft = reinterpret_cast<fftw_complex *>(out.data_start());
+
+  std::cout << "--> tprf::fourier _fourier_base_plan\n";
+  std::cout << "rank = " << rank << "\n";
+  std::cout << "dims[0] = " << dims[0] << "\n";
+  std::cout << "dims[1] = " << dims[1] << "\n";
+  std::cout << "dims[2] = " << dims[2] << "\n";
+  std::cout << "fftw_count = " << fftw_count << "\n";
+  std::cout << "in_strides = " << in.indexmap().strides() << "\n";
+  std::cout << "out_strides = " << out.indexmap().strides() << "\n";
+  
   auto p =
       fftw_plan_many_dft(rank,       // rank
                          dims,       // the dimension
                          fftw_count, // how many FFT : here 1
-                         NULL,       // in data
+                         //NULL,       // in data
+			 in_fft,
                          NULL,       // embed : unused. Doc unclear ?
                          in.indexmap().strides()[0], // stride of the in data
                          1,    // in : shift for multi fft.
-                         NULL, // out data
+                         //NULL, // out data
+			 out_fft,
                          NULL, // embed : unused. Doc unclear ?
                          out.indexmap().strides()[0], // stride of the out data
                          1, // out : shift for multi fft.
                          fftw_backward_forward, FFTW_ESTIMATE);
 
+  fftw_print_plan(p); std::cout << "\n";
   auto plan = std::make_unique<fourier_plan_base>((void *)p);
+  fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
 
   return std::move(plan);
 }
@@ -80,7 +98,15 @@ void _fourier_base(array_const_view<dcomplex, 2> in,
   auto in_fft = reinterpret_cast<fftw_complex *>(in.data_start());
   auto out_fft = reinterpret_cast<fftw_complex *>(out.data_start());
 
+  //std::cout << "in = " << in << "\n";
+  //std::cout << "out = " << out << "\n";
+
+  fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
+  
   fftw_execute_dft((fftw_plan)plan.get()->plan_ptr, in_fft, out_fft);
+
+  //std::cout << "out = " << out << "\n";
+  
 }
 
 void _fourier_base_destroy_plan(void *p) { fftw_destroy_plan((fftw_plan)p); }

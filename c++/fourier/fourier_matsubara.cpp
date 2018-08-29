@@ -285,10 +285,15 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                   "ERROR: Inverse Fourier implementation requires at least a "
                   "proper 3rd high-frequency moment\n");
     double _abs_tail0 = max_element(abs(tail(0, range())));
+    if (_abs_tail0 > 1e-6)
+      std::cerr << "WARNING: High frequency tail is not zero: "
+                << _abs_tail0;
+    /*
     TRIQS_ASSERT2((_abs_tail0 < 1e-10),
                   "ERROR: Inverse Fourier implementation requires vanishing "
                   "0th moment\n  error is :" +
                       std::to_string(_abs_tail0));
+    */
     mom_123.rebind(tail(range(1, 4), range()));
   }
 

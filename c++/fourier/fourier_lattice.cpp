@@ -51,7 +51,8 @@ namespace tprf::fourier {
     //check periodization_matrix is diagonal
     for (int i = 0; i < g_in.mesh().periodization_matrix.shape()[0]; i++)
       for (int j = 0; j < g_in.mesh().periodization_matrix.shape()[1]; j++)
-        if (i != j and g_in.mesh().periodization_matrix(i, j) != 0) TRIQS_RUNTIME_ERROR << "Periodization matrix must be diagonal for FFTW to work";
+        if (i != j and g_in.mesh().periodization_matrix(i, j) != 0)
+	  TRIQS_RUNTIME_ERROR << "Periodization matrix must be diagonal for FFTW to work";
 
     auto g_out    = gf_vec_t<V1>{out_mesh, g_in.target_shape()[0]};
     int n_others = second_dim(g_in.data());
@@ -59,6 +60,10 @@ namespace tprf::fourier {
     auto dims = g_in.mesh().get_dimensions();
     auto p =_fourier_base_plan(g_in.data(), g_out.data(), dims.size(), dims.ptr(), n_others, fftw_backward_forward);
 
+    std::cout << "--> tprf::fourier_plan (lattice)\n";
+    std::cout << "n_others = " << n_others << "\n";
+    std::cout << "dims = " << dims << "\n";
+    
     return std::move(p);
   }
 
@@ -74,17 +79,30 @@ namespace tprf::fourier {
   // ------------------------ DIRECT TRANSFORM --------------------------------------------
 
   gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk, fourier_plan & p) {
+
+    std::cout << "--> tprf::fourier_lattice gk-gr\n";
+    //std::cout << "gk.data() =" << gk.data() << "\n";
+    //std::cout << "gk.mesh() =\n" << gk.mesh() << "\n";
+    
     auto gr = gf_vec_t<cyclic_lattice>{r_mesh, gk.target_shape()[0]};
     _fourier_base(gk.data(), gr.data(), p);
+
+    //std::cout << "gr.data() (pre)  =" << gr.data() << "\n";
+
     gr.data() /= gk.mesh().size();
+
+    //std::cout << "gr.data() (post) =" << gr.data() << "\n";
+
     return std::move(gr);
   }
 
+  /*
   gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
     auto p = _fourier_plan(r_mesh, gk);
     auto gr = _fourier_impl(r_mesh, gk, p);
     return std::move(gr);
   }
+  */
   
   // ------------------------ INVERSE TRANSFORM --------------------------------------------
 
@@ -94,10 +112,12 @@ namespace tprf::fourier {
     return std::move(gk);
   }
 
+  /*
   gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh, gf_vec_cvt<cyclic_lattice> gr) {
     auto p = _fourier_plan(k_mesh, gr);
     auto gk = _fourier_impl(k_mesh, gr, p);
     return std::move(gk);
   }
+  */
   
 } // namespace triqs::gfs
