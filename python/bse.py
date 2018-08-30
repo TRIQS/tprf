@@ -43,6 +43,8 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     print '--> chi0_wnk from chi0_wnr'
     chi0_wnk = chi0q_from_chi0r(chi0_wnr)
 
+    del chi0_wnr
+
     return chi0_wnk    
         
 # ----------------------------------------------------------------------
@@ -65,8 +67,6 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
     print    
 
     chi0_wnk = get_chi0_wnk(g_wk, nw=nw, nwf=nwf)
-    print '--> trace chi0_wnk'
-    chi0_wk = chi0q_sum_nu(chi0_wnk)
     
     assert( chi0_wnk.mesh.components[0] == bmesh )
     assert( chi0_wnk.mesh.components[1] == fmesh )
@@ -80,11 +80,17 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
     else:
         chi0_wnk_tail_corr = get_chi0_wnk(g_wk, nw=nw, nwf=tail_corr_nwf)
         chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk_tail_corr)
+        del chi0_wnk_tail_corr
+
+    print '--> trace chi0_wnk'
+    chi0_wk = chi0q_sum_nu(chi0_wnk)
 
     dchi_wk = chi0_wk_tail_corr - chi0_wk
 
     del chi0_wk
-    #del chi0_wk_tail_corr
+
+    if not return_chi0_wk:
+        del chi0_wk_tail_corr
 
     if tail_corr_nwf is not None:
         del chi0_wnk_tail_corr
