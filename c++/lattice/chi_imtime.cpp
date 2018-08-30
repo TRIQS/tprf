@@ -20,9 +20,16 @@
  ******************************************************************************/
 
 #include "common.hpp"
+#include "../mpi.hpp"
 #include "chi_imtime.hpp"
 
+#include "../fourier/fourier.hpp"
+
 namespace tprf {
+
+  namespace {
+    using namespace fourier;
+  }
 
 // ----------------------------------------------------
 // chi0 bubble in imaginary time
@@ -50,9 +57,11 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 
   //for (auto const &r : rmesh) {
 
+  auto arr = mpi_view(rmesh);
+
 #pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
@@ -72,6 +81,7 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
     
   }
 
+  chi0_tr = mpi_all_reduce(chi0_tr);
   return chi0_tr;
 }
 
@@ -93,11 +103,11 @@ chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
   auto g_target = grt.target();
   auto chi_target = chi0_wr.target();
   
-  //for (auto const &r : rmesh) {
+  auto arr = mpi_view(rmesh);
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
@@ -119,6 +129,7 @@ chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
 
   }
 
+  chi0_wr = mpi_all_reduce(chi0_wr);
   return chi0_wr;
 }  
 
@@ -158,9 +169,11 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
 
   chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
+  auto arr = mpi_view(rmesh);
+
 #pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
 
     auto _ = all_t{};
     auto I = chi_trapz_tau(chi_tr[_, r]);
@@ -169,25 +182,24 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
     chi_wr[0, r] = I;
   }
 
+  chi_wr = mpi_all_reduce(chi_wr);
   return chi_wr;
 }
 
 chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
 
+  auto _ = all_t{};
   int nb = chi_tr.target().shape()[0];
-  // auto target = chi_tr.target();
 
   auto tmesh = std::get<0>(chi_tr.mesh());
   auto rmesh = std::get<1>(chi_tr.mesh());
 
-  int ntau = tmesh.size();
-  //int nw = ntau / 4;
   double beta = tmesh.domain().beta;
 
-  // chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, target};
-  chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+  auto wmesh = gf_mesh<imfreq>(beta, Boson, nw);
+  chi_wr_t chi_wr{{wmesh, rmesh}, {nb, nb, nb, nb}};
 
-  for (auto const &r : rmesh) {
+  //for (auto const &r : rmesh) {
 
  /*
 #pragma omp parallel for 
@@ -195,13 +207,116 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
   */
 
-    auto _ = all_t{};
-    chi_wr[_, r] = fourier(chi_tr[_, r]);
+  auto r0 = *rmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi_tr[_, r0]), gf_view(chi_wr[_, r0]));
+
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
+  
+    auto chi_w = make_gf<imfreq>(wmesh, chi_wr.target());
+    auto chi_t = make_gf<imtime>(tmesh, chi_wr.target());
+
+#pragma omp critical
+    chi_t = chi_tr[_, r];
+
+    _fourier_with_plan<0>(gf_const_view(chi_t), gf_view(chi_w), p);
+
+#pragma omp critical
+    chi_wr[_, r] = chi_w;
+
+    //chi_wr[_, r] = fourier(chi_tr[_, r]);
   }
 
+  chi_wr = mpi_all_reduce(chi_wr);
   return chi_wr;
 }
+
+
+chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
+
+  auto _ = all_t{};
+
+  // auto target = chi_wr.target();
+  int nb = chi_wr.target().shape()[0];
+
+  auto wmesh = std::get<0>(chi_wr.mesh());
+  auto rmesh = std::get<1>(chi_wr.mesh());
+
+  auto kmesh = gf_mesh<brillouin_zone>{brillouin_zone{rmesh.domain()}, rmesh.periodization_matrix};
   
+  chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
+
+  auto w0 = *wmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi_wr[w0, _]), gf_view(chi_wk[w0, _]));
+
+  auto arr = mpi_view(wmesh);
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & w = arr(idx);
+
+    auto chi_r = make_gf<cyclic_lattice>(rmesh, chi_wr.target());
+    auto chi_k = make_gf<brillouin_zone>(kmesh, chi_wr.target());
+
+#pragma omp critical
+    chi_r = chi_wr[w, _];
+
+    _fourier_with_plan<0>(gf_const_view(chi_r), gf_view(chi_k), p);
+
+#pragma omp critical
+    chi_wk[w, _] = chi_k;
+    
+  }
+
+  chi_wk = mpi_all_reduce(chi_wk);
+  return chi_wk;
+}
+
+chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
+
+  auto _ = all_t{};
+
+  int nb = chi_wk.target().shape()[0];
+
+  auto wmesh = std::get<0>(chi_wk.mesh());
+  auto kmesh = std::get<1>(chi_wk.mesh());
+
+  auto rmesh = gf_mesh<cyclic_lattice>{bravais_lattice{kmesh.domain()}, kmesh.periodization_matrix};
+  
+  chi_wr_t chi_wr{{wmesh, rmesh}, {nb, nb, nb, nb}};
+
+  auto w0 = *wmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi_wk[w0, _]), gf_view(chi_wr[w0, _]));
+
+  auto arr = mpi_view(wmesh);
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & w = arr(idx);
+  
+    auto chi_k = make_gf<brillouin_zone>(kmesh, chi_wr.target());
+    auto chi_r = make_gf<cyclic_lattice>(rmesh, chi_wr.target());
+
+#pragma omp critical
+    chi_k = chi_wk[w, _];
+
+    _fourier_with_plan<0>(gf_const_view(chi_k), gf_view(chi_r), p);
+
+#pragma omp critical
+    chi_wr[w, _] = chi_r;
+    
+    //for (auto const &w : wmesh)
+    //chi_wr[w, _] = triqs::gfs::fourier(chi_wk[w, _]);
+  }
+
+  chi_wr = mpi_all_reduce(chi_wr);
+  return chi_wr;
+}  
+  
+  /*
 chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
 
   // auto target = chi_wr.target();
@@ -216,7 +331,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
 
   auto _ = all_t{};
   for (auto const &w : wmesh)
-    chi_wk[w, _] = fourier(chi_wr[w, _]);
+    chi_wk[w, _] = triqs::gfs::fourier(chi_wr[w, _]);
 
   return chi_wk;
 }
@@ -234,9 +349,10 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
 
   auto _ = all_t{};
   for (auto const &w : wmesh)
-    chi_wr[w, _] = fourier(chi_wk[w, _]);
+    chi_wr[w, _] = triqs::gfs::fourier(chi_wk[w, _]);
 
   return chi_wr;
 }
+  */
   
 } // namespace tprf
