@@ -11,6 +11,8 @@ from scipy.interpolate import NearestNDInterpolator
 
 # ----------------------------------------------------------------------
 
+import pytriqs.utility.mpi as mpi
+
 from pytriqs.gf import Gf
 from pytriqs.gf import Idx
 from pytriqs.gf import MeshImFreq
@@ -123,8 +125,6 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 # ----------------------------------------------------------------------
 def imtime_bubble_chi0_wk(g_wk, nw=1):
 
-    print tprf_banner(), "\n"
-
     wmesh, kmesh =  g_wk.mesh.components
 
     norb = g_wk.target_shape[0]
@@ -132,40 +132,42 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     nw_g = len(wmesh)
     nk = len(kmesh)
 
-    print 'beta  =', beta
-    print 'nk    =', nk
-    print 'nw    =', nw_g
-    print 'norb  =', norb
-    print
-
     ntau = 4 * nw_g
     ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw_g + ntau) * norb**2
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
-    print 'Approx. Memory Utilization: %2.2f GB\n' % ngb
 
-    print '--> fourier_wk_to_wr'
+    if mpi.is_master_node():
+        print tprf_banner(), "\n"
+        print 'beta  =', beta
+        print 'nk    =', nk
+        print 'nw    =', nw_g
+        print 'norb  =', norb
+        print
+        print 'Approx. Memory Utilization: %2.2f GB\n' % ngb
+
+    mpi.report('--> fourier_wk_to_wr')
     g_wr = fourier_wk_to_wr(g_wk)
     del g_wk
 
-    print '--> fourier_wr_to_tr' 
+    mpi.report('--> fourier_wr_to_tr')
     g_tr = fourier_wr_to_tr(g_wr)
     del g_wr
-
+    
     if nw == 1:
-        print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
+        mpi.report('--> chi0_w0r_from_grt_PH (bubble in tau & r)')
         chi0_wr = chi0_w0r_from_grt_PH(g_tr)
         del g_tr
     else:
-        print '--> chi0_tr_from_grt_PH (bubble in tau & r)'
+        mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
         chi0_tr = chi0_tr_from_grt_PH(g_tr)
         del g_tr
         
-        print '--> chi_wr_from_chi_tr'
+        mpi.report('--> chi_wr_from_chi_tr')
         chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
         del chi_tr
         
-    print '--> chi_wk_from_chi_wr (r->k)'
+    mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
     del chi0_wr
 
