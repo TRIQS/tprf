@@ -19,6 +19,10 @@ from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------
 
+import pytriqs.utility.mpi as mpi
+
+# ----------------------------------------------------------------------
+
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
@@ -41,7 +45,8 @@ class HartreeFockSolver(object):
         mu_min, mu_max : range for chemical potential search
         """
 
-        print self.logo()
+        if mpi.is_master_node():
+            print self.logo()
         
         self.mu = mu0
         self.beta = beta
@@ -60,12 +65,13 @@ class HartreeFockSolver(object):
         self.norb = self.target_shape[0]
         self.triu_idxs = np.triu_indices(self.norb, k=1)
 
-        print 'H_int =', H_int
-        print 'beta =', self.beta
-        print 'mu =', self.mu
-        print 'bands =', self.norb
-        print 'n_k =', len(self.e_k.mesh)
-        print
+        if mpi.is_master_node():
+            print 'H_int =', H_int
+            print 'beta =', self.beta
+            print 'mu =', self.mu
+            print 'bands =', self.norb
+            print 'n_k =', len(self.e_k.mesh)
+            print
 
         if gf_struct is None:
             assert( H_int is None ), \
@@ -78,8 +84,9 @@ class HartreeFockSolver(object):
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
             self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
-            print 'gf_struct =', gf_struct
-            print 'fundamental_operators =', fundamental_operators
+            if mpi.is_master_node():
+                print 'gf_struct =', gf_struct
+                print 'fundamental_operators =', fundamental_operators
 
         else:
             self.U_abcd = np.zeros(self.shape_abcd)
