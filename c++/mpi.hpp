@@ -33,8 +33,10 @@ auto mpi_view(const array<T, 1> &arr, triqs::mpi::communicator const & c) {
 
   auto slice = triqs::mpi::slice_range(0, arr.shape()[0] - 1, c.size(), c.rank()); // NB! needs [first, last] in range
 
-  //std::cout << "mpi_view<array> " << "rank = " << c.rank() << " size = " << arr.shape()[0]
-  //	    << " s,e = " << slice.first << ", " << slice.second << "\n";
+  /*
+  std::cout << "mpi_view<array> " << "rank = " << c.rank() << " size = " << arr.shape()[0]
+  	    << " s,e = " << slice.first << ", " << slice.second << "\n";
+  */
 
   return arr(range(slice.first, slice.second + 1));
 }
@@ -51,10 +53,13 @@ auto mpi_view(const gf_mesh<T> &mesh, triqs::mpi::communicator const & c) {
   auto slice = triqs::mpi::slice_range(0, mesh.size() - 1, c.size(), c.rank()); // NB! needs [first, last] in range
   int size = slice.second + 1 - slice.first;
 
-  //std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
-  //	    << " s,e = " << slice.first << ", " << slice.second << "\n";
+  /*
+  std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
+  	    << " s,e = " << slice.first << ", " << slice.second << "\n";
+  c.barrier();
+  */
   
-  array<mesh_point<gf_mesh<T>>, 1> arr(size);
+  array<typename gf_mesh<T>::mesh_point_t, 1> arr(size);
 
   auto iter = mesh.begin();
   iter += slice.first;
@@ -64,7 +69,13 @@ auto mpi_view(const gf_mesh<T> &mesh, triqs::mpi::communicator const & c) {
     arr(idx) = w;
     iter++;
   }
-  
+
+  /*
+  std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
+  	    << " s,e = " << slice.first << ", " << slice.second << " arr size " << arr.size() << "\n";
+  c.barrier();
+  */
+
   return arr;
 }
 

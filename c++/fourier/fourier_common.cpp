@@ -60,6 +60,7 @@ fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
   auto in_fft  = reinterpret_cast<fftw_complex *>(in.data_start());
   auto out_fft = reinterpret_cast<fftw_complex *>(out.data_start());
 
+  /*
   std::cout << "--> tprf::fourier _fourier_base_plan\n";
   std::cout << "rank = " << rank << "\n";
   std::cout << "dims[0] = " << dims[0] << "\n";
@@ -68,6 +69,7 @@ fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
   std::cout << "fftw_count = " << fftw_count << "\n";
   std::cout << "in_strides = " << in.indexmap().strides() << "\n";
   std::cout << "out_strides = " << out.indexmap().strides() << "\n";
+  */
   
   auto p =
       fftw_plan_many_dft(rank,       // rank
@@ -85,9 +87,9 @@ fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
                          1, // out : shift for multi fft.
                          fftw_backward_forward, FFTW_ESTIMATE);
 
-  fftw_print_plan(p); std::cout << "\n";
+  //fftw_print_plan(p); std::cout << "\n";
   auto plan = std::make_unique<fourier_plan_base>((void *)p);
-  fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
+  //fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
 
   return std::move(plan);
 }
@@ -101,7 +103,7 @@ void _fourier_base(array_const_view<dcomplex, 2> in,
   //std::cout << "in = " << in << "\n";
   //std::cout << "out = " << out << "\n";
 
-  fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
+  //fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
   
   fftw_execute_dft((fftw_plan)plan.get()->plan_ptr, in_fft, out_fft);
 

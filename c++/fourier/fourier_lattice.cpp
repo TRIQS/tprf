@@ -60,9 +60,11 @@ namespace tprf::fourier {
     auto dims = g_in.mesh().get_dimensions();
     auto p =_fourier_base_plan(g_in.data(), g_out.data(), dims.size(), dims.ptr(), n_others, fftw_backward_forward);
 
+    /*
     std::cout << "--> tprf::fourier_plan (lattice)\n";
     std::cout << "n_others = " << n_others << "\n";
     std::cout << "dims = " << dims << "\n";
+    */
     
     return std::move(p);
   }
@@ -80,7 +82,7 @@ namespace tprf::fourier {
 
   gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk, fourier_plan & p) {
 
-    std::cout << "--> tprf::fourier_lattice gk-gr\n";
+    //std::cout << "--> tprf::fourier_lattice gk-gr\n";
     //std::cout << "gk.data() =" << gk.data() << "\n";
     //std::cout << "gk.mesh() =\n" << gk.mesh() << "\n";
     
