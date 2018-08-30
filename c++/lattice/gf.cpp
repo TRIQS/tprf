@@ -18,7 +18,7 @@
  * TRIQS. If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
- 
+
 #include <triqs/arrays/linalg/det_and_inverse.hpp>
 using triqs::arrays::inverse;
 
@@ -43,14 +43,16 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
-  
-#pragma omp parallel for 
-  for (int idx = 0; idx < e_k.mesh().size(); idx++) {
-    auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
     
-    for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
+  auto arr = mpi_view(g0_wk.mesh());
+
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+    g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
   }
 
+  g0_wk = mpi_all_reduce(g0_wk);  
   return g0_wk;
 }
 
@@ -63,8 +65,8 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
   
   for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
       g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
-  g0_wk = mpi_all_reduce(g0_wk);
 
+  g0_wk = mpi_all_reduce(g0_wk);
   return g0_wk;
 }
 
@@ -94,13 +96,15 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
   gk_iw_t g_wk =
       make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
 
-#pragma omp parallel for 
-  for (int idx = 0; idx < e_k.mesh().size(); idx++) {
-    auto iter = e_k.mesh().begin(); iter += idx; auto k = *iter;
-    
-    for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
+  auto arr = mpi_view(g_wk.mesh());
+
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+    g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
   }
 
+  g_wk = mpi_all_reduce(g_wk);  
   return g_wk;
 }
 
@@ -115,8 +119,8 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
 
   for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
-  g_wk = mpi_all_reduce(g_wk);
 
+  g_wk = mpi_all_reduce(g_wk);
   return g_wk;
 }
 
@@ -155,7 +159,6 @@ g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w) {
   return g_w;
 }
 
-  
 // ----------------------------------------------------
   
 #ifdef TPRF_OMP
@@ -175,10 +178,12 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
 
-  #pragma omp parallel for 
-  for (int idx = 0; idx < wmesh.size(); idx++) {
-    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
+  auto arr = mpi_view(wmesh);
 
+  #pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & w = arr(idx);
+    
     auto g_r = make_gf<cyclic_lattice>(rmesh, target);
     auto g_k = make_gf<brillouin_zone>(kmesh, target);
 
@@ -190,10 +195,9 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
     #pragma omp critical
     g_wr[w, _] = g_r;
     
-    //g_wr[w, _]() = triqs::gfs::fourier(g_wk[w, _]);   // WORKS
-
   }
 
+  g_wr = mpi_all_reduce(g_wr);
   return g_wr;
 }
 
@@ -251,9 +255,11 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
 
-#pragma omp parallel for 
-  for (int idx = 0; idx < wmesh.size(); idx++) {
-    auto iter = wmesh.begin(); iter += idx; auto w = *iter;
+  auto arr = mpi_view(wmesh);
+
+  #pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & w = arr(idx);
 
     auto g_r = make_gf<cyclic_lattice>(rmesh, target);
     auto g_k = make_gf<brillouin_zone>(kmesh, target);
@@ -268,6 +274,7 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
 
   }
   
+  g_wk = mpi_all_reduce(g_wk);
   return g_wk;
 }
 
@@ -332,9 +339,11 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[_, r0]), gf_view(g_tr[_, r0]));
 
-#pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
 
     auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
     auto g_t = make_gf<imtime>(tmesh, g_wr.target());
@@ -349,6 +358,7 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
 
   }
 
+  g_tr = mpi_all_reduce(g_tr);
   return g_tr;
 }
 
