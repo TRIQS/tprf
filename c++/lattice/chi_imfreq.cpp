@@ -20,6 +20,8 @@
  ******************************************************************************/
 
 #include <triqs/utility/timer.hpp>
+#include <triqs/utility/timestamp.hpp>
+#include <omp.h>
 
 #include "../fourier/fourier.hpp"
 #include "../linalg.hpp"
@@ -331,14 +333,28 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu(chi0q_t chi0q) {
 
-  auto mesh = std::get<1>(chi0q.mesh());
-  auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
-      {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
+  auto _ = all_t{};
+  auto wmesh = std::get<0>(chi0q.mesh());
+  auto nmesh = std::get<1>(chi0q.mesh());
+  auto kmesh = std::get<2>(chi0q.mesh());
+  
+  auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, chi0q.target());
+  chi0q_w *= 0.;
+  
+  double beta = wmesh.domain().beta;
 
-  double beta = mesh.domain().beta;
+  auto arr = mpi_view(gf_mesh{wmesh, kmesh});
 
-  chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / (beta * beta);
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+    for( auto &n : nmesh) chi0q_w[w, k] += chi0q[w, n, k];
+    chi0q_w[w, k] /= beta * beta;
+  }
 
+  //chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / (beta * beta);
+
+  chi0q_w = mpi_all_reduce(chi0q_w);
   return chi0q_w;
 }
 
@@ -504,6 +520,8 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto _ = all_t{};
 
+  triqs::mpi::communicator c;
+  
   auto target = chi0q.target();
   auto bmesh = std::get<0>(chi0q.mesh());
   auto fmesh = std::get<1>(chi0q.mesh());
@@ -514,40 +532,45 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
   auto chi_kw = make_gf<cartesian_product<brillouin_zone, imfreq>>(
       {kmesh, bmesh}, target);
 
-  auto chi0_n = make_gf<g_iw_t::mesh_t::var_t>(fmesh, target);
-  auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
-  chi0_nn *= 0.;
-
-  auto I = identity<Channel_t::PH>(chi0_nn);
-
-  array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
-
   auto arr = mpi_view(gf_mesh{kmesh, bmesh});
 
+  std::cout << "BSE rank " << c.rank() << " of " << c.size() << " has "
+	    << arr.size() << " jobs." << std::endl;
+
+  triqs::utility::timer t;
+
+  t.start();
+  
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[k, w] = arr(idx);
 
-    triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
+    //triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
 
     // ----------------------------------------------------
-    t_copy_1.start();
+    //t_copy_1.start();
+
+    auto chi0_n = make_gf<g_iw_t::mesh_t::var_t>(fmesh, target);
 
 #pragma omp critical
     chi0_n = chi0q[w, _, k];
 
-    t_copy_1.stop();
-    std::cout << "BSE: copy_1 " << double(t_copy_1) << " s" << std::endl;
+    //t_copy_1.stop();
+    //std::cout << "BSE: copy_1 " << double(t_copy_1) << " s" << std::endl;
     // ----------------------------------------------------
-    t_chi0_nn.start();
+    //t_chi0_nn.start();
 
-    for (auto const &n : fmesh)
-      chi0_nn[n, n] = chi0_n[n];
+    auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+    chi0_nn *= 0.;
+    
+    for (auto const &n : fmesh) chi0_nn[n, n] = chi0_n[n];
 
-    t_chi0_nn.stop();
-    std::cout << "BSE: chi0_nn " << double(t_chi0_nn) << " s" << std::endl;
+    //t_chi0_nn.stop();
+    //std::cout << "BSE: chi0_nn " << double(t_chi0_nn) << " s" << std::endl;
     // ----------------------------------------------------
-    t_bse.start();
+    //t_bse.start();
+
+    auto I = identity<Channel_t::PH>(chi0_nn);
 
     // this step could be optimized, using the diagonality of chi0 and I
     g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph[w, _, _]);
@@ -556,12 +579,14 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     g2_nn_t chi =
         product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
 
-    t_bse.stop();
-    std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
+    //t_bse.stop();
+    //std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
     // ----------------------------------------------------
-    t_chi_tr.start();
+    //t_chi_tr.start();
 
     // trace out fermionic frequencies
+    array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
+    
     tr_chi *= 0.0;
     for (auto const &n1 : fmesh)
       for (auto const &n2 : fmesh)
@@ -569,20 +594,42 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
     tr_chi /= beta * beta;
 
-    t_chi_tr.stop();
-    std::cout << "BSE: chi tr " << double(t_chi_tr) << " s" << std::endl;
+    //t_chi_tr.stop();
+    //std::cout << "BSE: chi tr " << double(t_chi_tr) << " s" << std::endl;
     // ----------------------------------------------------
-    t_copy_2.start();
+    //t_copy_2.start();
 
 #pragma omp critical
     chi_kw[k, w] = tr_chi;
 
-    t_copy_2.stop();
-    std::cout << "BSE: copy_2 " << double(t_copy_2) << " s" << std::endl;
+    //t_copy_2.stop();
+    //std::cout << "BSE: copy_2 " << double(t_copy_2) << " s" << std::endl;
     // ----------------------------------------------------
+
+    if(c.rank() == 0 && omp_get_thread_num() == 0) {
+
+      int Nomp = omp_get_num_threads();
+      int N = int(floor(arr.size() / double(Nomp)));
+      
+      //double t_left = double(t) * ( N / (idx + 1) - 1. );
+      int done_percent = int(floor(100 * double(idx + 1) / N));
+      
+      std::cout << "BSE " << triqs::utility::timestamp() << " "
+		<< std::setfill(' ') << std::setw(3) << done_percent << "% "
+		<< "ETA " << triqs::utility::estimate_time_left(N, idx, t)
+		<< " job no "
+		<< std::setfill(' ') << std::setw(5) << int(idx)
+		<< " of approx " << N << " jobs/thread/rank." << std::endl;
+    }
+        
   }
 
   chi_kw = mpi_all_reduce(chi_kw);
+
+  t.stop();
+  if(c.rank() == 0 )
+    std::cout << "BSE TIME: " << double(t) << " s" << std::endl;
+
   return chi_kw;
 }
 
