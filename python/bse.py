@@ -48,7 +48,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     return chi0_wnk    
         
 # ----------------------------------------------------------------------
-def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=False):
+def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=False):
 
     kmesh = g_wk.mesh.components[1]
     bmesh = gamma_wnn.mesh.components[0]
@@ -79,8 +79,8 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
         chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk)
     else:
         chi0_wnk_tail_corr = get_chi0_wnk(g_wk, nw=nw, nwf=tail_corr_nwf)
+        print '--> chi0q_sum_nu_tail_corr_PH'
         chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk_tail_corr)
-        del chi0_wnk_tail_corr
 
     print '--> trace chi0_wnk'
     chi0_wk = chi0q_sum_nu(chi0_wnk)
@@ -113,7 +113,7 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=None, return_chi0_wk=F
         return chi_kw
 
 # ----------------------------------------------------------------------
-def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=-1):
+def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
 
     fmesh_huge, kmesh = g_wk.mesh.components
     bmesh = gamma_wnn.mesh.components[0]

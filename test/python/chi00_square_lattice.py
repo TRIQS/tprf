@@ -153,6 +153,8 @@ def test_square_lattice_chi00():
     from triqs_tprf.lattice import chi0q_from_g_wk_PH
     chi00_wnk_ref = chi0q_from_g_wk_PH(nw=1, nnu=nnu, g_wk=g0_wk)
 
+    diff = np.max(np.abs(chi00_wnk.data - chi00_wnk_ref.data))
+    print 'chi00_wnk diff =', diff
     np.testing.assert_array_almost_equal(chi00_wnk.data, chi00_wnk_ref.data)
     
     print '--> chi00_wk_imfreq'

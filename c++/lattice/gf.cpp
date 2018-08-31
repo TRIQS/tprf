@@ -183,7 +183,7 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   #pragma omp parallel for 
   for (int idx = 0; idx < arr.size(); idx++) {
     auto & w = arr(idx);
-    
+
     auto g_r = make_gf<cyclic_lattice>(rmesh, target);
     auto g_k = make_gf<brillouin_zone>(kmesh, target);
 
@@ -194,7 +194,7 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
     #pragma omp critical
     g_wr[w, _] = g_r;
-    
+
   }
 
   g_wr = mpi_all_reduce(g_wr);
