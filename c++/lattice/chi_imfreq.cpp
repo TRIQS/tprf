@@ -21,6 +21,7 @@
 
 #include <triqs/utility/timer.hpp>
 
+#include "../fourier/fourier.hpp"
 #include "../linalg.hpp"
 #include "../mpi.hpp"
 
@@ -28,6 +29,11 @@
 #include "common.hpp"
 
 namespace tprf {
+
+namespace {
+using fourier::_fourier_plan;
+using fourier::_fourier_with_plan;
+} // namespace
 
 // ----------------------------------------------------
 // chi0 bubble in Matsubara frequency
@@ -51,6 +57,8 @@ return chi0r;
 
 chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
 
+  triqs::utility::timer t_alloc, t_calc, t_mpi_all_reduce;
+  
   auto _ = all_t{};
 
   int nb = g_nr.target().shape()[0];
@@ -61,22 +69,25 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
   auto wmesh = gf_mesh<imfreq>{beta, Boson, nw};
   auto nmesh = gf_mesh<imfreq>{beta, Fermion, nnu};
 
+  t_alloc.start();
   chi0r_t chi0_wnr{{wmesh, nmesh, rmesh}, {nb, nb, nb, nb}};
-
-  auto g_target = g_nr.target();
+  t_alloc.stop();
+  
   auto chi_target = chi0_wnr.target();
+  auto g_target = g_nr.target();
 
   auto arr = mpi_view(rmesh);
 
+  t_calc.start();
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &r = arr(idx);
 
     auto chi0_wn =
-        make_gf<cartesian_product<imfreq, imfreq>>({wmesh, nmesh}, chi_target);
+      make_gf<cartesian_product<imfreq, imfreq>>({wmesh, nmesh}, chi_target);
     auto g_pr_n = make_gf<imfreq>(nmesh, g_target);
     auto g_mr_n = make_gf<imfreq>(nmesh, g_target);
-
+    
 #pragma omp critical
     {
       g_pr_n = g_nr[_, r];
@@ -94,8 +105,16 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
     // chi0r(iw, inu, r)(a, b, c, d) << -beta * gr(inu, r)(d, a) * gr(inu + iw,
     // -r)(b, c);
   }
+  t_calc.stop();
 
+  t_mpi_all_reduce.start();
   chi0_wnr = mpi_all_reduce(chi0_wnr);
+  t_mpi_all_reduce.stop();
+
+  std::cout << "--> chi0r_from_gr_PH: alloc " << double(t_alloc)
+	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
+	    << double(t_mpi_all_reduce) << " s." << std::endl;
+  
   return chi0_wnr;
 }
 
@@ -133,6 +152,8 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
 
   return chi0_n;
 }
+
+// ----------------------------------------------------
 
 gf<imfreq, tensor_valued<4>>
 chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
@@ -190,37 +211,122 @@ chi0q_t chi0q_from_g_wk_PH(int nw, int nnu, gk_iw_vt g_wk) {
   return chi0_wnk;
 }
 
+// ----------------------------------------------------
+// momentum <-> realspace transforms
+
+/*
 chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
+
+auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh();
+auto rmesh = make_adjoint_mesh(kmesh);
+
+auto chi0_wnr =
+    make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
+
+auto _ = all_t{};
+for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
+  chi0_wnr[w, n, _] = fourier(chi0_wnk[w, n, _]);
+chi0_wnr = mpi_all_reduce(chi0_wnr);
+
+return chi0_wnr;
+}
+*/
+
+chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
+
+  auto _ = all_t{};
+  auto target = chi0_wnk.target();
 
   auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh();
   auto rmesh = make_adjoint_mesh(kmesh);
 
   auto chi0_wnr =
-      make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
+      make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, target);
 
-  auto _ = all_t{};
-  for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
-    chi0_wnr[w, n, _] = fourier(chi0_wnk[w, n, _]);
+  auto w0 = *bmesh.begin();
+  auto n0 = *fmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi0_wnk[w0, n0, _]),
+                            gf_view(chi0_wnr[w0, n0, _]));
+
+  auto arr = mpi_view(gf_mesh{bmesh, fmesh});
+
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, n] = arr(idx);
+
+    auto chi_r = make_gf<cyclic_lattice>(rmesh, target);
+    auto chi_k = make_gf<brillouin_zone>(kmesh, target);
+
+#pragma omp critical
+    chi_k = chi0_wnk[w, n, _];
+
+    _fourier_with_plan<0>(gf_const_view(chi_k), gf_view(chi_r), p);
+
+#pragma omp critical
+    chi0_wnr[w, n, _] = chi_r;
+  }
   chi0_wnr = mpi_all_reduce(chi0_wnr);
-
   return chi0_wnr;
 }
 
+// --
+/*
 chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
+
+auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
+auto kmesh = make_adjoint_mesh(rmesh);
+
+auto chi0_wnk =
+    make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
+
+auto _ = all_t{};
+for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
+  chi0_wnk[w, n, _] = triqs::gfs::fourier(chi0_wnr[w, n, _]);
+chi0_wnk = mpi_all_reduce(chi0_wnk);
+
+return chi0_wnk;
+}
+*/
+
+chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
+
+  auto _ = all_t{};
+  auto target = chi0_wnr.target();
 
   auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
 
   auto chi0_wnk =
-      make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
+      make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, target);
 
-  auto _ = all_t{};
-  for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
-    chi0_wnk[w, n, _] = fourier(chi0_wnr[w, n, _]);
+  auto w0 = *bmesh.begin();
+  auto n0 = *fmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi0_wnr[w0, n0, _]),
+                            gf_view(chi0_wnk[w0, n0, _]));
+
+  auto arr = mpi_view(gf_mesh{bmesh, fmesh});
+
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, n] = arr(idx);
+
+    auto chi_r = make_gf<cyclic_lattice>(rmesh, target);
+    auto chi_k = make_gf<brillouin_zone>(kmesh, target);
+
+#pragma omp critical
+    chi_r = chi0_wnr[w, n, _];
+
+    _fourier_with_plan<0>(gf_const_view(chi_r), gf_view(chi_k), p);
+
+#pragma omp critical
+    chi0_wnk[w, n, _] = chi_k;
+  }
+
   chi0_wnk = mpi_all_reduce(chi0_wnk);
-
   return chi0_wnk;
 }
+
+// ----------------------------------------------------
 
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu(chi0q_t chi0q) {
@@ -253,7 +359,7 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
   auto qmesh = std::get<2>(chi0q.mesh());
 
   auto chi_target = chi0q.target();
-  
+
   // for (auto const &w : wmesh) {
   //  for (auto const &q : qmesh) {
 
@@ -268,7 +374,7 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
     auto chi = make_gf<imfreq>(nmesh, chi_target);
     array<std::complex<double>, 4> dens(nb, nb, nb, nb);
 
-    #pragma omp critical
+#pragma omp critical
     chi = chi0q[w, _, q];
 
     for (auto a : range(nb)) {
@@ -276,16 +382,15 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
         for (auto c : range(nb)) {
           for (auto d : range(nb)) {
             auto chi_abcd = slice_target_to_scalar(chi, a, b, c, d);
-            //chi0q_w[w, q](a, b, c, d) = density(chi_abcd) / beta;
-	    dens(a, b, c, d) = density(chi_abcd) / beta;
+            // chi0q_w[w, q](a, b, c, d) = density(chi_abcd) / beta;
+            dens(a, b, c, d) = density(chi_abcd) / beta;
           }
         }
       }
     }
 
-    #pragma omp critical
+#pragma omp critical
     chi0q_w[w, q] = dens;
-    
   }
 
   chi0q_w = mpi_all_reduce(chi0q_w);
@@ -399,54 +504,85 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto _ = all_t{};
 
-  auto mb = std::get<0>(chi0q.mesh());
-  auto mf = std::get<1>(chi0q.mesh());
-  auto mbz = std::get<2>(chi0q.mesh());
+  auto target = chi0q.target();
+  auto bmesh = std::get<0>(chi0q.mesh());
+  auto fmesh = std::get<1>(chi0q.mesh());
+  auto kmesh = std::get<2>(chi0q.mesh());
 
-  double beta = mf.domain().beta;
+  double beta = fmesh.domain().beta;
 
   auto chi_kw = make_gf<cartesian_product<brillouin_zone, imfreq>>(
-      {mbz, mb}, chi0q.target());
+      {kmesh, bmesh}, target);
 
-  // for (auto const &k : mbz) {
+  auto chi0_n = make_gf<g_iw_t::mesh_t::var_t>(fmesh, target);
+  auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+  chi0_nn *= 0.;
+
+  auto I = identity<Channel_t::PH>(chi0_nn);
+
+  array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
+
+  auto arr = mpi_view(gf_mesh{kmesh, bmesh});
 
 #pragma omp parallel for
-  for (int idx = 0; idx < mbz.size(); idx++) {
-    auto iter = mbz.begin();
-    iter += idx;
-    auto k = *iter;
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[k, w] = arr(idx);
 
-    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
-    auto I = identity<Channel_t::PH>(chi0);
+    triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
 
-    array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
-
-    for (auto const &w : mb) {
-
-      chi0 *= 0.;
-      for (auto const &n : mf) {
-        chi0[n, n] = chi0q[w, n, k];
-      }
-
-      // this step could be optimized, using the diagonality of chi0 and I
-      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]);
-
-      // also the last product here
-      g2_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
-
-      // trace out fermionic frequencies
-      tr_chi *= 0.0;
-      for (auto const &n1 : mf)
-        for (auto const &n2 : mf)
-          tr_chi += chi[n1, n2];
-
-      tr_chi /= beta * beta;
+    // ----------------------------------------------------
+    t_copy_1.start();
 
 #pragma omp critical
-      chi_kw[k, w] = tr_chi;
-    }
+    chi0_n = chi0q[w, _, k];
+
+    t_copy_1.stop();
+    std::cout << "BSE: copy_1 " << double(t_copy_1) << " s" << std::endl;
+    // ----------------------------------------------------
+    t_chi0_nn.start();
+
+    for (auto const &n : fmesh)
+      chi0_nn[n, n] = chi0_n[n];
+
+    t_chi0_nn.stop();
+    std::cout << "BSE: chi0_nn " << double(t_chi0_nn) << " s" << std::endl;
+    // ----------------------------------------------------
+    t_bse.start();
+
+    // this step could be optimized, using the diagonality of chi0 and I
+    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph[w, _, _]);
+
+    // also the last product here
+    g2_nn_t chi =
+        product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+
+    t_bse.stop();
+    std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
+    // ----------------------------------------------------
+    t_chi_tr.start();
+
+    // trace out fermionic frequencies
+    tr_chi *= 0.0;
+    for (auto const &n1 : fmesh)
+      for (auto const &n2 : fmesh)
+        tr_chi += chi[n1, n2];
+
+    tr_chi /= beta * beta;
+
+    t_chi_tr.stop();
+    std::cout << "BSE: chi tr " << double(t_chi_tr) << " s" << std::endl;
+    // ----------------------------------------------------
+    t_copy_2.start();
+
+#pragma omp critical
+    chi_kw[k, w] = tr_chi;
+
+    t_copy_2.stop();
+    std::cout << "BSE: copy_2 " << double(t_copy_2) << " s" << std::endl;
+    // ----------------------------------------------------
   }
 
+  chi_kw = mpi_all_reduce(chi_kw);
   return chi_kw;
 }
 
