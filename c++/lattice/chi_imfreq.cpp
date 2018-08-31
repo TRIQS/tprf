@@ -538,7 +538,6 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 	    << arr.size() << " jobs." << std::endl;
 
   triqs::utility::timer t;
-
   t.start();
   
 #pragma omp parallel for
@@ -572,8 +571,13 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
     auto I = identity<Channel_t::PH>(chi0_nn);
 
+    auto gamma_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+
+#pragma omp critical
+    gamma_nn = gamma_ph[w, _, _];
+    
     // this step could be optimized, using the diagonality of chi0 and I
-    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph[w, _, _]);
+    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
 
     // also the last product here
     g2_nn_t chi =
