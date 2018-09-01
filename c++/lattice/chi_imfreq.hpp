@@ -25,6 +25,7 @@
 namespace tprf {
 
 chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr);
+chi0r_t chi0r_from_gr_PH_nompi(int nw, int nnu, gr_iw_vt gr);
 chi0q_t chi0q_from_g_wk_PH(int nw, int nnu, gk_iw_vt g_wk);
 
 chi0r_t chi0r_from_chi0q(chi0q_vt chi0q);

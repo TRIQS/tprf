@@ -64,6 +64,7 @@ module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::compl
 # -- Full BSE functions
 
 module.add_function("chi0r_t chi0r_from_gr_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
+module.add_function("chi0r_t chi0r_from_gr_PH_nompi(int nw, int nnu, gf_view<cartesian_product<imfreq, cyclic_lattice>> gr)", doc = """""")
 module.add_function("chi0q_t chi0q_from_g_wk_PH(int nw, int nnu, gf_view<cartesian_product<imfreq, brillouin_zone>> g_wk)", doc = """""")
 
 module.add_function("chi0r_t chi0r_from_chi0q(gf_view<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q)", doc = """""")
