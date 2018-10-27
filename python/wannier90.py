@@ -24,7 +24,13 @@ import numpy as np
 from StringIO import StringIO
 from collections import OrderedDict
 
-import ase.units as units
+#import ase.units as units
+
+class Units(object):
+    Bohr = 0.5291772105638411
+    Angstrom = 1.0
+
+units = Units()
 
 # ----------------------------------------------------------------------
 def parse_hopping_from_wannier90_hr_dat(filename):
