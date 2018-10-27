@@ -59,6 +59,8 @@ return chi0r;
 
 chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
 
+  triqs::mpi::communicator comm;
+
   triqs::utility::timer t_alloc, t_calc, t_mpi_all_reduce;
   
   auto _ = all_t{};
@@ -81,10 +83,27 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
 
   auto arr = mpi_view(rmesh);
 
+  std::cout << "rank " << comm.rank() << " has arr.size() = "
+	    << arr.size() << " of " << rmesh.size() << std::endl;
+
+  //mini_vector<long, 3> r_sum = {0l, 0l, 0l};
+  
   t_calc.start();
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &r = arr(idx);
+
+    /*
+#pragma omp critical
+    {
+      //std::cout << "r = ";
+      for( int i : range(3) ) {
+	r_sum[i] += r.index()[i];
+	//std::cout << r.index()[i] << ", ";
+      }
+      //std::cout << std::endl;
+    }
+    */
 
     auto chi0_wn =
       make_gf<cartesian_product<imfreq, imfreq>>({wmesh, nmesh}, chi_target);
@@ -111,9 +130,29 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt g_nr) {
   t_calc.stop();
 
   t_mpi_all_reduce.start();
-  chi0_wnr = mpi_all_reduce(chi0_wnr);
+
+  // This (surprisingly gives incorrect results, for sufficiently large arguments...
+  //chi0_wnr = mpi_all_reduce(chi0_wnr);
+
+  /* // Does not give correct result either...
+  for( auto const & w : wmesh )
+    chi0_wnr[w, _, _] = mpi_all_reduce(chi0_wnr[w, _, _]);
+  */
+  
+  for( auto const & w : wmesh )
+    for( auto const & n : nmesh )
+      chi0_wnr[w, n, _] = mpi_all_reduce(chi0_wnr[w, n, _]);
+  
   t_mpi_all_reduce.stop();
 
+  /*
+  comm.barrier();
+  std::cout << "r_sum = ";
+  for( int i : range(3) ) std::cout << r_sum[i] << ", ";
+  std::cout << std::endl;
+  comm.barrier();
+  */
+  
   std::cout << "--> chi0r_from_gr_PH: alloc " << double(t_alloc)
 	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
 	    << double(t_mpi_all_reduce) << " s." << std::endl;
@@ -345,7 +384,14 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
 #pragma omp critical
     chi0_wnr[w, n, _] = chi_r;
   }
-  chi0_wnr = mpi_all_reduce(chi0_wnr);
+  
+  //chi0_wnr = mpi_all_reduce(chi0_wnr); // Incorrect results for large args!!
+
+  // Workaround.. :P
+  for( auto const &w : bmesh )
+    for( auto const &n : fmesh )
+      chi0_wnr[w, n, _] = mpi_all_reduce(chi0_wnr[w, n, _]);
+
   return chi0_wnr;
 }
 
@@ -370,12 +416,15 @@ return chi0_wnk;
 
 chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
 
+  triqs::utility::timer t_alloc, t_calc, t_mpi_all_reduce;
+
   auto _ = all_t{};
   auto target = chi0_wnr.target();
 
   auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
 
+  t_alloc.start();
   auto chi0_wnk =
       make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, target);
 
@@ -384,14 +433,16 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
   auto p = _fourier_plan<0>(gf_const_view(chi0_wnr[w0, n0, _]),
                             gf_view(chi0_wnk[w0, n0, _]));
 
-  /*
   auto arr = mpi_view(gf_mesh{bmesh, fmesh});
 
+  t_alloc.stop();
+  t_calc.start();
+  
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[w, n] = arr(idx);
-  */
 
+  /*
   std::cout << "--> chi0q_from_chi0r (MPI DISABLED!)\n";
   // cancel mpi paralleliz
   auto m = gf_mesh{bmesh, fmesh};
@@ -399,8 +450,7 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
   //#pragma omp parallel for 
   for (int idx = 0; idx < m.size(); idx++) {
     auto iter = m.begin(); iter += idx; auto &[w, n] = *iter;
-
-
+  */
     
     auto chi_r = make_gf<cyclic_lattice>(rmesh, target);
     auto chi_k = make_gf<brillouin_zone>(kmesh, target);
@@ -413,8 +463,23 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
     #pragma omp critical
     chi0_wnk[w, n, _] = chi_k;
   }
+  
+  t_calc.stop();
+  t_mpi_all_reduce.start();
 
-  chi0_wnk = mpi_all_reduce(chi0_wnk);
+  //chi0_wnk = mpi_all_reduce(chi0_wnk); // Incorrect results for large args!!
+
+  // Workaround.. :P 
+  for( auto const &w : bmesh )
+    for( auto const &n : fmesh )
+      chi0_wnk[w, n, _] = mpi_all_reduce(chi0_wnk[w, n, _]);
+
+  t_mpi_all_reduce.stop();
+
+  std::cout << "--> chi0q_from_chi0r: alloc " << double(t_alloc)
+	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
+	    << double(t_mpi_all_reduce) << " s." << std::endl;
+  
   return chi0_wnk;
 }
 

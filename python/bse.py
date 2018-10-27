@@ -12,8 +12,6 @@ from pytriqs.gf import MeshImFreq, MeshProduct, Gf, Idx
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.ParameterCollection import ParameterCollection
-
 from triqs_tprf.logo import tprf_banner
 
 from triqs_tprf.linalg import inverse_PH
@@ -76,19 +74,25 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     mpi.report('n_r=0 ' + str(n_r[0,0]))
     mpi.barrier()
     
-    #mpi.report('--> chi0_wnr from g_wr')
-    #chi0_wnr = chi0r_from_gr_PH(nw=nw, nnu=nwf, gr=g_wr)
+    mpi.report('--> chi0_wnr from g_wr')
+    chi0_wnr = chi0r_from_gr_PH(nw=nw, nnu=nwf, gr=g_wr)
 
-    mpi.report('--> chi0_wnr from g_wr (nompi)')
-    chi0_wnr_nompi = chi0r_from_gr_PH_nompi(nw=nw, nnu=nwf, gr=g_wr)
+    #mpi.report('--> chi0_wnr from g_wr (nompi)')
+    #chi0_wnr_nompi = chi0r_from_gr_PH_nompi(nw=nw, nnu=nwf, gr=g_wr)
     
     del g_wr
 
-    #diff = np.max(np.abs(chi0_wnr.data - chi0_wnr_nompi.data))
+    #abs_diff = np.abs(chi0_wnr.data - chi0_wnr_nompi.data)
+    #mpi.report('shape = ' + str(abs_diff.shape))
+    #idx = np.argmax(abs_diff)
+    #mpi.report('argmax = ' + str(idx))
+    #diff = np.max(abs_diff)
     #mpi.report('diff = %6.6f' % diff)
     #del chi0_wnr
-    chi0_wnr = chi0_wnr_nompi
+    #chi0_wnr = chi0_wnr_nompi
 
+    #exit()
+    
     mpi.barrier()
     mpi.report('chi0_wnr ' + str(chi0_wnr[Idx(0), Idx(0), Idx(0,0,0)][0,0,0,0]))
     chi0_r0 = np.sum(chi0_wnr[:, :, Idx(0,0,0)].data)
@@ -108,6 +112,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
 
     #if mpi.is_master_node():
     if False:
+        from triqs_tprf.ParameterCollection import ParameterCollection
         p = ParameterCollection()
         p.g_wk = g_wk
         p.g_wr = g_wr
@@ -193,10 +198,10 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
     assert( chi0_wnk.mesh.components[2] == kmesh )
 
     # -- Lattice BSE calc with built in trace
-    #mpi.report('--> chi_kw from BSE')
-    mpi.report('DEBUG BSE INACTIVE'*72)
-    #chi_kw = chiq_sum_nu_from_chi0q_and_gamma_PH(chi0_wnk, gamma_wnn)
-    chi_kw = chi0_kw.copy()
+    mpi.report('--> chi_kw from BSE')
+    #mpi.report('DEBUG BSE INACTIVE'*72)
+    chi_kw = chiq_sum_nu_from_chi0q_and_gamma_PH(chi0_wnk, gamma_wnn)
+    #chi_kw = chi0_kw.copy()
 
     mpi.barrier()
     mpi.report('--> chi_kw from BSE (done)')
