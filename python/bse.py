@@ -158,8 +158,8 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
     chi0_wnk_tail_corr = get_chi0_wnk(g_wk, nw=nw, nwf=tail_corr_nwf)
 
     mpi.report('--> trace chi0_wnk_tail_corr (WARNING! NO TAIL FIT. FIXME!)')
-    #chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk_tail_corr)
-    chi0_wk_tail_corr = chi0q_sum_nu(chi0_wnk_tail_corr)
+    chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk_tail_corr)
+    #chi0_wk_tail_corr = chi0q_sum_nu(chi0_wnk_tail_corr)
 
     mpi.barrier()
     mpi.report('B1 ' + str(chi0_wk_tail_corr[Idx(0), Idx(0,0,0)][0,0,0,0]))    

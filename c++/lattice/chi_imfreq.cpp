@@ -356,9 +356,12 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
   auto _ = all_t{};
   auto target = chi0_wnk.target();
 
-  auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh();
+  //auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh(); // clang+OpenMP can not handle this...
+  auto bmesh = std::get<0>(chi0_wnk.mesh());
+  auto fmesh = std::get<1>(chi0_wnk.mesh());
+  auto kmesh = std::get<2>(chi0_wnk.mesh());
   auto rmesh = make_adjoint_mesh(kmesh);
-
+  
   auto chi0_wnr =
       make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, target);
 
@@ -369,16 +372,18 @@ chi0r_t chi0r_from_chi0q(chi0q_vt chi0_wnk) {
 
   auto arr = mpi_view(gf_mesh{bmesh, fmesh});
 
-#pragma omp parallel for
+#pragma omp parallel for shared(kmesh, rmesh)
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, n] = arr(idx);
+    //auto &[w, n] = arr(idx);
+    auto w = std::get<0>(arr(idx));
+    auto n = std::get<1>(arr(idx));
 
     auto chi_r = make_gf<cyclic_lattice>(rmesh, target);
     auto chi_k = make_gf<brillouin_zone>(kmesh, target);
-
+    
 #pragma omp critical
     chi_k = chi0_wnk[w, n, _];
-
+    
     _fourier_with_plan<0>(gf_const_view(chi_k), gf_view(chi_r), p);
 
 #pragma omp critical
@@ -421,7 +426,10 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
   auto _ = all_t{};
   auto target = chi0_wnr.target();
 
-  auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
+  //auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
+  auto bmesh = std::get<0>(chi0_wnr.mesh());
+  auto fmesh = std::get<1>(chi0_wnr.mesh());
+  auto rmesh = std::get<2>(chi0_wnr.mesh());
   auto kmesh = make_adjoint_mesh(rmesh);
 
   t_alloc.start();
@@ -440,7 +448,9 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
   
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, n] = arr(idx);
+    //auto &[w, n] = arr(idx);
+    auto w = std::get<0>(arr(idx));
+    auto n = std::get<1>(arr(idx));
 
   /*
   std::cout << "--> chi0q_from_chi0r (MPI DISABLED!)\n";
@@ -538,7 +548,9 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
 
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, q] = arr(idx);
+    //auto &[w, q] = arr(idx);
+    auto w = std::get<0>(arr(idx));
+    auto q = std::get<1>(arr(idx));
 
     auto _ = all_t{};
 
@@ -697,7 +709,9 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
   
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[k, w] = arr(idx);
+    //auto &[k, w] = arr(idx);
+    auto k = std::get<0>(arr(idx));
+    auto w = std::get<1>(arr(idx));
 
     //triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
 
