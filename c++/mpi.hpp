@@ -22,7 +22,6 @@
 #pragma once
 
 #include <triqs/mpi/base.hpp>
-#include <triqs/utility/itertools.hpp>
 
 #include "types.hpp"
 
