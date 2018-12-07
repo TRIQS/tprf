@@ -65,7 +65,7 @@ if __name__ == '__main__':
             (+1,): T,
             (-1,): T,
             },
-        orbital_positions = [(0,0,0)] * norb,
+        orbital_positions = [(0,0,0)] * 6,
         orbital_names = ['up_0', 'up_1', 'up_2', 'do_0', 'do_1', 'do_2'],
         )
 
