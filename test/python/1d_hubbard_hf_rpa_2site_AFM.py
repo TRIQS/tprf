@@ -199,13 +199,13 @@ if __name__ == '__main__':
     m_AF = get_vec(res_AF, 'm_AF')
     chi_AF = get_vec(res_AF, 'chi')
     
-    assert( np.array_equal(np.abs(m_AF) < 1e-9, chi_AF.real > 0.) ), \
+    assert( np.array_equal(np.abs(m_AF) < 1e-6, chi_AF.real > 0.) ), \
         "Error: The AF susceptibility and order parameter do not agree."
 
     m_FM = get_vec(res_FM, 'm_FM')
     chi_FM = get_vec(res_FM, 'chi')
     
-    assert( np.array_equal(np.abs(m_FM) < 1e-9, chi_FM.real > 0.) ), \
+    assert( np.array_equal(np.abs(m_FM) < 1e-6, chi_FM.real > 0.) ), \
         "Error: The AF susceptibility and order parameter do not agree."
 
     spl_chi_AF = InterpolatedUnivariateSpline(U[::-1], 1./chi_AF[::-1])
