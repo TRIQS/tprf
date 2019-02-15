@@ -36,6 +36,7 @@ Theory and notation
    theory/boundary_conditions
    theory/linear_response
    theory/rpa
+   theory/eliashberg
 
 FAQs
 ----
