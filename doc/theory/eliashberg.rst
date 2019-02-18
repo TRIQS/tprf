@@ -23,37 +23,87 @@ We asssume a homogenous system with some arbitrary effective pairing interaction
 Anomalous Green's Functions
 ---------------------------
 
+.. note::
+   Explain what happens with all spin quantum numbers in the single-particle Green's function. Do we work with a particular combination of spins? :math:`G_{a\bar{b}} = G_{\alpha \uparrow \bar{b} \downarrow}`?
+
 With the arise of Cooper pairs we need in addition to the normal single-particle Green's function
 
 .. math::
-   G_{a\bar{b}}(\tau_1, \tau_2) 
+   G_{a\bar{b}}(\tau - \tau') 
    \equiv 
-   - \langle \mathcal{T} c_{a}(\tau_1) c^\dagger_{\bar{b}}(\tau_2) \rangle\,,
+   - \langle \mathcal{T} c_{a}(\tau) c^\dagger_{\bar{b}}(\tau') \rangle
+   =
+   - \langle \mathcal{T} a(\tau) \bar{b}(\tau') \rangle\,,
 
 and its backwards propagating counterpart
 
 .. math::
-   \bar{G}_{\bar{a}b}(\tau_1, \tau_2) 
+   \bar{G}_{\bar{a}b}(\tau - \tau') 
    \equiv 
-   - \langle \mathcal{T} c^\dagger_{\bar{a}}(\tau_1) c_{b}(\tau_2) \rangle\,,
+   - \langle \mathcal{T} c^\dagger_{\bar{a}}(\tau) c_{b}(\tau') \rangle
+   =
+   - \langle \mathcal{T} \bar{a}(\tau) b(\tau') \rangle\,,
 
 the single-particle anomalous Green's functions :math:`F` and :math:`\bar{F}` to describe a superconducting state.
 These are defined as
 
 .. math::
-    F_{a\bar{b}}(\tau_1, \tau_2) 
+    F_{ab}(\tau - \tau') 
     \equiv
-   \langle \mathcal{T} c_{a}(\tau_1) c_{\bar{b}}(\tau_2) \rangle\,,
+   \langle \mathcal{T} c_{a}(\tau) c_{b}(\tau') \rangle
+   =
+   \langle \mathcal{T} a(\tau) b(\tau') \rangle
+   \,,
 
 .. math::
-    \bar{F}_{a\bar{b}}(\tau_1, \tau_2) 
-    \equiv
-   \langle \mathcal{T} c^\dagger_{a}(\tau_1) c^\dagger_{\bar{b}}(\tau_2) \rangle\,.
+   \bar{F}_{\bar{a}\bar{b}}(\tau - \tau') 
+   \equiv
+   \langle \mathcal{T} c^\dagger_{a}(\tau) c^\dagger_{\bar{b}}(\tau') \rangle
+   =
+   \langle \mathcal{T} \bar{a}(\tau) \bar{b}(\tau') \rangle\,.
+
+Fourier transforming to Matsubara frequency space then gives that
+
+.. math::
+   \bar{G}_{\bar{a}b}(\mathbf{k}, i\nu_n) = [ G_{b\bar{a}}(-\mathbf{k}, -i\nu_n) ]^{*}
+   \\
+   \bar{F}_{\bar{a}\bar{b}}(\mathbf{k}, i\nu_n) = [ F_{ba}(-\mathbf{k}, -i\nu_n) ]^{*} 
 
 Dyson-Gorkov Equations
 ----------------------
 
-The former properties of a superconductor are given by four coupled equations called Dyson-Gorkov Equations.
+The former properties of a superconductor are given by the Dyson-Gorkov equations
+
+.. math::
+   \mathbf{G}(\mathbf{k}, i\nu_n)
+   =
+   \mathbf{G}^{(0)}(\mathbf{k}, i\nu_n)
+   + \mathbf{G}^{(0)}(\mathbf{k}, i\nu_n)
+     \ast \mathbf{\Sigma}(\mathbf{k}, i\nu_n)
+     \ast \mathbf{G}(\mathbf{k}, i\nu_n)
+
+.. math::
+   \mathbf{G} \equiv
+   \left[ \begin{array}{cc}
+     G_{a\bar{b}} & F_{ab} \\
+     \bar{F}_{\bar{a}\bar{b}} & \bar{G}_{\bar{a}b} \\
+   \end{array} \right]
+   \quad
+   \mathbf{G}^{(0)}
+   \equiv
+   \left[ \begin{array}{cc}
+     G^{(0)}_{a\bar{b}} & 0 \\
+     0 & \bar{G}^{(0)}_{\bar{a}b} \\
+   \end{array} \right]
+   \quad
+   \mathbf{\Sigma}
+   \equiv
+   \left[ \begin{array}{cc}
+     \Sigma_{a\bar{b}} & \Delta_{ab} \\
+     \bar{\Delta}_{\bar{a}\bar{b}} & \bar{\Sigma}_{\bar{a}b} \\
+   \end{array} \right]
+
+In component form this becomes,
 
 .. math::
     G(a\bar{b}) = G^{(0)}(a\bar{b}) + G^{(0)}(a\bar{c})\Sigma(\bar{c}d)G(d\bar{b}) +
@@ -72,6 +122,13 @@ The former properties of a superconductor are given by four coupled equations ca
     \bar{G}^{(0)}(\bar{a}c) \Delta(cd) G(d\bar{b})
 
 Here :math:`\Sigma` is the normal self-energy and :math:`\Delta` and :math:`\bar{\Delta}` the anomalous self-energies, which are equal in the absence of a magnetic field and will be treated as from now on.
+
+Anomalous self-energy and particle-particle vertex
+--------------------------------------------------
+
+.. note::
+   Define :math:`\Gamma`. It should be the particle-particle vertex :math:`\Gamma^{(pp)}` related to the generalized susceptibility :math:`\chi` through the Bethe-Salpeter equation in the particle-particle channel. This would give the definition of the four orbital(spin) indices and their order.
+
 The anomalous self-energy can be expressed with the effective pairing interaction :math:`\Gamma` and the anomalous Green's function :math:`F` as
 
 .. math::
@@ -79,30 +136,30 @@ The anomalous self-energy can be expressed with the effective pairing interactio
     \Gamma_{A\bar{a}\bar{b}B}(\mathbf{k}-\mathbf{q}, i\nu - i\nu') F_{AB}(\mathbf{q}, i\nu')\,.
     :label: anom_self_energy
 
-Around the transition point to the superconducting state the anomalous self-energy :math:`\Delta` is approximately zero, and, because we are only interested in the transition point, we linearize the Dyson-Gorkov equations with respect to :math:`\Delta`.
-This yields
+Linearization in :math:`\Delta`
+-------------------------------
+	    
+Around the transition point to the superconducting state the anomalous self-energy :math:`\Delta` is approximately zero, and, because we are only interested in the transition point, we linearize :math:`F` in the Dyson-Gorkov equations with respect to :math:`\Delta`. This yields
 
 .. math::
-    G(a\bar{b}) = \big({G^{(0)}}^{-1}(a\bar{b}) - \Sigma(a\bar{b})\big)^{-1}\,,
+   F & = g \Sigma F + g \Delta \bar{G} \\
+   G & = g + g \Sigma G + g \Delta \bar{F}
 
 .. math::
-    \bar{G}(\bar{a}b) = \big({\bar{G}^{(0)}}^{-1}(\bar{a}b) - \bar{\Sigma}(\bar{a}b)\big)^{-1}\,,
+   F & = (g^{-1} - \Sigma)^{-1} \Delta \bar{G} \\
+   \bar{G} & = (\bar{g}^{-1} - \Sigma)^{-1} + \bar{\Delta} F
 
-.. math:: 
-    F(ab) =  \big({G^{(0)}}^{-1}(a\bar{c}) - \Sigma(a\bar{c})\big)^{-1} \Delta(\bar{c}\bar{d}) 
-        \big({\bar{G}^{(0)}}^{-1}(\bar{d}b) - \bar{\Sigma}(\bar{d}b)\big)^{-1}\,,
-    :label: lin_anom_gf
-
-.. math:: 
-    \bar{F}(\bar{a}\bar{b}) =  \big({\bar{G}^{(0)}}^{-1}(\bar{a}c) - \bar{\Sigma}(\bar{a}c)\big)^{-1} \Delta(cd) 
-        \big({G^{(0)}}^{-1}(d\bar{b}) - \Sigma(d\bar{b})\big)^{-1}\,.
-
-We can then plug :eq:`lin_anom_gf` into :eq:`anom_self_energy` to obtain the linearized Eliashberg equation
+.. math::
+   F = (g^{-1} - \Sigma)^{-1} \Delta (\bar{g}^{-1} - \bar{\Sigma})^{-1} + \mathcal{O}(\Delta^2)
+   :label: lin_anom_gf
+   
+We then insert :eq:`lin_anom_gf` into :eq:`anom_self_energy` and obtain the linearized Eliashberg equation
 
 .. math::
     \Delta_{\bar{a}\bar{b}}(\mathbf{k},i\nu) =  -\frac{1}{N_k \beta}\sum_{\mathbf{q}} \sum_{i\nu'}
-    \Gamma_{A\bar{a}\bar{b}B}(\mathbf{k}-\mathbf{q}, i\nu - i\nu') 
-    \big({G^{(0)}}^{-1}(\mathbf{q}, i\nu') - \Sigma(\mathbf{q}, i\nu') \big)^{-1}_{A\bar{c}} \\
+    \Gamma_{A\bar{a}\bar{b}B}(\mathbf{k}-\mathbf{q}, i\nu - i\nu')
+    \\ \times
+    \big({G^{(0)}}^{-1}(\mathbf{q}, i\nu') - \Sigma(\mathbf{q}, i\nu') \big)^{-1}_{A\bar{c}}
     \Delta_{\bar{c}\bar{d}}(\mathbf{q}, i\nu')
     \big({G^{(0)}}^{-1}_{}(-\mathbf{q}, -i\nu') - \Sigma_{}(-\mathbf{q}, -i\nu') \big)^{-1}_{B\bar{d}}\,.
 
@@ -116,9 +173,11 @@ where the eigenvalue :math:`\lambda` is seen as a measurement for the strength o
 RPA Approach
 ------------
 
+.. note::
+   Explain what happens with momenta
+
 The linearized Eliashberg equation can be studied in the RPA limit.
 In this case the normal self-energy is set to zero and the effective pairing interaction :math:`\Gamma` for triplet Cooper pairs is given by
-
 
 .. math::
     \Gamma^{(\mathrm{triplet})}(\bar{a}b\bar{c}d) =

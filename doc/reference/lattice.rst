@@ -20,7 +20,15 @@
   :maxdepth: 1
 
   /cpp2doc_generated/tprf/lindhard_chi00_wk
-  
+
+**lattice.hpp** Linearized Eliashberg equation
+==============================================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/eliashberg_product
+	     
 **lattice.hpp** Imaginary time generalized susceptibility
 =========================================================
 

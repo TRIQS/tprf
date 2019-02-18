@@ -33,6 +33,7 @@ using namespace tprf;
 
 module.add_function("array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 2> k_vecs, chi_wr_cvt chi)", doc = """""")
 
+# -- Dyson
 
 module.add_function("gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh)", doc = """""")
 module.add_function("gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, gf_view<imfreq, matrix_valued> sigma_w)", doc = """""")
@@ -42,7 +43,6 @@ module.add_function("g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigm
 module.add_function("gr_iw_t fourier_wk_to_wr(gf_view<cartesian_product<imfreq, brillouin_zone>> g_k)", doc = """""")
 module.add_function("gk_iw_t fourier_wr_to_wk(gf_view<cartesian_product<imfreq, cyclic_lattice>> g_r)", doc = """""")
 module.add_function("gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int ntau=-1)", doc = """""")
-
 
 # -- Bubble in imaginary time
 
@@ -60,6 +60,10 @@ module.add_function("chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued
 # -- RPA
 
 module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = """""")
+
+# -- Eliashberg
+
+module.add_function("gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
 
 # -- Full BSE functions
 
