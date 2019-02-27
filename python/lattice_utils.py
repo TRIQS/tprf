@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------
 
 import itertools
+import multiprocessing
 import numpy as np
 
 # ----------------------------------------------------------------------
@@ -124,6 +125,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
 # ----------------------------------------------------------------------
 def imtime_bubble_chi0_wk(g_wk, nw=1):
+    ncores = multiprocessing.cpu_count()
 
     wmesh, kmesh =  g_wk.mesh.components
 
@@ -133,7 +135,13 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     nk = len(kmesh)
 
     ntau = 4 * nw_g
-    ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw_g + ntau) * norb**2
+    ntot = np.prod(nk) * ntau * norb**2 # storing G(r, tau)
+    if nw == 1:
+        ngw = np.prod(nk) * nw_g * norb**2 # storing G(r, iomega)
+        nchit = ncores * ntau * norb**4 # storing \chi(tau) per core
+        ntot += max(ngw, nchit) 
+    else:
+        ntot += np.prod(nk) * ntau * norb**4 # storing \chi(r, tau)
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
 
@@ -165,7 +173,7 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
         
         mpi.report('--> chi_wr_from_chi_tr')
         chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
-        del chi_tr
+        del chi0_tr
         
     mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
