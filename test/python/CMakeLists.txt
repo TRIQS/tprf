@@ -8,7 +8,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_tgz_files} DESTINATION ${CMAKE_CURRE
 
 # List all tests
 set(all_tests chi4_iw_from_tau g_wk_to_from_g_wr chi00_square_lattice bse_and_rpa_loc_vs_latt mean_field mean_field_kanamori hartree_response 1d_hubbard_hf_rpa 1d_hubbard_hf_spin_rot_inv 1d_hubbard_hf_rpa_2site_AFM
-eliashberg)
+eliashberg, compare_general_rpa_to_matrix_rpa)
 
 foreach(t ${all_tests})
   add_test(NAME ${t} COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/${t}.py)

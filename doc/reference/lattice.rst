@@ -21,6 +21,15 @@
 
   /cpp2doc_generated/tprf/lindhard_chi00_wk
 
+**lattice.hpp** Random Phase Approximation
+==========================================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/solve_rpa_spin
+  /cpp2doc_generated/tprf/solve_rpa_charge
+
 **lattice.hpp** Linearized Eliashberg equation
 ==============================================
 

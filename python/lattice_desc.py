@@ -60,6 +60,8 @@ module.add_function("chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued
 # -- RPA
 
 module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = """""")
+module.add_function("chi_wk_t solve_rpa_spin(chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = """""")
+module.add_function("chi_wk_t solve_rpa_charge(chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = """""")
 
 # -- Eliashberg
 
