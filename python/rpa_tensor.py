@@ -34,11 +34,8 @@ def get_rpa_tensor(H_int, fundamental_operators):
     U_int = 4 * quartic_permutation_symmetrize(U_int)
 
     # -- Group in Gamma order cc^+cc^+ ( from c^+c^+cc )
-    
-    U_abcd = np.zeros_like(U_int)
-    for a, b, c, d in itertools.product(range(U_int.shape[0]), repeat=4):
-        U_abcd[a, b, c, d] = U_int[b, d, a, c]
-
+    U_abcd = np.ascontiguousarray(np.transpose(U_int, (2, 0, 3, 1)))
+        
     return U_abcd
 
 # ----------------------------------------------------------------------
@@ -112,10 +109,10 @@ def get_rpa_uc_tensor(norbs, U, Up, J, Jp):
 # ----------------------------------------------------------------------    
 def kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp):
 
-    """ Following Eliashberg notes, but with c+c+ cc order. """
+    """ Following Eliashberg notes. """
 
     shape = [norb]*4
-    U_c, U_s = np.zeros(shape), np.zeros(shape)
+    U_c, U_s = np.zeros(shape, dtype=np.complex), np.zeros(shape, dtype=np.complex)
     
     for a, abar, b, bbar in itertools.product(range(norb), repeat=4):
 
@@ -137,8 +134,11 @@ def kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp):
             scalar_c = Jp
             scalar_s = Jp
             
-        U_c[a, b, bbar, abar] = scalar_c
-        U_s[a, b, bbar, abar] = scalar_s
+        #U_c[a, b, bbar, abar] = scalar_c
+        #U_s[a, b, bbar, abar] = scalar_s
+        
+        U_c[a, abar, b, bbar] = scalar_c
+        U_s[a, abar, b, bbar] = scalar_s
 
     return U_c, U_s
 
@@ -176,21 +176,21 @@ def split_quartic_tensor_in_charge_and_spin(U_4):
     np.testing.assert_array_almost_equal(U_8[1, 0, 1, 1], zeros)
     np.testing.assert_array_almost_equal(U_8[0, 1, 1, 1], zeros)
 
-    np.testing.assert_array_almost_equal(U_8[0, 0, 1, 1], zeros)
-    np.testing.assert_array_almost_equal(U_8[1, 1, 0, 0], zeros)
+    np.testing.assert_array_almost_equal(U_8[1, 0, 1, 0], zeros)
+    np.testing.assert_array_almost_equal(U_8[0, 1, 0, 1], zeros)
 
     # -- split in charge and spin
     
     # c+ c c+ c form of the charge, spin diagonalization
-    #U_c = U_8[0, 0, 0, 0] + U_8[0, 0, 1, 1]
-    #U_s = U_8[0, 0, 0, 0] - U_8[0, 0, 1, 1]
+    U_c = - U_8[0, 0, 0, 0] - U_8[0, 0, 1, 1]
+    U_s = U_8[0, 0, 0, 0] - U_8[0, 0, 1, 1]
 
     # c+ c+ c c  form of the charge, spin diagonalization
-    U_c = U_8[0, 0, 0, 0] + U_8[0, 1, 1, 0]
-    U_s = -U_8[0, 0, 0, 0] + U_8[0, 1, 1, 0]
+    #U_c = U_8[0, 0, 0, 0] + U_8[0, 1, 1, 0]
+    #U_s = -U_8[0, 0, 0, 0] + U_8[0, 1, 1, 0]
 
-    U_c *= 4
-    U_s *= 4
+    #U_c *= 4
+    #U_s *= 4
     
     return U_c, U_s
 
@@ -202,17 +202,17 @@ def quartic_tensor_from_charge_and_spin(U_c, U_s):
 
     U_8 = np.zeros(shape_8, dtype=U_c.dtype)
 
-    U_uu = 0.5 * (U_c - U_s)
-    U_ud = 0.5 * (U_c + U_s)
+    U_uu = -0.5 * (U_c - U_s)
+    U_ud = +0.5 * (U_c + U_s)
     
     for s1, s2 in itertools.product(range(2), repeat=2):
         if s1 == s2:
             U_8[s1, s1, s1, s1] = U_uu
         else:
-            U_8[s1, s2, s2, s1] = U_ud
-            U_8[s1, s2, s1, s2] = -U_s
+            U_8[s1, s1, s2, s2] = -U_ud
+            U_8[s1, s2, s2, s1] = U_s
 
     U_8 = np.transpose(U_8, (0, 4, 1, 5, 2, 6, 3, 7))
     U_4 = U_8.reshape(2*np.array(shape_4))
     
-    return 0.25*U_4
+    return U_4
