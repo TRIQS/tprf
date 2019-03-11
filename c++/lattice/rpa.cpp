@@ -36,7 +36,7 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
 
   chi_wk_t chi_wk{{wmesh, kmesh}, chi0_wk.target_shape()};
 
-  // PH grouping, from c+c+cc
+  // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
   auto U = make_matrix_view(group_indices_view(U_arr, {0, 1}, {3, 2}));
 
   auto I = make_unit_matrix<scalar_t>(U.shape()[0]);
@@ -49,14 +49,14 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
       array<scalar_t, 4> chi0_arr{chi0_wk[w, k],
                                   memory_layout_t<4>{0, 1, 2, 3}};
 
-      // PH grouping FIXME!
+      // PH grouping (permuting last two indices)
       auto chi = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2}));
       auto chi0 =
           make_matrix_view(group_indices_view(chi0_arr, {0, 1}, {3, 2}));
 
       chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
 
-      chi_wk[w, k] = chi_arr; // assign back using the array_view
+      chi_wk[w, k] = chi_arr; // assign back using the array_view 
     }
   }
 

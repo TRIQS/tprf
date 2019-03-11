@@ -30,13 +30,17 @@ def fundamental_operators_from_gf_struct(gf_struct):
 # ----------------------------------------------------------------------
 def get_rpa_tensor(H_int, fundamental_operators):
 
-    U_int = quartic_tensor_from_operator(H_int, fundamental_operators)
-    U_int = 4 * quartic_permutation_symmetrize(U_int)
+    """ Takes a TRIQS operator object and extracts the quartic terms
+    and returns the corresponding antisymmetrized quartic tensor in
+    vertex index order, i.e., cc+cc+. """
+    
+    U_abcd = quartic_tensor_from_operator(H_int, fundamental_operators)
+    U_abcd = 4 * quartic_permutation_symmetrize(U_abcd)
 
     # -- Group in Gamma order cc^+cc^+ ( from c^+c^+cc )
-    U_abcd = np.ascontiguousarray(np.transpose(U_int, (2, 0, 3, 1)))
+    Gamma_RPA_abcd = np.ascontiguousarray(np.transpose(U_abcd, (2, 0, 3, 1)))
         
-    return U_abcd
+    return Gamma_RPA_abcd
 
 # ----------------------------------------------------------------------
 def get_gamma_rpa(chi0_wnn, U_abcd):
