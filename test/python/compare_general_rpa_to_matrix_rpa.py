@@ -7,172 +7,120 @@ for the spin- and charge-susceptibility. """
 
 import numpy as np
 
+# ----------------------------------------------------------------------
+
+from triqs_tprf.tight_binding import TBLattice
+
 # ======================================================================
 # General RPA formalism
 
 # ----------------------------------------------------------------------
-# -- One dimensional lattice with nearest neighbour hopping with
-# -- explicit spin indice
+# -- Two dimensional lattice with nearest neighbour hopping intra and
+# -- inter orbital and explicit spin indice
 
-t = 1.0
-    
-norb = 4
-h_loc = np.zeros((norb, norb))
-T = - t * np.eye(norb)
+norb = 2
+spin_names = ['up', 'do']
 
-from triqs_tprf.tight_binding import TBLattice
+n_orb_spin = norb * len(spin_names)
 
-t_r = TBLattice(
-    units = [(1, 0, 0)],
+t_intra = 1.0
+t_inter = 0.1
+
+inter_orbital_hopping = np.zeros((n_orb_spin, n_orb_spin))
+inter_orbital_hopping[0,1] = inter_orbital_hopping[1,0] = 1
+inter_orbital_hopping[2,3] = inter_orbital_hopping[3,2] = 1
+
+H = TBLattice(
+    units = [(1, 0, 0), (0, 1, 0)],
     hopping = {
         # nearest neighbour hopping -t
-        (0,): h_loc,
-        (+1,): T,
-        (-1,): T,
+        ( 0,+1): -t_intra * np.eye(n_orb_spin) - t_inter * inter_orbital_hopping,
+        ( 0,-1): -t_intra * np.eye(n_orb_spin) - t_inter * inter_orbital_hopping,
+        (+1, 0): -t_intra * np.eye(n_orb_spin) - t_inter * inter_orbital_hopping,
+        (-1, 0): -t_intra * np.eye(n_orb_spin) - t_inter * inter_orbital_hopping,
         },
-    orbital_positions = [(0,0,0)] * norb,
-    orbital_names = ['up_0', 'do_0', 'up_1', 'do_1'],
+    orbital_positions = [(0,0,0)]*n_orb_spin,
     )
 
-e_k = t_r.on_mesh_brillouin_zone(n_k=(256, 1, 1))
+e_k = H.on_mesh_brillouin_zone(n_k = (16, 16, 1))
+print(e_k)
 
 # ----------------------------------------------------------------------
 # -- Bare susceptibility from Green's function bubble
 
-nw = 20
-beta = 0.544
-
-from pytriqs.gf import MeshImFreq, Idx
-wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
-
+from pytriqs.gf import MeshImFreq
 from triqs_tprf.lattice import lattice_dyson_g0_wk
+
+wmesh = MeshImFreq(beta=5.0, S='Fermion', n_max=30)
 g0_wk = lattice_dyson_g0_wk(mu=0., e_k=e_k, mesh=wmesh)
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
-print
-print 'chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16))
 
 # ----------------------------------------------------------------------
 # -- Kanamori interaction
 
-U = 2.4
-J = 0.6
-
-from pytriqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
-from pytriqs.operators.util.hamiltonians import h_int_kanamori
-
-orb_names = [0, 1]
-spin_names = ['up', 'do']
-
-U_ab, UPrime_ab = U_matrix_kanamori(
-    n_orb=len(orb_names), U_int=U, J_hund=J)
-    
-H_int = h_int_kanamori(
-    spin_names, orb_names, U_ab, UPrime_ab, J_hund=J,
-    off_diag=False, map_operator_structure=None, H_dump=None) # orbital diag
-
-print 'H_int =\n', H_int
-
-# ----------------------------------------------------------------------
-# -- RPA rank 4 (antisymmetrized) interaction tensor
-
+from pytriqs.operators.util import U_matrix_kanamori, h_int_kanamori
+from pyed.OperatorUtils import fundamental_operators_from_gf_struct
 from triqs_tprf.rpa_tensor import get_rpa_tensor
-from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
+# -- Kanamori interaction
 
-gf_struct = [['up_0', [0]], ['do_0',[0]], ['up_1', [0]], ['do_1', [0]]]
+U = 1.0
+J = 0.1
+
+spin_names = ['up', 'do']
+orb_names = range(norb)
+
+# TRIQS uses spin as slow index
+gf_struct = [ [spin_name, orb_names] for spin_name in spin_names ]
+Umat, Upmat = U_matrix_kanamori(n_orb=norb, U_int=U, J_hund=J)
+H_int = h_int_kanamori(spin_names, orb_names, U=Umat, Uprime=Upmat, J_hund=J, off_diag=True)
 
 fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
-U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
-print 'U_abdc =\n', U_abcd.reshape((16, 16)).real
+U_abcd = get_rpa_tensor(H_int, fundamental_operators) # given in cc^+cc^+
 
 # ----------------------------------------------------------------------
 # -- Lattice susceptbility in the RPA approximation
 
 from triqs_tprf.lattice import solve_rpa_PH
+
 chi_wk = solve_rpa_PH(chi00_wk, U_abcd)
-
-print 'chi_q0 =\n', chi_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16))
-
-Sz = 0.5 * np.diag([+1., -1., +1., -1.])
-chi_SzSz_wk = chi_wk[0,0,0,0].copy()
-chi_SzSz_wk.data[:] = np.einsum('wkabcd,ab,cd->wk', chi_wk.data, Sz, Sz)
-
-n = np.diag([1., 1., 1., 1.])
-chi_nn_wk = chi_wk[0,0,0,0].copy()
-chi_nn_wk.data[:] = np.einsum('wkabcd,ab,cd->wk', chi_wk.data, n, n)
 
 # ======================================================================
 # Matrix RPA formalism
 
-# ----------------------------------------------------------------------
-# -- One dimensional lattice with nearest neighbour hopping without
-# -- spin indice
-    
-norb = 2
-h_loc = np.zeros((norb, norb))
-T = - t * np.eye(norb)
+from triqs_tprf.matrix_rpa import lose_spin_degree_of_freedom, tprf_order_to_matrix_rpa_order
 
-t_r = TBLattice(
-    units = [(1, 0, 0)],
-    hopping = {
-        # nearest neighbour hopping -t
-        (0,): h_loc,
-        (+1,): T,
-        (-1,): T,
-        },
-    orbital_positions = [(0,0,0)] * norb,
-    orbital_names = ['0', '1'],
-    )
+chi00_wk_wo_spin = lose_spin_degree_of_freedom(chi00_wk.data, rank=4, spin_fast=False)
+chi00_wk_matrix_rpa = tprf_order_to_matrix_rpa_order(chi00_wk_wo_spin)
 
-e_k = t_r.on_mesh_brillouin_zone(n_k=(256, 1, 1))
+from triqs_tprf.matrix_rpa import get_rpa_us_tensor, get_rpa_uc_tensor
 
-# ----------------------------------------------------------------------
-# -- Bare susceptibility from Green's function bubble
+U = 1.0
+Up = 0.8
+J = 0.1
+Jp = 0.1
 
-from pytriqs.gf import MeshImFreq, Idx
-wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
+us = get_rpa_us_tensor(norb, U, Up, J ,Jp)
+uc = get_rpa_uc_tensor(norb, U, Up, J ,Jp)
 
-from triqs_tprf.lattice import lattice_dyson_g0_wk
-g0_wk = lattice_dyson_g0_wk(mu=0., e_k=e_k, mesh=wmesh)
+from triqs_tprf.matrix_rpa import chi_rpa_spin, chi_rpa_charge
 
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
+chi_spin = chi_rpa_spin(chi00_wk_matrix_rpa, us)
+chi_charge = chi_rpa_charge(chi00_wk_matrix_rpa, uc)
 
-print
-print 'chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4))
+uu = tprf_order_to_matrix_rpa_order(chi_wk.data[:,:,:norb,:norb,:norb,:norb])
+ud = tprf_order_to_matrix_rpa_order(chi_wk.data[:,:,:norb,:norb,norb:,norb:])
 
-# ----------------------------------------------------------------------
-# -- Spin- and charge-susceptibility in matrix RPA formalism
+np.testing.assert_allclose(uu, 0.5*(chi_charge + chi_spin))
+np.testing.assert_allclose(ud, 0.5*(chi_charge - chi_spin))
 
-from triqs_tprf.lattice import solve_rpa_spin, solve_rpa_charge
-from triqs_tprf.rpa_tensor import get_rpa_us_tensor, get_rpa_uc_tensor
+np.testing.assert_allclose(chi_spin, uu-ud)
+np.testing.assert_allclose(chi_charge, uu+ud)
 
-Up = U - 2*J
-Jp = J
+from triqs_tprf.rpa_tensor import split_quartic_tensor_in_charge_and_spin
+uc_ref, us_ref = split_quartic_tensor_in_charge_and_spin(U_abcd)
 
-U_abcd_spin = get_rpa_us_tensor(norb, U, Up, J, Jp)
-U_abcd_charge = get_rpa_uc_tensor(norb, U, Up, J, Jp)
-
-chi_spin_wk = solve_rpa_spin(chi00_wk, U_abcd_spin)
-chi_charge_wk = solve_rpa_charge(chi00_wk, U_abcd_charge)
-
-chi_SzSz_wk_ref = chi_spin_wk[0,0,0,0].copy()
-chi_SzSz_wk_ref.data[:] = np.einsum('wkaabb->wk', chi_spin_wk.data)
-
-chi_nn_wk_ref = chi_charge_wk[0,0,0,0].copy()
-chi_nn_wk_ref.data[:] = np.einsum('wkaabb->wk', chi_charge_wk.data)
-
-# ----------------------------------------------------------------------
-# -- Compare the results of both formalisms. Note that in the matrix RPA
-# -- the susceptibilties carry a factor of 0.5, 
-# -- i.e. \chi_\text{general} = 2 * \chi_\text{matrix}.
-# -- But because we build \chi^{S_zS_z} with the proper spin operator,
-# -- which has \pm 0.5 elements we get an addtionl 0.25 factor.
-# -- Therefore:
-# -- \chi_\text{general}^{S_zS_z} = 0.5 * \chi_\text{matrix}^{S_zS_z},
-# -- \chi_\text{general}^{nn} = 2 * \chi_\text{matrix}^{nn},
-
-np.testing.assert_almost_equal(chi_SzSz_wk.data, 0.5*chi_SzSz_wk_ref.data)
-np.testing.assert_almost_equal(chi_nn_wk.data, 2*chi_nn_wk_ref.data)
+np.testing.assert_allclose(us, tprf_order_to_matrix_rpa_order(us_ref))
+np.testing.assert_allclose(uc, tprf_order_to_matrix_rpa_order(uc_ref))
