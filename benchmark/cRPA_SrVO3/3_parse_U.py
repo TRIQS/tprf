@@ -9,7 +9,7 @@ import itertools
 import numpy as np
 
 from eval_U import read_uijkl, red_to_2ind
-from vasp_crpa_parsers import read_vasp_crpa_momentum_space_interaction
+from vasp_crpa_parsers import read_vasp_crpa_momentum_space_interaction_to_ndarray
 
 print '='*72
 print '--> Reading UIJKL file'
@@ -24,9 +24,9 @@ print '='*72
 print '--> Reading UIJKL_Q and VIJKL_Q files'
 print '='*72
 
-UR_Q, Q = read_vasp_crpa_momentum_space_interaction('./crpa', 'UIJKL_Q_full.q*')
-VR_Q, Q = read_vasp_crpa_momentum_space_interaction('./crpa', 'VIJKL_Q_full.q*')
-VRR_Q, Q = read_vasp_crpa_momentum_space_interaction('./crpa', 'VIJKL_Q_redu.q*')
+UR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray('./crpa', 'UIJKL_Q_full.q*')
+VR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray('./crpa', 'VIJKL_Q_full.q*')
+VRR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray('./crpa', 'VIJKL_Q_redu.q*')
 U_Q = UR_Q + ( VR_Q - VRR_Q )
 
 U_ijkl_ref = np.sum(U_Q, axis=0) / Q.shape[0]

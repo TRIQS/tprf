@@ -7,7 +7,7 @@ import glob
 import warnings
 import numpy as np
 
-def read_vasp_crpa_momentum_space_interaction(path, prefix, verbose=False):
+def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=False):
 
     filenames = glob.glob(path + '/' + prefix + '*')
     filenames = np.sort(filenames)
@@ -48,3 +48,42 @@ def read_vasp_crpa_momentum_space_interaction(path, prefix, verbose=False):
     U_Q = U_Q[uidx]
         
     return U_Q, Q
+
+def convert_from_ndarray_to_triqs(U_Q, Q, cell, kpts):
+
+    from pytriqs.gf import Gf, MeshBrillouinZone
+    from pytriqs.lattice.lattice_tools import BrillouinZone
+    from pytriqs.lattice.lattice_tools import BravaisLattice
+
+    bl = BravaisLattice(cell, [(0,0,0)])
+    bz = BrillouinZone(bl)
+    bzmesh = MeshBrillouinZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
+
+    u_q = Gf(mesh=bzmesh, target_shape=U_Q.shape[1:])
+
+    tmp = np.array(Q * kpts[None, :], dtype=np.int)
+    I = [tuple(tmp[i]) for i in xrange(Q.shape[0])]
+
+    for qidx, i in enumerate(I):
+        for k in bzmesh:
+
+            # -- Generalize this transform absolute to relative k-points
+            a = cell[0, 0]
+            q = k * 0.5 * a / np.pi
+
+            j = tuple(np.array(kpts * q, dtype=np.int))
+            if i == j: u_q[k].data[:] = U_Q[qidx]
+
+    return u_q
+
+def read_vasp_crpa_momentum_space_interaction_to_triqs(path, cell, kpts, verbose=False):
+
+    UR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray(path, 'UIJKL_Q_full.q*', verbose=verbose)
+    VR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray(path, 'VIJKL_Q_full.q*', verbose=verbose)
+    VRR_Q, Q = read_vasp_crpa_momentum_space_interaction_to_ndarray(path, 'VIJKL_Q_redu.q*', verbose=verbose)
+    U_Q = UR_Q + ( VR_Q - VRR_Q )
+    
+    u_q = convert_from_ndarray_to_triqs(U_Q, Q, cell, kpts)
+
+    return u_q
+
