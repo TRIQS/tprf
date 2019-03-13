@@ -73,6 +73,7 @@ def test_eliashberg_product():
 
     # -- Set gamma_pp and delta_ref_wk to something where we know the product
 
+    np.random.seed(seed=1337)
     gamma_pp.data[:] = np.random.random(gamma_pp.data.shape)
     delta_in_wk.data[:] = np.random.random(delta_in_wk.data.shape)
     delta_ref_wk.data[:] = np.random.random(delta_ref_wk.data.shape)
