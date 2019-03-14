@@ -1,3 +1,13 @@
+# ----------------------------------------------------------------------
+
+""" This set of functions implements the matrix RPA as preseneted in mutliple papers.
+(Note that there is still the contradiction, that we use chi*U indest of U*chi.)
+Four rank tensors in c^+ccc^+ (susceptibilites) or cc^+c^+c (vertices) order
+are reshaped to matrices, and the RPA equations are simple matrix multiplications.
+This is used to test if TPRF and matrix RPA yields the same results.
+"""
+
+# ----------------------------------------------------------------------
 
 import itertools
 import numpy as np

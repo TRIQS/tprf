@@ -30,9 +30,9 @@ namespace tprf {
      Computes the equation
 
      .. math::
-         \chi^{(\mathrm{s})}(\bar{a}b\bar{c}d) = \big(
+         \chi(\bar{a}b\bar{c}d) = \big(
          \mathbb{1} 
-         - \chi^{(0)}(\bar{a}b\bar{B}A) U^{(\mathrm{s})}(A\bar{B}D\bar{C})
+         - \chi^{(0)}(\bar{a}b\bar{B}A) U(A\bar{B}D\bar{C})
          \big)^{-1} \chi^{(0)}(\bar{C}D\bar{c}d)\,.
      
      @param chi0 bare particle-hole bubble :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
@@ -41,37 +41,5 @@ namespace tprf {
   */
 
   chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U);
-
-  /** Matrix RPA spin tensor
-   
-
-     Computes the equation
-
-     .. math::
-         \chi^{(\mathrm{s})}(\bar{a}b\bar{c}d) = \big(\mathbb{1} - \chi^{(0)}(\bar{a}b\bar{A}B) 
-         U^{(\mathrm{s})}(\bar{A}B\bar{C}D)\big)^{-1}  \chi^{(0)}(\bar{C}D\bar{c}d)\,.
-     
-     @param chi0 spin-independent bare particle-hole bubble :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param U the spin interaction tensor which can be obtained by triqs_tprf.rpa_tensor.get_rpa_us_tensor :math:`U^{(\mathrm{s})}_{\bar{a}b\bar{c}d}`
-     @return The spin tensor as a rank 4 bosonic Matsubara frequency lattice Green's function :math:`\chi^{(\mathrm{s})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-  */
-
-  chi_wk_t solve_rpa_spin(chi_wk_vt chi0, array_view<std::complex<double>, 4> U);
-
-  /** Matrix RPA charge tensor
-   
-
-     Computes the equation
-
-     .. math::
-         \chi^{(\mathrm{c})}(\bar{a}b\bar{c}d) = \big(\mathbb{1} - \chi^{(0)}(\bar{a}b\bar{A}B) 
-         U^{(\mathrm{c})}(\bar{A}B\bar{C}D)\big)^{-1}  \chi^{(0)}(\bar{C}D\bar{c}d)\,.
-     
-     @param chi0 spin-independent bare particle-hole bubble :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param U the charge interaction tensor which can be obtained by triqs_tprf.rpa_tensor.get_rpa_uc_tensor :math:`U^{(\mathrm{c})}_{\bar{a}b\bar{c}d}`
-     @return The spin tensor as a rank 4 bosonic Matsubara frequency lattice Green's function :math:`\chi^{(\mathrm{c})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-  */
-
-  chi_wk_t solve_rpa_charge(chi_wk_vt chi0, array_view<std::complex<double>, 4> U);
   
 } // namespace tprf

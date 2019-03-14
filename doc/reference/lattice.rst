@@ -28,8 +28,6 @@
   :maxdepth: 1
 
   /cpp2doc_generated/tprf/solve_rpa_PH
-  /cpp2doc_generated/tprf/solve_rpa_spin
-  /cpp2doc_generated/tprf/solve_rpa_charge
 
 **lattice.hpp** Linearized Eliashberg equation
 ==============================================

@@ -2,7 +2,9 @@
 
 Derivation: Product relations
 =============================
-   
+
+.. _derivation_index_pairing_ph:
+
 Particle-Hole channel (:math:`PH`)
 ----------------------------------
 
