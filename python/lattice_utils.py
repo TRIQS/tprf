@@ -134,14 +134,33 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     nw_g = len(wmesh)
     nk = len(kmesh)
 
-    ntau = 4 * nw_g
-    ntot = np.prod(nk) * ntau * norb**2 # storing G(r, tau)
+    ntau = 2 * nw_g
+
+    # -- Memory Approximation
+
+    ng_tr = ntau * np.prod(nk) * norb**2 # storing G(tau, r)
+    ng_wr = nw_g * np.prod(nk) * norb**2 # storing G(w, r)
+    ng_t = ntau * norb**2 # storing G(tau)
+
+    nchi_tr = ntau * np.prod(nk) * norb**4 # storing \chi(tau, r)
+    nchi_wr = nw * np.prod(nk) * norb**4 # storing \chi(w, r)
+    nchi_t = ntau * norb**4 # storing \chi(tau)
+    nchi_w = nw * norb**4 # storing \chi(w)
+    nchi_r = np.prod(nk) * norb**4 # storing \chi(r)
+
     if nw == 1:
-        ngw = np.prod(nk) * nw_g * norb**2 # storing G(r, iomega)
-        nchit = ncores * ntau * norb**4 # storing \chi(tau) per core
-        ntot += max(ngw, nchit) 
+        ntot_case_1 = ng_tr + ng_wr
+        ntot_case_2 = ng_tr + nchi_wr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_3 = 4 * nchi_wr
+
+        ntot = max(ntot_case_1, ntot_case_2, ntot_case_3)
+
     else:
-        ntot += np.prod(nk) * ntau * norb**4 # storing \chi(r, tau)
+        ntot_case_1 = ng_tr + nchi_tr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_2 = nchi_tr + nchi_wr + ncores*(nchi_w + nchi_t)
+    
+        ntot = max(ntot_case_1, ntot_case_2)
+
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
 
