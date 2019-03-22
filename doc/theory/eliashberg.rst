@@ -177,28 +177,39 @@ RPA Approach
    Explain what happens with momenta
 
 The linearized Eliashberg equation can be studied in the RPA limit.
-In this case the normal self-energy is set to zero and the effective pairing interaction :math:`\Gamma` for triplet Cooper pairs is given by
+In this case the normal self-energy is set to zero and the effective pairing interaction :math:`\Gamma` for a singlet Cooper pairs is given by
 
 .. math::
-    \Gamma^{(\mathrm{triplet})}(\bar{a}b\bar{c}d) =
-    \frac{3}{2} U^{(\mathrm{s})}(\bar{a}b\bar{A}B) \chi^{(\mathrm{s})}(\bar{A}B\bar{C}D) 
-    U^{(\mathrm{s})}(\bar{C}D\bar{c}d) \\
-    -\frac{1}{2} U^{(\mathrm{c})}(\bar{a}b\bar{A}B) \chi^{(\mathrm{c})}(\bar{A}B\bar{C}D) 
-    U^{(\mathrm{c})}(\bar{C}D\bar{c}d) \\
-   + \frac{1}{2}\big(U^{(\mathrm{s})}(\bar{a}b\bar{c}d)+
-    U^{(\mathrm{c})}(\bar{a}b\bar{c}d)\big)\,.
+    \Gamma^{(\mathrm{singlet})}(a\bar{b}c\bar{d}) =
+    \frac{3}{2} U^{(\mathrm{s})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{s})}(\bar{B}A\bar{C}D) 
+    U^{(\mathrm{s})}(D\bar{C}c\bar{d}) \\
+    -\frac{1}{2} U^{(\mathrm{c})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{c})}(\bar{B}A\bar{C}D) 
+    U^{(\mathrm{c})}(D\bar{C}c\bar{d}) \\
+   + \frac{1}{2}\big(U^{(\mathrm{s})}(a\bar{b}c\bar{d})+
+    U^{(\mathrm{c})}(a\bar{b}c\bar{d})\big)\,,
+
+and for a triplet by
+
+.. math::
+    \Gamma^{(\mathrm{triplet})}(a\bar{b}c\bar{d}) =
+    -\frac{1}{2} U^{(\mathrm{s})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{s})}(\bar{B}A\bar{C}D) 
+    U^{(\mathrm{s})}(D\bar{C}c\bar{d}) \\
+    -\frac{1}{2} U^{(\mathrm{c})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{c})}(\bar{B}A\bar{C}D) 
+    U^{(\mathrm{c})}(D\bar{C}c\bar{d}) \\
+   + \frac{1}{2}\big(U^{(\mathrm{s})}(a\bar{b}c\bar{d})+
+    U^{(\mathrm{c})}(a\bar{b}c\bar{d})\big)\,.
 
 Here :math:`\chi^{(\mathrm{s})}` is the spin-susceptibility tensor defined by
 
 .. math::
     \chi^{(\mathrm{s})}(\bar{a}b\bar{c}d) = \big(\mathbb{1} - \chi^{(0)}(\bar{a}b\bar{A}B) 
-    U^{(\mathrm{s})}(\bar{A}B\bar{C}D)\big)^{-1}  \chi^{(0)}(\bar{C}D\bar{c}d)\,,
+    U^{(\mathrm{s})}(B\bar{A}C\bar{D})\big)^{-1}  \chi^{(0)}(\bar{D}C\bar{c}d)\,,
 
 and :math:`\chi^{(\mathrm{c})}` is the charge-susceptibility tensor defined by
 
 .. math::
     \chi^{(\mathrm{c})}(\bar{a}b\bar{c}d) = \big(\mathbb{1} + \chi^{(0)}(\bar{a}b\bar{A}B) 
-    U^{(\mathrm{c})}(\bar{A}B\bar{C}D)\big)^{-1}  \chi^{(0)}(\bar{C}D\bar{c}d)\,,
+    U^{(\mathrm{c})}(B\bar{A}C\bar{D})\big)^{-1}  \chi^{(0)}(\bar{D}C\bar{c}d)\,,
 
 here :math:`\chi^{(0)}` is the non-interacting particle-hole bubble.
 

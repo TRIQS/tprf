@@ -29,7 +29,7 @@ from scipy.sparse.linalg import eigs
 from lattice import eliashberg_product
 
 # ----------------------------------------------------------------------
-def solve_eliashberg(Gamma_pp, g_wk, tol=1e-7):
+def solve_eliashberg(Gamma_pp, g_wk, tol=1e-10):
 
     """ Solve the linearized Eliashberg equation using 
     iterative eigenvalue algorithms from scipy """
@@ -52,7 +52,10 @@ def solve_eliashberg(Gamma_pp, g_wk, tol=1e-7):
     x = from_wk_to_x(g_wk)
     N = x.shape[0]
     linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
-    E, U = eigs(linop, which='LR', tol=tol)
+
+    np.random.seed(1337)
+    v0 = np.random.random(N)
+    E, U = eigs(linop, which='LR', tol=tol, v0=v0)
 
     eigen_modes = []
     for idx in xrange(U.shape[-1]):
