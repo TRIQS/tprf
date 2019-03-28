@@ -29,6 +29,12 @@ namespace tprf {
 gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk) {
 
   auto [wmesh, kmesh] = delta_wk.mesh();
+  auto gf_wmesh = std::get<0>(g_wk.mesh());
+
+  if (wmesh.size() > gf_wmesh.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+          " (" << gf_wmesh.size() << ") must be atleast the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
 
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
@@ -46,33 +52,24 @@ gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk,
                        gk_iw_vt delta_wk) {
 
   auto [wmesh, kmesh] = delta_wk.mesh();
+  auto gamma_wmesh = std::get<0>(Gamma_pp.mesh());
+
+  if (2*wmesh.size() > gamma_wmesh.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of Gamma"
+          " (" << gamma_wmesh.size() << ") must be atleast TWICE the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
 
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
 
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
     
-  auto wmesh_bosonic = std::get<0>(Gamma_pp.mesh());
-
-  auto min_n = wmesh_bosonic.first_index();
-  auto max_n = wmesh_bosonic.last_index();
-
   for (const auto [w, k] : delta_wk.mesh())
     for (const auto [n, q] : delta_wk.mesh())
-      {
-        auto diff_freq = w - n;
-        auto diff_n = diff_freq.n;
-
-        if (diff_n < min_n){
-            diff_n = min_n;
-        }
-        else if (diff_n > max_n){
-            diff_n = max_n;
-        }
       for (auto [A, a, b, B] : Gamma_pp.target_indices())
         delta_wk_out[w, k](a, b) +=
-            Gamma_pp[wmesh_bosonic[diff_n], k - q](A, a, b, B) * F_wk[n, q](A, B);
-      }
+            Gamma_pp[w-n, k - q](A, a, b, B) * F_wk[n, q](A, B);
+
   delta_wk_out /= -(wmesh.domain().beta * kmesh.size());
 
   return delta_wk_out;
