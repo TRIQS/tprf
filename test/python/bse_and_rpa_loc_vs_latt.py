@@ -7,7 +7,6 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 
 # ----------------------------------------------------------------------
 
-import os
 import numpy as np
 
 import pytriqs.utility.mpi as mpi
@@ -27,31 +26,15 @@ from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH, chi_from_gg2_PH
 from triqs_tprf.linalg import inverse_PH
 
 # ----------------------------------------------------------------------
+
+from utilities import read_TarGZ_HDFArchive
+
+# ----------------------------------------------------------------------
 def trace_nn(G2_wnn):
     bmesh = G2_wnn.mesh.components[0]
     G2_w = Gf(mesh=bmesh, target_shape=G2_wnn.target_shape)
     G2_w.data[:] = np.sum(G2_wnn.data, axis=(1, 2)) / bmesh.beta**2
     return G2_w
-    
-# ----------------------------------------------------------------------
-def read_TarGZ_HDFArchive(filename):
-
-    import tarfile
-    from tempfile import NamedTemporaryFile
-
-    tar = tarfile.open(filename, "r:gz")
-    f = tar.extractfile(tar.getmembers()[0])
-
-    tmp = NamedTemporaryFile(delete=False)
-    tmp.write(f.read())
-    tmp.close()
-
-    with HDFArchive(tmp.name, 'r') as res:
-        p = res['p']
-
-    os.remove(tmp.name)
-
-    return p
     
 # ----------------------------------------------------------------------
 def make_calc():
@@ -60,7 +43,7 @@ def make_calc():
     # -- Read precomputed ED data
 
     filename = "bse_and_rpa_loc_vs_latt.tar.gz"
-    p = read_TarGZ_HDFArchive(filename)
+    p = read_TarGZ_HDFArchive(filename)['p']
     
     # ------------------------------------------------------------------
     # -- RPA tensor

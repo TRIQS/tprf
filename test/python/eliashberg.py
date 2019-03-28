@@ -1,3 +1,7 @@
+# ----------------------------------------------------------------------
+
+""" Compare final result and between steps of the Eliashberg equation to
+previous erstablished results """
 
 # ----------------------------------------------------------------------
 
@@ -5,94 +9,58 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Gf, MeshProduct
+from triqs_tprf.ParameterCollection import ParameterCollection
+from pytriqs.gf import Gf, MeshImFreq
 
-# ----------------------------------------------------------------------
-
-from triqs_tprf.tight_binding import TBLattice
-from triqs_tprf.lattice import lattice_dyson_g0_wk
-
-from triqs_tprf.lattice import eliashberg_product
+from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
+from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
+from triqs_tprf.lattice import gamma_PP_singlet, eliashberg_product
 from triqs_tprf.eliashberg import solve_eliashberg
 
 # ----------------------------------------------------------------------
-def test_eliashberg_product():
-    
-    # ------------------------------------------------------------------
-    # -- Discretizations
-    
-    n_k = (2, 2, 1)
-    nw = 10
-    
-    # ------------------------------------------------------------------
-    # -- tight binding parameters
 
-    beta = 20.0
-    mu = 0.0
-    t = 1.0
-    
-    h_loc = np.array([
-        [-0.3, -0.5],
-        [-0.5, .4],
-        ])
-        
-    T = - t * np.array([
-        [1., 0.23],
-        [0.23, 0.5],
-        ])
-
-    # ------------------------------------------------------------------
-    # -- tight binding
-    
-    print '--> tight binding model'
-    t_r = TBLattice(
-        units = [(1, 0, 0), (0, 1, 0)],
-        hopping = {
-            # nearest neighbour hopping -t
-            ( 0, 0): h_loc,
-            ( 0,+1): T,
-            ( 0,-1): T,
-            (+1, 0): T,
-            (-1, 0): T,
-            },
-        orbital_positions = [(0,0,0)]*2,
-        orbital_names = ['up_0', 'do_0'],
-        )
-
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
-
-    kmesh = e_k.mesh
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
-
-    g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
-
-    delta_in_wk = g0_wk.copy()
-    delta_ref_wk = g0_wk.copy()
-
-    gamma_pp = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=list(g0_wk.target_shape)*2)
-
-    # -- Set gamma_pp and delta_ref_wk to something where we know the product
-
-    np.random.seed(seed=1337)
-    gamma_pp.data[:] = np.random.random(gamma_pp.data.shape)
-    delta_in_wk.data[:] = np.random.random(delta_in_wk.data.shape)
-    delta_ref_wk.data[:] = np.random.random(delta_ref_wk.data.shape)
-
-    # -- Compute the product
-    
-    print '--> Eliashberg product'
-    delta_out_wk = eliashberg_product(gamma_pp, g0_wk, delta_in_wk)
-    print 'done.'
-
-    # -- Check that the result is the expected one
-
-    #np.testing.assert_array_almost_equal(delta_out_wk.data, delta_ref_wk.data)
-
-    E, eigen_modes = solve_eliashberg(gamma_pp, g0_wk)
-
-    print 'E =', E
+from utilities import read_TarGZ_HDFArchive
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
 
-    test_eliashberg_product()
+# -- Read previous established results
+
+filename = './eliashberg_benchmark.tar.gz'
+p = read_TarGZ_HDFArchive(filename)['p']
+
+print('\nThe benchmark data was obtained with the version of hash %s.'%p.tprf_hash)
+
+# -- Test the construction of Gamma
+
+gamma = gamma_PP_singlet(p.chi_c, p.chi_s, p.U_c, p.U_s)
+np.testing.assert_allclose(gamma.data, p.gamma.data)
+
+# -- Construct a Gamma with a possibly different wmesh than the benchmark data
+
+factor = 2.5
+
+wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(factor*p.nw_gf))
+g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=p.e_k, mesh=wmesh)
+
+
+chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=int(factor*p.nw_chi0))
+
+chi_s = solve_rpa_PH(chi00_wk, p.U_s)
+chi_c = solve_rpa_PH(chi00_wk, -p.U_c) # Minus for correct charge rpa equation
+
+gamma = gamma_PP_singlet(chi_c, chi_s, p.U_c, p.U_s)
+
+# -- Test the Eliashberg equation with the new gamma
+
+next_delta = eliashberg_product(gamma, p.g0_wk, p.g0_wk) 
+Es, eigen_modes = solve_eliashberg(gamma, p.g0_wk)
+
+np.testing.assert_allclose(next_delta.data, p.next_delta.data, atol=10**(-7))
+
+np.testing.assert_allclose(Es[0], p.E)
+try:
+    np.testing.assert_allclose(eigen_modes[0].data, p.eigen_mode.data, atol=10**(-6))
+except AssertionError:
+    np.testing.assert_allclose(-eigen_modes[0].data, p.eigen_mode.data, atol=10**(-6))
+
+print('\nSame results for both versions.')
