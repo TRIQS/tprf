@@ -64,6 +64,8 @@ module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::compl
 # -- Eliashberg
 
 module.add_function("gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
+module.add_function("gk_iw_t eliashberg_product_fft(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
+module.add_function("gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
 module.add_function("chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s)", doc = """""")
 
 # -- Full BSE functions
