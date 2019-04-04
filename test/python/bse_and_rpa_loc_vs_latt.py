@@ -27,7 +27,7 @@ from triqs_tprf.linalg import inverse_PH
 
 # ----------------------------------------------------------------------
 
-from utilities import read_TarGZ_HDFArchive
+from triqs_tprf.utilities import read_TarGZ_HDFArchive
 
 # ----------------------------------------------------------------------
 def trace_nn(G2_wnn):

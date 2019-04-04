@@ -32,6 +32,16 @@ add_compile_options(-std=c++17)
 # Common to all targets (ctint, python, tests).
 include_directories(${CMAKE_SOURCE_DIR})
 
+# Get the Git Hash
+find_package(Git)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+ WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+ OUTPUT_VARIABLE   TPRF_GIT_HASH
+ OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+message(STATUS "TPRF git hash : ${TPRF_GIT_HASH}")
+
 # To be fixed!!
 triqs_set_rpath_for_all_targets()
 

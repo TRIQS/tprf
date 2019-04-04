@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 
-""" Collection of functions that can be useful for testing scripts """
+""" Collection of functions that can be useful in scripts """
 
 # ----------------------------------------------------------------------
 
@@ -15,8 +15,14 @@ from pytriqs.archive import HDFArchive
 
 # ----------------------------------------------------------------------
 
-def get_git_revision_short_hash():
-    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+def show_version_info(info):
+    """ Return a string that formats the version information
+
+    Parameter:
+    info : tuple of strings, coming from triqs_tprf.version.info
+    """
+    string = "TPRF version %s of hash %s and TRIQS version %s of hash %s"%info
+    return string
 
 def write_TarGZ_HDFArchive(filename, **kwargs):
 

@@ -1,7 +1,12 @@
+
 # ----------------------------------------------------------------------
 
-""" Compare final result and between steps of the Eliashberg equation to
-previous erstablished results """
+""" Goes through the steps of solving the linearized Eliashberg equation for singlet pairing in
+RPA limit, saves the results and compares to previously established benchmark data. """
+
+# ----------------------------------------------------------------------
+
+import itertools
 
 # ----------------------------------------------------------------------
 
@@ -9,58 +14,117 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.ParameterCollection import ParameterCollection
-from pytriqs.gf import Gf, MeshImFreq
+from pytriqs.gf import MeshImFreq
 
-from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
+from triqs_tprf.ParameterCollection import ParameterCollection
+from triqs_tprf.tight_binding import TBLattice
+from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-from triqs_tprf.lattice import gamma_PP_singlet, eliashberg_product
+from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
+from triqs_tprf.lattice import solve_rpa_PH
+from triqs_tprf.lattice import gamma_PP_singlet
+from triqs_tprf.lattice import eliashberg_product
 from triqs_tprf.eliashberg import solve_eliashberg
 
 # ----------------------------------------------------------------------
 
-from utilities import read_TarGZ_HDFArchive
+from triqs_tprf.utilities import write_TarGZ_HDFArchive, read_TarGZ_HDFArchive, show_version_info
+import triqs_tprf.version as version
 
 # ----------------------------------------------------------------------
 
-# -- Read previous established results
+p = ParameterCollection(
+        filename = 'eliashberg_benchmark_new.tar.gz',
+        dim = 2,
+        norbs = 1,
+        t = 1.0,
+        mu = 0.0,
+        beta = 1,
+        U = 1.0,
+        nk = 2,
+        nw = 100,
+        version_info = version.info,
+        )
+
+# -- Setup model, RPA susceptibilities and spin/charge interaction
+
+full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
+non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
+
+t = -p.t * np.eye(p.norbs)
+
+H = TBLattice(
+            units = full_units[:p.dim],
+            hopping = {hop : t for hop in non_diagonal_hoppings},
+            orbital_positions = [(0,0,0)]*p.norbs,
+            )
+
+e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
+
+# A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
+big_factor = 2.0
+
+wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
+wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(big_factor*p.nw))
+
+g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
+g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
+
+chi0_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=p.nw)
+chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(big_factor*p.nw)+1)
+
+U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norbs, p.U, 0, 0, 0)
+
+chi_s = solve_rpa_PH(chi0_wk, U_s)
+chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
+chi_s_big = solve_rpa_PH(chi0_wk_big, U_s)
+chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equation
+
+# -- The output of the following three functions shall be tested
+
+gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
+gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
+next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk) 
+E, eigen_modes = solve_eliashberg(gamma_big, g0_wk)
+
+# -- Save results
+
+p.gamma = gamma
+p.next_delta = next_delta
+p.E = E[0]
+p.eigen_mode = eigen_modes[0]
+
+write_TarGZ_HDFArchive(p.filename, p=p)
+
+# -- Load benchmark data
 
 filename = './eliashberg_benchmark.tar.gz'
-p = read_TarGZ_HDFArchive(filename)['p']
+p_benchmark = read_TarGZ_HDFArchive(filename)['p']
 
-print('\nThe benchmark data was obtained with the version of hash %s.'%p.tprf_hash)
+# -- Check if the benchmark data was calculated for the same model,
+# -- otherwise a comparison does not make sense.
 
-# -- Test the construction of Gamma
+model_parameters = ['dim', 'norbs', 't', 'mu', 'beta', 'U']
 
-gamma = gamma_PP_singlet(p.chi_c, p.chi_s, p.U_c, p.U_s)
-np.testing.assert_allclose(gamma.data, p.gamma.data)
+for model_parameter in model_parameters:
+    run_time, benchmark = p[model_parameter], p_benchmark[model_parameter]
+    if run_time != benchmark:
+        error = 'The model of the benchmark and the one used now are not the same.\n' 
+        error += '\t\tNow: {0} = {1}, benchmark: {0} = {2}.'.format(model_parameter, run_time,
+                                                                                    benchmark)
+        raise AssertionError, error
 
-# -- Construct a Gamma with a possibly different wmesh than the benchmark data
+# -- Compare the results. Raise an error if the are not the same within a tolerance.
 
-factor = 2.5
+print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info))
 
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(factor*p.nw_gf))
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=p.e_k, mesh=wmesh)
-
-
-chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=int(factor*p.nw_chi0))
-
-chi_s = solve_rpa_PH(chi00_wk, p.U_s)
-chi_c = solve_rpa_PH(chi00_wk, -p.U_c) # Minus for correct charge rpa equation
-
-gamma = gamma_PP_singlet(chi_c, chi_s, p.U_c, p.U_s)
-
-# -- Test the Eliashberg equation with the new gamma
-
-next_delta = eliashberg_product(gamma, p.g0_wk, p.g0_wk) 
-Es, eigen_modes = solve_eliashberg(gamma, p.g0_wk)
-
-np.testing.assert_allclose(next_delta.data, p.next_delta.data, atol=10**(-7))
-
-np.testing.assert_allclose(Es[0], p.E)
+np.testing.assert_allclose(p_benchmark.gamma.data, p.gamma.data)
+np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data, atol=1e-7)
+np.testing.assert_allclose(p_benchmark.E, p.E) 
 try:
-    np.testing.assert_allclose(eigen_modes[0].data, p.eigen_mode.data, atol=10**(-6))
+    np.testing.assert_allclose(p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
 except AssertionError:
-    np.testing.assert_allclose(-eigen_modes[0].data, p.eigen_mode.data, atol=10**(-6))
+    np.testing.assert_allclose(-p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
 
-print('\nSame results for both versions.')
+print('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info))
