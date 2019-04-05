@@ -10,6 +10,11 @@ FILE(GLOB cpp_sources_fourier RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} fourier/*.cpp
 # Set up the compilation of those files into a shared library
 add_library(tprf_c ${cpp_sources} ${cpp_sources_lattice} ${cpp_sources_fourier})
 
+# We are using openmp
+target_compile_options(tprf_c PUBLIC -fopenmp)
+target_link_libraries(tprf_c PUBLIC "-fopenmp")
+# FIXME New cmake version allow: target_link_options(tprf_c PUBLIC -fopenmp)
+
 # This library should be linked to all libraries against which TRIQS is linked
 target_link_libraries(tprf_c PUBLIC triqs)
 
