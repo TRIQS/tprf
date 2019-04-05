@@ -47,6 +47,7 @@ namespace tprf {
   gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk);
   gk_iw_t eliashberg_product_fft(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk);
   gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk);
+  std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_and_constant(chi_wk_vt Gamma_pp);
 
  /** Gamma particle-particle singlet
 

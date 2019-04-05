@@ -20,7 +20,9 @@ from triqs_tprf.lattice import gamma_PP_singlet
 from triqs_tprf.lattice import eliashberg_product
 from triqs_tprf.lattice import eliashberg_product_fft
 from triqs_tprf.lattice import eliashberg_g_delta_g_product
+from triqs_tprf.lattice import split_into_dynamic_and_constant
 from triqs_tprf.eliashberg import solve_eliashberg
+from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
 
 # ----------------------------------------------------------------------
 
@@ -33,10 +35,11 @@ from utilities import read_TarGZ_HDFArchive
 import os
 os.system('pwd')
 
-filename = './eliashberg_benchmark.tar.gz'
-p = read_TarGZ_HDFArchive(filename)['p']
-
-print('\nThe benchmark data was obtained with the version of hash %s.'%p.tprf_hash)
+nk = 16
+nw = 200
+beta = 5
+mu = 0.0
+U = 1.0
 
 
 t = - 2.0 * np.eye(1)
@@ -47,81 +50,79 @@ t_r = TBLattice(
         (-1,): t,
         },
     orbital_positions = [(0,0,0)],
-    orbital_names = ['up', 'do'],
     )
 
-e_k = t_r.on_mesh_brillouin_zone((4, 1, 1))
-print e_k.data
-print p.e_k.data
+e_k = t_r.on_mesh_brillouin_zone((nk, 1, 1))
 
-#np.testing.assert_allclose(e_k.data, p.e_k.data)
+factor = 2.
 
-# -- Test the construction of Gamma
+wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=int(nw))
 
-gamma = gamma_PP_singlet(p.chi_c, p.chi_s, p.U_c, p.U_s)
-np.testing.assert_allclose(gamma.data, p.gamma.data)
+g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
-# -- Construct a Gamma with a possibly different wmesh than the benchmark data
+wmesh_big = MeshImFreq(beta=beta, S='Fermion', n_max=int(2*factor*nw))
+g0_wk_big = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh_big)
 
-print p.nw_gf
-print p.nw_chi0
-
-factor = 1.
-
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(factor*p.nw_gf))
-#g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=p.e_k, mesh=wmesh)
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-
-wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(2*factor*p.nw_gf))
-g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
-
-#np.testing.assert_allclose(g0_wk.data, p.g0_wk.data)
-
-#chi00_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=int(factor*p.nw_chi0))
-chi00_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=int(2*factor*p.nw_gf + 1))
-#chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=int(2*factor*p.nw_gf + 1))
+chi00_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=int(factor*nw + 1))
 
 print g0_wk.data.shape
 print chi00_wk.data.shape
-#exit()
 
-chi_s = solve_rpa_PH(chi00_wk, +p.U_s)
-chi_c = solve_rpa_PH(chi00_wk, -p.U_c) # Minus for correct charge rpa equation
+U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(1, U, 0.0, 0.0, 0.0)
 
-gamma = gamma_PP_singlet(chi_c, chi_s, p.U_c, p.U_s)
+chi_s = solve_rpa_PH(chi00_wk, +U_s)
+chi_c = solve_rpa_PH(chi00_wk, -U_c) # Minus for correct charge rpa equation
+
+gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
+
+gamma_dyn, gamma_const = split_into_dynamic_and_constant(gamma)
 
 # -- Test the Eliashberg equation with the new gamma
 
-F_wk = eliashberg_g_delta_g_product(g0_wk, g0_wk)
-next_delta = eliashberg_product(gamma, g0_wk, g0_wk)
-next_delta_fft = eliashberg_product_fft(gamma, g0_wk, g0_wk)
+delta = g0_wk.copy()
+delta.data[:] = 1.0
+
+F_wk = eliashberg_g_delta_g_product(g0_wk, delta)
+next_delta = eliashberg_product(gamma, g0_wk, delta)
+next_delta_fft = eliashberg_product_fft(gamma, g0_wk, delta)
+
+
+k_point = Idx(0, 0, 0)
+
+print(np.allclose(next_delta[:, k_point].data, next_delta_fft[:, k_point].data))
+print(np.max(np.abs((next_delta[:, k_point].data - next_delta_fft[:, k_point].data))))
+
 
 from pytriqs.plot.mpl_interface import oplot, plt
 subp = [3, 3, 1]
 plt.figure(figsize=(9, 6))
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(g0_wk[:, Idx(0, 0, 0)], label='d')
+oplot(g0_wk[:, k_point], label='d')
 plt.title('g0_wk')
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(chi00_wk[:, Idx(0, 0, 0)], label='d')
+oplot(chi00_wk[:, k_point], label='d')
 plt.title('chi00_wk')
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(gamma[:, Idx(0, 0, 0)], label='d')
+oplot(gamma[:, k_point], label='d')
 plt.title('gamma')
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(F_wk[:, Idx(0, 0, 0)])
+oplot(gamma_dyn[:, k_point], label='d')
+plt.title('gamma_dyn')
+
+plt.subplot(*subp); subp[-1] += 1
+oplot(F_wk[:, k_point])
 plt.title('F_wk')
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(next_delta[:, Idx(0, 0, 0)], label='d')
+oplot(next_delta[:, k_point], label='d')
 plt.title('next_delta')
 
 plt.subplot(*subp); subp[-1] += 1
-oplot(next_delta_fft[:, Idx(0, 0, 0)], label='dfft')
+oplot(next_delta_fft[:, k_point], label='dfft')
 plt.title('next_delta_fft')
 
 plt.tight_layout()

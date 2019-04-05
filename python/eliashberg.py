@@ -49,6 +49,14 @@ def solve_eliashberg(Gamma_pp, g_wk, tol=1e-10):
         delta_out_x = from_wk_to_x(delta_out_wk)
         return delta_out_x
 
+    # -- Check if the constant term of Gamma_pp is given, if not determine it
+    # CODECODECODECODECODECODECODECODECODECODECODECODECODECODECODE
+
+    # -- Fourier transform the dynamic term in tau and r space and the constant term to r space
+    # CODECODECODECODECODECODECODECODECODECODECODECODECODECODECODE
+
+    # -- The Eliashberg product will take care of the rest
+
     x = from_wk_to_x(g_wk)
     N = x.shape[0]
     linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
