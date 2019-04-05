@@ -64,9 +64,10 @@ module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::compl
 # -- Eliashberg
 
 module.add_function("gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
-module.add_function("gk_iw_t eliashberg_product_fft(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
+module.add_function("gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
 module.add_function("gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")
-module.add_function("std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_and_constant(chi_wk_vt Gamma_pp)", doc = """""")
+module.add_function("std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp)", doc = """""")
+module.add_function("std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k)", doc = """""")
 module.add_function("chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s)", doc = """""")
 
 # -- Full BSE functions
