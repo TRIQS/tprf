@@ -36,6 +36,7 @@
   :maxdepth: 1
 
   /cpp2doc_generated/tprf/eliashberg_product
+  /cpp2doc_generated/tprf/eliashberg_product_fft
   /cpp2doc_generated/tprf/gamma_PP_singlet
   /cpp2doc_generated/tprf/gamma_PP_triplet
 
