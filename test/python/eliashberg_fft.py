@@ -1,7 +1,15 @@
 # ----------------------------------------------------------------------
 
-""" Compare final result and between steps of the Eliashberg equation to
-previous erstablished results """
+""" Compare the naive implementation of the linearized Eliashberg product
+and the one using Fourier transformations.
+This test is quite computational intensive, because of the inefficiency of
+the naive implementations. In the future the Fourier transformation 
+implementation will subsitute the naive one.
+"""
+
+# ----------------------------------------------------------------------
+
+import itertools
 
 # ----------------------------------------------------------------------
 
@@ -10,160 +18,90 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-from pytriqs.gf import Gf, MeshImFreq, Idx
+from pytriqs.gf import Gf, MeshImFreq
 
 from triqs_tprf.tight_binding import TBLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.lattice import gamma_PP_singlet
-from triqs_tprf.lattice import eliashberg_product
-from triqs_tprf.lattice import eliashberg_product_fft
-from triqs_tprf.lattice import eliashberg_g_delta_g_product
-from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
-from triqs_tprf.lattice import dynamic_and_constant_to_tr
+from triqs_tprf.lattice import eliashberg_product, eliashberg_product_fft
+from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 from triqs_tprf.eliashberg import solve_eliashberg, solve_eliashberg_fft
 from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
 
 # ----------------------------------------------------------------------
 
-from utilities import read_TarGZ_HDFArchive
+p = ParameterCollection(
+        dim = 1,
+        norbs = 1,
+        t = 1.0,
+        mu = 0.0,
+        beta = 5,
+        U = 1.0,
+        nk = 4,
+        nw = 500,
+        )
 
-# ----------------------------------------------------------------------
+# -- Setup model, RPA susceptibilities and spin/charge interaction
 
-# -- Read previous established results
+full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
+non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
 
-import os
-os.system('pwd')
+t = -p.t * np.eye(p.norbs)
 
-nk = 4
-nw = 1000
-beta = 5
-mu = 0.0
-U = 1.0
+H = TBLattice(
+            units = full_units[:p.dim],
+            hopping = {hop : t for hop in non_diagonal_hoppings},
+            orbital_positions = [(0,0,0)]*p.norbs,
+            )
 
+e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
 
-t = - 2.0 * np.eye(1)
-t_r = TBLattice(
-    units = [(1, 0, 0)],
-    hopping = {
-        (+1,): t,
-        (-1,): t,
-        },
-    orbital_positions = [(0,0,0)],
-    )
+# A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
+big_factor = 2.0
 
-e_k = t_r.on_mesh_brillouin_zone((nk, 1, 1))
+wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
+wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(big_factor*p.nw))
 
-factor = 2.
+g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
+g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
 
-wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=int(nw))
+chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(big_factor*p.nw)+1)
 
-g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
+U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norbs, p.U, 0, 0, 0)
 
-wmesh_big = MeshImFreq(beta=beta, S='Fermion', n_max=int(2*factor*nw))
-g0_wk_big = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh_big)
+chi_s_big = solve_rpa_PH(chi0_wk_big, U_s)
+chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equation
 
-chi00_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=int(factor*nw + 1))
+gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
 
-print g0_wk.data.shape
-print chi00_wk.data.shape
+# -- Preprocess gamma for the FFT implementation
 
-U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(1, U, 0.0, 0.0, 0.0)
-
-chi_s = solve_rpa_PH(chi00_wk, +U_s)
-chi_c = solve_rpa_PH(chi00_wk, -U_c) # Minus for correct charge rpa equation
-
-gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
-
-gamma_dyn_wk, gamma_const_k = split_into_dynamic_wk_and_constant_k(gamma)
+gamma_dyn_wk, gamma_const_k = split_into_dynamic_wk_and_constant_k(gamma_big)
 gamma_dyn_tr, gamma_const_r = dynamic_and_constant_to_tr(gamma_dyn_wk, gamma_const_k)
 
-# -- Test the Eliashberg equation with the new gamma
+# -- Test the Eliashberg equation
 
-delta = g0_wk.copy()
-delta.data[:] = 1.0
+next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk)
+next_delta_fft = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, g0_wk)
 
-F_wk = eliashberg_g_delta_g_product(g0_wk, delta)
-next_delta = eliashberg_product(gamma, g0_wk, delta)
-next_delta_fft = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, delta)
+np.testing.assert_allclose(next_delta.data, next_delta_fft.data, atol=1e-7)
 
+Es, eigen_modes = solve_eliashberg(gamma_big, g0_wk)
+Es_fft, eigen_modes_fft = solve_eliashberg_fft(gamma_big, g0_wk)
 
-print(np.allclose(next_delta.data, next_delta_fft.data))
-print(np.max(np.abs((next_delta.data - next_delta_fft.data))))
+E = Es[0]
+eigen_mode = eigen_modes[0]
+E_fft = Es_fft[0]
+eigen_mode_fft = eigen_modes_fft[0]
 
-delta_init = g0_wk.copy()
-delta_init.data[:] = np.random.random(g0_wk.data.shape) 
-delta_init.data[:] = 1.0
+np.testing.assert_allclose(E, E_fft, atol=1e-7) 
 
-#next_delta = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, delta_init)
-#for i in range(100):
-#    next_delta = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, next_delta)
-
-
-
-
-
-k_point = Idx(0, 0, 0)
-
-
-
-#from pytriqs.plot.mpl_interface import oplot, plt
-#subp = [3, 3, 1]
-#plt.figure(figsize=(9, 6))
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(g0_wk[:, k_point], label='d')
-#plt.title('g0_wk')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(chi00_wk[:, k_point], label='d')
-#plt.title('chi00_wk')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(gamma[:, k_point], label='d')
-#plt.title('gamma')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(gamma_dyn_tr[:, k_point], label='d')
-#plt.title('gamma_dyn')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(F_wk[:, k_point])
-#plt.title('F_wk')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(next_delta[:, k_point], label='d')
-#plt.title('next_delta')
-#
-#plt.subplot(*subp); subp[-1] += 1
-#oplot(next_delta_fft[:, k_point], label='dfft')
-#plt.title('next_delta_fft')
-#
-#plt.tight_layout()
-#plt.show()
-
-
-print next_delta.data[:4, 0, 0, 0]
-print next_delta_fft.data[:4, 0, 0, 0]
-
-Es, eigen_modes = solve_eliashberg(gamma, g0_wk)
-Es_fft, eigen_modes_fft = solve_eliashberg_fft(gamma, g0_wk, 1.0)
-Es_fft2, eigen_modes_fft2 = solve_eliashberg_fft(gamma, g0_wk)
-
-print(Es)
-print(Es_fft)
-print(Es_fft2)
-
-
-exit()
-
-np.testing.assert_allclose(next_delta.data, p.next_delta.data, atol=1e-7)
-
-np.testing.assert_allclose(Es[0], p.E)
 try:
-    np.testing.assert_allclose(eigen_modes[0].data, p.eigen_mode.data, atol=1e-6)
+    np.testing.assert_allclose(eigen_mode.data, eigen_mode_fft.data, atol=1e-7) 
 except AssertionError:
-    np.testing.assert_allclose(-eigen_modes[0].data, p.eigen_mode.data, atol=1e-6)
+    np.testing.assert_allclose(-eigen_mode.data, eigen_mode_fft.data, atol=1e-7) 
 
-print('\nSame results for both versions.')
+print('\nSame results for both implementations of the linearized Eliashberg equation.')
