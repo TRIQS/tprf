@@ -66,28 +66,56 @@ def solve_eliashberg(Gamma_pp, g_wk, tol=1e-10):
 
     return E, eigen_modes
     
-def solve_eliashberg_fft(Gamma_pp, g_wk, Gamma_pp_const_k=None, tol=1e-10):
+def solve_eliashberg_fft(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10):
 
-    """ Solve the linearized Eliashberg equation using 
-    iterative eigenvalue algorithms from scipy via the FFT product
+    r""" Solve the linearized Eliashberg equation
     
-    Parmeters:
+    Returns the biggest eigenvalues and corresponding eigenvectors of the linearized Eliashberg
+    equation. The Eliashberg equation implementation is using fourier transformations for 
+    computational efficiency. The eigenvalues are found using an iterative algorithm from scipy.
+    
+    Parameters
+    ----------
+    Gamma_pp_wk : Gf,
+               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    g_wk : Gf, 
+           Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
+           be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    Gamma_pp_const_k : float or np.ndarray or Gf, optional
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
+                       be a MeshBrillouinZone.
+    tol : float, optional
+          Relative accuracy for eigenvalues (stopping criterion).
 
-        Gamma_pp : gf object, pairing vertex
-        g_wk : gf object, Green's function
-        Gamma_pp_const_k : int, float, np.ndarray, part of the pairing vertex that is constant
-                            in Matsubara frequency space
-        tol : float, relative accuracy for eigenvalues (stopping criterion)
+    Returns
+    -------
+    Es : list of float,
+         Biggest eigenvalues of the linearized Eliashberg equation :math:`\lambda`.
+    eigen_modes : list of Gf,
+                  Corresponding eigenvectors (anomalous self-energies) 
+                  :math:`\Delta(i\nu_n, \mathbf{k})` as Gf with MeshProduct with the components
+                  (MeshImFreq, MeshBrillouinZone).
+
+    See Also
+    --------
+    :ref:`eliashberg`
+
     """
 
     # -- Determine the dynamic and constant part via a tail fit
     # -- (This is done even if the constant term is given to get the specific GF types)
-    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(Gamma_pp)
+    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(Gamma_pp_wk)
 
-    # -- Use a the constant term if explicitly given
+    # -- Use a constant term if explicitly given
     if Gamma_pp_const_k:
-        Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
-        Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp.data - Gamma_pp_const_k
+        try:
+            Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
+            Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k
+        except TypeError:
+            Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
+            Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
 
     # -- FFT dynamic and constant term to (tau, real) or (real)
     Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
@@ -114,12 +142,12 @@ def solve_eliashberg_fft(Gamma_pp, g_wk, Gamma_pp_const_k=None, tol=1e-10):
 
     np.random.seed(1337)
     v0 = np.random.random(N)
-    E, U = eigs(linop, which='LR', tol=tol, v0=v0)
+    Es, U = eigs(linop, which='LR', tol=tol, v0=v0)
 
     eigen_modes = []
     for idx in xrange(U.shape[-1]):
         delta_wk = from_x_to_wk(U[:, idx])
         eigen_modes.append(delta_wk)
 
-    return E, eigen_modes
+    return list(Es), eigen_modes
     
