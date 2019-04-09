@@ -24,6 +24,7 @@
 #include "../mpi.hpp"
 
 namespace tprf {
+namespace gw {
 
 chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
 
@@ -33,28 +34,28 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
   using scalar_t = chi_wk_t::scalar_t;
   auto I = make_unit_matrix<scalar_t>(nb * nb);
 
+  auto to_matrix = [](auto t) {
+    array<scalar_t, 4> t_arr{t, memory_layout_t<4>{0, 1, 2, 3}};
+    auto t_mat = make_matrix_view(group_indices_view(t_arr, {0, 1}, {3, 2}));
+    return t_mat;
+    };
+
+  // MPI and openMP parallell loop
   auto arr = mpi_view(W_wk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);  
 
-  //for (auto const &[w, k] : W_wk.mesh()) {
-    
-    array<scalar_t, 4> PI_arr{PI_wk[w, k], memory_layout_t<4>{0, 1, 2, 3}};
-    array<scalar_t, 4> V_arr{V_k[k], memory_layout_t<4>{0, 1, 2, 3}};
-    array<scalar_t, 4> W_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
-
-    // PH grouping (permuting last two indices)
-    auto PI = make_matrix_view(group_indices_view(PI_arr, {0, 1}, {3, 2}));
-    auto V = make_matrix_view(group_indices_view(V_arr, {0, 1}, {3, 2}));
-    auto W = make_matrix_view(group_indices_view(W_arr, {0, 1}, {3, 2}));
+    auto PI = to_matrix(PI_wk[w, k]);
+    auto W = to_matrix(W_wk[w, k]);
+    auto V = to_matrix(V_k[k]);
 
     W = V * inverse(I - PI * V);
-
-    W_wk[w, k] = W_arr; // assign back using the array_view
   }
-  
+
+  W_wk = mpi_all_reduce(W_wk);
   return W_wk;
 }
 
+} // namespace gw
 } // namespace tprf
