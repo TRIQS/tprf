@@ -29,6 +29,14 @@
 
   /cpp2doc_generated/tprf/solve_rpa_PH
 
+**gw.hpp** GW approximation
+===========================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/screened_interaction_W
+  
 **lattice.hpp** Linearized Eliashberg equation
 ==============================================
 

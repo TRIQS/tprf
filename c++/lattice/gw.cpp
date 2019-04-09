@@ -24,7 +24,6 @@
 #include "../mpi.hpp"
 
 namespace tprf {
-namespace gw {
 
 chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
 
@@ -57,5 +56,4 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
   return W_wk;
 }
 
-} // namespace gw
 } // namespace tprf

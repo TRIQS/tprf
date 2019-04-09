@@ -63,7 +63,7 @@ module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::compl
 
 # -- GW
 
-module.add_function("chi_wk_t gw::screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k)", doc = """""")
+module.add_function("chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k)", doc = """""")
 
 # -- Eliashberg
 

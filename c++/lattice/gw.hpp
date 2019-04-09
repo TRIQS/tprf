@@ -24,23 +24,22 @@
 #include "../types.hpp"
 
 namespace tprf {
-namespace gw {
 
-/** W calculator
-
-    Computes
+/** Screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator 
+    for static momentum dependent interaction :math:`V(\mathbf{k})`
 
     .. math::
-        W(i\omega_n) = ...
+        W_{abcd}(i\omega_n, \mathbf{k}) = 
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          W_{hgcd}(i\omega_n, \mathbf{k})
 
-    @param X math parameter :math:`\Gamma^{(pp)}_{a\bar{b}c\bar{d}}(\mathbf{k},
-   i\nu_n)`
-    @return Gives the result of :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG
-   \Delta`
-
+    @param PI_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
+    @return screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
 chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k);
   
-} // namespace gw
 } // namespace tprf
