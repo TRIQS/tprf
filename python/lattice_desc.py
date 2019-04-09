@@ -61,6 +61,10 @@ module.add_function("chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued
 
 module.add_function("chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = """""")
 
+# -- GW
+
+module.add_function("chi_wk_t gw::screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k)", doc = """""")
+
 # -- Eliashberg
 
 module.add_function("gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk)", doc = """""")

@@ -2,7 +2,8 @@
  *
  * TRIQS: a Toolbox for Research in Interacting Quantum Systems
  *
- * Copyright (C) 2017, H. U.R. Strand
+ * Copyright (C) 2019, The Simons Foundation
+ * Authors: H. U.R. Strand
  *
  * TRIQS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -20,15 +21,26 @@
  ******************************************************************************/
 #pragma once
 
-#include "types.hpp"
+#include "../types.hpp"
 
-#include "./lattice/gf.hpp"
-#include "./lattice/lindhard_chi00.hpp"
-#include "./lattice/rpa.hpp"
-#include "./lattice/gw.hpp"
-#include "./lattice/eliashberg.hpp"
-#include "./lattice/fourier_interpolation.hpp"
+namespace tprf {
+namespace gw {
 
-#include "./lattice/chi_imtime.hpp"
-#include "./lattice/chi_imfreq.hpp"
+/** W calculator
 
+    Computes
+
+    .. math::
+        W(i\omega_n) = ...
+
+    @param X math parameter :math:`\Gamma^{(pp)}_{a\bar{b}c\bar{d}}(\mathbf{k},
+   i\nu_n)`
+    @return Gives the result of :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG
+   \Delta`
+
+ */
+
+chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k);
+  
+} // namespace gw
+} // namespace tprf
