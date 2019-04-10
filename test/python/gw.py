@@ -65,12 +65,11 @@ V_k = Gf(mesh=kmesh, target_shape=[norb]*4)
 V_k.data[:] = 1.0
 
 
-print('--> screened_interaction_W')
-
+print('--> pi_bubble')
 PI_wk = pi_bubble(g_wk)
-
+print('--> screened_interaction_W')
 W_wk = screened_interaction_W(PI_wk, V_k)
-
+print('--> gw_self_energy')
 sigma_wk = gw_self_energy(W_wk, g_wk)
-
-#g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk) # todo momentum dependent self-energy
+print('--> lattice_dyson_g_wk')
+g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)

@@ -36,6 +36,7 @@
   :maxdepth: 1
 
   /cpp2doc_generated/tprf/screened_interaction_W
+  /cpp2doc_generated/tprf/gw_self_energy
   
 **lattice.hpp** Linearized Eliashberg equation
 ==============================================

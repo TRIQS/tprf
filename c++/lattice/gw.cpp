@@ -28,6 +28,7 @@ namespace tprf {
 chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
 
   auto W_wk = make_gf(PI_wk);
+  W_wk *= 0.;
   size_t nb = PI_wk.target_shape()[0];
 
   using scalar_t = chi_wk_t::scalar_t;
