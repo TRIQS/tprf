@@ -68,29 +68,50 @@ wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(big_factor*p.nw))
 g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
 g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
 
+chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
 chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(big_factor*p.nw)+1)
 
 U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norbs, p.U, 0, 0, 0)
 
+chi_s = solve_rpa_PH(chi0_wk, U_s)
+chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
 chi_s_big = solve_rpa_PH(chi0_wk_big, U_s)
 chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equation
 
+gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
 gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
+
+print(gamma.mesh[0])
+print(gamma.mesh[0].first_index())
+print(gamma.mesh[0].last_index())
+print(gamma_big.mesh[0].first_index())
+print(gamma_big.mesh[0].last_index())
+print(g0_wk.mesh[0].first_index())
+print(g0_wk.mesh[0].last_index())
 
 # -- Preprocess gamma for the FFT implementation
 
-gamma_dyn_wk, gamma_const_k = split_into_dynamic_wk_and_constant_k(gamma_big)
+gamma_dyn_wk, gamma_const_k = split_into_dynamic_wk_and_constant_k(gamma)
 gamma_dyn_tr, gamma_const_r = dynamic_and_constant_to_tr(gamma_dyn_wk, gamma_const_k)
+
+
+print(len(list(gamma_dyn_tr.mesh[0].values())))
+
 
 # -- Test the Eliashberg equation
 
-next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk)
-next_delta_fft = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, g0_wk)
+v0 = g0_wk.copy()
+#v0.data[:] = v0.data[:] +1.0
+#v0.data[:] = np.random.random(g0_wk.data.shape)
 
-np.testing.assert_allclose(next_delta.data, next_delta_fft.data, atol=1e-7)
+next_delta = eliashberg_product(gamma_big, g0_wk, v0)
+next_delta_fft = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, v0)
+
+#np.testing.assert_allclose(next_delta.data, next_delta_fft.data, atol=1e-7)
+
 
 Es, eigen_modes = solve_eliashberg(gamma_big, g0_wk)
-Es_fft, eigen_modes_fft = solve_eliashberg_fft(gamma_big, g0_wk)
+Es_fft, eigen_modes_fft = solve_eliashberg_fft(gamma, g0_wk)
 
 E = Es[0]
 eigen_mode = eigen_modes[0]

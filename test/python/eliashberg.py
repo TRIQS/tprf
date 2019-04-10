@@ -120,7 +120,7 @@ for model_parameter in model_parameters:
 print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info))
 
 np.testing.assert_allclose(p_benchmark.gamma.data, p.gamma.data)
-np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data, atol=1e-7)
+np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data)
 np.testing.assert_allclose(p_benchmark.E, p.E) 
 try:
     np.testing.assert_allclose(p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
