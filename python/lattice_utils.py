@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------
 
 import itertools
+import multiprocessing
 import numpy as np
 
 # ----------------------------------------------------------------------
@@ -124,6 +125,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
 # ----------------------------------------------------------------------
 def imtime_bubble_chi0_wk(g_wk, nw=1):
+    ncores = multiprocessing.cpu_count()
 
     wmesh, kmesh =  g_wk.mesh.components
 
@@ -132,8 +134,33 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     nw_g = len(wmesh)
     nk = len(kmesh)
 
-    ntau = 4 * nw_g
-    ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw_g + ntau) * norb**2
+    ntau = 2 * nw_g
+
+    # -- Memory Approximation
+
+    ng_tr = ntau * np.prod(nk) * norb**2 # storing G(tau, r)
+    ng_wr = nw_g * np.prod(nk) * norb**2 # storing G(w, r)
+    ng_t = ntau * norb**2 # storing G(tau)
+
+    nchi_tr = ntau * np.prod(nk) * norb**4 # storing \chi(tau, r)
+    nchi_wr = nw * np.prod(nk) * norb**4 # storing \chi(w, r)
+    nchi_t = ntau * norb**4 # storing \chi(tau)
+    nchi_w = nw * norb**4 # storing \chi(w)
+    nchi_r = np.prod(nk) * norb**4 # storing \chi(r)
+
+    if nw == 1:
+        ntot_case_1 = ng_tr + ng_wr
+        ntot_case_2 = ng_tr + nchi_wr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_3 = 4 * nchi_wr
+
+        ntot = max(ntot_case_1, ntot_case_2, ntot_case_3)
+
+    else:
+        ntot_case_1 = ng_tr + nchi_tr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_2 = nchi_tr + nchi_wr + ncores*(nchi_w + nchi_t)
+    
+        ntot = max(ntot_case_1, ntot_case_2)
+
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
 
@@ -165,7 +192,7 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
         
         mpi.report('--> chi_wr_from_chi_tr')
         chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
-        del chi_tr
+        del chi0_tr
         
     mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)

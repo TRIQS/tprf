@@ -74,6 +74,10 @@ typedef chi0r_t::view_type chi0r_vt;
   // imagnary time "t" for "\tau"
   // real space "r"
   // momentum space "k"
+
+typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> g_wk_t;
+typedef gk_iw_t::const_view_type g_wk_cvt;
+typedef gk_iw_t::view_type g_wk_vt;
   
 typedef gf<imtime, tensor_valued<4>> chi_t_t;
 typedef chi_t_t::const_view_type chi_t_cvt;
@@ -90,6 +94,14 @@ typedef chi_wr_t::view_type chi_wr_vt;
 typedef gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;
+
+typedef gf<brillouin_zone, tensor_valued<4>> chi_k_t;
+typedef chi_k_t::const_view_type chi_k_cvt;
+typedef chi_k_t::view_type chi_k_vt;
+
+typedef gf<cyclic_lattice, tensor_valued<4>> chi_r_t;
+typedef chi_r_t::const_view_type chi_r_cvt;
+typedef chi_r_t::view_type chi_r_vt;
 
     // -- back to old style
 

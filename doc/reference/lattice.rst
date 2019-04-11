@@ -20,7 +20,35 @@
   :maxdepth: 1
 
   /cpp2doc_generated/tprf/lindhard_chi00_wk
+
+**lattice.hpp** Random Phase Approximation
+==========================================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/solve_rpa_PH
+
+**gw.hpp** GW approximation
+===========================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/screened_interaction_W
+  /cpp2doc_generated/tprf/gw_self_energy
   
+**lattice.hpp** Linearized Eliashberg equation
+==============================================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/eliashberg_product
+  /cpp2doc_generated/tprf/eliashberg_product_fft
+  /cpp2doc_generated/tprf/gamma_PP_singlet
+  /cpp2doc_generated/tprf/gamma_PP_triplet
+
 **lattice.hpp** Imaginary time generalized susceptibility
 =========================================================
 

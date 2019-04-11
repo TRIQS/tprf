@@ -22,6 +22,7 @@ Reference manual
 
    reference/linalg
    reference/lattice
+   reference/eliashberg
 
 Theory and notation
 -------------------
@@ -36,6 +37,8 @@ Theory and notation
    theory/boundary_conditions
    theory/linear_response
    theory/rpa
+   theory/matrix_rpa
+   theory/eliashberg
 
 FAQs
 ----

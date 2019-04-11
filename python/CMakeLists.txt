@@ -46,12 +46,18 @@ target_link_libraries(hubbard_atom tprf_c)
 triqs_set_rpath_for_target(hubbard_atom)
 install(TARGETS hubbard_atom DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
+# Configure the version
+configure_file(version.py.in version.py)
+
 # Install utilities
+install(FILES ${PYTHON_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/version.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 install(FILES logo.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES plot.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 install(FILES bse.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 install(FILES rpa_tensor.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+install(FILES eliashberg.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
+install(FILES utilities.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 install(FILES hf_solver.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 install(FILES hf_response.py DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})

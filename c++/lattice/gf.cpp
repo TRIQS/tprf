@@ -86,6 +86,18 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 #endif
 
 // ----------------------------------------------------
+
+g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk) {
+
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  gk_iw_t g_wk = make_gf(sigma_wk);
+
+  for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
+    g_wk[w, k] = inverse((w + mu)*I - e_k[k] - sigma_wk[w, k]);
+
+  g_wk = mpi_all_reduce(g_wk);
+  return g_wk;
+}
   
 #ifdef TPRF_OMP
 
