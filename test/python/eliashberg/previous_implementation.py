@@ -86,7 +86,7 @@ chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equat
 gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
 gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
 next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk) 
-E, eigen_modes = solve_eliashberg(gamma_big, g0_wk)
+E, eigen_modes = solve_eliashberg(gamma_big, g0_wk, product='SUM', solver='IRAM')
 
 # -- Save results
 

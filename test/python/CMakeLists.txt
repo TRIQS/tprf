@@ -4,8 +4,8 @@ foreach(file ${all_h5_tgz_files})
   configure_file(${file} ${file} COPYONLY)
 endforeach()
 
-# List of all tests
-set(all_tests chi4_iw_from_tau g_wk_to_from_g_wr_py chi00_square_lattice bse_and_rpa_loc_vs_latt mean_field mean_field_kanamori hartree_response 1d_hubbard_hf_rpa 1d_hubbard_hf_spin_rot_inv 1d_hubbard_hf_rpa_2site_AFM eliashberg compare_general_rpa_to_matrix_rpa interaction_tensor_charge_spin_factorization)
+# List all tests
+set(all_tests chi4_iw_from_tau g_wk_to_from_g_wr_py chi00_square_lattice bse_and_rpa_loc_vs_latt mean_field mean_field_kanamori hartree_response 1d_hubbard_hf_rpa 1d_hubbard_hf_spin_rot_inv 1d_hubbard_hf_rpa_2site_AFM compare_general_rpa_to_matrix_rpa interaction_tensor_charge_spin_factorization eliashberg/product_summation_vs_fft eliashberg/eigenvalue_solver eliashberg/previous_implementation)
 
 foreach(test ${all_tests})
   get_filename_component(test_name ${test} NAME_WE)
