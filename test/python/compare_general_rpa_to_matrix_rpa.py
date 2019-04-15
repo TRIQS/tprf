@@ -94,7 +94,7 @@ chi_wk = solve_rpa_PH(chi00_wk, U_abcd)
 # -- Showcase reshaping from 4-rank tensors to matrix as done in papers
 # -- and test if the process is reversable
 
-from matrix_rpa import tensor_to_matrix, matrix_to_tensor
+from triqs_tprf.matrix_rpa import tensor_to_matrix, matrix_to_tensor
 
 test_chi = np.chararray([norb]*4, itemsize=4)
 
@@ -156,13 +156,13 @@ np.testing.assert_equal(test_uc, matrix_to_tensor(tensor_to_matrix(test_uc)))
 # ----------------------------------------------------------------------
 # -- Calculate chi spin/charge with spin independent chi0
 
-from matrix_rpa import lose_spin_degree_of_freedom, tprf_order_to_matrix_rpa_order
+from triqs_tprf.matrix_rpa import lose_spin_degree_of_freedom, tprf_order_to_matrix_rpa_order
 
 chi00_wk_wo_spin_array = lose_spin_degree_of_freedom(chi00_wk.data, 
                                                         rank=4, spin_fast=False) # c^+cc^+c
 chi00_wk_matrix_rpa = tprf_order_to_matrix_rpa_order(chi00_wk_wo_spin_array) # now in c^+ccc^+ order
 
-from matrix_rpa import get_rpa_us_tensor, get_rpa_uc_tensor
+from triqs_tprf.matrix_rpa import get_rpa_us_tensor, get_rpa_uc_tensor
 
 U = 1.0
 Up = 0.8
@@ -172,7 +172,7 @@ Jp = 0.1
 us_matrix_rpa = get_rpa_us_tensor(norb, U, Up, J ,Jp) # given in cc^+c^+c
 uc_matrix_rpa = get_rpa_uc_tensor(norb, U, Up, J ,Jp) # given in cc^+c^+c
 
-from matrix_rpa import chi_rpa_spin, chi_rpa_charge
+from triqs_tprf.matrix_rpa import chi_rpa_spin, chi_rpa_charge
 
 chi_spin_matrix_rpa = chi_rpa_spin(chi00_wk_matrix_rpa, us_matrix_rpa) # given in c^+ccc^+
 chi_charge_matrix_rpa = chi_rpa_charge(chi00_wk_matrix_rpa, uc_matrix_rpa) # given in c^+ccc^+

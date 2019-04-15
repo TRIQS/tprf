@@ -166,7 +166,7 @@ def compare_next_delta(p):
 
     print_diff(diff)
     try:
-        np.testing.assert_allclose(diff, 0, atol=1e-9)
+        np.testing.assert_allclose(diff, 0, atol=p.atol)
     except AssertionError as e:
         print('The test failed for the parameter set:')
         p.__dict__.pop("v0")
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     p = ParameterCollection(
             dim = 1,
-            norbs = 2,
+            norbs = 1,
             t = 2.0,
             mu = 0.0,
             beta = 5,
@@ -195,6 +195,7 @@ if __name__ == '__main__':
             nr_factor = 0.5,
             fit_const = False,
             big_factor = 2,
+            atol = 1e-9,
             )
 
     for norbs in [1, 2]:
@@ -213,7 +214,7 @@ if __name__ == '__main__':
     print('Compare explicit given constant vs. fit:')
 
     print_diff(diff)
-    np.testing.assert_allclose(diff, 0, atol=1e-9)
+    np.testing.assert_allclose(diff, 0, atol=p.atol)
 
     print('Fitting the constant part works.')
 
