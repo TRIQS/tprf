@@ -164,12 +164,14 @@ chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   Gamma_pp_wk *= 0;
 
   for (const auto [w, k] : Gamma_pp_wk.mesh())
-    for (auto [a, b, c, d] : Gamma_pp_wk.target_indices())
-      for (auto [A, B, C, D] : chi_c.target_indices())
+    for (auto [a, b, c, d] : Gamma_pp_wk.target_indices()){
+      for (auto [A, B, C, D] : chi_c.target_indices()){
         Gamma_pp_wk[w,k](a, b, c, d) += 
                 1.5 * U_s(a, b, A, B) * chi_s[w, k](B, A, C, D) * U_s(D, C, c, d) \
-                - 0.5 * U_c(a, b, A, B) * chi_c[w, k](B, A, C, D) * U_c(D, C, c, d) \
-                + 0.5 * (U_s(a, b, c, d) + U_c(a, b, c, d));
+                - 0.5 * U_c(a, b, A, B) * chi_c[w, k](B, A, C, D) * U_c(D, C, c, d);
+      }
+        Gamma_pp_wk[w,k](a, b, c, d) += 0.5 * (U_s(a, b, c, d) + U_c(a, b, c, d));
+    }
 
   return Gamma_pp_wk;
 }
@@ -183,12 +185,14 @@ chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   Gamma_pp_wk *= 0;
 
   for (const auto [w, k] : Gamma_pp_wk.mesh())
-    for (auto [a, b, c, d] : Gamma_pp_wk.target_indices())
-      for (auto [A, B, C, D] : chi_c.target_indices())
+    for (auto [a, b, c, d] : Gamma_pp_wk.target_indices()){
+      for (auto [A, B, C, D] : chi_c.target_indices()){
         Gamma_pp_wk[w,k](a, b, c, d) += 
                 - 0.5 * U_s(a, b, A, B) * chi_s[w, k](B, A, C, D) * U_s(D, C, c, d) \
-                - 0.5 * U_c(a, b, A, B) * chi_c[w, k](B, A, C, D) * U_c(D, C, c, d) \
-                + 0.5 * (U_s(a, b, c, d) + U_c(a, b, c, d));
+                - 0.5 * U_c(a, b, A, B) * chi_c[w, k](B, A, C, D) * U_c(D, C, c, d);
+      }
+        Gamma_pp_wk[w,k](a, b, c, d) += 0.5 * (U_s(a, b, c, d) + U_c(a, b, c, d));
+    }
 
   return Gamma_pp_wk;
 }
