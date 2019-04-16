@@ -10,6 +10,7 @@
 
   /cpp2doc_generated/tprf/lattice_dyson_g0_wk
   /cpp2doc_generated/tprf/lattice_dyson_g_wk
+  /cpp2doc_generated/tprf/lattice_dyson_g_w
   /cpp2doc_generated/tprf/fourier_wk_to_wr
   /cpp2doc_generated/tprf/fourier_wr_to_wk
 

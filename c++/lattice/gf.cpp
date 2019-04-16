@@ -39,10 +39,10 @@ namespace tprf {
 
 #ifdef TPRF_OMP
 
-gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, const gf_mesh<imfreq> & mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
     
   auto arr = mpi_view(g0_wk.mesh());
 
@@ -58,10 +58,10 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 
 #else
   
-gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_w_t::mesh_t mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
   
   for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
       g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
@@ -69,19 +69,6 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
   g0_wk = mpi_all_reduce(g0_wk);
   return g0_wk;
 }
-
-  /*
-gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
-
-  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g0_wk = make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
-  
-  for (auto const &k : e_k.mesh())
-    for (auto const &w : mesh) g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
-
-  return g0_wk;
-}
-  */
   
 #endif
 
@@ -90,7 +77,7 @@ gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh) {
 g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g_wk = make_gf(sigma_wk);
+  auto g_wk = make_gf(sigma_wk);
 
   for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
     g_wk[w, k] = inverse((w + mu)*I - e_k[k] - sigma_wk[w, k]);
@@ -101,12 +88,11 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk) {
   
 #ifdef TPRF_OMP
 
-gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
+g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
 
   auto mesh = sigma_w.mesh();
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g_wk =
-      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+  g_wk_t g_wk({sigma_w.mesh(), e_k.mesh()}, e_k.target_shape());
 
   auto arr = mpi_view(g_wk.mesh());
 
@@ -122,12 +108,11 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
 
 #else
   
-gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
+g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
 
   auto mesh = sigma_w.mesh();
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g_wk =
-      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
+  g_wk_t g_wk({mesh, e_k.mesh()}, e_k.target_shape());
 
   for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
@@ -136,29 +121,15 @@ gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
   return g_wk;
 }
 
-  /*
-gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_iw_vt sigma_w) {
-
-  auto mesh = sigma_w.mesh();
-  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  gk_iw_t g_wk =
-      make_gf<gk_iw_t::mesh_t::var_t>({mesh, e_k.mesh()}, e_k.target());
-
-  for (auto const &k : e_k.mesh())
-    for (auto const &w : mesh) g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
-
-  return g_wk;
-}
-  */  
 #endif
 
-g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w) {
+g_w_t lattice_dyson_g_w(double mu, ek_vt e_k, g_w_vt sigma_w) {
 
   auto wmesh = sigma_w.mesh();
   auto kmesh = e_k.mesh();
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_iw_t g_w = make_gf<g_iw_t::mesh_t::var_t>(wmesh, e_k.target());
+  g_w_t g_w(wmesh, e_k.target_shape());
 
   auto wkmesh = gk_iw_t::mesh_t{{wmesh, kmesh}};
   
@@ -175,7 +146,7 @@ g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w) {
   
 #ifdef TPRF_OMP
 
-gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
+g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
 
   auto _ = all_t{};
   auto target = g_wk.target();
@@ -185,7 +156,7 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   auto kmesh = std::get<1>(g_wk.mesh());
   auto rmesh = make_adjoint_mesh(kmesh);
 
-  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, target);
+  g_wr_t g_wr({wmesh, rmesh}, g_wk.target_shape());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
@@ -215,12 +186,12 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
 #else
 
-gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
+g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
 
   auto [wmesh, kmesh] = g_wk.mesh();
   auto rmesh = make_adjoint_mesh(kmesh);
 
-  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, g_wk.target());
+  g_wr_t g_wr({wmesh, rmesh}, g_wk.target_shape());
 
   auto _ = all_t{};
   for ( auto const &w : mpi_view(wmesh) )
@@ -230,21 +201,6 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
   
   return g_wr;
 }
-
-  /*
-gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
-
-  auto [wmesh, kmesh] = g_wk.mesh();
-  auto rmesh = make_adjoint_mesh(kmesh);
-
-  gr_iw_t g_wr = make_gf<gr_iw_t::mesh_t::var_t>({wmesh, rmesh}, g_wk.target());
-
-  auto _ = all_t{};
-  for (auto const &w : wmesh) g_wr[w, _]() = fourier(g_wk[w, _]);
-
-  return g_wr;
-}
-  */
   
 #endif
 
@@ -252,7 +208,7 @@ gr_iw_t fourier_wk_to_wr(gk_iw_vt g_wk) {
 
 #ifdef TPRF_OMP
   
-gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
+g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
 
   auto _ = all_t{};
   auto target = g_wr.target();
@@ -262,7 +218,7 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
   auto rmesh = std::get<1>(g_wr.mesh());
   auto kmesh = make_adjoint_mesh(rmesh);
   
-  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, target);
+  g_wk_t g_wk({wmesh, kmesh}, g_wr.target_shape());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
@@ -292,12 +248,12 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
 
 #else
   
-gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
+g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
 
   auto [wmesh, rmesh] = g_wr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
   
-  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
+  g_wk_t g_wk({wmesh, kmesh}, g_wr.target_shape());
 
   auto _ = all_t{};
   for (auto const &w : mpi_view(wmesh))
@@ -308,21 +264,6 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
   return g_wk;
 }
 
-  /*
-gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
-
-  auto [wmesh, rmesh] = g_wr.mesh();
-  auto kmesh = make_adjoint_mesh(rmesh);
-  
-  gk_iw_t g_wk = make_gf<gk_iw_t::mesh_t::var_t>({wmesh, kmesh}, g_wr.target());
-
-  auto _ = all_t{};
-  for (auto const &w : wmesh) g_wk[w, _]() = fourier(g_wr[w, _]);
-  
-  return g_wk;
-}
-  */
-
 #endif
   
 // ----------------------------------------------------
@@ -330,7 +271,7 @@ gk_iw_t fourier_wr_to_wk(gr_iw_vt g_wr) {
 
 #ifdef TPRF_OMP
   
-gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
+g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt) {
 
   auto wmesh = std::get<0>(g_wr.mesh());
   auto rmesh = std::get<1>(g_wr.mesh());
@@ -341,8 +282,7 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
   int nw = wmesh.last_index() + 1;
   if( nt <= 0 ) nt = 4 * nw;
 
-  gr_tau_t g_tr = make_gf<gr_tau_t::mesh_t::var_t>(
-      {{beta, S, nt}, rmesh}, g_wr.target());
+  g_tr_t g_tr({{beta, S, nt}, rmesh}, g_wr.target_shape());
 
   auto tmesh = std::get<0>(g_tr.mesh());
 
@@ -376,7 +316,7 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
 
 #else
   
-gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
+g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt) {
 
   auto wmesh = std::get<0>(g_wr.mesh());
   auto rmesh = std::get<1>(g_wr.mesh());
@@ -386,8 +326,7 @@ gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int nt) {
   int nw = wmesh.last_index() + 1;
   if( nt <= 0 ) nt = 4 * nw;
 
-  gr_tau_t g_tr = make_gf<gr_tau_t::mesh_t::var_t>(
-    {{beta, wmesh.domain().statistic, nt}, rmesh}, g_wr.target());
+  g_tr_t g_tr({{beta, wmesh.domain().statistic, nt}, rmesh}, g_wr.target_shape());
 
   auto _ = all_t{};
   auto r0 = *rmesh.begin();

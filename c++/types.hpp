@@ -75,9 +75,29 @@ typedef chi0r_t::view_type chi0r_vt;
   // real space "r"
   // momentum space "k"
 
+typedef gf<imfreq, matrix_valued> g_w_t;
+typedef g_w_t::const_view_type g_w_cvt;
+typedef g_w_t::view_type g_w_vt;
+
+typedef gf<imtime, matrix_valued> g_t_t;
+typedef g_t_t::const_view_type g_t_cvt;
+typedef g_t_t::view_type g_t_vt;
+
 typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> g_wk_t;
-typedef gk_iw_t::const_view_type g_wk_cvt;
-typedef gk_iw_t::view_type g_wk_vt;
+typedef g_wk_t::const_view_type g_wk_cvt;
+typedef g_wk_t::view_type g_wk_vt;
+
+typedef gf<cartesian_product<imfreq, cyclic_lattice>, matrix_valued> g_wr_t;
+typedef g_wr_t::const_view_type g_wr_cvt;
+typedef g_wr_t::view_type g_wr_vt;
+
+typedef gf<cartesian_product<imtime, cyclic_lattice>, matrix_valued> g_tr_t;
+typedef g_tr_t::const_view_type g_tr_cvt;
+typedef g_tr_t::view_type g_tr_vt;
+
+typedef gf<cartesian_product<imtime, brillouin_zone>, matrix_valued> g_tk_t;
+typedef g_tk_t::const_view_type g_tk_cvt;
+typedef g_tk_t::view_type g_tk_vt;
   
 typedef gf<imtime, tensor_valued<4>> chi_t_t;
 typedef chi_t_t::const_view_type chi_t_cvt;
