@@ -50,6 +50,7 @@ if (DocWithC++2rst)
 		      ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp
                       --output_directory ${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
                       --namespace tprf
+                      --namespace tprf::hubbard_atom
                       ${INC}		    
                       --includes ${TRIQS_ROOT}/include
                       --includes ${CMAKE_SOURCE_DIR}/c++/
