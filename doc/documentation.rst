@@ -21,6 +21,7 @@ Reference manual
    :maxdepth: 2
 
    reference/linalg
+   reference/impurity
    reference/lattice
    reference/eliashberg
 
