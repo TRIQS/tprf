@@ -39,7 +39,7 @@ namespace tprf {
 
 #ifdef TPRF_OMP
 
-g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, const gf_mesh<imfreq> & mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
@@ -58,7 +58,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, const gf_mesh<imfreq> & mesh) {
 
 #else
   
-g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_w_t::mesh_t mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, const gf_mesh<imfreq> & mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
@@ -74,7 +74,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_w_t::mesh_t mesh) {
 
 // ----------------------------------------------------
 
-g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk) {
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   auto g_wk = make_gf(sigma_wk);
@@ -88,7 +88,7 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk) {
   
 #ifdef TPRF_OMP
 
-g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
   auto mesh = sigma_w.mesh();
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
@@ -108,7 +108,7 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
 
 #else
   
-g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
   auto mesh = sigma_w.mesh();
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
@@ -123,7 +123,7 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w) {
 
 #endif
 
-g_w_t lattice_dyson_g_w(double mu, ek_vt e_k, g_w_vt sigma_w) {
+g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
   auto wmesh = sigma_w.mesh();
   auto kmesh = e_k.mesh();
@@ -146,7 +146,7 @@ g_w_t lattice_dyson_g_w(double mu, ek_vt e_k, g_w_vt sigma_w) {
   
 #ifdef TPRF_OMP
 
-g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
+g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
 
   auto _ = all_t{};
   auto target = g_wk.target();
@@ -186,7 +186,7 @@ g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
 
 #else
 
-g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
+g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
 
   auto [wmesh, kmesh] = g_wk.mesh();
   auto rmesh = make_adjoint_mesh(kmesh);
@@ -208,7 +208,7 @@ g_wr_t fourier_wk_to_wr(g_wk_vt g_wk) {
 
 #ifdef TPRF_OMP
   
-g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
+g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
 
   auto _ = all_t{};
   auto target = g_wr.target();
@@ -248,7 +248,7 @@ g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
 
 #else
   
-g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
+g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
 
   auto [wmesh, rmesh] = g_wr.mesh();
   auto kmesh = make_adjoint_mesh(rmesh);
@@ -271,7 +271,7 @@ g_wk_t fourier_wr_to_wk(g_wr_vt g_wr) {
 
 #ifdef TPRF_OMP
   
-g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt) {
+g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
 
   auto wmesh = std::get<0>(g_wr.mesh());
   auto rmesh = std::get<1>(g_wr.mesh());
@@ -316,7 +316,7 @@ g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt) {
 
 #else
   
-g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt) {
+g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
 
   auto wmesh = std::get<0>(g_wr.mesh());
   auto rmesh = std::get<1>(g_wr.mesh());

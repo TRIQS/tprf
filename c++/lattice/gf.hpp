@@ -41,7 +41,7 @@ namespace tprf {
   @param mesh imaginary frequency mesh
   @return Matsubara frequency lattice Green's function $G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})$
 */
-g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, const gf_mesh<imfreq> & mesh);
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh);
   
 /** Construct an interacting Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
    
@@ -61,7 +61,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, ek_vt e_k, const gf_mesh<imfreq> & mesh);
  @param sigma_w imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n)`
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w);
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
 
 /** Construct an interacting Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
    
@@ -81,7 +81,7 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_w_vt sigma_w);
  @param sigma_wk imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})`
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk);
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk);
 
 /** Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function $G_{a\bar{b}}(i\omega_n)$
    
@@ -101,7 +101,7 @@ g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk);
  @param sigma_w imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n)`
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-g_w_t lattice_dyson_g_w(double mu, ek_vt e_k, g_w_vt sigma_w);
+g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
 
 /** Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
@@ -110,7 +110,7 @@ g_w_t lattice_dyson_g_w(double mu, ek_vt e_k, g_w_vt sigma_w);
     @param g_wk k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
     @return real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
-g_wr_t fourier_wk_to_wr(g_wk_vt g_wk);
+g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk);
   
 /** Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
@@ -119,7 +119,7 @@ g_wr_t fourier_wk_to_wr(g_wk_vt g_wk);
     @param g_wr real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
     @return k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
  */
-g_wk_t fourier_wr_to_wk(g_wr_vt g_wr);
+g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr);
 
 /** Fast fourier transform of real-space Green's function from Matsubara frequency to imaginary time
 
@@ -128,6 +128,6 @@ g_wk_t fourier_wr_to_wk(g_wr_vt g_wr);
     @param g_wr real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
     @return real-space imaginary time Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
-g_tr_t fourier_wr_to_tr(g_wr_vt g_wr, int nt=-1);
+g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt=-1);
 
 } // namespace tprf

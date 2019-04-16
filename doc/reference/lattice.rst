@@ -13,6 +13,7 @@
   /cpp2doc_generated/tprf/lattice_dyson_g_w
   /cpp2doc_generated/tprf/fourier_wk_to_wr
   /cpp2doc_generated/tprf/fourier_wr_to_wk
+  /cpp2doc_generated/tprf/fourier_wr_to_tr
 
 **lattice.hpp** Lindhard non-interacting generalized susceptibility
 ====================================================================

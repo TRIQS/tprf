@@ -35,15 +35,15 @@ module.add_function("array<std::complex<double>, 6> cluster_mesh_fourier_interpo
 
 # -- Dyson
 
-module.add_function("gk_iw_t lattice_dyson_g0_wk(double mu, ek_vt e_k, g_iw_t::mesh_t mesh)", doc = """""")
-module.add_function("gk_iw_t lattice_dyson_g_wk(double mu, ek_vt e_k, gf_view<imfreq, matrix_valued> sigma_w)", doc = """""")
-module.add_function("g_wk_t lattice_dyson_g_wk(double mu, ek_vt e_k, g_wk_vt sigma_wk)", doc = """""")
-module.add_function("g_iw_t lattice_dyson_g_w(double mu, ek_vt e_k, g_iw_vt sigma_w)", doc = """""")
+module.add_function("g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh)", doc = """""")
+module.add_function("gk_iw_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w)", doc = """""")
+module.add_function("g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk)", doc = """""")
+module.add_function("g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w)", doc = """""")
 
 
-module.add_function("gr_iw_t fourier_wk_to_wr(gf_view<cartesian_product<imfreq, brillouin_zone>> g_k)", doc = """""")
-module.add_function("gk_iw_t fourier_wr_to_wk(gf_view<cartesian_product<imfreq, cyclic_lattice>> g_r)", doc = """""")
-module.add_function("gr_tau_t fourier_wr_to_tr(gr_iw_vt g_wr, int ntau=-1)", doc = """""")
+module.add_function("g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk)", doc = """""")
+module.add_function("g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr)", doc = """""")
+module.add_function("g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int ntau=-1)", doc = """""")
 
 # -- Bubble in imaginary time
 
