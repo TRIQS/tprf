@@ -11,12 +11,6 @@ include_directories(${TRIQS_INCLUDE_ALL} ${CMAKE_CURRENT_SOURCE_DIR})
 #install(TARGETS tprf DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
 
 # Build the C++ extension module
-add_cpp2py_module(fourier)
-target_link_libraries(fourier tprf_c)
-triqs_set_rpath_for_target(fourier)
-install(TARGETS fourier DESTINATION ${CPP2PY_PYTHON_LIB_DEST_ROOT}/${python_destination})
-
-# Build the C++ extension module
 add_cpp2py_module(lattice)
 target_link_libraries(lattice tprf_c)
 triqs_set_rpath_for_target(lattice)

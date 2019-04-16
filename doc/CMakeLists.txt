@@ -16,7 +16,7 @@ set(DOC_SOURCE ${CMAKE_CURRENT_BINARY_DIR})
 
 # create documentation target
 set(sphinx_top ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
-add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${doc_sources} ${doc_notebooks} fourier tprf_c
+add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${doc_sources} ${doc_notebooks} tprf_c
                    COMMAND ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -b html ${DOC_SOURCE} html)
 add_custom_target(doc_sphinx ALL DEPENDS ${sphinx_top})
 
