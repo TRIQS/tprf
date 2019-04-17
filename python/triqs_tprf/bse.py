@@ -4,16 +4,12 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 import pytriqs.utility.mpi as mpi
-
 from pytriqs.archive import HDFArchive
-
 from pytriqs.gf import MeshImFreq, MeshProduct, Gf, Idx
-
 
 # ----------------------------------------------------------------------
 
 from triqs_tprf.logo import tprf_banner
-
 from triqs_tprf.linalg import inverse_PH
 
 from triqs_tprf.lattice import fourier_wk_to_wr
@@ -26,32 +22,93 @@ from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
 # ----------------------------------------------------------------------
 def solve_local_bse(chi0_wnn, chi_wnn):
 
-    gamma_wnn = inverse_PH(chi0_wnn) - inverse_PH(chi_wnn)
-    
+    r"""Solve the Bethe-Salpeter equation for the local vertex function 
+    :math:`\Gamma_{abcd}(\omega, \nu, \nu')`.
+
+    Computes:
+
+    .. math::
+       \Gamma_{abcd}(\omega, \nu, \nu') = [\chi^{(0)}]^{-1} - \chi^{-1}
+
+    where the inverses are taken in the particle-hole channel pairing
+    of fermionic frequencies :math:`\nu` and :math:`\nu'` and orbital
+    indices.
+
+    Parameters
+    ----------
+
+    chi0_wnn : Gerealized local bubble susceptibility 
+               :math:`\chi^{(0)}_{abcd}(\omega, \nu, \nu')`
+    chi_wnn : Generalized local susceptibility 
+              :math:`\chi_{abcd}(\omega, \nu, \nu')`
+
+    Returns
+    -------
+
+    gamma_wnn : Particle-hole vertex function 
+                :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
+    """
+
+    gamma_wnn = inverse_PH(chi0_wnn) - inverse_PH(chi_wnn)    
     return gamma_wnn
 
 # ----------------------------------------------------------------------
-def fixed_fermionic_window_python_wnk(g2, nwf):
+def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
 
-    #nw = (g2.data.shape[0] + 1) / 2
+    r""" Helper routine to reduce the number of fermionic Matsubara 
+    frequencies :math:`\nu` in a two frequency and one momenta dependent
+    generalized susceptibility :math:`\chi_{abcd}(\omega, \nu, \mathbf{k})`.
 
+    Parameters
+    ----------
+
+    chi_wnk : two frequency and one momenta dependent generalized 
+              susceptibility :math:`\chi_{abcd}(\omega, \nu, \mathbf{k})`.
+    nwf : number of fermionic frequencies to keep.
+
+    Returns
+    -------
+
+    chi_wnk_out : Susceptibility with reduced number of fermionic Matsubara
+                  frequencies.
+    """
+
+    g2 = chi_wnk
     wmesh, nmesh, kmesh = g2.mesh.components
     
     beta = g2.mesh.components[0].beta
     nmesh_small = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)
 
-    g2_out = Gf(mesh=MeshProduct(wmesh, nmesh_small, kmesh), target_shape=g2.target_shape)
+    chi_wnk_out = Gf(mesh=MeshProduct(wmesh, nmesh_small, kmesh), target_shape=g2.target_shape)
 
     n = g2.data.shape[1]
     s = n/2 - nwf
     e = n/2 + nwf
     
-    g2_out.data[:] = g2.data[:, s:e, :]
+    chi_wnk_out.data[:] = g2.data[:, s:e, :]
 
-    return g2_out
+    return chi_wnk_out
 
 # ----------------------------------------------------------------------
 def get_chi0_wnk(g_wk, nw=1, nwf=None):
+
+    r""" Compute the generalized lattice bubble susceptibility 
+    :math:`\chi^{(0)}_{abcd}(\omega, \nu, \mathbf{k})` from the single-particle
+    Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+
+    Parameters
+    ----------
+
+    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+    nw : Number of bosonic freqiencies in :math:`\chi`.
+    nwf : Number of fermionic freqiencies in :math:`\chi`.    
+
+    Returns
+    -------
+
+    chi0_wnk : Generalized lattice bubble susceptibility
+               :math:`\chi^{(0)}_{abcd}(\omega, \nu, \mathbf{k})`
+    """
 
     fmesh = g_wk.mesh.components[0]
     kmesh = g_wk.mesh.components[1]
@@ -130,6 +187,26 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
 # ----------------------------------------------------------------------
 def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
 
+    r""" Compute the generalized lattice susceptibility 
+    :math:`\chi_{abcd}(\omega, \mathbf{k})` using the Bethe-Salpeter 
+    equation (BSE).
+
+    Parameters
+    ----------
+
+    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+    gamma_wnn : Local particle-hole vertex function 
+                :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
+    tail_corr_nwf : Number of fermionic freqiencies to use in the 
+                    tail correction of the sum over fermionic frequencies.
+
+    Returns
+    -------
+
+    chi0_wk : Generalized lattice susceptibility
+              :math:`\chi_{abcd}(\omega, \mathbf{k})`
+    """
+    
     fmesh_g = g_wk.mesh.components[0]
     kmesh = g_wk.mesh.components[1]
     

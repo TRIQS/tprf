@@ -24,6 +24,7 @@ Reference manual
    reference/impurity
    reference/lattice
    reference/eliashberg
+   reference/bse
 
 Theory and notation
 -------------------
