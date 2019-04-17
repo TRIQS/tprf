@@ -58,7 +58,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
 #else
   
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, const gf_mesh<imfreq> & mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
