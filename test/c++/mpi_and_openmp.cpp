@@ -6,9 +6,9 @@
 using namespace triqs::clef;
 using namespace triqs::lattice;
 
-#include "mpi.hpp"
+#include <triqs_tprf/mpi.hpp>
 
-using namespace tprf;
+using namespace triqs_tprf;
 
 // ------------------------------------------------------------
 

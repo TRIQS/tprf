@@ -18,37 +18,22 @@
  * TRIQS. If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
+#pragma once
 
-#include <triqs/test_tools/gfs.hpp>
+#include "types.hpp"
 
-#include <triqs_tprf/hubbard_atom.hpp>
+namespace triqs_tprf {
 
-using namespace triqs_tprf;
-using namespace triqs_tprf::hubbard_atom;
+g_iw_t block_iw_AB_to_matrix_valued(b_g_iw_vt bg_AB);
+  
+void block_3nu_AABB_to_tensor_valued(b_g2_iw_vt bg2_AABB, g2_iw_vt g2);
 
-TEST(hubbard_atom, single_particle_greens_function) {
-  double eps = 1e-9;
-  double beta = 2.0;
-  double U = 5.0;
-  int nw = 10000;
-  auto G_iw = single_particle_greens_function(nw, beta, U);
+void get_magnetic_component(g2_iw_vt g2, g2_iw_vt g2_m);
 
-  for( auto const &iw : G_iw.mesh() ) {
-    auto ref_val = 1./(iw - U*U/(4.*iw));
-    EXPECT_NEAR(G_iw[iw](0,0).real(), ref_val.real(), eps);
-    EXPECT_NEAR(G_iw[iw](0,0).imag(), ref_val.imag(), eps);
-  }
-}
+template <Channel_t CH> void from_3nu(g2_iw_vt g2_ch, g2_iw_cvt g2);
 
-TEST(hubbard_atom, chi_ph_magnetic) {
-  double eps = 1e-9;
-  double beta = 2.234;
-  double U = 5.0;
-  int nw = 4;
-  int nwf = 10;
-  auto chi = chi_ph_magnetic(nw, nwf, beta, U);
+void from_3nu_PH(g2_iw_vt g2_ch, g2_iw_vt g2);
+void from_3nu_PH_bar(g2_iw_vt g2_ch, g2_iw_vt g2);
+void from_3nu_PP(g2_iw_vt g2_ch, g2_iw_vt g2);
 
-  std::cerr << "Lacking reference data FIXME!\n";
-}
-
-MAKE_MAIN;
+} // namespace triqs_tprf

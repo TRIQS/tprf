@@ -1,17 +1,15 @@
 # Copy h5 files to binary dir
-
-FILE(GLOB all_h5_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h5)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_h5_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-FILE(GLOB all_tgz_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.tar.gz)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_tgz_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-# List all tests
-set(all_tests chi4_iw_from_tau g_wk_to_from_g_wr chi00_square_lattice bse_and_rpa_loc_vs_latt mean_field mean_field_kanamori hartree_response 1d_hubbard_hf_rpa 1d_hubbard_hf_spin_rot_inv 1d_hubbard_hf_rpa_2site_AFM eliashberg compare_general_rpa_to_matrix_rpa interaction_tensor_charge_spin_factorization)
-
-foreach(t ${all_tests})
-  add_test(NAME ${t} COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/${t}.py)
+file(GLOB_RECURSE all_h5_tgz_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.ref.h5 *.tar.gz)
+foreach(file ${all_h5_tgz_files})
+  configure_file(${file} ${file} COPYONLY)
 endforeach()
 
-# Set the PythonPath : put the build dir first (in case there is an installed version). 
-set_property(TEST ${all_tests} PROPERTY ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/python:$ENV{PYTHONPATH} )
+# List of all tests
+set(all_tests chi4_iw_from_tau g_wk_to_from_g_wr_py chi00_square_lattice bse_and_rpa_loc_vs_latt mean_field mean_field_kanamori hartree_response 1d_hubbard_hf_rpa 1d_hubbard_hf_spin_rot_inv 1d_hubbard_hf_rpa_2site_AFM eliashberg compare_general_rpa_to_matrix_rpa interaction_tensor_charge_spin_factorization)
+
+foreach(test ${all_tests})
+  get_filename_component(test_name ${test} NAME_WE)
+  get_filename_component(test_dir ${test} DIRECTORY)
+  add_test(NAME ${test_name} COMMAND ${TRIQS_PYTHON_INTERPRETER} ${CMAKE_CURRENT_SOURCE_DIR}/${test_dir}/${test_name}.py WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_dir})
+  set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/python:$ENV{PYTHONPATH} ${SANITIZER_RT_PRELOAD})
+endforeach()

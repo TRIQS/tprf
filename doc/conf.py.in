@@ -3,48 +3,47 @@
 # TRIQS documentation build configuration file
 
 import sys
-sys.path.insert(0, "@TRIQS_ROOT@/@TRIQS_SPHINXEXT_PATH@/numpydoc")
+sys.path.insert(0, "@TRIQS_SPHINXEXT_PATH@/autorun")
+sys.path.insert(0, "@TRIQS_SPHINXEXT_PATH@/numpydoc")
 
-extensions = [
-    'nbsphinx',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.doctest',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.githubpages',
-    'plot_directive',
-    'numpydoc',
-    'IPython.sphinxext.ipython_console_highlighting',
-    ]
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.doctest',
+              'sphinx.ext.todo',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.autosummary',
+              'plot_directive',
+              'numpydoc',
+              'autorun',
+              'nbsphinx',
+              'sphinx.ext.githubpages',
+              'IPython.sphinxext.ipython_console_highlighting',
+              ]
 
 source_suffix = '.rst'
 
-project = u'TPRF: Two-Particle Response Function tool box for TRIQS'
+project = u'TPRF - Two-Particle Response Function tool box for TRIQS'
 copyright = u'2017, H. U.R. Strand'
 version = '@TPRF_VERSION@'
-release = '@TPRF_RELEASE@'
 
 math_number_all = True
-#mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
-mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=default"
+mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
 templates_path = ['@CMAKE_SOURCE_DIR@/doc/_templates']
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 html_theme = 'triqs'
 html_theme_path = ['@TRIQS_THEMES_PATH@']
 html_show_sphinx = False
-html_context = {'header_title': 'tprf',
+html_context = {'header_title': 'triqs_tprf',
                 'header_subtitle': 'two-particle response function tools based on the <a class="triqs" style="font-size: 12px" href="http://ipht.cea.fr/triqs">TRIQS</a> library',
                 'header_links': [['Install', 'install'],
                                  ['Documentation', 'documentation'],
                                  ['Issues', 'issues'],
-                                 ['About TPRF', 'about']]}
+                                 ['About triqs_tprf', 'about']]}
 html_static_path = ['@CMAKE_SOURCE_DIR@/doc/_static']
 html_sidebars = {'index': ['sideb.html', 'searchbox.html']}
 
-htmlhelp_basename = 'TRIQSTPRFdoc'
+htmlhelp_basename = 'TPRFdoc'
 
-intersphinx_mapping = {'python': ('http://docs.python.org/2.7', None), 'triqslibs': ('@TRIQS_ROOT@/@TRIQS_INVENTORY_DIR@', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/2.7', None), 'triqslibs': ('https://triqs.github.io/triqs/master', None)}

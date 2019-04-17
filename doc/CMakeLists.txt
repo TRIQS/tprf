@@ -1,85 +1,63 @@
-# Path to the Sphinx inventory file of the library
-set(TRIQS_INVENTORY_DIR "${TRIQS_PATH}/share/doc/triqs" CACHE STRING
-    "Path or URL to a directory containing a Sphinx inventory file of the TRIQS library")
-mark_as_advanced(TRIQS_INVENTORY_DIR)
+# Generate the sphinx config file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
-# Path to the Sphinx extensions provided by TRIQS
-set(TRIQS_SPHINXEXT_PATH "${TRIQS_PATH}/share/triqs/sphinxext")
+# ---------------------------------
+# Top Sphinx target
+# ---------------------------------
+# Sources
+file(GLOB_RECURSE sources *.rst)
 
-# generate the conf.py
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py)
+set(sphinx_top ${CMAKE_CURRENT_BINARY_DIR}/html/contents.html)
+add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${sources}
+		   COMMAND PYTHONPATH=${CMAKE_BINARY_DIR}/python:$ENV{PYTHONPATH} ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -j8 -b html ${CMAKE_CURRENT_BINARY_DIR} html)
+add_custom_target(docs_sphinx ALL DEPENDS ${sphinx_top} ${CMAKE_CURRENT_BINARY_DIR})
 
-# all rst files of the documentation
-file(GLOB_RECURSE doc_sources *.rst)
-file(GLOB_RECURSE doc_notebooks *.ipynb)
-set(DOC_SOURCE ${CMAKE_CURRENT_BINARY_DIR})
+# Application must be compiled first
+add_dependencies(docs_sphinx triqs_tprf_c)
 
-# create documentation target
-set(sphinx_top ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
-add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${doc_sources} ${doc_notebooks} tprf_c
-                   COMMAND ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -b html ${DOC_SOURCE} html)
-add_custom_target(doc_sphinx ALL DEPENDS ${sphinx_top})
+# ------------------------------------------------------------------------------------------------
+# Copy the directory substructure and link all files with relevant extensions
+# cp_rs is a script in cpp2py/bin, it mimics cp -rs on Linux
+# and filters the relevant extension
+# ------------------------------------------------------------------------------------------------
+set(EXT_FOR_DOC "rst png txt css_t conf css js gif jpg py html bib h5 md ipynb")
+execute_process(COMMAND cp_rs ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${EXT_FOR_DOC})
 
-# Create a temporary copy of the doc that will be completed by the automatically generated one.
-# NB! the conf.py.in -> conf.py is generated at the configure step
-# the conf.py in the repo is for readthedocs and we must take care to
-# not overwrite the generated conf.py with the one in the repo
-FILE(GLOB_RECURSE all_rst_files RELATIVE ${CMAKE_SOURCE_DIR}/doc *.rst _* *.py *.png *.cpp *.ipynb)
-SET(rst_copy_tar  ${CMAKE_CURRENT_BINARY_DIR}/rst_copy.tar)
-add_custom_command (OUTPUT ${rst_copy_tar} DEPENDS ${all_rst_files}
- COMMAND cd ${CMAKE_SOURCE_DIR}/doc && tar cf ${rst_copy_tar} ${all_rst_files} && cd ${CMAKE_BINARY_DIR}/doc && cp conf.py conf.py.bak && tar xf ${rst_copy_tar} && mv conf.py.bak conf.py )
-add_custom_target(rst_copy DEPENDS ${rst_copy_tar})
-add_dependencies(doc_sphinx rst_copy) # we must first have copied the sources
+# -----------------------------------------------------------------------------
+# Make an optional target that allows us to regenerate the C++ doc with c++2rst
+# -----------------------------------------------------------------------------
+add_custom_target(docs_cpp2rst)
 
-# use c++2doc to automatically build the documentation of C++
-option(DocWithC++2rst "Use c++2rst to generate C++ documentation of tprf classes and functions (requires libclang)" ON)
+get_property(TRIQS_INCLUDE_DIRS TARGET triqs PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(TPRF_INCLUDE_DIRS TARGET triqs_tprf_c PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+set(CPP2RST_INCLUDE_DIRS ${TRIQS_INCLUDE_DIRS} ${TPRF_INCLUDE_DIRS})
 
-if (DocWithC++2rst)
+foreach(I ${CPP2RST_INCLUDE_DIRS})
+  set (CPP2RST_INCLUDE_COMMAND ${CPP2RST_INCLUDE_COMMAND} --includes ${I})
+endforeach()
 
-  # get include paths for the triqs target
-  get_property(TRIQS_INCLUDE_DIRS TARGET triqs PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-  foreach(I ${TRIQS_INCLUDE_DIRS})
-   set (INC  ${INC} --includes ${I})
-  endforeach()
+macro(generate_docs header_file)
+  add_custom_command(
+    TARGET docs_cpp2rst
+    COMMAND c++2rst
+    ${header_file}
+    -N triqs_tprf
+    -N triqs_tprf::hubbard_atom
+    --output_directory ${CMAKE_CURRENT_SOURCE_DIR}/cpp2rst_generated
+    ${CPP2RST_INCLUDE_COMMAND}
+    --cxxflags="-std=c++17"
+    -I ${CMAKE_SOURCE_DIR}/c++
+    -I ${TRIQS_ROOT}/include
+    2>&1 >> cpp2rst.log
+  )
+endmacro(generate_docs)
+generate_docs(${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp)
 
-  FILE(GLOB_RECURSE all_header_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../c++/*.hpp ../c++/lattice/*.hpp)
-
-  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log
-                      DEPENDS ${all_header_files} 
-		      COMMAND c++2rst
-		      ${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp
-                      --output_directory ${CMAKE_CURRENT_BINARY_DIR}/cpp2doc_generated
-                      --namespace tprf
-                      --namespace tprf::hubbard_atom
-                      ${INC}		    
-                      --includes ${TRIQS_ROOT}/include
-                      --includes ${CMAKE_SOURCE_DIR}/c++/
-                      --includes ${CMAKE_SOURCE_DIR}/c++/lattice
-		      --cxxflags "-std=c++17 -DFOOBAR"
-                      2>&1 > c++2rst.log
-		      VERBATIM)
-
-  add_custom_target(doc_cpp2doc DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c++2rst.log) 
-  add_dependencies(doc_cpp2doc tprf_c) #
-  add_dependencies(doc_sphinx doc_cpp2doc) # we must have installed the sources before building
-  
-endif()
-
-# install
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ COMPONENT documentation DESTINATION share/doc/tprf
- FILES_MATCHING 
- PATTERN "*.html" 
- PATTERN "*.png"
- PATTERN "*.js"
- PATTERN "_*"
- PATTERN "*.png" 
- PATTERN "*.jpg" 
- PATTERN "*.gif" 
- PATTERN "*.xsl" 
- PATTERN "*.css"
- PATTERN "*.pdf"
- PATTERN "*.py"
- PATTERN "*.txt"
- PATTERN "*.inv"
- PATTERN "*.bib"
- )
+# ---------------------------------
+# Install
+# ---------------------------------
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ COMPONENT documentation DESTINATION share/doc/triqs_tprf
+  FILES_MATCHING
+  REGEX "\\.(html|pdf|png|gif|jpg|js|xsl|css|py|txt|inv|bib|ipynb)$"
+  PATTERN "_*"
+)

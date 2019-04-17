@@ -1,68 +1,91 @@
-# start configuration
-cmake_minimum_required(VERSION 2.8)
-project(tprf CXX)
-set(CMAKE_BUILD_TYPE Release)
-enable_testing()
+# Start configuration
+cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+project(triqs_tprf CXX)
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
 
-# We use shared libraries
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+# Default to Release build type
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Type of build" FORCE)
+endif()
+message( STATUS "-------- BUILD-TYPE: ${CMAKE_BUILD_TYPE} --------")
 
-# Load TRIQS and Cpp2Py
-find_package(TRIQS 2.0 REQUIRED)
-find_package(Cpp2Py 1.5 REQUIRED)
+# Build static libraries
+set(BUILD_SHARED_LIBS OFF)
 
-# Load TRIQS, including all predefined variables from TRIQS installation
-# First append triqs installed files to the cmake load path
-list(APPEND CMAKE_MODULE_PATH ${TRIQS_PATH}/share/triqs/cmake)
+# Export the list of compile-commands into compile_commands.json
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_definitions(${TRIQS_CXX_DEFINITIONS})
-include_directories(${TRIQS_INCLUDE_ALL})
+# Enable compiler warnings for the whole project
+add_compile_options(-Wall
+		     $<$<CONFIG:Debug>:-Og>
+		     $<$<CONFIG:Debug>:-ggdb3>
+		     )
 
-# Default Install directory to TRIQS_ROOT if not given. Checks an absolute name is given.
+# Load Dependencies
+find_package(TRIQS 2.2 REQUIRED)
+find_package(Cpp2Py 1.6 REQUIRED)
+
+# Default Install directory to TRIQS_ROOT if not given or invalid.
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR (NOT IS_ABSOLUTE ${CMAKE_INSTALL_PREFIX}))
   message(STATUS " No install prefix given (or invalid). Defaulting to TRIQS_ROOT")
   set(CMAKE_INSTALL_PREFIX ${TRIQS_ROOT} CACHE PATH "default install path" FORCE)
 endif()
-message(STATUS "-------- CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX} -------------")
+message(STATUS "-------- CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX} --------")
 
-# All PRIVATE common options.
-# The std for all targets
-add_compile_options(-std=c++17)
+# Define the triqs_tprf version numbers and get the git hash
+set(TPRF_VERSION_MAJOR 2)
+set(TPRF_VERSION_MINOR 2)
+set(TPRF_VERSION_PATCH 0)
+set(TPRF_VERSION ${TPRF_VERSION_MAJOR}.${TPRF_VERSION_MINOR}.${TPRF_VERSION_PATCH})
+triqs_get_git_hash_of_source_dir(TPRF_GIT_HASH)
+message(STATUS "triqs_tprf version : ${TPRF_VERSION}")
+message(STATUS "Git hash: ${TPRF_GIT_HASH}")
 
-# Common to all targets (ctint, python, tests).
-include_directories(${CMAKE_SOURCE_DIR})
+# Build and install the triqs_tprf library
+add_subdirectory(c++/triqs_tprf)
 
-# Get the Git Hash
-find_package(Git)
-
-execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
- WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
- OUTPUT_VARIABLE   TPRF_GIT_HASH
- OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-message(STATUS "TPRF git hash : ${TPRF_GIT_HASH}")
-
-# To be fixed!!
-triqs_set_rpath_for_all_targets()
-
-# Compile C++ code
-add_subdirectory(c++)
-
-# Python interface (if is compiled with Python support).
-# Remove this for a pure C++ code.
-if (${TRIQS_WITH_PYTHON_SUPPORT})
- add_subdirectory(python)
-
- # Build Sphinx based docs
- option(BUILD_DOC "Build documentation" OFF)
- if(${BUILD_DOC})
-   if(NOT ${TRIQS_WITH_DOCUMENTATION})
-     message(FATAL_ERROR "Error: TRIQS library has not been compiled with its documentation")
-   endif()
-   add_subdirectory(doc)
- endif(${BUILD_DOC})
+# Tests
+option(Build_Tests "Build tests" ON)
+if(Build_Tests)
+  enable_testing()
+  add_subdirectory(test)
 endif()
 
-# Add tests
-enable_testing()
-add_subdirectory(test)
+if(TRIQS_WITH_PYTHON_SUPPORT)
+  # Python interface
+  add_subdirectory(python/triqs_tprf)
+
+  # Build the documentation
+  option(Build_Documentation "Build documentation" OFF)
+  if(Build_Documentation)
+    if(NOT TRIQS_WITH_DOCUMENTATION)
+      message(WARNING "TRIQS library has not been compiled with its documentation! Cannot build documentation.")
+    else()
+      message(STATUS "Documentation Build enabled")
+      add_subdirectory(doc)
+    endif()
+  endif()
+else()
+  message(WARNING "TRIQS library has been installed without Python support. Cannot build the Python Interface and Documentation.")
+endif()
+
+# Additional configuration files
+add_subdirectory(share)
+
+# Debian Package
+option(BUILD_DEBIAN_PACKAGE "Build a deb package" OFF)
+if(BUILD_DEBIAN_PACKAGE)
+  if(NOT CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+    message(FATAL_ERROR "CMAKE_INSTALL_PREFIX must be /usr for packaging")
+  endif()
+  SET(CPACK_GENERATOR "DEB")
+  SET(CPACK_PACKAGE_VERSION ${TPRF_VERSION})
+  SET(CPACK_PACKAGE_CONTACT "https://github.com/TRIQS/triqs_tprf")
+  EXECUTE_PROCESS(COMMAND dpkg --print-architecture OUTPUT_VARIABLE CMAKE_DEBIAN_PACKAGE_ARCHITECTURE OUTPUT_STRIP_TRAILING_WHITESPACE)
+  SET(CPACK_DEBIAN_PACKAGE_DEPENDS "triqs (>= 2.2)")
+  SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+  SET(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
+  INCLUDE(CPack)
+endif()

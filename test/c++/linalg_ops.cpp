@@ -20,17 +20,16 @@
  ******************************************************************************/
 
 #include <triqs/arrays.hpp>
-
 #include <triqs/gfs.hpp>
 #include <triqs/test_tools/gfs.hpp>
-
 #include <triqs/mc_tools/random_generator.hpp>
-
-#include "linalg.hpp"
 
 using namespace triqs::gfs;
 using namespace triqs::arrays;
-using namespace tprf;
+
+#include <triqs_tprf/linalg.hpp>
+
+using namespace triqs_tprf;
 
 // ----------------------------------------------------
 // Helper functions

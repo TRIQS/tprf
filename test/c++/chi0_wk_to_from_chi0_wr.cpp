@@ -27,9 +27,10 @@ using namespace triqs::gfs;
 using namespace triqs::arrays;
 using namespace triqs::lattice;
 
-#include "types.hpp"
-#include "lattice.hpp"
-using namespace tprf;
+#include <triqs_tprf/types.hpp>
+#include <triqs_tprf/lattice.hpp>
+
+using namespace triqs_tprf;
 
 TEST(lattice, chi0_wk_to_from_chi0_wr) {
 
