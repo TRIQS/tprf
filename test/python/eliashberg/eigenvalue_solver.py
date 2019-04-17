@@ -75,8 +75,7 @@ def run_solve_eliashberg(p):
         gamma_const = 0.5*(U_s + U_c)
     
     Es, eigen_modes = solve_eliashberg(gamma, g0_wk, Gamma_pp_const_k=gamma_const, 
-                                        product=p.product, solver=p.solver, 
-                                        nr_factor=p.nr_factor, seed=p.seed)
+                                        product=p.product, solver=p.solver)
     
     return Es, eigen_modes
 
@@ -100,14 +99,11 @@ if __name__ == '__main__':
             big_factor = 2,
             product = 'FFT',
             solver = 'PM',
-            nr_factor = 0.6,
-            seed = 1337,
             )
 
     Es_pm, eigen_modes_pm = run_solve_eliashberg(p)
 
-    p.solver = 'IRAM'
-    Es_iram, eigen_modes_iram = run_solve_eliashberg(p)
+    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.copy(solver='IRAM')
 
     print(Es_pm[0], Es_iram[0])
 

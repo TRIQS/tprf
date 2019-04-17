@@ -58,8 +58,8 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
     Returns
     -------
     delta : Gf,
-            An inital anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
-            a iterative solver, given as a Gf with MeshProduct with the components
+            An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
+            an iterative solver, given as a Gf with MeshProduct with the components
             (MeshImFreq, MeshBrillouinZone).
     """
 
@@ -121,8 +121,8 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k):
 
     return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
-def solve_eliashberg(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10,
-                            product='FFT', solver='PM', nr_factor=0.5, seed=None):
+def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None, tol=1e-10,
+                            product='FFT', solver='PM'):
 
     r""" Solve the linearized Eliashberg equation
     
@@ -138,6 +138,11 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10,
     g_wk : Gf, 
            Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
            be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    initial_delta : Gf, optional
+                   An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
+                   an iterative solver, given as a Gf with MeshProduct with the components
+                   (MeshImFreq, MeshBrillouinZone).
+                   If not given :func:`semi_random_initial_delta` will be called.
     Gamma_pp_const_k : float or np.ndarray or Gf, optional
                        Part of the pairing vertex that is constant in Matsubara frequency space
                        :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
@@ -159,13 +164,6 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10,
                  'PM' : Use the Power Method implemented in :func:`power_method_LR`.
 
                  'IRAM' : Use the Implicitly Restarted Arnoldi Method implemented in :func:`implicitly_restarted_arnoldi_method`.
-    nr_factor : float, optional
-                Percentage of :math:`\omega` points of the inital delta, which shall not be
-                randomized. This is needed to assure a working tail fit for the
-                Fourier transformations. The default is 0.5, meaning that 50% of
-                the :math:`\omega` points will not be randomized.
-    seed : int, optional
-           Set a np.random.seed to enforce predictable results.
 
     Returns
     -------
@@ -211,15 +209,16 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10,
     else:
         raise NotImplementedError('There is no implementation of the eliashberg product'
                                     ' called %s.'%product)
-
-    init = from_wk_to_x(semi_random_initial_delta(g_wk, nr_factor=nr_factor, seed=seed))
+    if not initial_delta:
+        initial_delta = semi_random_initial_delta(g_wk)
+    initial_delta = from_wk_to_x(initial_delta)
 
     if solver == 'PM':
-        es, evs = power_method_LR(matvec, init, tol=tol)
+        es, evs = power_method_LR(matvec, initial_delta, tol=tol)
         es, evs = [es], [evs]
 
     elif solver == 'IRAM':
-        es, evs = implicitly_restarted_arnoldi_method(matvec, init, tol=tol)
+        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, tol=tol)
 
     else:
         raise NotImplementedError('There is no solver called %s.'%solver)

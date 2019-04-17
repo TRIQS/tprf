@@ -78,6 +78,16 @@ class ParameterCollection(object):
     def dict(self):
         return self.__dict__
 
+    def update(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def copy(self, **kwargs):
+        """Shallow copy that allows for changing/adding attributes
+        """
+        p = ParameterCollection(**self.dict())
+        p.update(**kwargs)
+        return p
+
     def __getitem__(self, key):
         return self.__dict__[key]
 
@@ -135,6 +145,8 @@ class ParameterCollection(object):
                 
                 out += ''.join([key, ' = ', str_value]) + '\n'
         return out
+
+    __repr__ = __str__
 
     def get_my_name(self):
         ans = []
@@ -195,7 +207,7 @@ class ParameterCollections(object):
         self.objects = list(np.array(self.objects)[sidx])
 
     def getattr_from_objects(self, attr):
-        return np.array([getattr(o, attr) for o in self.objects ])
+        return np.array([getattr(o, attr, None) for o in self.objects ])
     
     def __getattr__(self, attr):
         return self.getattr_from_objects(attr)
@@ -207,6 +219,24 @@ class ParameterCollections(object):
     def __factory_from_dict__(cls, name, d):
         ret = cls(d['objects'])
         return ret    
+
+    def __iter__(self):
+        return self.objects.__iter__()
+
+    def __next__(self):
+        return self.objects.__next__()
+
+    def __getitem__(self, idx):
+        return self.objects[idx]
+
+    def __str__(self):
+        out = ''
+        for p in self:
+            out += p.__str__()
+            out += '\n'
+        return out
+
+    __repr__ = __str__
 
 # ----------------------------------------------------------------------
 # -- Register ParameterCollection in Triqs hdf_archive_schemes
