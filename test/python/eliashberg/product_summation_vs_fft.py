@@ -129,38 +129,41 @@ def compare_next_delta(p):
     print('Start the FFT')
     next_delta_fft = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, p.v0)
 
-    from pytriqs.plot.mpl_interface import oplot, plt
-    import warnings 
-    warnings.filterwarnings("ignore") #ignore some matplotlib warnings
-    subp = [4, 3, 1]
-    fig = plt.figure(figsize=(18, 15))
-
     deltas = [v0, next_delta, next_delta_fft]
-    titles = ['Input', 'Summation', 'FFT']
 
-    for k_point in [Idx(0,0,0), Idx(1,0,0)]:
+    if p.plot:
 
-        ax = plt.subplot(*subp); subp[-1] += 1
-        oplot(g0_wk[:, k_point])
-        plt.title('GF')
+        from pytriqs.plot.mpl_interface import oplot, plt
+        import warnings 
+        warnings.filterwarnings("ignore") #ignore some matplotlib warnings
+        subp = [4, 3, 1]
+        fig = plt.figure(figsize=(18, 15))
 
-        ax = plt.subplot(*subp); subp[-1] += 1
-        oplot(gamma[:, k_point])
-        plt.title('Gamma')
+        titles = ['Input', 'Summation', 'FFT']
 
-        ax = plt.subplot(*subp); subp[-1] += 1
-        oplot(gamma_dyn_tr[:, k_point])
-        plt.title('Gamma dyn tr')
-
-        for delta, title in zip(deltas, titles):
+        for k_point in [Idx(0,0,0), Idx(1,0,0)]:
 
             ax = plt.subplot(*subp); subp[-1] += 1
-            oplot(delta[:, k_point])
-            plt.title(title)
+            oplot(g0_wk[:, k_point])
+            plt.title('GF')
 
-            ax.legend_ = None
+            ax = plt.subplot(*subp); subp[-1] += 1
+            oplot(gamma[:, k_point])
+            plt.title('Gamma')
 
-    #plt.show()
+            ax = plt.subplot(*subp); subp[-1] += 1
+            oplot(gamma_dyn_tr[:, k_point])
+            plt.title('Gamma dyn tr')
+
+            for delta, title in zip(deltas, titles):
+
+                ax = plt.subplot(*subp); subp[-1] += 1
+                oplot(delta[:, k_point])
+                plt.title(title)
+
+                ax.legend_ = None
+
+        plt.show()
 
     diff = compare_deltas(deltas[1:])
 
@@ -175,7 +178,6 @@ def compare_next_delta(p):
 
     return deltas
     
-
 #================================================================================ 
 
 if __name__ == '__main__':
@@ -196,6 +198,7 @@ if __name__ == '__main__':
             fit_const = False,
             big_factor = 2,
             atol = 1e-9,
+            plot = False,
             )
 
     for norbs in [1, 2]:
@@ -205,9 +208,7 @@ if __name__ == '__main__':
     print('The summation and FFT implementation of the eliashberg product'
                                                 ' both yield the same result.')
 
-    p.fit_const = True
-
-    deltas_with_fit = compare_next_delta(p)
+    deltas_with_fit = compare_next_delta(p.copy(fit_const=True))
 
     diff = compare_deltas(deltas[2:], deltas_with_fit[2:])
 
@@ -217,4 +218,3 @@ if __name__ == '__main__':
     np.testing.assert_allclose(diff, 0, atol=p.atol)
 
     print('Fitting the constant part works.')
-
