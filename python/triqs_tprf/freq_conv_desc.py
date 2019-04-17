@@ -1,40 +1,37 @@
-
+# Generated automatically using the command :
+# c++2py ../../c++/triqs_tprf/freq_conv.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m freq_conv -o freq_conv -C pytriqs --moduledoc="functionality for changing frequency conventions" --cxxflags="-std=c++17"
 from cpp2py.wrap_generator import *
 
 # The module
-module = module_(full_name = "freq_conv", doc = "Two-particle Green's function freqiency notation converters", app_name = "freq_conv")
+module = module_(full_name = "freq_conv", doc = "functionality for changing frequency conventions", app_name = "triqs_tprf")
 
-# All the triqs C++/Python modules
+# Imports
 import pytriqs.gf
 
-# Add here all includes beyond what is automatically included by the triqs modules
-module.add_include("triqs_tprf/freq_conv.hpp") # Manually added
+# Add here all includes
+module.add_include("triqs_tprf/freq_conv.hpp")
 
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
-#include <cpp2py/converters/map.hpp>
-#include <cpp2py/converters/optional.hpp>
-#include <cpp2py/converters/pair.hpp>
-#include <cpp2py/converters/set.hpp>
-#include <cpp2py/converters/string.hpp>
-#include <cpp2py/converters/vector.hpp>
-#include <triqs/cpp2py_converters/arrays.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
-#include <cpp2py/converters/variant.hpp>
 
-using namespace triqs::gfs;
-using namespace triqs::lattice;
 using namespace triqs_tprf;
 """)
 
-module.add_function ("gf<imfreq, matrix_valued> block_iw_AB_to_matrix_valued(block_gf_view<imfreq, matrix_valued> bg_AB)", doc = """""")
+module.add_enum("Channel_t", ['Channel_t::PP', 'Channel_t::PH', 'Channel_t::PH_bar'], "triqs_tprf", """Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)""")
 
-module.add_function ("void block_3nu_AABB_to_tensor_valued(block2_gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> bg2_AABB, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2)", doc = """""")
+module.add_function ("triqs_tprf::g_iw_t triqs_tprf::block_iw_AB_to_matrix_valued (triqs_tprf::b_g_iw_vt bg_AB)", doc = """""")
 
-module.add_function ("void get_magnetic_component(gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2,  gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_m)", doc = """""")
+module.add_function ("void triqs_tprf::block_3nu_AABB_to_tensor_valued (triqs_tprf::b_g2_iw_vt bg2_AABB, triqs_tprf::g2_iw_vt g2)", doc = """""")
 
-module.add_function ("void from_3nu_PH(gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_ch, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2)", doc = """""")
-module.add_function ("void from_3nu_PH_bar(gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_ch, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2)", doc = """""")
-module.add_function ("void from_3nu_PP(gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_ch, gf_view<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2)", doc = """""")
+module.add_function ("void triqs_tprf::get_magnetic_component (triqs_tprf::g2_iw_vt g2, triqs_tprf::g2_iw_vt g2_m)", doc = """""")
+
+module.add_function ("void triqs_tprf::from_3nu_PH (triqs_tprf::g2_iw_vt g2_ch, triqs_tprf::g2_iw_vt g2)", doc = """""")
+
+module.add_function ("void triqs_tprf::from_3nu_PH_bar (triqs_tprf::g2_iw_vt g2_ch, triqs_tprf::g2_iw_vt g2)", doc = """""")
+
+module.add_function ("void triqs_tprf::from_3nu_PP (triqs_tprf::g2_iw_vt g2_ch, triqs_tprf::g2_iw_vt g2)", doc = """""")
+
+
 
 module.generate_code()
