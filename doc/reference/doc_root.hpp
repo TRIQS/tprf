@@ -1,5 +1,4 @@
-
-#include "../../c++/linalg.hpp"
-#include "../../c++/chi_from_gg2.hpp"
-#include "../../c++/hubbard_atom.hpp"
-#include "../../c++/lattice.hpp"
+#include <triqs_tprf/linalg.hpp>
+#include <triqs_tprf/chi_from_gg2.hpp>
+#include <triqs_tprf/hubbard_atom.hpp>
+#include <triqs_tprf/lattice.hpp>
