@@ -129,7 +129,6 @@ fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh,
                            gf_vec_cvt<imtime> gt,
                            arrays::array_const_view<dcomplex, 2> mom_23) {
 
-  double beta = gt.mesh().domain().beta;
   auto L = gt.mesh().size() - 1;
   if (L < 2 * (iw_mesh.last_index() + 1))
     TRIQS_RUNTIME_ERROR
@@ -147,7 +146,8 @@ fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh,
 
   int dims[] = {int(L)};
   auto plan = _fourier_base_plan(_gin, _gout, 1, dims, n_others, FFTW_BACKWARD);
-  return std::move(plan);
+  //return std::move(plan);
+  return plan;
 }
 
 gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
@@ -223,7 +223,7 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
     gw[w] = _gout((w.index() + L) % L, _) + a1 / (w - b1) + a2 / (w - b2) +
             a3 / (w - b3);
 
-  return std::move(gw);
+  return gw;
 }
 
 gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
@@ -231,7 +231,7 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
                                arrays::array_const_view<dcomplex, 2> mom_23) {
   auto p = _fourier_plan(iw_mesh, gt, mom_23);
   auto gw = _fourier_impl(iw_mesh, gt, p, mom_23);
-  return std::move(gw);
+  return gw;
 }
 // ------------------------ INVERSE TRANSFORM
 // --------------------------------------------
@@ -261,7 +261,7 @@ fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh,
 
   int dims[] = {int(L)};
   auto plan = _fourier_base_plan(_gin, _gout, 1, dims, n_others, FFTW_FORWARD);
-  return std::move(plan);
+  return plan;
 }
 
 gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
@@ -363,7 +363,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
   double pm = (is_fermion ? -1 : 1);
   gt[L] = pm * (gt[0] + m1);
 
-  return std::move(gt);
+  return gt;
 }
 
 gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
@@ -371,7 +371,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                                arrays::array_const_view<dcomplex, 2> mom_123) {
   auto p = _fourier_plan(tau_mesh, gw, mom_123);
   auto gt = _fourier_impl(tau_mesh, gw, p, mom_123);
-  return std::move(gt);
+  return gt;
 }
 
 } // namespace triqs_tprf::fourier

@@ -164,7 +164,6 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
   auto rmesh = std::get<1>(chi_tr.mesh());
 
   int nw = 1;
-  int ntau = tmesh.size();
   double beta = tmesh.domain().beta;
 
   chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};

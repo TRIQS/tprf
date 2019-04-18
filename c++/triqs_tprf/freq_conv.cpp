@@ -37,9 +37,6 @@ placeholder<6> np;
 placeholder<7> n1;
 placeholder<8> n2;
 placeholder<9> n3;
-
-placeholder<10> b1;
-placeholder<11> b2;
 } // namespace
 
 namespace triqs_tprf {

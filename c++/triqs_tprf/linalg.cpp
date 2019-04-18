@@ -30,8 +30,6 @@ namespace triqs_tprf {
   channel_grouping<CH> chg;
   auto g_inv = make_gf(g.mesh(), g.target(), g.memory_layout());
 
-  auto _ = all_t{};
-
   auto g_w = make_gf(g, chg.memory_layout());
   auto g_w_inv = make_gf(g_w.mesh(), g_w.target(), g_w.memory_layout());
 
@@ -102,8 +100,6 @@ namespace triqs_tprf {
 
   channel_grouping<CH> chg;
   auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
-
-  auto _ = all_t{};
   auto I_w = make_gf(I, chg.memory_layout());
   auto I_mat = chg.matrix_view(I_w.data());
 
@@ -116,7 +112,6 @@ namespace triqs_tprf {
  /// Identity: 1, identity two-particle response-function
  template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g) {
 
-  channel_grouping<CH> chg;
   auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
 
   for (auto const &w : std::get<0>(g.mesh())) {

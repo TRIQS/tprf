@@ -91,7 +91,7 @@ fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
   auto plan = std::make_unique<fourier_plan_base>((void *)p);
   //fftw_print_plan((fftw_plan)plan.get()->plan_ptr); std::cout << "\n";
 
-  return std::move(plan);
+  return plan;
 }
 
 void _fourier_base(array_const_view<dcomplex, 2> in,

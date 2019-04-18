@@ -498,16 +498,11 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu(chi0q_t chi0q) {
 
-  auto _ = all_t{};
-  auto wmesh = std::get<0>(chi0q.mesh());
-  auto nmesh = std::get<1>(chi0q.mesh());
-  auto kmesh = std::get<2>(chi0q.mesh());
-  
+  auto [wmesh, nmesh, kmesh] = chi0q.mesh();  
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, chi0q.target());
   chi0q_w *= 0.;
   
   double beta = wmesh.domain().beta;
-
   auto arr = mpi_view(gf_mesh{wmesh, kmesh});
 
 #pragma omp parallel for
@@ -843,8 +838,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
 
   for (auto const &[k, w] : mpi_view(gf_mesh{kmesh, bmesh})) {
 
-    triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3,
-        t_chi_tr;
+    triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3;
 
     // ----------------------------------------------------
     // Build the bare bubble at k, w
@@ -971,8 +965,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
 
   for (auto const &[k, w] : mpi_view(gf_mesh{kmesh, bmesh})) {
 
-    triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3,
-        t_chi_tr;
+    triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3;
 
     // ----------------------------------------------------
     // Build the bare bubble at k, w

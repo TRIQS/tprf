@@ -66,7 +66,7 @@ namespace triqs_tprf::fourier {
     std::cout << "dims = " << dims << "\n";
     */
     
-    return std::move(p);
+    return p;
   }
 
   fourier_plan _fourier_plan(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
@@ -95,7 +95,7 @@ namespace triqs_tprf::fourier {
 
     //std::cout << "gr.data() (post) =" << gr.data() << "\n";
 
-    return std::move(gr);
+    return gr;
   }
 
   /*
@@ -111,7 +111,7 @@ namespace triqs_tprf::fourier {
   gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh, gf_vec_cvt<cyclic_lattice> gr, fourier_plan & p) {
     auto gk = gf_vec_t<brillouin_zone>{k_mesh, gr.target_shape()[0]};
     _fourier_base(gr.data(), gk.data(), p);
-    return std::move(gk);
+    return gk;
   }
 
   /*

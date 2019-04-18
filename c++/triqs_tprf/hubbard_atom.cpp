@@ -109,7 +109,6 @@ namespace hubbard_atom {
     val_t B0 = 1.;
     val_t A0 = 1.;
     val_t B1 = 1.;
-    val_t B2 = I;
 
     a0(w, n) << beta*0.5*A*A/A0 *
       (-n*n+U*U*0.25)*(-(n+s*w)*(n+s*w)+U*U*0.25) /
