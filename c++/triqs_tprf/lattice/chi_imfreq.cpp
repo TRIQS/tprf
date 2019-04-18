@@ -601,15 +601,15 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 // ----------------------------------------------------
 // chi
 
-chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn) {
 
   auto _ = all_t{};
 
-  auto mb = std::get<0>(chi0q.mesh());
-  auto mf = std::get<1>(chi0q.mesh());
-  auto mbz = std::get<2>(chi0q.mesh());
+  auto mb = std::get<0>(chi0_wnk.mesh());
+  auto mf = std::get<1>(chi0_wnk.mesh());
+  auto mbz = std::get<2>(chi0_wnk.mesh());
 
-  auto chiq = make_gf<chiq_t::mesh_t::var_t>({mbz, mb, mf, mf}, chi0q.target());
+  chi_kwnn_t chi_kwnn({mbz, mb, mf, mf}, chi0_wnk.target_shape());
 
   // for (auto const &k : mbz) {
 
@@ -619,28 +619,28 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     iter += idx;
     auto k = *iter;
 
-    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0q.target());
+    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0_wnk.target());
     auto I = identity<Channel_t::PH>(chi0);
 
     for (auto const &w : mb) {
 
       chi0 *= 0.;
       for (auto const &n : mf) {
-        chi0[n, n] = chi0q[w, n, k];
+        chi0[n, n] = chi0_wnk[w, n, k];
       }
 
       // this step could be optimized, using the diagonality of chi0 and I
-      g2_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph[w, _, _]);
+      chi_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph_wnn[w, _, _]);
 
       // also the last product here
-      g2_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
+      chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
 
 #pragma omp critical
-      chiq[k, w, _, _] = chi;
+      chi_kwnn[k, w, _, _] = chi;
     }
   }
 
-  return chiq;
+  return chi_kwnn;
 }
 
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>

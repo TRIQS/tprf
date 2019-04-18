@@ -78,6 +78,18 @@ typedef chi_wnr_t::view_type chi_wnr_vt;
 typedef gf<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi_wnk_t;
 typedef chi_wnk_t::const_view_type chi_wnk_cvt;
 typedef chi_wnk_t::view_type chi_wnk_vt;
+
+typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> chi_wnn_t;
+typedef chi_wnn_t::const_view_type chi_wnn_cvt;
+typedef chi_wnn_t::view_type chi_wnn_vt;
+
+typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi_nn_t;
+typedef chi_nn_t::const_view_type chi_nn_cvt;
+typedef chi_nn_t::view_type chi_nn_vt;
+  
+typedef gf<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chi_kwnn_t;
+typedef chi_kwnn_t::const_view_type chi_kwnn_cvt;
+typedef chi_kwnn_t::view_type chi_kwnn_vt;
   
   // -- New style types FIXME notation
   
@@ -151,11 +163,7 @@ typedef chiq_t::view_type chiq_vt;
 
 /// Two-particle response function type with three Matsubara frequencies
 typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
-
-/// Short hand constant view type for g2_iw_t
 typedef g2_iw_t::const_view_type g2_iw_cvt;
-
-/// Short hand view type for g2_iw_t
 typedef g2_iw_t::view_type g2_iw_vt;
   
 using scalar_t = g2_iw_t::scalar_t;

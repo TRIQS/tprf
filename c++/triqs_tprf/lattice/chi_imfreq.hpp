@@ -139,16 +139,44 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk);
   @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega)` in one bosonic Matsubara frequency.
  */
 chi_w_t chi0q_sum_nu_q(chi_wnk_cvt chi_wnk);
-  
-chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph);
+
+/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k})`.
+
+  Computes
+
+  .. math::
+     \chi_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k}) =
+     \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+
+  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
+  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k})`.
+ */
+chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn);
+
+/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+
+  Computes
+
+  .. math::
+     \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+
+  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
+  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+ */
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph);
+
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf=-1);
+
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf=-1);
 
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu(chiq_t chiq);
+  
 gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq);
 
 } // namespace triqs_tprf
