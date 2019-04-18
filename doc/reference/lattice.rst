@@ -57,6 +57,10 @@
 .. toctree::
   :maxdepth: 1
 
-  /cpp2rst_generated/triqs_tprf/chi0_tr_from_grt_PH
-  /cpp2rst_generated/triqs_tprf/chi_w0r_from_chi_tr
+  /cpp2doc_generated/tprf/chi0_tr_from_grt_PH
+  /cpp2doc_generated/tprf/chi0_w0r_from_grt_PH
+  /cpp2doc_generated/tprf/chi_w0r_from_chi_tr
+  /cpp2doc_generated/tprf/chi_wr_from_chi_tr
+  /cpp2doc_generated/tprf/chi_wk_from_chi_wr
+  /cpp2doc_generated/tprf/chi_wr_from_chi_wk
 

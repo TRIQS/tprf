@@ -34,26 +34,26 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // chi0 bubble in imaginary time
 
-chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
+chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 
   auto _ = all_t{};
 
-  auto tmesh = std::get<0>(grt.mesh());
-  auto rmesh = std::get<1>(grt.mesh());
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
 
-  int nb = grt.target().shape()[0];
+  int nb = g_tr.target().shape()[0];
   int ntau = tmesh.size();
   double beta = tmesh.domain().beta;
 
   chi_tr_t chi0_tr{{{beta, Boson, ntau}, rmesh}, {nb, nb, nb, nb}};
 
-  auto g_target = grt.target();
+  auto g_target = g_tr.target();
   auto chi_target = chi0_tr.target();
   
   // -- This does not work on the boundaries!! The eval wraps to the other
   // regime!
   // -- gt(beta) == gt(beta + 0^+)
-  // chi0_tr(tau, r)(a, b, c, d) << grt(tau, r)(d, a) * grt(-tau, -r)(b, c);
+  // chi0_tr(tau, r)(a, b, c, d) << g_tr(tau, r)(d, a) * g_tr(-tau, -r)(b, c);
 
   //for (auto const &r : rmesh) {
 
@@ -69,8 +69,8 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 
 #pragma omp critical
     {
-      g_pr_t = grt[_, r];
-      g_mr_t = grt[_, -r];
+      g_pr_t = g_tr[_, r];
+      g_mr_t = g_tr[_, -r];
     }
     
     for (auto const &t : tmesh)
@@ -86,21 +86,21 @@ chi_tr_t chi0_tr_from_grt_PH(gr_tau_vt grt) {
 }
 
 // -- optimized version for w=0
-chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
+chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 
   auto _ = all_t{};
 
-  auto tmesh = std::get<0>(grt.mesh());
-  auto rmesh = std::get<1>(grt.mesh());
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
 
   int nw = 1;
-  int nb = grt.target().shape()[0];
+  int nb = g_tr.target().shape()[0];
   int ntau = tmesh.size();
   double beta = tmesh.domain().beta;
 
   chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
-  auto g_target = grt.target();
+  auto g_target = g_tr.target();
   auto chi_target = chi0_wr.target();
   
   auto arr = mpi_view(rmesh);
@@ -115,8 +115,8 @@ chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
 
 #pragma omp critical
     {
-      g_pr_t = grt[_, r];
-      g_mr_t = grt[_, -r];
+      g_pr_t = g_tr[_, r];
+      g_mr_t = g_tr[_, -r];
     }
     
     for (auto const &t : tmesh)
@@ -133,7 +133,7 @@ chi_wr_t chi0_w0r_from_grt_PH(gr_tau_vt grt) {
   return chi0_wr;
 }  
 
-chi_t_t::zero_t chi_trapz_tau(chi_t_vt chi_t) {
+chi_t_t::zero_t chi_trapz_tau(chi_t_cvt chi_t) {
 
   auto tmesh = chi_t.mesh();
   int ntau = tmesh.size();
@@ -156,7 +156,7 @@ chi_t_t::zero_t chi_trapz_tau(chi_t_vt chi_t) {
 }
 
 // -- specialized calc for w=0
-chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
+chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr) {
 
   int nb = chi_tr.target().shape()[0];
 
@@ -185,7 +185,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_vt chi_tr) {
   return chi_wr;
 }
 
-chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
+chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw) {
 
   auto _ = all_t{};
   int nb = chi_tr.target().shape()[0];
@@ -234,7 +234,7 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_vt chi_tr, int nw) {
 }
 
 
-chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
+chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 
   auto _ = all_t{};
 
@@ -274,7 +274,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
   return chi_wk;
 }
 
-chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
+chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
 
   auto _ = all_t{};
 
@@ -316,7 +316,7 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
 }  
   
   /*
-chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
+chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 
   // auto target = chi_wr.target();
   int nb = chi_wr.target().shape()[0];
@@ -335,7 +335,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_vt chi_wr) {
   return chi_wk;
 }
 
-chi_wr_t chi_wr_from_chi_wk(chi_wk_vt chi_wk) {
+chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
 
   int nb = chi_wk.target().shape()[0];
 

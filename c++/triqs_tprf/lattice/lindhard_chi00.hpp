@@ -90,6 +90,6 @@ namespace triqs_tprf {
       contribution (the last term on the last row).
 
    */
-chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued> e_k, int nw, double beta, double mu);
+chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw, double beta, double mu);
   
 } // namespace triqs_tprf

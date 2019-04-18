@@ -31,7 +31,7 @@ namespace triqs_tprf {
 
 double fermi(double e) { return 1. / (exp(e) + 1.); }
 
-chi_wk_t lindhard_chi00_wk(gf<brillouin_zone, matrix_valued> e_k, int nw,
+chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
                           double beta, double mu) {
 
   auto kmesh = e_k.mesh();
