@@ -42,7 +42,7 @@ def test_square_lattice_chi00():
     
     n_k = (2, 2, 1)
     nw_g = 500
-    nnu = 400
+    nn = 400
     nw = 1
     
     # ------------------------------------------------------------------
@@ -143,7 +143,7 @@ def test_square_lattice_chi00():
     # -- imfreq chi00
     
     print '--> chi00_wnr'
-    chi00_wnr = chi0r_from_gr_PH(nw=1, nnu=nnu, gr=g0_wr)
+    chi00_wnr = chi0r_from_gr_PH(nw=1, nn=nn, g_wr=g0_wr)
 
     print '--> chi00_wnk'
     chi00_wnk = chi0q_from_chi0r(chi00_wnr)
@@ -151,7 +151,7 @@ def test_square_lattice_chi00():
     # -- Test per k and w calculator for chi0_wnk
     print '--> chi00_wnk_ref'
     from triqs_tprf.lattice import chi0q_from_g_wk_PH
-    chi00_wnk_ref = chi0q_from_g_wk_PH(nw=1, nnu=nnu, g_wk=g0_wk)
+    chi00_wnk_ref = chi0q_from_g_wk_PH(nw=1, nn=nn, g_wk=g0_wk)
 
     diff = np.max(np.abs(chi00_wnk.data - chi00_wnk_ref.data))
     print 'chi00_wnk diff =', diff

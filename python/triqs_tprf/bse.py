@@ -132,10 +132,10 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     mpi.barrier()
     
     mpi.report('--> chi0_wnr from g_wr')
-    chi0_wnr = chi0r_from_gr_PH(nw=nw, nnu=nwf, gr=g_wr)
+    chi0_wnr = chi0r_from_gr_PH(nw=nw, nn=nwf, g_wr=g_wr)
 
     #mpi.report('--> chi0_wnr from g_wr (nompi)')
-    #chi0_wnr_nompi = chi0r_from_gr_PH_nompi(nw=nw, nnu=nwf, gr=g_wr)
+    #chi0_wnr_nompi = chi0r_from_gr_PH_nompi(nw=nw, nn=nwf, g_wr=g_wr)
     
     del g_wr
 

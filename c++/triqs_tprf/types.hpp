@@ -59,14 +59,26 @@ typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> chi0_t;
 typedef chi0_t::const_view_type chi0_cvt;
 typedef chi0_t::view_type chi0_vt;
 
+  // old style
+
 typedef gf<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q_t;
 typedef chi0q_t::const_view_type chi0q_cvt;
 typedef chi0q_t::view_type chi0q_vt;
-
+  
 typedef gf<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi0r_t;
 typedef chi0r_t::const_view_type chi0r_cvt;
 typedef chi0r_t::view_type chi0r_vt;
 
+  // new style
+
+typedef gf<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi_wnr_t;
+typedef chi_wnr_t::const_view_type chi_wnr_cvt;
+typedef chi_wnr_t::view_type chi_wnr_vt;
+
+typedef gf<cartesian_product<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi_wnk_t;
+typedef chi_wnk_t::const_view_type chi_wnk_cvt;
+typedef chi_wnk_t::view_type chi_wnk_vt;
+  
   // -- New style types FIXME notation
   
   // bosonic freq w for "\omega"
