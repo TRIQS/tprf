@@ -8,6 +8,6 @@
 .. toctree::
   :maxdepth: 1
 
-  /cpp2doc_generated/tprf/inverse
-  /cpp2doc_generated/tprf/product
-  /cpp2doc_generated/tprf/identity
+  /cpp2rst_generated/triqs_tprf/inverse
+  /cpp2rst_generated/triqs_tprf/product
+  /cpp2rst_generated/triqs_tprf/identity
