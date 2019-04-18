@@ -14,17 +14,21 @@ Tutorials
    user_guide/Lattice BSE on Hubbard atom.ipynb
    user_guide/Mean field and RPA response of the one dimensional Hubbard model.ipynb
    
-Reference manual
+Python reference manual
 ----------------
 
 .. toctree::
    :maxdepth: 2
 
-   reference/linalg
-   reference/impurity
-   reference/lattice
-   reference/eliashberg
-   reference/bse
+   reference/python_reference
+
+C++ reference manual
+----------------
+
+.. toctree::
+   :maxdepth: 1
+
+   reference/cpp_reference
 
 Theory and notation
 -------------------
