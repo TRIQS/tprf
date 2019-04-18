@@ -498,7 +498,10 @@ chi0q_t chi0q_from_chi0r(chi0r_vt chi0_wnr) {
 gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
 chi0q_sum_nu(chi0q_t chi0q) {
 
-  auto [wmesh, nmesh, kmesh] = chi0q.mesh();  
+  auto wmesh = std::get<0>(chi0q.mesh());
+  auto nmesh = std::get<1>(chi0q.mesh());
+  auto kmesh = std::get<2>(chi0q.mesh());
+  
   auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, chi0q.target());
   chi0q_w *= 0.;
   
