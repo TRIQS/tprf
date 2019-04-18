@@ -460,15 +460,14 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
 
 // ----------------------------------------------------
 
-gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
-chi0q_sum_nu(chi0q_t chi0q) {
+chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk) {
 
-  auto wmesh = std::get<0>(chi0q.mesh());
-  auto nmesh = std::get<1>(chi0q.mesh());
-  auto kmesh = std::get<2>(chi0q.mesh());
+  auto wmesh = std::get<0>(chi_wnk.mesh());
+  auto nmesh = std::get<1>(chi_wnk.mesh());
+  auto kmesh = std::get<2>(chi_wnk.mesh());
   
-  auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, chi0q.target());
-  chi0q_w *= 0.;
+  chi_wk_t chi_wk({wmesh, kmesh}, chi_wnk.target_shape());
+  chi_wk *= 0.;
   
   double beta = wmesh.domain().beta;
   auto arr = mpi_view(gf_mesh{wmesh, kmesh});
@@ -476,33 +475,30 @@ chi0q_sum_nu(chi0q_t chi0q) {
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
-    for( auto &n : nmesh) chi0q_w[w, k] += chi0q[w, n, k];
-    chi0q_w[w, k] /= beta * beta;
+    for( auto &n : nmesh) chi_wk[w, k] += chi_wnk[w, n, k];
+    chi_wk[w, k] /= beta * beta;
   }
 
-  //chi0q_w(iw, k) << sum(chi0q(iw, inu, k), inu = mesh) / (beta * beta);
+  //chi_wk(iw, k) << sum(chi_wnk(iw, inu, k), inu = mesh) / (beta * beta);
 
-  chi0q_w = mpi_all_reduce(chi0q_w);
-  return chi0q_w;
+  chi_wk = mpi_all_reduce(chi_wk);
+  return chi_wk;
 }
 
-//  array<std::complex<double>, 4> chi0_n_sum_nu_tail_corr(gf<imfreq> chi0_n)
+// ----------------------------------------------------
 
-gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
-chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
+chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
 
-  auto mesh = std::get<1>(chi0q.mesh());
-  auto chi0q_w = make_gf<cartesian_product<imfreq, brillouin_zone>>(
-      {std::get<0>(chi0q.mesh()), std::get<2>(chi0q.mesh())}, chi0q.target());
+  auto wmesh = std::get<0>(chi_wnk.mesh());
+  auto nmesh = std::get<1>(chi_wnk.mesh());
+  auto qmesh = std::get<2>(chi_wnk.mesh());
 
-  int nb = chi0q.target_shape()[0];
-  double beta = mesh.domain().beta;
+  chi_wk_t chi_wk({wmesh, qmesh}, chi_wnk.target_shape());
 
-  auto wmesh = std::get<0>(chi0q.mesh());
-  auto nmesh = std::get<1>(chi0q.mesh());
-  auto qmesh = std::get<2>(chi0q.mesh());
+  int nb = chi_wnk.target_shape()[0];
+  double beta = wmesh.domain().beta;
 
-  auto chi_target = chi0q.target();
+  auto chi_target = chi_wnk.target();
 
   // for (auto const &w : wmesh) {
   //  for (auto const &q : qmesh) {
@@ -521,7 +517,7 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
     array<std::complex<double>, 4> dens(nb, nb, nb, nb);
 
 #pragma omp critical
-    chi = chi0q[w, _, q];
+    chi = chi_wnk[w, _, q];
 
     for (auto a : range(nb)) {
       for (auto b : range(nb)) {
@@ -536,29 +532,31 @@ chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q) {
     }
 
 #pragma omp critical
-    chi0q_w[w, q] = dens;
+    chi_wk[w, q] = dens;
   }
 
-  chi0q_w = mpi_all_reduce(chi0q_w);
-  return chi0q_w;
+  chi_wk = mpi_all_reduce(chi_wk);
+  return chi_wk;
 }
 
-gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q) {
+// ----------------------------------------------------
 
-  auto mesh_b = std::get<0>(chi0q.mesh());
-  auto mesh_f = std::get<1>(chi0q.mesh());
-  auto mesh_k = std::get<2>(chi0q.mesh());
+chi_w_t chi0q_sum_nu_q(chi_wnk_cvt chi_wnk) {
 
-  auto chi0_w = make_gf<imfreq>(mesh_b, chi0q.target());
+  auto mesh_b = std::get<0>(chi_wnk.mesh());
+  auto mesh_f = std::get<1>(chi_wnk.mesh());
+  auto mesh_k = std::get<2>(chi_wnk.mesh());
 
-  for (auto const &[w, n, k] : chi0q.mesh())
-    chi0_w[w] += chi0q[w, n, k];
+  chi_w_t chi_w(mesh_b, chi_wnk.target_shape());
+
+  for (auto const &[w, n, k] : chi_wnk.mesh())
+    chi_w[w] += chi_wnk[w, n, k];
 
   double nk = mesh_k.size();
   double beta = mesh_f.domain().beta;
-  chi0_w = chi0_w / nk / (beta * beta);
+  chi_w = chi_w / nk / (beta * beta);
 
-  return chi0_w;
+  return chi_w;
 }
 
 // ----------------------------------------------------

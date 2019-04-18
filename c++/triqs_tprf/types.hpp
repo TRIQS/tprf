@@ -139,6 +139,10 @@ typedef gf<cyclic_lattice, tensor_valued<4>> chi_r_t;
 typedef chi_r_t::const_view_type chi_r_cvt;
 typedef chi_r_t::view_type chi_r_vt;
 
+typedef gf<imfreq, tensor_valued<4>> chi_w_t;
+typedef chi_w_t::const_view_type chi_w_cvt;
+typedef chi_w_t::view_type chi_w_vt;
+
     // -- back to old style
 
 typedef gf<cartesian_product<brillouin_zone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq_t;

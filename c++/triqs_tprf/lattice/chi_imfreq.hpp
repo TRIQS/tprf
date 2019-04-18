@@ -100,12 +100,46 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk);
  */
 chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr);
 
-gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
-chi0q_sum_nu(chi0q_t chi0q);
-gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>>
-chi0q_sum_nu_tail_corr_PH(chi0q_t chi0q);
-gf<imfreq, tensor_valued<4>> chi0q_sum_nu_q(chi0q_t chi0q);
+/** Sum over fermionic frequency in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})`. (NB! without tail corrections)
 
+  Computes
+
+  .. math::
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \frac{1}{\beta^2} \sum_{\nu=\nu_{min}}^\nu_{max} \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+
+  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic Matsubara frequency and momentum space.
+ */
+chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk);
+
+/** Sum over fermionic frequency in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})` using higher order tail corrections when summing to infinity.
+
+  Computes
+
+  .. math::
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \frac{1}{\beta^2} \sum_{\nu=-\infty}^\infty \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+
+  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic Matsubara frequency and momentum space.
+ */
+chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk);
+
+/** Sum over fermionic frequency and momentum in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})`. (NB! without tail corrections)
+
+  Computes
+
+  .. math::
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \frac{1}{N_k} \sum_\matbf{k} \frac{1}{\beta^2} \sum_{\nu=\nu_{min}}^\nu_{max}
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+
+  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega)` in one bosonic Matsubara frequency.
+ */
+chi_w_t chi0q_sum_nu_q(chi_wnk_cvt chi_wnk);
+  
 chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph);
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph);
