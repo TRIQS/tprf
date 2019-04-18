@@ -64,3 +64,20 @@
   /cpp2doc_generated/tprf/chi_wk_from_chi_wr
   /cpp2doc_generated/tprf/chi_wr_from_chi_wk
 
+**lattice.hpp** Imaginary frequency generalized susceptibility
+==============================================================
+
+.. toctree::
+  :maxdepth: 1
+
+  /cpp2doc_generated/tprf/chi0r_from_gr_PH
+  /cpp2doc_generated/tprf/chi0r_from_gr_PH_nompi
+  /cpp2doc_generated/tprf/chi0q_from_g_wk_PH
+  /cpp2doc_generated/tprf/chi0r_from_chi0q
+  /cpp2doc_generated/tprf/chi0q_from_chi0r
+  /cpp2doc_generated/tprf/chi0q_sum_nu
+  /cpp2doc_generated/tprf/chi0q_sum_nu_tail_corr_PH
+  /cpp2doc_generated/tprf/chi0q_sum_nu_q
+  /cpp2doc_generated/tprf/chiq_from_chi0q_and_gamma_PH
+  /cpp2doc_generated/tprf/chiq_sum_nu_from_chi0q_and_gamma_PH
+

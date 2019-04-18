@@ -599,7 +599,6 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 */
 
 // ----------------------------------------------------
-// chi
 
 chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn) {
 
@@ -643,22 +642,22 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
   return chi_kwnn;
 }
 
-gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
-chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
+// ----------------------------------------------------
+  
+chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn) {
 
   auto _ = all_t{};
 
   triqs::mpi::communicator c;
   
-  auto target = chi0q.target();
-  auto bmesh = std::get<0>(chi0q.mesh());
-  auto fmesh = std::get<1>(chi0q.mesh());
-  auto kmesh = std::get<2>(chi0q.mesh());
+  auto target_shape = chi0_wnk.target_shape();
+  auto bmesh = std::get<0>(chi0_wnk.mesh());
+  auto fmesh = std::get<1>(chi0_wnk.mesh());
+  auto kmesh = std::get<2>(chi0_wnk.mesh());
 
   double beta = fmesh.domain().beta;
 
-  auto chi_kw = make_gf<cartesian_product<brillouin_zone, imfreq>>(
-      {kmesh, bmesh}, target);
+  chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
   auto arr = mpi_view(gf_mesh{kmesh, bmesh});
 
@@ -679,17 +678,17 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     // ----------------------------------------------------
     //t_copy_1.start();
 
-    auto chi0_n = make_gf<g_iw_t::mesh_t::var_t>(fmesh, target);
+    chi_w_t chi0_n(fmesh, target_shape);
 
 #pragma omp critical
-    chi0_n = chi0q[w, _, k];
+    chi0_n = chi0_wnk[w, _, k];
 
     //t_copy_1.stop();
     //std::cout << "BSE: copy_1 " << double(t_copy_1) << " s" << std::endl;
     // ----------------------------------------------------
     //t_chi0_nn.start();
 
-    auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+    chi_nn_t chi0_nn({fmesh, fmesh}, target_shape);
     chi0_nn *= 0.;
     
     for (auto const &n : fmesh) chi0_nn[n, n] = chi0_n[n];
@@ -701,17 +700,16 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
     auto I = identity<Channel_t::PH>(chi0_nn);
 
-    auto gamma_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+    chi_nn_t gamma_nn({fmesh, fmesh}, target_shape);
 
 #pragma omp critical
-    gamma_nn = gamma_ph[w, _, _];
+    gamma_nn = gamma_ph_wnn[w, _, _];
     
     // this step could be optimized, using the diagonality of chi0 and I
-    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
+    chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
 
     // also the last product here
-    g2_nn_t chi =
-        product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+    chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
 
     //t_bse.stop();
     //std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
@@ -719,7 +717,7 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     //t_chi_tr.start();
 
     // trace out fermionic frequencies
-    array<std::complex<double>, 4> tr_chi(chi0q.target_shape());
+    array<std::complex<double>, 4> tr_chi(target_shape);
     
     tr_chi *= 0.0;
     for (auto const &n1 : fmesh)
@@ -766,6 +764,8 @@ chiq_sum_nu_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   return chi_kw;
 }
+
+// ----------------------------------------------------
 
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
