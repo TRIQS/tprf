@@ -35,7 +35,7 @@ endif()
 message(STATUS "-------- CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX} --------")
 
 # Define the triqs_tprf version numbers and get the git hash
-set(TPRF_VERSION_MAJOR 0)
+set(TPRF_VERSION_MAJOR 2)
 set(TPRF_VERSION_MINOR 1)
 set(TPRF_VERSION_PATCH 0)
 set(TPRF_VERSION ${TPRF_VERSION_MAJOR}.${TPRF_VERSION_MINOR}.${TPRF_VERSION_PATCH})
