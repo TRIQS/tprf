@@ -19,7 +19,7 @@ lattice_dyson_g_wk
     triqs_tprf::g_wk_t lattice_dyson_g_wk (double mu, triqs_tprf::e_k_cvt e_k,
    triqs_tprf::g_wk_cvt sigma_wk)     (2)
 
-(1)Construct an interacting Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
+(1)Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
 
 Parameters
@@ -55,7 +55,7 @@ Documentation
 
 
 
-(2)Construct an interacting Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
+(2)Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
 
 Parameters

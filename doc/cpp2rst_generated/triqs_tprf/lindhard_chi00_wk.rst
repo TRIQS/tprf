@@ -13,8 +13,8 @@ lindhard_chi00_wk
 
 .. code-block:: c
 
-    triqs_tprf::chi_wk_t lindhard_chi00_wk (gf<triqs::lattice::brillouin_zone,
-   triqs::gfs::matrix_valued> e_k, int nw, double beta, double mu)
+    triqs_tprf::chi_wk_t lindhard_chi00_wk (triqs_tprf::e_k_cvt e_k, int nw, double beta,
+   double mu)
 
 Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 

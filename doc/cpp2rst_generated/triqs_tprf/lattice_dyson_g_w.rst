@@ -16,7 +16,7 @@ lattice_dyson_g_w
     triqs_tprf::g_w_t lattice_dyson_g_w (double mu, triqs_tprf::e_k_cvt e_k,
    triqs_tprf::g_w_cvt sigma_w)
 
-Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function $G_{a\bar{b}}(i\omega_n)$
+Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
 
 
 Parameters
