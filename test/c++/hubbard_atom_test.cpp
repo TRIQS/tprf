@@ -41,7 +41,6 @@ TEST(hubbard_atom, single_particle_greens_function) {
 }
 
 TEST(hubbard_atom, chi_ph_magnetic) {
-  double eps = 1e-9;
   double beta = 2.234;
   double U = 5.0;
   int nw = 4;

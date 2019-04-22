@@ -40,7 +40,6 @@ TEST(lattice, g0_wk_to_from_g0_wr) {
  double t = 1.0;
  auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
  
- triqs::clef::placeholder<0> om_;
  triqs::clef::placeholder<1> k_;
 
  auto e_k = ek_t{{bz, nk}, {1, 1}};
