@@ -81,5 +81,14 @@ Hartree-Fock and Hartree solvers
 .. autoclass:: triqs_tprf.hf_solver.HartreeSolver
    :members:
       
-.. autoclass:: triqs_tprf.hf_solver.HartreeResponse
+.. autoclass:: triqs_tprf.hf_response.HartreeResponse
    :members:
+
+Parameter collections
+=====================
+
+.. autoclass:: triqs_tprf.ParameterCollection.ParameterCollection
+   :members:
+.. autoclass:: triqs_tprf.ParameterCollection.ParameterCollections
+   :members:
+

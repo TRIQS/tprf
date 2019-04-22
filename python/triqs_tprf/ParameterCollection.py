@@ -25,6 +25,46 @@ import numpy as np
 # ----------------------------------------------------------------------
 class ParameterCollection(object):
 
+    """ Helper class for handing collections of parameters.
+
+    Parameters
+    ----------
+
+    kwargs : dict
+        Key-word argument list of parameters.
+
+    Examples
+    --------
+
+    A ``ParameterCollection`` has any number of attributes, accessible with the
+    dot operator.
+
+    >>> p = ParameterCollection(beta=10., U=1.0, t=1.0)
+    >>> print p
+    U = 1.0
+    beta = 10.0
+    t = 1.0
+    >>> print p.beta
+    10.0
+    >>> p.W = 1.2
+    >>> print p
+    U = 1.0
+    W = 1.2
+    beta = 10.0
+    t = 1.0
+    
+    and can be stored and loaded to/from TRIQS hdf archives.
+
+    >>> from pytriqs.archive import HDFArchive
+    >>> with HDFArchive('data.h5', 'w') as arch: arch['p'] = p
+    >>> with HDFArchive('data.h5', 'r') as arch: p_ref = arch['p']
+    >>> print p_ref
+    U = 1.0
+    beta = 10.0
+    t = 1.0
+    
+    """
+    
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
@@ -114,6 +154,30 @@ register_class(ParameterCollection)
 # ----------------------------------------------------------------------
 class ParameterCollections(object):
 
+    r""" Helper class for handing a series of collections of parameters.
+
+    Parameters
+    ----------
+
+    objects : list
+        List of ``ParameterCollection`` instances.
+
+    Examples
+    --------
+
+    The ``ParameterCollections`` class makes it easy to get vectors of 
+    parameters from a list of ``ParameterCollection`` objects.
+
+    >>> p1 = ParameterCollection(beta=10., U=1.0, t=1.0)
+    >>> p2 = ParameterCollection(beta=5., U=2.0, t=1.337)
+    >>> ps = ParameterCollections(objects=[p1, p2])
+    >>> print ps.beta
+    [10.  5.]
+    >>> print ps.U
+    [1. 2.]
+
+    """
+    
     def __init__(self, objects=[]):
         self.objects = objects
 
