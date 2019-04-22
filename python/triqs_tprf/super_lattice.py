@@ -49,10 +49,21 @@ class TBSuperLattice(TBLattice):
     Parameters
     ----------
 
-    tb_lattice : The base tight binding lattice (TBLattice).
-    super_lattice_units : The unit vectors of the superlattice in the ``tb_lattice`` (integer) coordinates.
-    cluster_sites : Coordinates of the cluster in tb_lattice coordinates. If ``None``, an automatic computation of cluster positions is made as follows: it takes all points whose coordinates in the basis of the superlattice are in [0, 1[^dimension.
-    remove_internal_hoppings : If ``true``, the hopping terms are removed inside the cluster. Useful to add Hartree Fock terms at the boundary of a cluster, e.g.
+    tb_lattice : TBLattice instance
+        The base tight binding lattice.
+
+    super_lattice_units : ndarray (2D)
+        The unit vectors of the superlattice in the ``tb_lattice`` (integer) coordinates.
+
+    cluster_sites : 
+        Coordinates of the cluster in tb_lattice coordinates. 
+        If ``None``, an automatic computation of cluster positions 
+        is made as follows: it takes all points whose coordinates 
+        in the basis of the superlattice are in [0, 1[^dimension.
+
+    remove_internal_hoppings : bool
+        If ``true``, the hopping terms are removed inside the cluster. 
+        Useful to add Hartree Fock terms at the boundary of a cluster, e.g.
 
     """    
     def __init__(self, tb_lattice, super_lattice_units, cluster_sites = None, remove_internal_hoppings = False):

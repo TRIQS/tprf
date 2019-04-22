@@ -45,10 +45,20 @@ class TBLattice(object):
     Parameters
     ----------
 
-    units : Basis vectors for the real space lattice, as a list of three tuples of double.
-    hopping : Dictionary with three tuple of integeers as keys, describing real space hoppings in multiples of the real space lattice basis vectors, and values being numpy ndarray hopping matrices in the orbital indices.
-    orbital_positions : Internal orbital positions in the unit-cell, as a list of three tuples of double.
-    orbital_names : List of strings of names for each orbital.
+    units : list of three-tuples of floats
+        Basis vectors for the real space lattice.
+
+    hopping : dict
+        Dictionary with three tuple of integeers as keys, 
+        describing real space hoppings in multiples of 
+        the real space lattice basis vectors, and values being 
+        numpy ndarray hopping matrices in the orbital indices.
+
+    orbital_positions : list of three three-tuples of floats.
+        Internal orbital positions in the unit-cell.
+
+    orbital_names : list of strings
+        Names for each orbital.
 
     """
 
@@ -97,12 +107,14 @@ class TBLattice(object):
         Parameters
         ----------
 
-        n_k : Number of k-points in every dimension, as a three tuple of integers.
+        n_k : three-tuple of ints
+            Number of k-points in every dimension.
 
         Returns
         -------
 
-        e_k : Reciprocal space dispersion in terms of a TRIQS Green's function object on a Brillouin Zone mesh.
+        e_k : TRIQS Greens function on a Brillioun zone mesh
+            Reciprocal space tight binding dispersion.
 
         """
         
