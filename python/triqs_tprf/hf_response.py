@@ -150,8 +150,11 @@ class HartreeFockResponse(BaseResponse):
     Parameters
     ----------
 
-    hartree_fock_solver : Converged Hartree-Fock solver.
-    eps : Step size in finite difference linear response calculation.
+    hartree_fock_solver : HartreeFockSolver instance
+        Converged Hartree-Fock solver.
+
+    eps : float
+        Step size in finite difference linear response calculation.
 
     """
     
@@ -232,8 +235,11 @@ class HartreeResponse(BaseResponse):
     Parameters
     ----------
 
-    hartree_solver : Converged Hartree solver.
-    eps : Step size in finite difference linear response calculation.
+    hartree_solver : HartreeSolver instance
+        Converged Hartree solver.
+
+    eps : float
+        Step size in finite difference linear response calculation.
 
     """
     

@@ -34,12 +34,23 @@ class HartreeFockSolver(object):
     Parameters
     ----------
 
-    e_k : single-particle dispersion
-    beta : inverse temperature
-    H_int : Local interaction Hamiltonian
-    gf_struct : gf_struct fixing orbital order between e_k and H_int
-    mu0 : chemical potential
-    mu_min, mu_max : range for chemical potential search.
+    e_k : TRIQS Greens function on a Brillouin zone mesh
+        Single-particle dispersion.
+
+    beta : float
+        inverse temperature
+
+    H_int : TRIQS Operator instance
+        Local interaction Hamiltonian
+
+    gf_struct : list of lists of block index and list of internal orbital indices
+        gf_struct fixing orbital order between e_k and H_int
+
+    mu0 : float
+        chemical potential
+
+    mu_min, mu_max : float, optional
+        range for chemical potential search.
 
     """
         
@@ -231,18 +242,29 @@ class HartreeFockSolver(object):
         Parameters
         ----------
 
-        beta : Inverse temperature
-        N_tot : total density
-        M0 : Initial mean-field (0 if None)
-        mu0 : Initial chemical potential
-        nitermax : maximal number of self consistent iterations
-        mixing : linear mixing parameter
-        tol : convergence in relative change of the density matrix
+        N_target : float
+            Total density.
+
+        M0 : ndarray (2D), optional
+            Initial mean-field (0 if None).
+
+        mu0 : float, optional
+            Initial chemical potential.
+
+        nitermax : int, optional
+            Maximal number of self consistent iterations.
+
+        mixing : float, optional
+            Linear mixing parameter.
+
+        tol : float, optional
+            Convergence in relative change of the density matrix.
 
         Returns
         -------
 
-        rho : Local density matrix
+        rho : ndarray (2D)
+            Local density matrix.
 
         """
 
@@ -294,10 +316,14 @@ class HartreeFockSolver(object):
         Parameters
         ----------
 
-        beta : Inverse temperature
-        N_tot : total density
-        M0 : Initial mean-field (0 if None)
-        mu0 : Initial chemical potential
+        N_tot : float
+            Total density.
+
+        M0 : ndarray (2D), optional
+            Initial mean-field (0 if None).
+
+        mu0 : float, optional
+            Initial chemical potential.
 
         """
 
@@ -325,10 +351,11 @@ class HartreeFockSolver(object):
         Parameters
         ----------
 
-        beta : Inverse temperature
-        N_tot : total density
-        M0 : Initial mean-field (0 if None)
-        mu0 : Initial chemical potential
+        mu0 : float
+            Initial chemical potential.
+
+        M0 : ndarray (2D), optional
+            Initial mean-field (0 if None).
 
         """
 
@@ -456,12 +483,23 @@ class HartreeSolver(HartreeFockSolver):
     Parameters
     ----------
 
-    e_k : single-particle dispersion
-    beta : inverse temperature
-    H_int : Local interaction Hamiltonian
-    gf_struct : gf_struct fixing orbital order between e_k and H_int
-    mu0 : chemical potential
-    mu_min, mu_max : range for chemical potential search.
+    e_k : TRIQS Greens function on a Brillouin zone mesh
+        Single-particle dispersion.
+
+    beta : float
+        inverse temperature
+
+    H_int : TRIQS Operator instance
+        Local interaction Hamiltonian
+
+    gf_struct : list of lists of block index and list of internal orbital indices
+        gf_struct fixing orbital order between e_k and H_int
+
+    mu0 : float
+        chemical potential
+
+    mu_min, mu_max : float, optional
+        range for chemical potential search.
 
     """
 
