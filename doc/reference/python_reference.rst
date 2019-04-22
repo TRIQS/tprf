@@ -59,3 +59,9 @@ Wannier90 tight binding parsers
 .. autofunction:: triqs_tprf.wannier90.parse_lattice_vectors_from_wannier90_wout
 .. autofunction:: triqs_tprf.wannier90.parse_reciprocal_lattice_vectors_from_wannier90_wout
 .. autofunction:: triqs_tprf.wannier90.parse_band_structure_from_wannier90_band_dat
+
+Tight binding lattice model
+===========================
+
+.. autoclass:: triqs_tprf.tight_binding.TBLattice
+   :members:

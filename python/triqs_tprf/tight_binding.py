@@ -1,4 +1,3 @@
-
 ################################################################################
 #
 # TRIQS: a Toolbox for Research in Interacting Quantum Systems
@@ -36,7 +35,22 @@ from pytriqs.lattice.lattice_tools import energies_on_bz_grid, energies_on_bz_pa
 from pytriqs.dos import DOS
 from pytriqs.gf import Gf, MeshBrillouinZone, MeshCyclicLattice
 
-class TBLattice:
+class TBLattice(object):
+
+    """ Class describing a tight binding lattice model.
+
+    This class is based in the TRIQS tight binding class and has been extended with
+    some extra convienience methods and documentation.
+
+    Parameters
+    ----------
+
+    units : Basis vectors for the real space lattice, as a list of three tuples of double.
+    hopping : Dictionary with three tuple of integeers as keys, describing real space hoppings in multiples of the real space lattice basis vectors, and values being numpy ndarray hopping matrices in the orbital indices.
+    orbital_positions : Internal orbital positions in the unit-cell, as a list of three tuples of double.
+    orbital_names : List of strings of names for each orbital.
+
+    """
 
     def __init__ (self, units, hopping, orbital_positions = [ (0, 0, 0) ], orbital_names = [""]):
 
@@ -77,6 +91,21 @@ class TBLattice:
     
     def on_mesh_brillouin_zone(self, n_k):
 
+        """ Construct a discretization of the tight binding model in
+        reciprocal space with given number of k-points.
+
+        Parameters
+        ----------
+
+        n_k : Number of k-points in every dimension, as a three tuple of integers.
+
+        Returns
+        -------
+
+        e_k : Reciprocal space dispersion in terms of a TRIQS Green's function object on a Brillouin Zone mesh.
+
+        """
+        
         target_shape = [self.NOrbitalsInUnitCell] * 2
 
         kmesh = self.get_kmesh(n_k)
