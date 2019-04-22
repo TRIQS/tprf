@@ -29,21 +29,23 @@ from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 # ----------------------------------------------------------------------
 class HartreeFockSolver(object):
 
-    """ TRIQS: Hartree-Fock solver """
+    """ Hartree-Fock solver for local interactions.
+
+    Parameters
+    ----------
+
+    e_k : single-particle dispersion
+    beta : inverse temperature
+    H_int : Local interaction Hamiltonian
+    gf_struct : gf_struct fixing orbital order between e_k and H_int
+    mu0 : chemical potential
+    mu_min, mu_max : range for chemical potential search.
+
+    """
         
     # ------------------------------------------------------------------
     def __init__(self, e_k, beta, H_int=None, gf_struct=None,
                  mu0=0., mu_max=10, mu_min=-10.):
-        """
-        Parameters:
-
-        e_k : single-particle dispersion
-        beta : inverse temperature
-        H_int : Local interaction Hamiltonian
-        gf_struct : gf_struct fixing orbital order between e_k and H_int
-        mu0 : chemical potential
-        mu_min, mu_max : range for chemical potential search
-        """
 
         if mpi.is_master_node():
             print self.logo()
@@ -224,17 +226,23 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def solve_iter(self, N_target, M0=None, mu0=None,
                    nitermax=100, mixing=0.5, tol=1e-9):
-        """
-        Parameters:
+        """ Solve the HF-equations using forward recursion at fixed density.     
+
+        Parameters
+        ----------
 
         beta : Inverse temperature
         N_tot : total density
         M0 : Initial mean-field (0 if None)
         mu0 : Initial chemical potential
-
         nitermax : maximal number of self consistent iterations
         mixing : linear mixing parameter
         tol : convergence in relative change of the density matrix
+
+        Returns
+        -------
+
+        rho : Local density matrix
 
         """
 
@@ -280,13 +288,17 @@ class HartreeFockSolver(object):
 
     # ------------------------------------------------------------------
     def solve_newton(self, N_target, M0=None, mu0=None):
-        """
-        Parameters:
+
+        """ Solve the HF-equations using a quasi Newton method at fixed density.
+
+        Parameters
+        ----------
 
         beta : Inverse temperature
         N_tot : total density
         M0 : Initial mean-field (0 if None)
         mu0 : Initial chemical potential
+
         """
 
         print 'MF: Newton solver'
@@ -307,13 +319,17 @@ class HartreeFockSolver(object):
 
     # ------------------------------------------------------------------
     def solve_newton_mu(self, mu, M0=None):
-        """
-        Parameters:
+
+        """ Solve the HF-equations using a quasi Newton method at fixed chemical potential.
+
+        Parameters
+        ----------
 
         beta : Inverse temperature
         N_tot : total density
         M0 : Initial mean-field (0 if None)
         mu0 : Initial chemical potential
+
         """
 
         print 'MF: Newton solver'
@@ -382,6 +398,7 @@ class HartreeFockSolver(object):
 
     # ------------------------------------------------------------------
     def mat2vec(self, mat):
+        
         """ Converts a unitary matrix to a vector representation
         with the order
 
@@ -401,6 +418,7 @@ class HartreeFockSolver(object):
 
     # ------------------------------------------------------------------
     def vec2mat(self, vec):
+        
         """ Converts from vector representation to a unitary matrix
         see mat2vec(...) for details. """
 
@@ -431,6 +449,20 @@ TRIQS: Hartree-Fock solver
     
 # ----------------------------------------------------------------------
 class HartreeSolver(HartreeFockSolver):
+
+    """ Hartree solver for local interactions.
+
+    Parameters
+    ----------
+
+    e_k : single-particle dispersion
+    beta : inverse temperature
+    H_int : Local interaction Hamiltonian
+    gf_struct : gf_struct fixing orbital order between e_k and H_int
+    mu0 : chemical potential
+    mu_min, mu_max : range for chemical potential search.
+
+    """
 
     # ------------------------------------------------------------------
     def mat2vec(self, mat):

@@ -69,3 +69,17 @@ Tight binding lattice model
 .. autoclass:: triqs_tprf.super_lattice.TBSuperLattice
    :members:
       
+Hartree-Fock and Hartree solvers
+================================
+
+.. autoclass:: triqs_tprf.hf_solver.HartreeFockSolver
+   :members:
+
+.. autoclass:: triqs_tprf.hf_response.HartreeFockResponse
+   :members:
+
+.. autoclass:: triqs_tprf.hf_solver.HartreeSolver
+   :members:
+      
+.. autoclass:: triqs_tprf.hf_solver.HartreeResponse
+   :members:

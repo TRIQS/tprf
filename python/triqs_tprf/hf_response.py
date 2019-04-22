@@ -145,6 +145,16 @@ Triqs: Hartree-Fock Random Phase Approximation susceptibility
 # ----------------------------------------------------------------------
 class HartreeFockResponse(BaseResponse):
 
+    """ Hartree-Fock linear response calculator.
+
+    Parameters
+    ----------
+
+    hartree_fock_solver : Converged Hartree-Fock solver.
+    eps : Step size in finite difference linear response calculation.
+
+    """
+    
     def __init__(self, hartree_fock_solver, eps=1e-9):
 
         super(HartreeFockResponse, self).__init__(hartree_fock_solver)
@@ -217,6 +227,16 @@ class HartreeFockResponse(BaseResponse):
 # ----------------------------------------------------------------------
 class HartreeResponse(BaseResponse):
 
+    """ Hartree linear response calculator.
+
+    Parameters
+    ----------
+
+    hartree_solver : Converged Hartree solver.
+    eps : Step size in finite difference linear response calculation.
+
+    """
+    
     def __init__(self, hartree_solver, eps=1e-9):
 
         super(HartreeResponse, self).__init__(hartree_solver)
