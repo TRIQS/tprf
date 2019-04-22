@@ -39,16 +39,14 @@ Installation steps
 Version compatibility
 ---------------------
 
-Be careful that the version of the TRIQS library and of the application must be
-compatible (more information on the :ref:`TRIQS website <triqslibs:versions>`).
-In particular you should make sure that the Major and Minor Version number
-of the application and TRIQS agree.
-If you want to use a particular version of the application, go into the directory with the sources
+Be careful that the version of TPRF must be compatible with your TRIQS library version, see :ref:`TRIQS website <triqslibs:versions>`.
+In particular you should make sure that the Major and Minor Version number are the same.
+If you want to use a particular version, go into the directory with the sources
 and look at all available versions::
 
      $ cd tprf.src && git tag
 
-Checkout the version of the code that you want::
+Checkout the version that you want::
 
      $ git checkout 2.1.0
 
