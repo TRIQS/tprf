@@ -399,12 +399,13 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def mat2vec(self, mat):
         
-        """ Converts a unitary matrix to a vector representation
+        r""" Converts a unitary matrix to a vector representation
         with the order
 
-        i) the real diagonal entries
-        ii) the real part of the upper triangular entries
-        ii) the imaginary part of the upper triangular entries
+        1. the real diagonal entries
+        2. the real part of the upper triangular entries
+        3. the imaginary part of the upper triangular entries
+
         """
         
         assert( len(mat.shape) == 2 )
