@@ -143,7 +143,7 @@ def test_square_lattice_chi00():
     # -- imfreq chi00
     
     print '--> chi00_wnr'
-    chi00_wnr = chi0r_from_gr_PH(nw=1, nn=nn, g_wr=g0_wr)
+    chi00_wnr = chi0r_from_gr_PH(nw=1, nn=nn, g_nr=g0_wr)
 
     print '--> chi00_wnk'
     chi00_wnk = chi0q_from_chi0r(chi00_wnr)

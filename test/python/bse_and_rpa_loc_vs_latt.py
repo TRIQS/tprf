@@ -167,7 +167,7 @@ def make_calc():
     lat_bse.g_wr = fourier_wk_to_wr(lat_bse.g_wk)
 
     from triqs_tprf.lattice import chi0r_from_gr_PH
-    lat_bse.chi0_wnr = chi0r_from_gr_PH(nw=1, nn=p.nwf, g_wr=lat_bse.g_wr)
+    lat_bse.chi0_wnr = chi0r_from_gr_PH(nw=1, nn=p.nwf, g_nr=lat_bse.g_wr)
 
     from triqs_tprf.lattice import chi0q_from_chi0r
     lat_bse.chi0_wnk = chi0q_from_chi0r(lat_bse.chi0_wnr)
