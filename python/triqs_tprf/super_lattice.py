@@ -4,6 +4,8 @@
 # TRIQS: a Toolbox for Research in Interacting Quantum Systems
 #
 # Copyright (C) 2011 by M. Ferrero, O. Parcollet
+# Copyright (C) 2018 The Simons Foundation
+# Author: Hugo U. R. Strand
 #
 # TRIQS is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -39,22 +41,22 @@ def nint_strict(x, precision=1.e-9):
 
 
 class TBSuperLattice(TBLattice):
-    """
-    Builds a superlattice on top of a base Lattice, by picking superlattice units and optionally the cluster points.
-    """
+    
+    r""" Class building a superlattice on top of a base lattice (TBLattice).
+
+    The class inherits from TBLattice and has all the basic TBLattice methods, especially the ``on_mesh_brillouin_zone``-method.
+
+    Parameters
+    ----------
+
+    tb_lattice : The base tight binding lattice (TBLattice).
+    super_lattice_units : The unit vectors of the superlattice in the ``tb_lattice`` (integer) coordinates.
+    cluster_sites : Coordinates of the cluster in tb_lattice coordinates. If ``None``, an automatic computation of cluster positions is made as follows: it takes all points whose coordinates in the basis of the superlattice are in [0, 1[^dimension.
+    remove_internal_hoppings : If ``true``, the hopping terms are removed inside the cluster. Useful to add Hartree Fock terms at the boundary of a cluster, e.g.
+
+    """    
     def __init__(self, tb_lattice, super_lattice_units, cluster_sites = None, remove_internal_hoppings = False):
-        """
-         * tb_lattice: The underlying lattice
 
-         * super_lattice_units: The unit vectors of the superlattice in the tb_lattice (integer) coordinates
-
-	 * cluster_sites [None]: Coordinates of the cluster in tb_lattice coordinates.
-                   If None, an automatic computation of cluster positions is made as follows:
-                   it takes all points whose coordinates in the basis of the superlattice are in [0, 1[^dimension
-
-         * remove_internal_hoppings: If true, the hopping terms are removed inside the cluster.
-                   Useful to add Hartree Fock terms at the boundary of a cluster, e.g.
-        """
         #if not isinstance(tb_lattice, TBLattice): raise ValueError, "tb_lattice should be an instance of TBLattice"
         self.__BaseLattice = tb_lattice
         dim = tb_lattice.dim

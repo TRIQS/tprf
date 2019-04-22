@@ -65,3 +65,7 @@ Tight binding lattice model
 
 .. autoclass:: triqs_tprf.tight_binding.TBLattice
    :members:
+
+.. autoclass:: triqs_tprf.super_lattice.TBSuperLattice
+   :members:
+      
