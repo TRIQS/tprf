@@ -15,7 +15,7 @@ Tutorials
    user_guide/Mean field and RPA response of the one dimensional Hubbard model.ipynb
    
 Python reference manual
-----------------
+-----------------------
 
 .. toctree::
    :maxdepth: 2
@@ -23,7 +23,7 @@ Python reference manual
    reference/python_reference
 
 C++ reference manual
-----------------
+--------------------
 
 .. toctree::
    :maxdepth: 1

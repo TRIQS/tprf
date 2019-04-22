@@ -51,3 +51,11 @@ Hubbard atom analytic response functions
 
 Two-particle response function linear-algebra operations
 ========================================================
+
+Wannier90 tight binding parsers
+===============================
+
+.. autofunction:: triqs_tprf.wannier90.parse_hopping_from_wannier90_hr_dat
+.. autofunction:: triqs_tprf.wannier90.parse_lattice_vectors_from_wannier90_wout
+.. autofunction:: triqs_tprf.wannier90.parse_reciprocal_lattice_vectors_from_wannier90_wout
+.. autofunction:: triqs_tprf.wannier90.parse_band_structure_from_wannier90_band_dat

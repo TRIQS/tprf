@@ -24,6 +24,8 @@ import numpy as np
 from StringIO import StringIO
 from collections import OrderedDict
 
+# ----------------------------------------------------------------------
+
 #import ase.units as units
 
 class Units(object):
@@ -35,10 +37,24 @@ units = Units()
 # ----------------------------------------------------------------------
 def parse_hopping_from_wannier90_hr_dat(filename):
 
-    """ Parse real space hopping matrix from Wannier90 "seedname_hr.dat". 
-    Returns a dictionary where the keys are the real-space vectors, in 
-    terms of multiples of the lattice vectors, and the values are
-    num_wannier x num_wannier numpy arrays with the hopping integrals. """
+    r""" Wannier90 real space hopping parser of ``*_hr.dat`` files.
+
+    Returns a dictionary where the keys are the real-space hopping vectors, 
+    in terms of multiples of the lattice vectors, and the values are
+    ``num_wann * num_wann`` numpy ndarrays with the hopping integrals. 
+
+    Parameters
+    ----------
+
+    filename : Wannier90 ``*_hr.dat`` file to parse.
+
+    Returns
+    -------
+
+    hopp_dict : Dictionary of real space hoppings.
+    num_wann : Total number of Wannier functions per unit-cell.
+
+    """
     
     with open(filename, 'r') as fd:
         lines = fd.readlines()
@@ -99,8 +115,19 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 # ----------------------------------------------------------------------
 def parse_lattice_vectors_from_wannier90_wout(filename):
 
-    """ Extract the lattice vectors from the Wannier90
-    "seedname.wout" file. Returns a list of three tuples. """
+    r""" Wannier90 real space lattice vectors parser of ``*.wout`` files.
+    
+    Parameters
+    ----------
+
+    filename : Wannier90 ``*.wout`` file to parse.
+
+    Returns
+    -------
+
+    vectors : List of the three lattice vectors in terms of three-tuples of floats.
+
+    """
 
     with open(filename, 'r') as fd:
         lines = fd.readlines()
@@ -137,8 +164,19 @@ def parse_lattice_vectors_from_wannier90_wout(filename):
 # ----------------------------------------------------------------------
 def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
 
-    """ Extract the lattice vectors from the Wannier90
-    "seedname.wout" file. Returns a list of three tuples. """
+    r""" Wannier90 reciprocal space lattice vectors parser of ``*.wout`` files.
+    
+    Parameters
+    ----------
+
+    filename : Wannier90 ``*.wout`` file to parse.
+
+    Returns
+    -------
+
+    vectors : List of the three lattice vectors in terms of three-tuples of floats.
+
+    """
 
     with open(filename, 'r') as fd:
         lines = fd.readlines()
@@ -164,8 +202,20 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
 # ----------------------------------------------------------------------
 def parse_band_structure_from_wannier90_band_dat(filename):
 
-    """ Extract the reciprocal lattice vectors from the Wannier90
-    "seedname.wout" file. Returns a list of three tuples. """
+    r""" Wannier90 band structure parser of ``*_band.dat``` files.
+    
+    Parameters
+    ----------
+
+    filename : Wannier90 ``*_band.dat`` file to parse.
+
+    Returns
+    -------
+    
+    E : Band energies.
+    w : k-space path points.
+
+    """
 
     with open(filename, 'r') as fd:
         lines = fd.readlines()
