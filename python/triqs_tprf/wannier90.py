@@ -46,13 +46,16 @@ def parse_hopping_from_wannier90_hr_dat(filename):
     Parameters
     ----------
 
-    filename : Wannier90 ``*_hr.dat`` file to parse.
+    filename : str
+        Wannier90 ``*_hr.dat`` file to parse.
 
     Returns
     -------
 
-    hopp_dict : Dictionary of real space hoppings.
-    num_wann : Total number of Wannier functions per unit-cell.
+    hopp_dict : dict
+        Dictionary of real space hoppings.
+    num_wann : int
+        Total number of Wannier functions per unit-cell.
 
     """
     
@@ -120,12 +123,14 @@ def parse_lattice_vectors_from_wannier90_wout(filename):
     Parameters
     ----------
 
-    filename : Wannier90 ``*.wout`` file to parse.
+    filename : str
+        Wannier90 ``*.wout`` file to parse.
 
     Returns
     -------
 
-    vectors : List of the three lattice vectors in terms of three-tuples of floats.
+    vectors : list of three three-tuples of floats
+        Lattice vectors.
 
     """
 
@@ -169,12 +174,14 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
     Parameters
     ----------
 
-    filename : Wannier90 ``*.wout`` file to parse.
+    filename : str
+        Wannier90 ``*.wout`` file to parse.
 
     Returns
     -------
 
-    vectors : List of the three lattice vectors in terms of three-tuples of floats.
+    vectors : list of three three-tuples of floats
+        Reciprocal lattice vectors. 
 
     """
 
@@ -207,13 +214,16 @@ def parse_band_structure_from_wannier90_band_dat(filename):
     Parameters
     ----------
 
-    filename : Wannier90 ``*_band.dat`` file to parse.
+    filename : str
+        Wannier90 ``*_band.dat`` file to parse.
 
     Returns
     -------
     
-    E : Band energies.
-    w : k-space path points.
+    E : ndarray (2D)
+        Band energies.
+    w : ndarray (1D)
+        k-space path points.
 
     """
 
