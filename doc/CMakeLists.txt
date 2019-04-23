@@ -12,8 +12,8 @@ add_custom_command(OUTPUT ${sphinx_top} DEPENDS ${sources}
 		   COMMAND PYTHONPATH=${CMAKE_BINARY_DIR}/python:$ENV{PYTHONPATH} ${TRIQS_SPHINXBUILD_EXECUTABLE} -c . -j8 -b html ${CMAKE_CURRENT_BINARY_DIR} html)
 add_custom_target(docs_sphinx ALL DEPENDS ${sphinx_top} ${CMAKE_CURRENT_BINARY_DIR})
 
-# Application must be compiled first
-add_dependencies(docs_sphinx triqs_tprf_c)
+# Application and modules must be compiled first
+add_dependencies(docs_sphinx triqs_tprf_c lattice linalg chi_from_gg2 freq_conv hubbard_atom)
 
 # ------------------------------------------------------------------------------------------------
 # Copy the directory substructure and link all files with relevant extensions
