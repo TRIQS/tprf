@@ -1,12 +1,13 @@
-def projectName = "triqs_tprf" /* set to app/repo name */
+def projectName = "tprf" /* set to app/repo name */
 
 /* which platform to build documentation on */
 def documentationPlatform = "ubuntu-clang"
 /* depend on triqs upstream branch/project */
-def triqsBranch = env.CHANGE_TARGET ?: env.BRANCH_NAME
+/*def triqsBranch = env.CHANGE_TARGET ?: env.BRANCH_NAME*/
+def triqsBranch = 2.1.x
 def triqsProject = '/TRIQS/triqs/' + triqsBranch.replaceAll('/', '%2F')
 /* whether to publish the results (disabled for template project) */
-def publish = !env.BRANCH_NAME.startsWith("PR-") && projectName != "triqs_tprf"
+def publish = !env.BRANCH_NAME.startsWith("PR-") && projectName != "app4triqs"
 
 properties([
   disableConcurrentBuilds(),
@@ -101,7 +102,7 @@ try {
         git(url: "ssh://git@github.com/TRIQS/TRIQS.github.io.git", branch: "master", credentialsId: "ssh", changelog: false)
         sh "rm -rf ${subdir}"
         docker.image("flatironinstitute/${projectName}:${env.BRANCH_NAME}-${documentationPlatform}").inside() {
-          sh "cp -rp \$INSTALL/share/doc/${projectName} ${subdir}"
+          sh "cp -rp \$INSTALL/share/doc/triqs_${projectName} ${subdir}"
         }
         sh "git add -A ${subdir}"
         sh """
@@ -110,19 +111,6 @@ try {
         // note: credentials used above don't work (need JENKINS-28335)
         sh "git push origin master || { git pull --rebase origin master && git push origin master ; }"
       }
-      /* Update docker repo submodule */
-      if (release) { dir("$workDir/docker") { try {
-        git(url: "ssh://git@github.com/TRIQS/docker.git", branch: env.BRANCH_NAME, credentialsId: "ssh", changelog: false)
-        sh "echo '160000 commit ${commit}\t${projectName}' | git update-index --index-info"
-        sh """
-          git commit --author='Flatiron Jenkins <jenkins@flatironinstitute.org>' --allow-empty -m 'Autoupdate ${projectName}' -m '${env.BUILD_TAG}'
-        """
-        // note: credentials used above don't work (need JENKINS-28335)
-        sh "git push origin ${env.BRANCH_NAME} || { git pull --rebase origin ${env.BRANCH_NAME} && git push origin ${env.BRANCH_NAME} ; }"
-      } catch (err) {
-        /* Ignore, non-critical -- might not exist on this branch */
-        echo "Failed to update docker repo"
-      } } }
     } }
   } }
 } catch (err) {
