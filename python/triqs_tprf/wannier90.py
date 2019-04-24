@@ -2,7 +2,7 @@
 #
 # TPRF: a Two-Particle Response Function Toolbox
 #
-# Copyright (C) 2017 by The Simons Foundation
+# Copyright (C) 2018 by The Simons Foundation
 # Author: H. U.R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
