@@ -11,6 +11,7 @@ and uses a fallback if that is not the case.
 Author: H. U.R. Strand (2019)
 """
 
+import itertools
 import numpy as np
 #from packaging.version import parse
 from distutils.version import StrictVersion as parse
@@ -19,8 +20,12 @@ def is_numpy_newer_than(version):
     return parse(np.__version__) > parse(version)
 
 def np_linalg_func(arr, func, version='1.8.0'):
-    if is_numpy_newer_than(version): arr_out = func(arr)
-    else: arr_out = np.array(map(func, arr))
+    if is_numpy_newer_than(version):
+        arr_out = func(arr)
+    else:
+        arr_out = np.empty_like(arr)
+        for idx in itertools.product(arr.shape[:-2]):
+            arr_out[idx] = func(arr[idx])
     return arr_out
 
 def np_inv(A):

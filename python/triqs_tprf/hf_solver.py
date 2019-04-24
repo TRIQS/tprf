@@ -179,7 +179,7 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def update_non_int_free_energy(self):
 
-        e = np.linalg.eigvalsh(self.e_k_MF.data)
+        e = np_eigvalsh(self.e_k_MF.data)
         e -= self.mu
         
         self.Omega0 = -1./self.beta * np.sum( np.log(1. + np.exp(-self.beta*e)) )
