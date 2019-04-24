@@ -7,7 +7,7 @@ def documentationPlatform = "ubuntu-clang"
 def triqsBranch = '2.1.x'
 def triqsProject = '/TRIQS/triqs/' + triqsBranch.replaceAll('/', '%2F')
 /* whether to publish the results (disabled for template project) */
-def publish = !env.BRANCH_NAME.startsWith("PR-") && projectName != "app4triqs"
+def publish = !env.BRANCH_NAME.startsWith("PR-")
 
 properties([
   disableConcurrentBuilds(),
@@ -111,6 +111,19 @@ try {
         // note: credentials used above don't work (need JENKINS-28335)
         sh "git push origin master || { git pull --rebase origin master && git push origin master ; }"
       }
+      /* Update docker repo submodule */
+      if (release) { dir("$workDir/docker") { try {
+        git(url: "ssh://git@github.com/TRIQS/docker.git", branch: env.BRANCH_NAME, credentialsId: "ssh", changelog: false)
+        sh "echo '160000 commit ${commit}\ttriqs_${projectName}' | git update-index --index-info"
+        sh """
+          git commit --author='Flatiron Jenkins <jenkins@flatironinstitute.org>' --allow-empty -m 'Autoupdate ${projectName}' -m '${env.BUILD_TAG}'
+        """
+        // note: credentials used above don't work (need JENKINS-28335)
+        sh "git push origin ${env.BRANCH_NAME} || { git pull --rebase origin ${env.BRANCH_NAME} && git push origin ${env.BRANCH_NAME} ; }"
+      } catch (err) {
+        /* Ignore, non-critical -- might not exist on this branch */
+        echo "Failed to update docker repo"
+      } } }
     } }
   } }
 } catch (err) {
@@ -132,7 +145,7 @@ Changes:
 End of build log:
 \${BUILD_LOG,maxLines=60}
     """,
-    to: 'nwentzell@flatironinstitute.org, dsimon@flatironinstitute.org',
+    to: 'hstrand@flatironinstitute.org, nwentzell@flatironinstitute.org, dsimon@flatironinstitute.org',
     recipientProviders: [
       [$class: 'DevelopersRecipientProvider'],
     ],
