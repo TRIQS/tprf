@@ -9,14 +9,14 @@ from pytriqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------
 
-from pyed.OperatorUtils import quartic_tensor_from_operator
-from pyed.OperatorUtils import operator_from_quartic_tensor
+from triqs_tprf.OperatorUtils import quartic_tensor_from_operator
+from triqs_tprf.OperatorUtils import operator_from_quartic_tensor
 
-from pyed.OperatorUtils import symmetrize_quartic_tensor
+from triqs_tprf.OperatorUtils import symmetrize_quartic_tensor
 
-from pyed.OperatorUtils import quartic_permutation_symmetrize
-from pyed.OperatorUtils import quartic_conjugation_symmetrize
-from pyed.OperatorUtils import quartic_pauli_symmetrize
+from triqs_tprf.OperatorUtils import quartic_permutation_symmetrize
+from triqs_tprf.OperatorUtils import quartic_conjugation_symmetrize
+from triqs_tprf.OperatorUtils import quartic_pauli_symmetrize
 
 # ----------------------------------------------------------------------
 def fundamental_operators_from_gf_struct(gf_struct):

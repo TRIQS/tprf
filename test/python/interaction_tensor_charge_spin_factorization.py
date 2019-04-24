@@ -11,11 +11,11 @@ from pytriqs.operators.util.op_struct import set_operator_structure
 
 # ----------------------------------------------------------------------    
 
-from pyed.OperatorUtils import quartic_permutation_symmetrize
-from pyed.OperatorUtils import fundamental_operators_from_gf_struct
-from pyed.OperatorUtils import get_quadratic_operator,  quadratic_matrix_from_operator
-from pyed.OperatorUtils import quartic_tensor_from_operator, operator_from_quartic_tensor
-from pyed.OperatorUtils import operator_single_particle_transform, relabel_operators
+from triqs_tprf.OperatorUtils import quartic_permutation_symmetrize
+from triqs_tprf.OperatorUtils import fundamental_operators_from_gf_struct
+from triqs_tprf.OperatorUtils import get_quadratic_operator,  quadratic_matrix_from_operator
+from triqs_tprf.OperatorUtils import quartic_tensor_from_operator, operator_from_quartic_tensor
+from triqs_tprf.OperatorUtils import operator_single_particle_transform, relabel_operators
 
 # ----------------------------------------------------------------------    
 

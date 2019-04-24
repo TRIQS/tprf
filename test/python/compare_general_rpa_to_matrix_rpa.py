@@ -62,7 +62,7 @@ chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
 # -- Kanamori interaction
 
 from pytriqs.operators.util import U_matrix_kanamori, h_int_kanamori
-from pyed.OperatorUtils import fundamental_operators_from_gf_struct
+from triqs_tprf.OperatorUtils import fundamental_operators_from_gf_struct
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 
 U = 1.0
