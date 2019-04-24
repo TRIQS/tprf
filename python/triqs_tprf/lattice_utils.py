@@ -27,12 +27,6 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from scipy.interpolate import LinearNDInterpolator
-from scipy.interpolate import RegularGridInterpolator
-from scipy.interpolate import NearestNDInterpolator        
-
-# ----------------------------------------------------------------------
-
 import pytriqs.utility.mpi as mpi
 
 from pytriqs.gf import Gf
@@ -322,6 +316,7 @@ def get_abs_k_chi_interpolator(values, bzmesh, bz, extend_bz=[0]):
     k_vec = np.vstack(k_vec_ext)
     values = np.hstack(values_ext)
 
+    from scipy.interpolate import LinearNDInterpolator
     interp = LinearNDInterpolator(k_vec, values, fill_value=float('nan'))
     
     return interp
@@ -347,11 +342,14 @@ def get_rel_k_chi_interpolator(values, bzmesh, bz, nk,
     # -- select interpolator type
         
     if interpolator is 'regular':
+        from scipy.interpolate import RegularGridInterpolator
         interp = RegularGridInterpolator(
             (kx, ky, kz), values, fill_value=float('nan'), bounds_error=False)
     elif interpolator is 'nearest':
+        from scipy.interpolate import NearestNDInterpolator        
         interp = NearestNDInterpolator(k_vec_rel, values.flatten())
     elif interpolator is 'linear':
+        from scipy.interpolate import LinearNDInterpolator
         interp = LinearNDInterpolator(k_vec_rel, values.flatten(), fill_value=float('nan'))
     else:
         raise NotImplementedError
