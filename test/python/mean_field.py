@@ -9,6 +9,7 @@ Author: Hugo U. R. Strand (2018) """
 # ----------------------------------------------------------------------
 
 import numpy as np
+from numpy_compat import is_numpy_newer_than
 
 from scipy.integrate import quad
 from scipy.optimize import brentq
@@ -149,28 +150,28 @@ def get_tb_model(t, U, n, m, mu=0., vanilla_tb=False):
 
 # ----------------------------------------------------------------------
 def test_fermi_distribution_derivative(verbose=False):
-    
-    beta = 3.3
-    e = np.linspace(-5., 5., num=1000)
-    f = fermi_distribution(beta, e)
-    df = fermi_distribution_derivative(beta, e)
 
-    from scipy.interpolate import InterpolatedUnivariateSpline
-    sp = InterpolatedUnivariateSpline(e, f)
-    dsp = sp.derivative(1)
+    if is_numpy_newer_than('1.8.0'):
+        beta = 3.3
+        e = np.linspace(-5., 5., num=1000)
+        f = fermi_distribution(beta, e)
+        df = fermi_distribution_derivative(beta, e)
 
-    df_ref = dsp(e)
+        from scipy.interpolate import InterpolatedUnivariateSpline
+        sp = InterpolatedUnivariateSpline(e, f)
+        dsp = sp.derivative(1)
+        df_ref = dsp(e)
 
-    np.testing.assert_almost_equal(df, df_ref)
+        np.testing.assert_almost_equal(df, df_ref)
 
-    if verbose:
-        import matplotlib.pyplot as plt
-        plt.plot(e, f, label='f')
-        plt.plot(e, df, label='df')
-        plt.plot(e, df_ref, label='df_ref')
-        plt.legend()
-        plt.show()
-        exit()
+        if verbose:
+            import matplotlib.pyplot as plt
+            plt.plot(e, f, label='f')
+            plt.plot(e, df, label='df')
+            plt.plot(e, df_ref, label='df_ref')
+            plt.legend()
+            plt.show()
+            exit()
 
 # ----------------------------------------------------------------------
 def get_density_of_states(eps, t):

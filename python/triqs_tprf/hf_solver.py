@@ -33,7 +33,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 import itertools
 import numpy as np
-from numpy_compat import np_eigvalsh
+from numpy_compat import np_eigvalsh, np_eigh
 
 # ----------------------------------------------------------------------
 
@@ -159,7 +159,7 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def update_momentum_density_matrix(self):
 
-        e, V = np.linalg.eigh(self.e_k_MF.data)
+        e, V = np_eigh(self.e_k_MF.data)
         e -= self.mu
         
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)

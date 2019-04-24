@@ -11,6 +11,7 @@ This is used to test if TPRF and matrix RPA yields the same results.
 
 import itertools
 import numpy as np
+from numpy_compat import np_inv
 
 # ----------------------------------------------------------------------
 def tprf_order_to_matrix_rpa_order(tensor):
@@ -179,7 +180,7 @@ def matrix_rpa(chi0_matrix, u_matrix):
     
     u_chi0 = np.einsum('...ij,...jk->...ik', chi0_matrix, u_matrix)
 
-    inverse_matrix = np.linalg.inv(np.eye(norb**2) - u_chi0)
+    inverse_matrix = np_inv(np.eye(norb**2) - u_chi0)
     
     chi_rpa_matrix = np.einsum('...ij,...jk->...ik', inverse_matrix, chi0_matrix)
 
