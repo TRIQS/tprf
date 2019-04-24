@@ -231,8 +231,8 @@ if __name__ == '__main__':
     U_FM_ref = spl_e_FM.roots()[0]
     print 'U_FM_ref =', U_FM_ref
 
-    np.testing.assert_almost_equal(U_AF, U_AF_ref, decimal=6)
-    np.testing.assert_almost_equal(U_FM, U_FM_ref, decimal=6)
+    np.testing.assert_almost_equal(U_AF, U_AF_ref, decimal=4)
+    np.testing.assert_almost_equal(U_FM, U_FM_ref, decimal=4)
     
     exit()
 
