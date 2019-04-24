@@ -29,8 +29,8 @@ def np_linalg_func(arr, func, version='1.8.0'):
         for idx in itertools.product(*ranges):
             arr_out[idx] = func(arr[idx])
 
-    arr_out_ref = func(arr)
-    np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
+    #arr_out_ref = func(arr)
+    #np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
     return arr_out
 
 def np_inv(A):
@@ -59,6 +59,6 @@ def np_eigvalsh(arr):
         for idx in itertools.product(*ranges):
             arr_out[idx, ...] = np.linalg.eigvalsh(arr[idx, ...])
 
-    arr_out_ref = np.linalg.eigvalsh(arr)
-    np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
+    #arr_out_ref = np.linalg.eigvalsh(arr)
+    #np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
     return arr_out
