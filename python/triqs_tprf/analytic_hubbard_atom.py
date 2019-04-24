@@ -40,6 +40,55 @@ from triqs_tprf.freq_conv import block_iw_AB_to_matrix_valued
 # ----------------------------------------------------------------------
 def analytic_hubbard_atom(beta, U, nw, nwf, nwf_gf):
 
+    r""" Compute dynamical response functions for the Hubbard atom at half filling.
+
+    This function returns an object that contains the single-particle
+    Greens function :math:`G(\omega)`, the magnetic two-particle generalized susceptibility
+    :math:`\chi_m(\omega, \nu, \nu')`, and the corresponding bare bubble 
+    :math:`\chi^{(0)}_m(\omega, \nu, \nu')`, and the magnetic vertex function
+    :math:`\Gamma_m(\omega, \nu, \nu')`.
+
+    This is implemented using analytical formulas from 
+    Thunstrom et al. [PRB 98, 235107 (2018)]
+    please cite the paper if you use this function!
+
+    In particular this is one exact solution to the Bethe-Salpeter
+    equation, that is the infinite matrix inverse problem:
+
+    .. math::
+        \Gamma_m = [\chi^{(0)}_m]^{-1} - \chi_m^{-1}
+
+    Parameters
+    ----------
+
+    beta : float
+        Inverse temperature.
+
+    U : float
+        Hubbard U interaction parameter.
+
+    nw : int
+        Number of bosonic Matsubara frequencies 
+        in the computed two-particle response functions.
+
+    nwf : int
+        Number of fermionic Matsubara frequencies
+        in the computed two-particle response functions.
+
+    nwf_gf : int
+        Number of fermionic Matsubara frequencies
+        in the computed single-particle Greens function.
+
+    Returns
+    -------
+
+    p : ParameterCollection
+        Object containing all the response functions and some other
+        observables, `p.G_iw`, `p.chi_m`, `p.chi0_m`, 
+        `p.gamma_m`, `p.Z`, `p.m2`, `p.chi_m_static`.
+
+    """
+    
     d = ParameterCollection()
     d.beta, d.U, d.nw, d.nwf, d.nwf_gf = beta, U, nw, nwf, nwf_gf
     

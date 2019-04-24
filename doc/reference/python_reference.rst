@@ -49,9 +49,23 @@ Linearized Eliashberg equation
 Hubbard atom analytic response functions
 ========================================
 
+.. autofunction:: triqs_tprf.analytic_hubbard_atom.analytic_hubbard_atom
+
 Two-particle response function linear-algebra operations
 ========================================================
 
+.. autofunction:: triqs_tprf.linalg.inverse_PH
+.. autofunction:: triqs_tprf.linalg.inverse_PP
+.. autofunction:: triqs_tprf.linalg.inverse_PH_bar
+
+.. autofunction:: triqs_tprf.linalg.product_PH
+.. autofunction:: triqs_tprf.linalg.product_PP
+.. autofunction:: triqs_tprf.linalg.product_PH_bar
+
+.. autofunction:: triqs_tprf.linalg.identity_PH
+.. autofunction:: triqs_tprf.linalg.identity_PP
+.. autofunction:: triqs_tprf.linalg.identity_PH_bar
+		  
 Wannier90 tight binding parsers
 ===============================
 
