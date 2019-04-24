@@ -33,6 +33,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 import itertools
 import numpy as np
+from numpy_compat import np_eigvalsh
 
 # ----------------------------------------------------------------------
 
@@ -143,7 +144,7 @@ class HartreeFockSolver(object):
         if mu0 is None:
             mu0 = self.mu
             
-        e = np.linalg.eigvalsh(self.e_k_MF.data)
+        e = np_eigvalsh(self.e_k_MF.data)
 
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
 
