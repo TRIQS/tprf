@@ -9,7 +9,6 @@ Author: Hugo U. R. Strand (2018) """
 # ----------------------------------------------------------------------
 
 import numpy as np
-from numpy_compat import is_numpy_newer_than
 
 from scipy.integrate import quad
 from scipy.optimize import brentq
@@ -20,6 +19,7 @@ from pytriqs.gf import MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 
+from triqs_tprf.numpy_compat import is_numpy_newer_than
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lindhard_chi00_wk
 

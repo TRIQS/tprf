@@ -27,7 +27,7 @@ def np_inv(A):
     return np_linalg_func(A, np.linalg.inv)
 
 def np_eigh(A):
-    if is_numpy_newer_than(version):
+    if is_numpy_newer_than('1.8.0'):
         E, U = np.linalg.eigh(A)
     else:
         N, M, K = A.shape

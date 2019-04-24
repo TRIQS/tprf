@@ -11,7 +11,8 @@ This is used to test if TPRF and matrix RPA yields the same results.
 
 import itertools
 import numpy as np
-from numpy_compat import np_inv
+
+from triqs_tprf.numpy_compat import np_inv
 
 # ----------------------------------------------------------------------
 def tprf_order_to_matrix_rpa_order(tensor):
