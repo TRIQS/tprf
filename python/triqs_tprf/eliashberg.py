@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ################################################################################
 #
 # TRIQS: a Toolbox for Research in Interacting Quantum Systems
