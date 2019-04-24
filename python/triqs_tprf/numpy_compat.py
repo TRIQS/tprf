@@ -20,12 +20,17 @@ def is_numpy_newer_than(version):
     return parse(np.__version__) > parse(version)
 
 def np_linalg_func(arr, func, version='1.8.0'):
+    #if False:
     if is_numpy_newer_than(version):
         arr_out = func(arr)
     else:
         arr_out = np.empty_like(arr)
-        for idx in itertools.product(arr.shape[:-2]):
+        ranges = [xrange(N) for N in arr.shape[:-2]]
+        for idx in itertools.product(*ranges):
             arr_out[idx] = func(arr[idx])
+
+    arr_out_ref = func(arr)
+    np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
     return arr_out
 
 def np_inv(A):
@@ -44,5 +49,16 @@ def np_eigh(A):
             
     return E, U
 
-def np_eigvalsh(A):
-    return np_linalg_func(A, np.linalg.eigvalsh)
+def np_eigvalsh(arr):
+    #if False:
+    if is_numpy_newer_than('1.8.0'):
+        arr_out = np.linalg.eigvalsh(arr)
+    else:
+        arr_out = np.empty_like(np.squeeze(arr[...,0]))
+        ranges = [xrange(N) for N in arr.shape[:-2]]
+        for idx in itertools.product(*ranges):
+            arr_out[idx, ...] = np.linalg.eigvalsh(arr[idx, ...])
+
+    arr_out_ref = np.linalg.eigvalsh(arr)
+    np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
+    return arr_out
