@@ -177,7 +177,7 @@ if __name__ == '__main__':
     print 'chi_diff2 =', np.max(np.abs(chi_diff2))
 
     np.testing.assert_array_almost_equal(1./chi, 1./chi_dmdh)
-    np.testing.assert_array_almost_equal(1./chi, 1./chi_d2Omegadh2, decimal=5)
+    np.testing.assert_array_almost_equal(1./chi, 1./chi_d2Omegadh2, decimal=3)
 
     if False:
         import matplotlib.pyplot as plt
