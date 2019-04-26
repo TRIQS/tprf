@@ -37,16 +37,20 @@ def np_inv(A):
     return np_linalg_func(A, np.linalg.inv)
 
 def np_eigh(A):
+    #if False:
     if is_numpy_newer_than('1.8.0'):
         E, U = np.linalg.eigh(A)
     else:
         N, M, K = A.shape
         assert(M == K)
         E = np.empty((N, M))
-        U = np.empty((N, M, M))        
+        U = np.empty((N, M, M), dtype=np.complex) 
         for i in xrange(N):
             E[i], U[i] = np.linalg.eigh(A[i])
             
+    #E_ref, U_ref = np.linalg.eigh(A)
+    #np.testing.assert_array_almost_equal(E, E_ref)
+    #np.testing.assert_array_almost_equal(U, U_ref)
     return E, U
 
 def np_eigvalsh(arr):
