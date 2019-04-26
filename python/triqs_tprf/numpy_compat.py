@@ -57,7 +57,7 @@ def np_eigvalsh(arr):
         arr_out = np.empty_like(np.squeeze(arr[...,0]))
         ranges = [xrange(N) for N in arr.shape[:-2]]
         for idx in itertools.product(*ranges):
-            arr_out[idx, ...] = np.linalg.eigvalsh(arr[idx, ...])
+            arr_out[idx] = np.linalg.eigvalsh(arr[idx])
 
     #arr_out_ref = np.linalg.eigvalsh(arr)
     #np.testing.assert_array_almost_equal(arr_out, arr_out_ref)
