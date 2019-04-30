@@ -5,7 +5,7 @@ add_library(triqs_tprf_c ${sources})
 target_link_libraries(triqs_tprf_c PUBLIC triqs)
 
 # Configure compilation
-target_compile_options(triqs_tprf_c PUBLIC -std=c++17 -fPIC -fopenmp)
+target_compile_options(triqs_tprf_c PUBLIC -fPIC -fopenmp -std=c++17)
 target_link_libraries(triqs_tprf_c PUBLIC "-fopenmp") # We are using openmp
 target_include_directories(triqs_tprf_c PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/c++>)
 target_compile_definitions(triqs_tprf_c PUBLIC

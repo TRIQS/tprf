@@ -23,7 +23,6 @@
 ################################################################################
 
 version = "@TPRF_VERSION@"
-triqs_version = "@TRIQS_VERSION@"
 triqs_hash = "@TRIQS_GIT_HASH@"
 triqs_tprf_hash = "@TPRF_GIT_HASH@"
 
@@ -33,4 +32,5 @@ def show_version():
 def show_git_hash():
   print "\nYou are using triqs_tprf git hash %s based on triqs git hash %s\n"%(triqs_tprf_hash, triqs_hash)
 
+triqs_version = "@TRIQS_VERSION@"
 info = (version, triqs_tprf_hash[:7], triqs_version, triqs_hash[:7])

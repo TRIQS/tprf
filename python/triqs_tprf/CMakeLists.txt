@@ -11,7 +11,6 @@ target_link_libraries(chi_from_gg2 triqs_tprf_c)
 add_cpp2py_module(freq_conv)
 target_link_libraries(freq_conv triqs_tprf_c)
 
-# Build the C++ extension module
 add_cpp2py_module(hubbard_atom)
 target_link_libraries(hubbard_atom triqs_tprf_c)
 
@@ -20,7 +19,8 @@ configure_file(version.py.in version.py)
 
 # All Python files. Copy them in the build dir to have a complete package for the tests.
 file(GLOB_RECURSE python_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.py)
-list(FILTER python_sources EXCLUDE REGEX "_desc.py")
+file(GLOB_RECURSE wrap_generators RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *_desc.py)
+list(REMOVE_ITEM python_sources "${wrap_generators}")
 foreach(file ${python_sources})
   configure_file(${file} ${file} COPYONLY)
 endforeach()

@@ -14,9 +14,9 @@ set(TPRF_GIT_HASH @TPRF_GIT_HASH@)
 set(TPRF_ROOT  @CMAKE_INSTALL_PREFIX@)
 
 # Include the exported targets of this project
-include(@CMAKE_INSTALL_PREFIX@/lib/cmake/triqs/triqs_tprf-targets.cmake)
+include(@CMAKE_INSTALL_PREFIX@/lib/cmake/triqs_tprf/triqs_tprf-targets.cmake)
 
-MESSAGE(STATUS "Found TPRFConfig.cmake with version ${TPRF_VERSION}, hash = ${TPRF_GIT_HASH}")
+message(STATUS "Found triqs_tprf-config.cmake with version ${TPRF_VERSION}, hash = ${TPRF_GIT_HASH}")
 
 # Was the Project built with Documentation?
 set(TPRF_WITH_DOCUMENTATION @Build_Documentation@)
