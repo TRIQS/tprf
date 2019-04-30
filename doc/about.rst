@@ -1,7 +1,7 @@
 .. _about:
 
-About app4triqs
-===============
+About tprf
+==========
 
 An example application using ``cpp2py`` and TRIQS.
 

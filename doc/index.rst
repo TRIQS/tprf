@@ -1,11 +1,11 @@
 .. _welcome:
 
-app4triqs
-=========
+tprf
+====
 
-.. sidebar:: app4triqs 2.2.0
+.. sidebar:: tprf 2.1.0
 
-   This is the homepage of app4triqs v2.2.0.
+   This is the homepage of tprf v2.1.0.
    For changes see the :ref:`changelog page <changelog>`.
 
 An example application using cpp2py and TRIQS.
