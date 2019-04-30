@@ -1,12 +1,12 @@
 
-# *TPRF*: a Two-Particle Response Function tool box for TRIQS
+# *TPRF*: the Two-Particle Response Function tool box for TRIQS
 
 Copyright (C) 2017, H. U.R. Strand
 
-TPRF is a Triqs application containing various tools for working with
-two particle respnse functions.
+Copyright (C) 2018-2019, The Simons Foundation
 
-NB! TPRF is an early-stage development project use with care
+TPRF is a TRIQS application containing various tools for working with
+two particle response functions.
 
 For more information see the Documentation https://hugostrand.github.io/tprf/
 

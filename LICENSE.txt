@@ -1,6 +1,7 @@
 TPRF: Two-particle Response Function toolbox for TRIQS
 
 Copyright (C) 2017 by H. U.R. Strand
+Copyright (C) 2018-2019, The Simons Foundation
 
 TRIQS is free software: you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
