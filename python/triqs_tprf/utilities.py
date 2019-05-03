@@ -74,3 +74,24 @@ def read_TarGZ_HDFArchive(filename):
     os.remove(tmp.name)
 
     return data
+
+def beta_to_temperature(beta):
+    """Convert beta in 1/eV to Temperature in Kelvin
+    """
+
+    def eV_to_Kelvin(ev):
+        return 11604.5250061657 * ev
+
+    T = 1. / beta
+    return eV_to_Kelvin(T)
+
+def temperature_to_beta(T):
+    """Convert Temperature in Kelvin to beta in 1/eV
+    """
+
+    def Kelvin_to_eV(K):
+        return K / 11604.5250061657
+
+    T = Kelvin_to_eV(T)
+    beta = 1./ T
+    return beta
