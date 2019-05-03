@@ -21,6 +21,7 @@
 ################################################################################
 
 import inspect
+import itertools
 import numpy as np
 
 # ----------------------------------------------------------------------
@@ -243,3 +244,52 @@ class ParameterCollections(object):
 
 from pytriqs.archive.hdf_archive_schemes import register_class 
 register_class(ParameterCollections)
+
+# ----------------------------------------------------------------------
+
+def parameter_scan(p, **kwargs):
+    """Return ParameterCollections with copies of ParameterCollection for different parameters
+
+    Uses a given ParameterCollection as a template to create copies of it with one or more
+    parameters changing. Stores all of these copies in a ParameterCollections for easy access.
+
+    Parameters
+    ----------
+    p : ParameterCollection,
+        The ParameterCollection that shall be used as a template for all the others
+    **kwargs : Sequence,
+               The keyword gives the parameter name and the Sequence the values that shall
+               be scanned through.
+
+    Returns
+    -------
+    ParameterCollections
+
+    Examples
+    --------
+    >>> p = ParameterCollection(beta=10., U=1.0, t=1.0)
+    >>> ps = parameter_scan(p, U=[1.0, 1.5, 2.0])
+    >>> print ps[0]
+    U = 1.0
+    beta = 10.0
+    t = 1.0
+    >>> print ps[1]
+    U = 1.5
+    beta = 10.0
+    t = 1.0
+    >>> print ps[2]
+    U = 2.0
+    beta = 10.0
+    t = 1.0
+    """
+    parameter_values = []
+
+    for key, value in kwargs.iteritems():
+        parameter_values.append(zip([key]*len(value), value))
+    
+    ps = []
+    
+    for parameter_value in itertools.product(*parameter_values):
+        ps.append(p.copy(**dict(parameter_value)))
+
+    return ParameterCollections(ps)
