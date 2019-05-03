@@ -35,12 +35,19 @@ namespace triqs_tprf {
           \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           W_{hgcd}(i\omega_n, \mathbf{k})
 
+    Instead of returning :math:`W` we return the retarded part
+    :math:`W^{(r)}` (with zero high-frequency offset)
+    
+    .. math::
+        W^{(r)}_{abcd}(i\omega_n, \mathbf{k}) = 
+            W_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(\mathbf{k})
+
     @param PI_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
     @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
-    @return screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+    @return retarded screened interaction :math:`W^{(r)}_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k);
+chi_wk_t retarded_screened_interaction_Wr_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k);
 
 /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator 
 
@@ -52,14 +59,14 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k);
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
 
     .. math::
-        W_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
-          \left\{ W_{abcd}(i\omega_n, \mathbf{k}) \right\}
+        W^{(r)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{(r)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
 
     computes the GW self-energy as the product
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
@@ -67,11 +74,27 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k);
         \Sigma_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
 
-    @param W_wk screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+    @param V_k static bare interaction :math:`V_{abcd}(\mathbf{k})`
+    @param Wr_wk retarded screened interaction :math:`W^{(r)}_{abcd}(i\omega_n, \mathbf{k})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
     @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
  */
 
-g_wk_t gw_self_energy(chi_wk_vt W_wk, g_wk_vt g_wk);
+g_wk_t gw_self_energy(chi_wk_cvt Wr_wk, g_wk_cvt g_wk);
+
+/** GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
+
+    Computes the GW self-energy as the product
+
+    .. math::
+        \Sigma_{ab}(\tau, \mathbf{r}) =
+          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+
+    @param Wr_tr retarded screened interaction :math:`W^{(r)}_{abcd}(\tau, \mathbf{r})`
+    @param g_tr single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`
+    @return GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`
+ */
+
+g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr);
 
 } // namespace triqs_tprf

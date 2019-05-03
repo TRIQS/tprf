@@ -233,6 +233,21 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw) {
   return chi_wr;
 }
 
+chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau) {
+  std::cout << "WARNING: chi_tr_from_chi_wr is not parallellized. FIXME\n";
+
+  auto wmesh = std::get<0>(chi_wr.mesh());
+  double beta = wmesh.domain().beta;
+
+  if( ntau <= 0 )
+    ntau = wmesh.size() * 6;
+  
+  auto tmesh = gf_mesh<imtime>(beta, Boson, ntau);
+
+  auto chi_tr = make_gf_from_fourier<0>(chi_wr, tmesh);
+  
+  return chi_tr;
+}  
 
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 

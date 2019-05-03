@@ -269,6 +269,22 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
 
+g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw) {
+  std::cout << "WARNING: fourier_tr_to_wr is not parallellized. FIXME\n";
+
+  auto tmesh = std::get<0>(g_tr.mesh());
+  double beta = tmesh.domain().beta;
+  auto S = tmesh.domain().statistic;
+
+  if( nw <= 0 ) nw = tmesh.size() / 4;
+
+  auto wmesh = gf_mesh<imfreq>(beta, S, nw);
+  
+  auto g_wr = make_gf_from_fourier<0>(g_tr, wmesh);
+  
+  return g_wr;
+}
+
 #ifdef TPRF_OMP
   
 g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {

@@ -14,6 +14,7 @@ Lattice Green's functions
   /cpp2rst_generated/triqs_tprf/fourier_wk_to_wr
   /cpp2rst_generated/triqs_tprf/fourier_wr_to_wk
   /cpp2rst_generated/triqs_tprf/fourier_wr_to_tr
+  /cpp2rst_generated/triqs_tprf/fourier_tr_to_wr
 
 Lindhard non-interacting generalized susceptibility
 ===================================================
@@ -60,6 +61,7 @@ Generalized bubble susceptibility (for RPA)
   /cpp2rst_generated/triqs_tprf/chi0_w0r_from_grt_PH
   /cpp2rst_generated/triqs_tprf/chi_w0r_from_chi_tr
   /cpp2rst_generated/triqs_tprf/chi_wr_from_chi_tr
+  /cpp2rst_generated/triqs_tprf/chi_tr_from_chi_wr
   /cpp2rst_generated/triqs_tprf/chi_wk_from_chi_wr
   /cpp2rst_generated/triqs_tprf/chi_wr_from_chi_wk
 

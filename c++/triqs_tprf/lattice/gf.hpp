@@ -126,8 +126,17 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr);
     Computes: :math:`G_{a\bar{b}}(\tau, \mathbf{r}) = \mathcal{F} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{r}) \right\}`
 
     @param g_wr real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
-    @return real-space imaginary time Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
+    @return real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
  */
 g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt=-1);
 
+/** Fast fourier transform of real-space Green's function from imaginary time to Matsubara frequency
+
+    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F} \left\{ G_{a\bar{b}}(\tau, \mathbf{r}) \right\}`
+
+    @param g_tr real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
+    @return real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
+ */
+g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw=-1);
+  
 } // namespace triqs_tprf

@@ -84,6 +84,23 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr);
  */
 chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw);
 
+/** Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
+
+  Computes
+
+  .. math::
+         \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) =
+         \mathcal{F}_{\omega \rightarrow \tau} \left\{
+	 \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
+         \right\}
+
+  @param chi_tr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
+                in imaginary time and real space.
+  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
+          in Matsubara frequency and real-space.
+ */
+chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
+
 /** Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
 
   Computes

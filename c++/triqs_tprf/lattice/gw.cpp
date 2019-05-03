@@ -25,8 +25,11 @@
 
 namespace triqs_tprf {
 
-chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
+chi_wk_t retarded_screened_interaction_Wr_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
 
+  if( std::get<1>(PI_wk.mesh()) != V_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+  
   auto W_wk = make_gf(PI_wk);
   W_wk *= 0.;
   size_t nb = PI_wk.target_shape()[0];
@@ -48,7 +51,7 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
     auto PI = make_matrix_view(group_indices_view(PI_arr, {0, 1}, {3, 2}));
     auto W = make_matrix_view(group_indices_view(W_arr, {0, 1}, {3, 2}));
 
-    W = V * inverse(I - PI * V);
+    W = V * inverse(I - PI * V) - V;
 
     W_wk[w, k] = W_arr;
   }
@@ -57,12 +60,20 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
   return W_wk;
 }
 
-g_wk_t gw_self_energy(chi_wk_vt W_wk, g_wk_vt g_wk) {
+g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
 
-  // TODO: parallellize fourier transforms
-  auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
-  auto W_tr = make_gf_from_fourier<0, 1>(W_wk);
+  auto Wtm = std::get<0>(Wr_tr.mesh());
+  auto gtm = std::get<0>(g_tr.mesh());
+  
+  if( Wtm.size() != gtm.size() || Wtm.domain().beta != gtm.domain().beta )
+    TRIQS_RUNTIME_ERROR << "gw_sigma_tr: tau meshes are not the same.\n";
 
+  if( Wtm.domain().statistic != Boson || gtm.domain().statistic != Fermion )
+    TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
+  
+  if( std::get<1>(Wr_tr.mesh()) != std::get<1>(g_tr.mesh()) )
+    TRIQS_RUNTIME_ERROR << "gw_sigma_tr: real-space meshes are not the same.\n";
+  
   auto sigma_tr = make_gf(g_tr);
   sigma_tr *= 0.;
 
@@ -74,13 +85,33 @@ g_wk_t gw_self_energy(chi_wk_vt W_wk, g_wk_vt g_wk) {
 
     //for (const auto &[t, r] : g_tr.mesh()) {
 
-    for (const auto &[a, b, c, d] : W_tr.target_indices()) {
-      sigma_tr[t, r](a, b) += W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
+    for (const auto &[a, b, c, d] : Wr_tr.target_indices()) {
+      sigma_tr[t, r](a, b) += Wr_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
     }
   }
 
-  auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_tr);
+  return sigma_tr;
+}
 
+g_wk_t gw_self_energy(chi_wk_cvt Wr_wk, g_wk_cvt g_wk) {
+
+  auto Wwm = std::get<0>(Wr_wk.mesh());
+  auto gwm = std::get<0>(g_wk.mesh());
+  
+  if( Wwm.domain().beta != gwm.domain().beta )
+    TRIQS_RUNTIME_ERROR << "gw_self_energy: inverse temperatures are not the same.\n";
+
+  if( Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion )
+    TRIQS_RUNTIME_ERROR << "gw_self_energy: statistics are incorrect.\n";
+
+  if( std::get<1>(Wr_wk.mesh()) != std::get<1>(g_wk.mesh()) )
+    TRIQS_RUNTIME_ERROR << "gw_self_energy: k-space meshes are not the same.\n";
+  
+  // TODO: parallellize fourier transforms
+  auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
+  auto Wr_tr = make_gf_from_fourier<0, 1>(Wr_wk);
+  auto sigma_tr = gw_sigma_tr(Wr_tr, g_tr);
+  auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_tr);
   return sigma_wk;
 }
 
