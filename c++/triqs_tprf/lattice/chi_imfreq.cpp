@@ -59,7 +59,7 @@ return chi0r;
 
 chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
 
-  triqs::mpi::communicator comm;
+  mpi::communicator comm;
 
   triqs::utility::timer t_alloc, t_calc, t_mpi_all_reduce;
   
@@ -118,21 +118,21 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
   t_mpi_all_reduce.start();
 
   // This (surprisingly gives incorrect results, for sufficiently large arguments...
-  //chi0_wnr = mpi_all_reduce(chi0_wnr);
+  //chi0_wnr = mpi::all_reduce(chi0_wnr);
 
   /* // Does not give correct result either...
   for( auto const & w : wmesh )
-    chi0_wnr[w, _, _] = mpi_all_reduce(chi0_wnr[w, _, _]);
+    chi0_wnr[w, _, _] = mpi::all_reduce(chi0_wnr[w, _, _]);
   */
   
   for( auto const & w : wmesh )
     for( auto const & n : nmesh )
-      chi0_wnr[w, n, _] = mpi_all_reduce(chi0_wnr[w, n, _]);
+      chi0_wnr[w, n, _] = mpi::all_reduce(chi0_wnr[w, n, _]);
   
   t_mpi_all_reduce.stop();
 
   std::cout << "--> chi0r_from_gr_PH: alloc " << double(t_alloc)
-	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
+	    << " s, calc " << double(t_calc) << " s, mpi::all_reduce "
 	    << double(t_mpi_all_reduce) << " s." << std::endl;
   
   return chi0_wnr;
@@ -195,11 +195,11 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
   t_calc.stop();
 
   t_mpi_all_reduce.start();
-  //chi0_wnr = mpi_all_reduce(chi0_wnr);
+  //chi0_wnr = mpi::all_reduce(chi0_wnr);
   t_mpi_all_reduce.stop();
 
   std::cout << "--> chi0r_from_gr_PH: alloc " << double(t_alloc)
-	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
+	    << " s, calc " << double(t_calc) << " s, mpi::all_reduce "
 	    << double(t_mpi_all_reduce) << " s." << std::endl;
   
   return chi0_wnr;
@@ -322,7 +322,7 @@ auto chi0_wnr =
 auto _ = all_t{};
 for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
   chi0_wnr[w, n, _] = fourier(chi0_wnk[w, n, _]);
-chi0_wnr = mpi_all_reduce(chi0_wnr);
+chi0_wnr = mpi::all_reduce(chi0_wnr);
 
 return chi0_wnr;
 }
@@ -366,12 +366,12 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk) {
     chi_wnr[w, n, _] = chi_r;
   }
   
-  //chi_wnr = mpi_all_reduce(chi_wnr); // Incorrect results for large args!!
+  //chi_wnr = mpi::all_reduce(chi_wnr); // Incorrect results for large args!!
 
   // Workaround.. :P
   for( auto const &w : bmesh )
     for( auto const &n : fmesh )
-      chi_wnr[w, n, _] = mpi_all_reduce(chi_wnr[w, n, _]);
+      chi_wnr[w, n, _] = mpi::all_reduce(chi_wnr[w, n, _]);
 
   return chi_wnr;
 }
@@ -389,7 +389,7 @@ auto chi0_wnk =
 auto _ = all_t{};
 for (auto const &[w, n] : mpi_view(gf_mesh{bmesh, fmesh}))
   chi0_wnk[w, n, _] = triqs::gfs::fourier(chi0_wnr[w, n, _]);
-chi0_wnk = mpi_all_reduce(chi0_wnk);
+chi0_wnk = mpi::all_reduce(chi0_wnk);
 
 return chi0_wnk;
 }
@@ -442,17 +442,17 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
   t_calc.stop();
   t_mpi_all_reduce.start();
 
-  //chi_wnk = mpi_all_reduce(chi_wnk); // Incorrect results for large args!!
+  //chi_wnk = mpi::all_reduce(chi_wnk); // Incorrect results for large args!!
 
   // Workaround.. :P 
   for( auto const &w : bmesh )
     for( auto const &n : fmesh )
-      chi_wnk[w, n, _] = mpi_all_reduce(chi_wnk[w, n, _]);
+      chi_wnk[w, n, _] = mpi::all_reduce(chi_wnk[w, n, _]);
 
   t_mpi_all_reduce.stop();
 
   std::cout << "--> chi0q_from_chi0r: alloc " << double(t_alloc)
-	    << " s, calc " << double(t_calc) << " s, mpi_all_reduce "
+	    << " s, calc " << double(t_calc) << " s, mpi::all_reduce "
 	    << double(t_mpi_all_reduce) << " s." << std::endl;
   
   return chi_wnk;
@@ -481,7 +481,7 @@ chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk) {
 
   //chi_wk(iw, k) << sum(chi_wnk(iw, inu, k), inu = mesh) / (beta * beta);
 
-  chi_wk = mpi_all_reduce(chi_wk);
+  chi_wk = mpi::all_reduce(chi_wk);
   return chi_wk;
 }
 
@@ -536,7 +536,7 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
     chi_wk[w, q] = dens;
   }
 
-  chi_wk = mpi_all_reduce(chi_wk);
+  chi_wk = mpi::all_reduce(chi_wk);
   return chi_wk;
 }
 
@@ -649,7 +649,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
 
   auto _ = all_t{};
 
-  triqs::mpi::communicator c;
+  mpi::communicator c;
   
   auto target_shape = chi0_wnk.target_shape();
   auto bmesh = std::get<0>(chi0_wnk.mesh());
@@ -758,7 +758,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
         
   }
 
-  chi_kw = mpi_all_reduce(chi_kw);
+  chi_kw = mpi::all_reduce(chi_kw);
 
   t.stop();
   if(c.rank() == 0 )
@@ -886,7 +886,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
     chi_kw[k, w] = tr_chi;
   }
 
-  chi_kw = mpi_all_reduce(chi_kw);
+  chi_kw = mpi::all_reduce(chi_kw);
 
   return chi_kw;
 }
@@ -1017,7 +1017,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
     chi_kw[k, w] = tr_chi;
   }
 
-  chi_kw = mpi_all_reduce(chi_kw);
+  chi_kw = mpi::all_reduce(chi_kw);
 
   return chi_kw;
 }

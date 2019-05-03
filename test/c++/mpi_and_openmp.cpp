@@ -14,7 +14,7 @@ using namespace triqs_tprf;
 
 TEST(mpi, mpi_view) {
 
-  triqs::mpi::communicator c;
+  mpi::communicator c;
 
   double beta = 20;
   int n_k = 2;
@@ -60,7 +60,7 @@ TEST(mpi, mpi_view) {
 
 TEST(mpi, mpi_view_openmp) {
 
-  triqs::mpi::communicator c;
+  mpi::communicator c;
 
   double beta = 20;
   int n_k = 2;

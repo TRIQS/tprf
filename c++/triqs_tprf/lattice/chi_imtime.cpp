@@ -81,7 +81,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
     
   }
 
-  chi0_tr = mpi_all_reduce(chi0_tr);
+  chi0_tr = mpi::all_reduce(chi0_tr);
   return chi0_tr;
 }
 
@@ -129,7 +129,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 
   }
 
-  chi0_wr = mpi_all_reduce(chi0_wr);
+  chi0_wr = mpi::all_reduce(chi0_wr);
   return chi0_wr;
 }  
 
@@ -181,7 +181,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr) {
     chi_wr[0, r] = I;
   }
 
-  chi_wr = mpi_all_reduce(chi_wr);
+  chi_wr = mpi::all_reduce(chi_wr);
   return chi_wr;
 }
 
@@ -229,7 +229,7 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw) {
     //chi_wr[_, r] = fourier(chi_tr[_, r]);
   }
 
-  chi_wr = mpi_all_reduce(chi_wr);
+  chi_wr = mpi::all_reduce(chi_wr);
   return chi_wr;
 }
 
@@ -285,7 +285,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
     
   }
 
-  chi_wk = mpi_all_reduce(chi_wk);
+  chi_wk = mpi::all_reduce(chi_wk);
   return chi_wk;
 }
 
@@ -326,7 +326,7 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
     //chi_wr[w, _] = triqs::gfs::fourier(chi_wk[w, _]);
   }
 
-  chi_wr = mpi_all_reduce(chi_wr);
+  chi_wr = mpi::all_reduce(chi_wr);
   return chi_wr;
 }  
   

@@ -21,16 +21,17 @@
  ******************************************************************************/
 #pragma once
 
-#include <triqs/mpi/base.hpp>
+#include <itertools/itertools.hpp>
+#include <mpi/mpi.hpp>
 
 #include "types.hpp"
 
 namespace triqs_tprf {
 
 template<class T>
-auto mpi_view(const array<T, 1> &arr, triqs::mpi::communicator const & c) {
+auto mpi_view(const array<T, 1> &arr, mpi::communicator const & c) {
 
-  auto slice = triqs::mpi::slice_range(0, arr.shape()[0] - 1, c.size(), c.rank()); // NB! needs [first, last] in range
+  auto slice = itertools::chunk_range(0, arr.shape()[0], c.size(), c.rank());
 
   /*
   std::cout << "mpi_view<array> " << "rank = " << c.rank() << " size = " << arr.shape()[0]
@@ -42,15 +43,15 @@ auto mpi_view(const array<T, 1> &arr, triqs::mpi::communicator const & c) {
 
 template<class T>
 auto mpi_view(const array<T, 1> &arr) {
-  triqs::mpi::communicator c;
+  mpi::communicator c;
   return mpi_view(arr, c);
 }
   
 template<class T>
-auto mpi_view(const gf_mesh<T> &mesh, triqs::mpi::communicator const & c) {
+auto mpi_view(const gf_mesh<T> &mesh, mpi::communicator const & c) {
 
-  auto slice = triqs::mpi::slice_range(0, mesh.size() - 1, c.size(), c.rank()); // NB! needs [first, last] in range
-  int size = slice.second + 1 - slice.first;
+  auto slice = itertools::chunk_range(0, mesh.size(), c.size(), c.rank());
+  int size = slice.second - slice.first;
 
   /*
   std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
@@ -80,7 +81,7 @@ auto mpi_view(const gf_mesh<T> &mesh, triqs::mpi::communicator const & c) {
 
 template<class T>
 auto mpi_view(const gf_mesh<T> &mesh) {
-  triqs::mpi::communicator c;
+  mpi::communicator c;
   return mpi_view(mesh, c);
 }
   

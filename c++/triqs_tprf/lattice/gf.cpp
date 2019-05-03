@@ -52,7 +52,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
     g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
   }
 
-  g0_wk = mpi_all_reduce(g0_wk);  
+  g0_wk = mpi::all_reduce(g0_wk);
   return g0_wk;
 }
 
@@ -66,7 +66,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
   for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
       g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
 
-  g0_wk = mpi_all_reduce(g0_wk);
+  g0_wk = mpi::all_reduce(g0_wk);
   return g0_wk;
 }
   
@@ -82,7 +82,7 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
   for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
     g_wk[w, k] = inverse((w + mu)*I - e_k[k] - sigma_wk[w, k]);
 
-  g_wk = mpi_all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk);
   return g_wk;
 }
   
@@ -102,7 +102,7 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
   }
 
-  g_wk = mpi_all_reduce(g_wk);  
+  g_wk = mpi::all_reduce(g_wk);
   return g_wk;
 }
 
@@ -117,7 +117,7 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
 
-  g_wk = mpi_all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk);
   return g_wk;
 }
 
@@ -136,7 +136,7 @@ g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   for (auto const &[w, k] : mpi_view(wkmesh) ) 
     g_w[w] += inverse((w + mu)*I - e_k(k) - sigma_w[w]);
 
-  g_w = mpi_all_reduce(g_w);
+  g_w = mpi::all_reduce(g_w);
   g_w /= kmesh.size();
 
   return g_w;
@@ -180,7 +180,7 @@ g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
 
   }
 
-  g_wr = mpi_all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr);
   return g_wr;
 }
 
@@ -197,7 +197,7 @@ g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
   for ( auto const &w : mpi_view(wmesh) )
     g_wr[w, _]() = triqs::gfs::fourier(g_wk[w, _]);  
 
-  g_wr = mpi_all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr);
   
   return g_wr;
 }
@@ -242,7 +242,7 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
 
   }
   
-  g_wk = mpi_all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk);
   return g_wk;
 }
 
@@ -259,7 +259,7 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
   for (auto const &w : mpi_view(wmesh))
     g_wk[w, _]() = triqs::gfs::fourier(g_wr[w, _]);
 
-  g_wk = mpi_all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk);
   
   return g_wk;
 }
@@ -326,7 +326,7 @@ g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
 
   }
 
-  g_tr = mpi_all_reduce(g_tr);
+  g_tr = mpi::all_reduce(g_tr);
   return g_tr;
 }
 
