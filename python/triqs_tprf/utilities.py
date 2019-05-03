@@ -154,3 +154,26 @@ def G2_loc_fixed_fermionic_window_python(g2, nwf):
     
     g2_out.data[:] = g2.data[:, s:e, s:e]
     return g2_out
+
+# ----------------------------------------------------------------------
+def beta_to_temperature(beta):
+    """Convert beta in 1/eV to Temperature in Kelvin
+    """
+
+    def eV_to_Kelvin(ev):
+        return 11604.5250061657 * ev
+
+    T = 1. / beta
+    return eV_to_Kelvin(T)
+
+# ----------------------------------------------------------------------
+def temperature_to_beta(T):
+    """Convert Temperature in Kelvin to beta in 1/eV
+    """
+
+    def Kelvin_to_eV(K):
+        return K / 11604.5250061657
+
+    T = Kelvin_to_eV(T)
+    beta = 1./ T
+    return beta
