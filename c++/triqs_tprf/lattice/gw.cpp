@@ -34,24 +34,18 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
   using scalar_t = chi_wk_t::scalar_t;
   auto I = make_unit_matrix<scalar_t>(nb * nb);
 
-  auto to_matrix = [](auto t) {
-    array<scalar_t, 4> t_arr{t, memory_layout_t<4>{0, 1, 2, 3}};
-    auto t_mat = make_matrix_view(group_indices_view(t_arr, {0, 1}, {3, 2}));
-    return t_mat;
-  };
-
   // MPI and openMP parallell loop
   auto arr = mpi_view(W_wk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
 
-    auto V = to_matrix(V_k[k]);
-    auto PI = to_matrix(PI_wk[w, k]);
-
-    // auto W = to_matrix(W_wk[w, k]);
-
+    array<scalar_t, 4> V_arr{V_k[k], memory_layout_t<4>{0, 1, 2, 3}};
+    array<scalar_t, 4> PI_arr{PI_wk[w, k], memory_layout_t<4>{0, 1, 2, 3}};
     array<scalar_t, 4> W_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
+
+    auto V = make_matrix_view(group_indices_view(V_arr, {0, 1}, {3, 2}));
+    auto PI = make_matrix_view(group_indices_view(PI_arr, {0, 1}, {3, 2}));
     auto W = make_matrix_view(group_indices_view(W_arr, {0, 1}, {3, 2}));
 
     W = V * inverse(I - PI * V);
@@ -65,13 +59,21 @@ chi_wk_t screened_interaction_W(chi_wk_vt PI_wk, chi_k_vt V_k) {
 
 g_wk_t gw_self_energy(chi_wk_vt W_wk, g_wk_vt g_wk) {
 
+  // TODO: parallellize fourier transforms
   auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
   auto W_tr = make_gf_from_fourier<0, 1>(W_wk);
 
   auto sigma_tr = make_gf(g_tr);
   sigma_tr *= 0.;
 
-  for (const auto &[t, r] : g_tr.mesh()) {
+  // MPI and openMP parallell loop
+  auto arr = mpi_view(g_tr.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[t, r] = arr(idx);
+
+    //for (const auto &[t, r] : g_tr.mesh()) {
+
     for (const auto &[a, b, c, d] : W_tr.target_indices()) {
       sigma_tr[t, r](a, b) += W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
     }
