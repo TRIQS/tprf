@@ -93,7 +93,7 @@ g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
   return sigma_tr;
 }
 
-g_wk_t gw_self_energy(chi_wk_cvt Wr_wk, g_wk_cvt g_wk) {
+g_wk_t gw_sigma_wk_serial_fft(chi_wk_cvt Wr_wk, g_wk_cvt g_wk) {
 
   auto Wwm = std::get<0>(Wr_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());

@@ -80,7 +80,7 @@ chi_wk_t retarded_screened_interaction_Wr_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k);
     @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
  */
 
-g_wk_t gw_self_energy(chi_wk_cvt Wr_wk, g_wk_cvt g_wk);
+g_wk_t gw_sigma_wk_serial_fft(chi_wk_cvt Wr_wk, g_wk_cvt g_wk);
 
 /** GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 

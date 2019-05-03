@@ -39,7 +39,7 @@ from triqs_tprf.lattice import chi0_tr_from_grt_PH
 
 from triqs_tprf.lattice import retarded_screened_interaction_Wr_wk as cpp_retarded_screened_interaction_Wr_wk
 
-from triqs_tprf.lattice import gw_self_energy as cpp_gw_self_energy
+from triqs_tprf.lattice import gw_sigma_wk_serial_fft as cpp_gw_sigma_wk_serial_fft
 from triqs_tprf.lattice import gw_sigma_tr as cpp_gw_sigma_tr
 
 # ----------------------------------------------------------------------
@@ -116,6 +116,6 @@ def gw_sigma_wk(Wr_wk, g_wk, fft_flag=False):
         del sigma_wr
 
     else:
-        sigma_wk = cpp_gw_self_energy(Wr_wk, g_wk)    
+        sigma_wk = cpp_gw_sigma_wk_serial_fft(Wr_wk, g_wk)    
     
     return sigma_wk
