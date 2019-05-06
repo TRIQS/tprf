@@ -4,17 +4,17 @@
 .. highlight:: c
 
 
-.. _gw_self_energy:
+.. _gw_sigma_wk_serial_fft:
 
-gw_self_energy
-==============
+gw_sigma_wk_serial_fft
+======================
 
 **Synopsis**:
 
 .. code-block:: c
 
-    triqs_tprf::g_wk_t gw_self_energy (triqs_tprf::chi_wk_vt W_wk, triqs_tprf::g_wk_vt
-   g_wk)
+    triqs_tprf::g_wk_t gw_sigma_wk_serial_fft (triqs_tprf::chi_wk_cvt Wr_wk,
+   triqs_tprf::g_wk_cvt g_wk)
 
 GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
 
@@ -22,7 +22,9 @@ GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
 Parameters
 ----------
 
- * **W_wk**: screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+ * **V_k**: static bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+ * **Wr_wk**: retarded screened interaction :math:`W^{(r)}_{abcd}(i\omega_n, \mathbf{k})`
 
  * **g_wk**: single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
 
@@ -45,14 +47,14 @@ Documentation
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
 
     .. math::
-        W_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
-          \left\{ W_{abcd}(i\omega_n, \mathbf{k}) \right\}
+        W^{(r)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{(r)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
 
     computes the GW self-energy as the product
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 

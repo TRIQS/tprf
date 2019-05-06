@@ -25,7 +25,7 @@
 
 namespace triqs_tprf {
 
-chi_wk_t retarded_screened_interaction_Wr_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
+chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
 
   if( std::get<1>(PI_wk.mesh()) != V_k.mesh() )
     TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";

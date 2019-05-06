@@ -28,7 +28,7 @@ Parameters
 Return value
 ------------
 
-real-space imaginary time Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
+real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
 
 Documentation
 -------------
