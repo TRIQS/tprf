@@ -216,6 +216,33 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     return chi0_wk
 
 # ----------------------------------------------------------------------
+def chi_contraction(chi, op1, op2):
+    """Contract a susceptibility with two operators
+
+    Parameters
+    ----------
+    chi : Gf,
+          Susceptibility :math:`\chi(i\omega_n, \mathbf{k})`. The mesh attribute of
+          the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone)
+          and its target_rank 4.
+    op1, op2 : np.ndarray,
+               Operators in matrix representation.
+
+    Returns
+    -------
+    Gf,
+    Susceptibility :math:`\chi(i\omega_n, \mathbf{k})`. With a target_rank of 0.
+    """
+    if chi.target_shape[:2] != op1.shape or chi.target_shape[2:] != op2.shape:
+        raise ValueError('The shape of the operators %s and %s'%(op1.shape, op2.shape) +
+                         ' must fit the shape of chi %s.'%(chi.target_shape,))
+
+    chi_op1op2 = chi[0, 0, 0, 0].copy()
+    chi_op1op2.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, op1, op2)
+
+    return chi_op1op2
+
+# ----------------------------------------------------------------------
 def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
     if sigma_w is None:
