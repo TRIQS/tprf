@@ -103,12 +103,16 @@ if __name__ == '__main__':
 
     Es_pm, eigen_modes_pm = run_solve_eliashberg(p)
 
-    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.copy(solver='IRAM')
+    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.copy(solver='IRAM'))
 
     print(Es_pm[0], Es_iram[0])
 
     np.testing.assert_allclose(Es_pm[0], Es_iram[0])
-    np.testing.assert_allclose(eigen_modes_pm[0].data, eigen_modes_iram[0].data, atol=1e-8)
+
+    try:
+        np.testing.assert_allclose(eigen_modes_pm[0].data, eigen_modes_iram[0].data, atol=1e-8)
+    except AssertionError:
+        np.testing.assert_allclose(-eigen_modes_pm[0].data, eigen_modes_iram[0].data, atol=1e-8)
 
     print('Both solvers yield the same results.')
 
