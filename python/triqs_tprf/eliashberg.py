@@ -22,6 +22,7 @@
 #
 ################################################################################
 
+import functools
 import numpy as np
 from scipy.sparse.linalg import LinearOperator
 from scipy.sparse.linalg import eigs
@@ -30,7 +31,7 @@ from scipy.sparse.linalg import eigs
 
 from pytriqs.gf import Gf
 from lattice import eliashberg_product
-from lattice import eliashberg_product_fft
+from lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 
 # ----------------------------------------------------------------------
@@ -192,23 +193,28 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
         Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k)
 
-        def matvec(delta_x):
-            delta_wk = from_x_to_wk(delta_x)
-            delta_out_wk = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk)
-            delta_out_x = from_wk_to_x(delta_out_wk)
-            return delta_out_x
+        if np.allclose(Gamma_pp_dyn_tr.data, 0): # -- If dynamic part is zero reduced calculation
+            eliashberg_product = functools.partial(eliashberg_product_fft_constant,
+                                                   Gamma_pp_const_r, g_wk)
+
+        else:
+            eliashberg_product = functools.partial(eliashberg_product_fft,
+                                                   Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk)
 
     elif product == 'SUM':
+        eliashberg_product = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
 
-        def matvec(delta_x):
-            delta_wk = from_x_to_wk(delta_x)
-            delta_out_wk = eliashberg_product(Gamma_pp_wk, g_wk, delta_wk)
-            delta_out_x = from_wk_to_x(delta_out_wk)
-            return delta_out_x
 
     else:
         raise NotImplementedError('There is no implementation of the eliashberg product'
                                     ' called %s.'%product)
+
+    def matvec(delta_x):
+        delta_wk = from_x_to_wk(delta_x)
+        delta_out_wk = eliashberg_product(delta_wk)
+        delta_out_x = from_wk_to_x(delta_out_wk)
+        return delta_out_x
+
     if not initial_delta:
         initial_delta = semi_random_initial_delta(g_wk)
     initial_delta = from_wk_to_x(initial_delta)
