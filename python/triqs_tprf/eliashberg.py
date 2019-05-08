@@ -194,16 +194,14 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
         Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k)
 
         if np.allclose(Gamma_pp_dyn_tr.data, 0): # -- If dynamic part is zero reduced calculation
-            eliashberg_product = functools.partial(eliashberg_product_fft_constant,
-                                                   Gamma_pp_const_r, g_wk)
+            eli_prod = functools.partial(eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk)
 
         else:
-            eliashberg_product = functools.partial(eliashberg_product_fft,
-                                                   Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk)
+            eli_prod = functools.partial(eliashberg_product_fft, 
+                                         Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk)
 
     elif product == 'SUM':
-        eliashberg_product = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
-
+        eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
 
     else:
         raise NotImplementedError('There is no implementation of the eliashberg product'
@@ -211,7 +209,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
     def matvec(delta_x):
         delta_wk = from_x_to_wk(delta_x)
-        delta_out_wk = eliashberg_product(delta_wk)
+        delta_out_wk = eli_prod(delta_wk)
         delta_out_x = from_wk_to_x(delta_out_wk)
         return delta_out_x
 
