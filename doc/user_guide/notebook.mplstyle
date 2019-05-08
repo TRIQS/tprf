@@ -1,0 +1,39 @@
+# Style for jupyter-notebooks
+
+figure.figsize          : 6,5
+
+axes.titlesize          : 26 
+axes.labelsize          : 24
+axes.linewidth          : 2.5
+
+axes.edgecolor          : grey
+axes.labelcolor         : grey
+
+axes.spines.left        : True  
+axes.spines.bottom      : True
+axes.spines.top         : False
+axes.spines.right       : False
+
+
+lines.linewidth         : 3
+lines.markersize        : 10
+
+
+xtick.color             : grey
+ytick.color             : grey
+
+xtick.labelsize         : 20
+ytick.labelsize         : 20
+
+xtick.major.size        : 7
+xtick.major.width       : 2.5
+ytick.major.size        : 7
+ytick.major.width       : 2.5
+
+
+axes.prop_cycle         : cycler('color', ['e41a1c','377eb8','4daf4a','984ea3', 'ff7f00','ffff33','a65628','f781bf'] )
+
+figure.subplot.wspace   : 0.3
+figure.subplot.hspace   : 0.3
+
+legend.fontsize         : 20
