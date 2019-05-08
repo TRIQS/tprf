@@ -154,6 +154,37 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
 
   return delta_wk_out;
 }
+
+// optimized version if there is only a constant term
+gk_iw_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
+                                        gk_iw_vt g_wk, gk_iw_vt delta_wk) {
+
+  auto _ = all_t{};
+
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
+
+  auto rmesh = std::get<1>(F_tr.mesh());
+
+  auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), delta_wk.target());
+  delta_r_out *= 0.;
+
+  for (const auto r :  rmesh) {
+    auto F_t = F_tr[_, r];
+    for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
+        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
+  }
+
+  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
+
+  auto delta_wk_out = make_gf(F_wk.mesh(), delta_wk.target());
+  delta_wk_out *= 0.;
+
+  for (const auto [w , k]: delta_wk_out.mesh())
+      delta_wk_out[w, k] += delta_k_out[k];
+
+  return delta_wk_out;
+}
   
 chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
         array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s) {

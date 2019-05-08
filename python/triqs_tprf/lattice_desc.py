@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C pytriqs --moduledoc="Lattice functionality" --cxxflags="-std=c++17" --target_file_only
+# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C pytriqs --moduledoc="Lattice functionality" --cxxflags="-std=c++17"
 from cpp2py.wrap_generator import *
 
 # The module
@@ -493,6 +493,8 @@ Returns
 -------
 out
      Gives the result of the product :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG \Delta`""")
+
+module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""""")
 
 module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""""")
 
