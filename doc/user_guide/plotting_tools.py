@@ -43,13 +43,10 @@ def __bsplot_impl(top, obj, path, xticks_fct, xticklabels_fct, *opt_list, **opt_
     k_vecs, k_plot, K_plot = k_space_path(k_paths, bz=obj.mesh.domain)
     kx, ky, kz = k_vecs.T
     
-    get_gf_on_path = np.vectorize(lambda kx, ky, kz : obj([kx, ky, kz])[(0,0)].real)    
-    gf_on_path = get_gf_on_path(kx, ky, kz)
-    
-    plot_min, plot_max = np.min(gf_on_path), np.max(gf_on_path)
-    y_ticks = [plot_min, plot_max]
-    
     plt_fct = getattr(top, 'plot')
+
+    get_gf_on_path = np.vectorize(lambda kx, ky, kz : obj([kx, ky, kz]).real)    
+    gf_on_path = get_gf_on_path(kx, ky, kz)
 
     plt_fct(k_plot, gf_on_path, *opt_list, **opt_dict)
     
@@ -60,5 +57,7 @@ def __bsplot_impl(top, obj, path, xticks_fct, xticklabels_fct, *opt_list, **opt_
         xticklabels_fct(hs_labels)
 
 mpl.axes.Axes.bsplot = lambda self, obj, path, *opt_list, **opt_dict: __bsplot_impl(self, obj, path, self.set_xticks, self.set_xticklabels, *opt_list, **opt_dict)
+
+
 
 
