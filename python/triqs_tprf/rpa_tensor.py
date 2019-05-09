@@ -191,6 +191,37 @@ def quartic_tensor_from_charge_and_spin(U_c, U_s):
     return U_4
 
 # ----------------------------------------------------------------------    
+def kanamori_quartic_tensor(norb, U, Up, J, Jp):
+    r"""Return Kanamori interaction as a quartic tensor
+
+    .. math::
+
+        \hat{U}_{\text { Kanamori }} = U \sum_{i} \hat{n}_{i, \uparrow} \hat{n}_{i, \downarrow}+\sum_{i>j, s, s^{\prime}}\left(U^{\prime}-J \delta_{\sigma, \sigma^{\prime}}\right) \hat{n}_{i, \sigma} \hat{n}_{j, \sigma^{\prime}} - \\ J \sum_{i \neq j}\left(\hat{c}_{i, \downarrow}^{\dagger} \hat{c}_{j, \uparrow}^{\dagger} \hat{c}_{j, \downarrow} \hat{c}_{i, \uparrow}+\hat{c}_{j, \uparrow}^{\dagger} \hat{c}_{j, \downarrow}^{\dagger} \hat{c}_{i, \uparrow} \hat{c}_{i, \downarrow}+\mathrm{h.c.}\right)
+
+    Parameters
+    ----------
+    norb : int,
+           Number of orbitals including spin up and down as seperate orbs.
+    U : complex,
+        Strength of intra-orbital interaction.
+    Up : complex,
+         Strength of inter-orbital interaction.
+    J : complex, 
+        Strength of Hound's coupling.
+    Jp : complex,
+         Strength pair hopping and spin-flip.
+
+    Returns
+    -------
+    np.ndarray
+    """
+
+    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(int(norb/2), U, Up, J, Jp)
+    U = quartic_tensor_from_charge_and_spin(U_c, U_s)
+
+    return U
+
+# ----------------------------------------------------------------------    
 def lose_spin_degree_of_freedom(gf, spin_fast=True):
     """Only keep the up spin elements of a Greens function
 

@@ -18,6 +18,7 @@ Random Phase Approximation
 ==========================
 
 .. autofunction:: triqs_tprf.lattice.solve_rpa_PH
+.. autofunction:: triqs_tprf.rpa_tensor.kanamori_quartic_tensor
 
 Impurity susceptibility and Bethe-Salpeter Equation
 ===================================================
