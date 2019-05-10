@@ -91,6 +91,8 @@ Tight binding lattice model
 .. autoclass:: triqs_tprf.tight_binding.TBLattice
    :members:
 
+.. autofunction:: triqs_tprf.tight_binding.create_square_lattice
+
 .. autoclass:: triqs_tprf.super_lattice.TBSuperLattice
    :members:
       
