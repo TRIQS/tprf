@@ -79,7 +79,7 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
 
     return delta
 
-def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k):
+def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     r""" Prepare Gamma to be used with the FFT implementation
 
     Parameters

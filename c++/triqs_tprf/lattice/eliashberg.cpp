@@ -105,19 +105,36 @@ std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dy
     return {Gamma_pp_dyn_tr, Gamma_pp_const_r};
 }
 
-gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
-                                gk_iw_vt g_wk, gk_iw_vt delta_wk) {
+ek_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, gr_tau_t F_tr) {
 
   auto _ = all_t{};
+
+  auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), F_tr.target());
+  delta_r_out *= 0.;
+
+  for (const auto r : std::get<1>(F_tr.mesh())) {
+    auto F_t = F_tr[_, r];
+    for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
+        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
+  }
+
+  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
+
+  return delta_k_out;
+}
+
+gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
+                                gk_iw_vt g_wk, gk_iw_vt delta_wk) {
 
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
   auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
 
+  auto [tmesh, rmesh] = F_tr.mesh();
+
   // Dynamic part
-  auto delta_tr_out = make_gf(F_tr.mesh(), delta_wk.target());
+  auto delta_tr_out = make_gf(F_tr);
   delta_tr_out *= 0.;
 
-  auto [tmesh, rmesh] = delta_tr_out.mesh();
   auto gamma_tmesh = std::get<0>(Gamma_pp_dyn_tr.mesh());
 
   // Test if the tau meshs of delta and gamma are compatible. If not raise an error, because
@@ -127,7 +144,7 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
           " (" << gamma_tmesh.size() << ") must be the size of the mesh of Delta (" <<
           tmesh.size() << ").";
 
-  for (const auto [t, r] : delta_tr_out.mesh()) {
+  for (const auto [t, r] : triqs::utility::product(tmesh, rmesh)) {
     for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
       delta_tr_out[t, r](a, b) += -Gamma_pp_dyn_tr[t, r](A, a, B, b) * F_tr[t, r](A, B);
   }
@@ -137,16 +154,7 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
   auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
 
   // Constant part
-  auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), delta_wk.target());
-  delta_r_out *= 0.;
-
-  for (const auto r :  rmesh) {
-    auto F_t = F_tr[_, r];
-    for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
-  }
-
-  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
+  auto delta_k_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
 
   // Combine dynamic and constant part
   for (const auto [w , k]: delta_wk_out.mesh())
@@ -159,25 +167,12 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
 gk_iw_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
                                         gk_iw_vt g_wk, gk_iw_vt delta_wk) {
 
-  auto _ = all_t{};
-
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
   auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
 
-  auto rmesh = std::get<1>(F_tr.mesh());
+  auto delta_k_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
 
-  auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), delta_wk.target());
-  delta_r_out *= 0.;
-
-  for (const auto r :  rmesh) {
-    auto F_t = F_tr[_, r];
-    for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
-  }
-
-  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
-
-  auto delta_wk_out = make_gf(F_wk.mesh(), delta_wk.target());
+  auto delta_wk_out = make_gf(F_wk);
   delta_wk_out *= 0.;
 
   for (const auto [w , k]: delta_wk_out.mesh())
