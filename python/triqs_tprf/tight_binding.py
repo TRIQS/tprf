@@ -21,9 +21,6 @@
 #
 ################################################################################
 
-import numbers
-from collections import namedtuple
-
 import numpy as np
 
 from pytriqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
@@ -134,83 +131,73 @@ class TBLattice(object):
         return e_k
 
 # ----------------------------------------------------------------------
+def create_square_lattice(norb, t, tp=0.0, zeeman=0.0, spin=False, **kwargs):
+    r"""Retuns TBLattice that represents a model on a square lattice
+    
+    The model is described by the Hamiltonian
 
-Parameter = namedtuple('Parameter', ['name', 'type', 'default'])
-Parameter.__new__.__defaults__ = (None,)
+    .. math:: 
+        H=-t \sum_{\langle j, l\rangle \sigma}\left(c_{j \sigma}^{\dagger}
+        c_{l \sigma}+c_{l \sigma}^{\dagger} c_{j \sigma}\right) -
+        t' \sum_{\langle\langle j, l\rangle\rangle \sigma}\left(c_{j \sigma}^{\dagger}
+        c_{l \sigma}+c_{l \sigma}^{\dagger} c_{j \sigma}\right) +
+        \xi \sum_j \left(n_{j \uparrow} - n_{j \downarrow} \right)\,,
 
-class Model(object):
-    """Base class for models to check for characterizing parameters
+    where the angular bracket describes a sum over nearest neighbors and the double
+    angular bracket over next-nearest neighbors.
+
+
+    Parameters
+    ----------
+    norb : int,
+           Number of orbitals excluding spin
+    t : complex,
+        Kinetic energy of nearest neighbor hopping.
+        Corresponds to :math:`t`.
+    tp : complex, optional
+         Kinetic energy of next-nearest neighbor hopping.
+         Corresponds to :math:`t'`.
+    zeeman : complex, optional
+             Strength of Zeeman term.
+             Corresponds to :math:`\xi`.
+    spin : bool,
+           True if spin index should be used explicitly, False otherwise.
+           The Zeeman term can only be applied if spin=True.
+
+    Returns
+    -------
+    square_lattice : TBLattice
     """
-    mandatory_parameters = [Parameter('norb', int)]
-    optional_parameters = [Parameter('spin', bool, True)]
 
-    def __init__(self, **kwargs):
+    if zeeman != 0.0 and not spin:
+        raise AttributeError('There can not be a Zeeman term in a spinless model.')
+    if spin:
+        norb *= 2
 
-        for key, value in kwargs.iteritems():
-            self.__setattr__(key, value)
+    t_matrix = -t * np.eye(norb)
+    tp_matrix = -tp * np.eye(norb)
+    zeeman_matrix = zeeman * np.diag([(-1)**orb for orb in range(norb)])
 
-        for parameter in self.mandatory_parameters:
+    hopping = {
+                # Zeeman term
+                ( 0, 0): zeeman_matrix,
 
-            if not hasattr(self, parameter.name):
-                raise AttributeError('The parameter %s has to be given.'%parameter.name)
+                # nearest neighbour hopping
+                ( 0,+1): t_matrix,
+                ( 0,-1): t_matrix,
+                (+1, 0): t_matrix,
+                (-1, 0): t_matrix,
+                
+                # next-nearest neighbour hopping
+                ( +1,+1): tp_matrix,
+                ( -1,-1): tp_matrix,
+                (+1, -1): tp_matrix,
+                (-1, +1): tp_matrix,
+                }
 
-            if not isinstance(getattr(self, parameter.name), parameter.type):
-                raise TypeError('The parameter %s needs to be of %s type.'%(parameter.name,
-                                                                            parameter.type))
-        for parameter in self.optional_parameters:
+    units = [(1, 0, 0), (0, 1, 0)]
+    orbital_positions = [(0, 0, 0)] * norb
 
-            if hasattr(self, parameter.name):
-                continue
-            
-            # -- If the default is the name of another parameter set it to its value
-            if isinstance(parameter.default, str) and hasattr(self, parameter.default):
-                setattr(self, parameter.name, getattr(self, parameter.default))
+    square_lattice = TBLattice(units, hopping, orbital_positions)
 
-            else:
-                setattr(self, parameter.name, parameter.default)
-
-        if self.spin:
-            self.norb = 2*self.norb
-
-class SquareLattice(Model, TBLattice):
-    """Square lattice with nearest neighbor and next-nearest neighbor hopping
-    """
-    mandatory_parameters = [Parameter('t', numbers.Number)]
-    mandatory_parameters += Model.mandatory_parameters
-
-    optional_parameters = [Parameter('tp', numbers.Number, 0.0),
-                           Parameter('zeeman', numbers.Number, 0.0)]
-    optional_parameters += Model.optional_parameters
-
-    def __init__(self, **kwargs):
-
-        Model.__init__(self, **kwargs)
-        
-        if self.zeeman != 0.0 and not self.spin:
-            raise AttributeError('There can not be a zeeman term in a spinless model.')
-
-        t_matrix = -self.t * np.eye(self.norb)
-        tp_matrix = -self.tp * np.eye(self.norb)
-        zeeman_matrix = self.zeeman * np.diag([(-1)**orb for orb in range(self.norb)])
-
-        hopping = {
-                    # Zeeman term
-                    ( 0, 0): zeeman_matrix,
-
-                    # nearest neighbour hopping
-                    ( 0,+1): t_matrix,
-                    ( 0,-1): t_matrix,
-                    (+1, 0): t_matrix,
-                    (-1, 0): t_matrix,
-                    
-                    # next-nearest neighbour hopping
-                    ( +1,+1): tp_matrix,
-                    ( -1,-1): tp_matrix,
-                    (+1, -1): tp_matrix,
-                    (-1, +1): tp_matrix,
-                    }
-
-        units = [(1, 0, 0), (0, 1, 0)]
-        orbital_positions = [(0, 0, 0)] * self.norb
-        TBLattice.__init__(self, units, hopping, orbital_positions)
-
+    return square_lattice
