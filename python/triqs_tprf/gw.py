@@ -25,6 +25,10 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
+import pytriqs.utility.mpi as mpi
+
+# ----------------------------------------------------------------------
+
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_wk
 from triqs_tprf.lattice import fourier_wr_to_tr
@@ -37,7 +41,7 @@ from triqs_tprf.lattice import chi_wr_from_chi_wk
 
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
 
-from triqs_tprf.lattice import retarded_screened_interaction_Wr_wk as cpp_retarded_screened_interaction_Wr_wk
+from triqs_tprf.lattice import dynamical_screened_interaction_W_wk as cpp_dynamical_screened_interaction_W_wk
 
 from triqs_tprf.lattice import gw_sigma_wk_serial_fft as cpp_gw_sigma_wk_serial_fft
 from triqs_tprf.lattice import gw_sigma_tr as cpp_gw_sigma_tr
@@ -45,11 +49,12 @@ from triqs_tprf.lattice import gw_sigma_tr as cpp_gw_sigma_tr
 # ----------------------------------------------------------------------
 def bubble_PI_wk(g_wk):
 
-    r""" Compute the particle-hole bubble from the lattice
-    single particle Green's function
+    r""" Compute the particle-hole bubble from the single particle lattice Green's function
 
     .. math::
-        \PI_{abcd}(i\omega_n, k) = ...
+        \Pi_{abcd}(i\omega_n, k) = - 
+        \mathcal{F}_{\tau, \mathbf{r} \rightarrow i\omega_n, \mathbf{k}}
+        \left\{ G_{d\bar{a}}(\tau, \mathbf{r}) G_{b\bar{c}}(-\tau, -\mathbf{r}) \right\}
     
     Parameters
     ----------
@@ -79,39 +84,83 @@ def bubble_PI_wk(g_wk):
     return PI_wk
 
 # ----------------------------------------------------------------------
-def retarded_screened_interaction_Wr_wk(PI_wk, V_k):
-    return cpp_retarded_screened_interaction_Wr_wk(PI_wk, V_k)
+def dynamical_screened_interaction_W_wk(PI_wk, V_k):
+    return cpp_dynamical_screened_interaction_W_wk(PI_wk, V_k)
 
 # ----------------------------------------------------------------------
 def gw_sigma_wk(Wr_wk, g_wk, fft_flag=False):
+
+    r""" GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
+
+    Fourier transforms the screened interaction and the single-particle
+    Green's function to imagiary time and real space.
+
+    .. math::
+        G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
+
+    .. math::
+        W^{(r)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{(r)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+
+    computes the GW self-energy as the product
+
+    .. math::
+        \Sigma_{ab}(\tau, \mathbf{r}) =
+          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+
+    and transforms back to frequency and momentum
+
+    .. math::
+        \Sigma_{ab}(i\omega_n, \mathbf{k}) =
+          \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
+
+    Parameters
+    ----------
+
+    V_k : TRIQS Green's function (rank 4) on a Brillouinzone mesh
+          static bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+    Wr_wk : TRIQS Green's function (rank 4) on Matsubara and Brillouinzone meshes
+            retarded screened interaction :math:`W^{(r)}_{abcd}(i\omega_n, \mathbf{k})`
+    
+    g_wk : TRIQS Green's function (rank 2) on Matsubara and Brillouinzone meshes
+           single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+    Returns
+    -------
+
+    sigma_wk : TRIQS Green's function (rank 2) on Matsubara and Brillouinzone meshes
+               GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
+    """
 
     if fft_flag:
 
         nw = len(g_wk.mesh.components[0]) / 2
         ntau = nw * 6 + 1
         
-        print('g wk -> wr')
+        mpi.report('g wk -> wr')
         g_wr = fourier_wk_to_wr(g_wk)
-        print('g wr -> tr')
+        mpi.report('g wr -> tr')
         g_tr = fourier_wr_to_tr(g_wr, nt=ntau)
         del g_wr
 
-        print('W wk -> wr')
+        mpi.report('W wk -> wr')
         Wr_wr = chi_wr_from_chi_wk(Wr_wk)
-        print('W wr -> tr')
+        mpi.report('W wr -> tr')
         Wr_tr = chi_tr_from_chi_wr(Wr_wr, ntau=ntau)
         del Wr_wr
 
-        print('sigma tr')
+        mpi.report('sigma tr')
         sigma_tr = cpp_gw_sigma_tr(Wr_tr, g_tr)
         del Wr_tr
         del g_tr
 
-        print('sigma tr -> wr')
+        mpi.report('sigma tr -> wr')
         sigma_wr = fourier_tr_to_wr(sigma_tr, nw=nw)
 
         del sigma_tr
-        print('sigma wr -> wk')
+        mpi.report('sigma wr -> wk')
         sigma_wk = fourier_wr_to_wk(sigma_wr)
         del sigma_wr
 

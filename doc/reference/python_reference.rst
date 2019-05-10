@@ -38,8 +38,10 @@ Lattice Bethe-Salpeter Equation
 GW approximation
 ================
 
-.. autofunction:: triqs_tprf.lattice.screened_interaction_W
-.. autofunction:: triqs_tprf.lattice.gw_self_energy
+.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_wk
+.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_wk_from_generalized_susceptibility
+.. autofunction:: triqs_tprf.gw.bubble_PI_wk
+.. autofunction:: triqs_tprf.gw.gw_sigma_wk
 
 Linearized Eliashberg equation 
 ==============================

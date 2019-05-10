@@ -60,6 +60,40 @@ chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
   return W_wk;
 }
 
+chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
+
+  if( std::get<1>(chi_wk.mesh()) != V_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+  
+  auto W_wk = make_gf(chi_wk);
+  W_wk *= 0.;
+  size_t nb = W_wk.target_shape()[0];
+
+  using scalar_t = chi_wk_t::scalar_t;
+  auto I = make_unit_matrix<scalar_t>(nb * nb);
+
+  // MPI and openMP parallell loop
+  auto arr = mpi_view(W_wk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+
+    array<scalar_t, 4> V_arr{V_k[k], memory_layout_t<4>{0, 1, 2, 3}};
+    array<scalar_t, 4> chi_arr{chi_wk[w, k], memory_layout_t<4>{0, 1, 2, 3}};
+    array<scalar_t, 4> W_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
+
+    auto V = make_matrix_view(group_indices_view(V_arr, {0, 1}, {3, 2}));
+    auto chi = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2}));
+    auto W = make_matrix_view(group_indices_view(W_arr, {0, 1}, {3, 2}));
+
+    W = V * chi * V;
+    W_wk[w, k] = W_arr;
+  }
+
+  W_wk = mpi_all_reduce(W_wk);
+  return W_wk;
+}
+  
 g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
 
   auto Wtm = std::get<0>(Wr_tr.mesh());
