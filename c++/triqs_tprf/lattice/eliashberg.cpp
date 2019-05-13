@@ -26,7 +26,7 @@ namespace triqs_tprf {
 
 // Helper function computing F = GG \Delta
   
-gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk) {
+g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 
   auto [wmesh, kmesh] = delta_wk.mesh();
   auto gf_wmesh = std::get<0>(g_wk.mesh());
@@ -48,8 +48,8 @@ gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk) {
   return F_wk;
 }
 
-gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk,
-                       gk_iw_vt delta_wk) {
+g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
+                       g_wk_vt delta_wk) {
 
   auto [wmesh, kmesh] = delta_wk.mesh();
   auto gamma_wmesh = std::get<0>(Gamma_pp.mesh());
@@ -105,7 +105,7 @@ std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dy
     return {Gamma_pp_dyn_tr, Gamma_pp_const_r};
 }
 
-ek_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, gr_tau_t F_tr) {
+e_k_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr) {
 
   auto _ = all_t{};
 
@@ -123,8 +123,8 @@ ek_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, gr_tau_t F_t
   return delta_k_out;
 }
 
-gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
-                                gk_iw_vt g_wk, gk_iw_vt delta_wk) {
+g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
+                                g_wk_vt g_wk, g_wk_vt delta_wk) {
 
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
   auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
@@ -164,8 +164,8 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
 }
 
 // optimized version if there is only a constant term
-gk_iw_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
-                                        gk_iw_vt g_wk, gk_iw_vt delta_wk) {
+g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
+                                        g_wk_vt g_wk, g_wk_vt delta_wk) {
 
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
   auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
