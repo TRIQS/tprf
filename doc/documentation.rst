@@ -13,7 +13,6 @@ Tutorials
    user_guide/Bethe-Salpeter Equation on the Hubbard atom.ipynb
    user_guide/Lattice BSE on Hubbard atom.ipynb
    user_guide/Mean field and RPA response of the one dimensional Hubbard model.ipynb
-   user_guide/PHT_Hubbard_Model.ipynb
    
 Python reference manual
 -----------------------
