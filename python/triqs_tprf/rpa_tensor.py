@@ -196,12 +196,18 @@ def kanamori_quartic_tensor(norb, U, Up, J, Jp):
 
     .. math::
 
-        \hat{U}_{\text { Kanamori }} = U \sum_{i} \hat{n}_{i, \uparrow} \hat{n}_{i, \downarrow}+\sum_{i>j, s, s^{\prime}}\left(U^{\prime}-J \delta_{\sigma, \sigma^{\prime}}\right) \hat{n}_{i, \sigma} \hat{n}_{j, \sigma^{\prime}} - \\ J \sum_{i \neq j}\left(\hat{c}_{i, \downarrow}^{\dagger} \hat{c}_{j, \uparrow}^{\dagger} \hat{c}_{j, \downarrow} \hat{c}_{i, \uparrow}+\hat{c}_{j, \uparrow}^{\dagger} \hat{c}_{j, \downarrow}^{\dagger} \hat{c}_{i, \uparrow} \hat{c}_{i, \downarrow}+\mathrm{h.c.}\right)
+        \hat{U}_{\text { Kanamori }} = U \sum_{i} \hat{n}_{i, \uparrow} \hat{n}_{i, \downarrow}+
+        \sum_{i>j, s, s^{\prime}}\left(U^{\prime}-J \delta_{\sigma, \sigma^{\prime}}\right)
+        \hat{n}_{i, \sigma} \hat{n}_{j, \sigma^{\prime}} - 
+        \\ J \sum_{i \neq j}\left(\hat{c}_{i, \downarrow}^{\dagger} \hat{c}_{j, \uparrow}^{\dagger}
+        \hat{c}_{j, \downarrow} \hat{c}_{i, \uparrow}+\hat{c}_{j, \uparrow}^{\dagger}
+        \hat{c}_{j, \downarrow}^{\dagger} \hat{c}_{i, \uparrow} \hat{c}_{i, \downarrow}+
+        \mathrm{h.c.}\right)
 
     Parameters
     ----------
     norb : int,
-           Number of orbitals including spin up and down as seperate orbs.
+           Number of orbitals excluding spin.
     U : complex,
         Strength of intra-orbital interaction.
     Up : complex,
@@ -213,10 +219,11 @@ def kanamori_quartic_tensor(norb, U, Up, J, Jp):
 
     Returns
     -------
-    np.ndarray
+    U : np.ndarray,
+        shape = (2*norb, 2*norb, 2*norb, 2*norb)
     """
 
-    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(int(norb/2), U, Up, J, Jp)
+    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp)
     U = quartic_tensor_from_charge_and_spin(U_c, U_s)
 
     return U
