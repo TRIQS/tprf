@@ -208,7 +208,7 @@ if __name__ == '__main__':
     print('The summation and FFT implementation of the eliashberg product'
                                                 ' both yield the same result.')
 
-    deltas_with_fit = compare_next_delta(p.copy(fit_const=True))
+    deltas_with_fit = compare_next_delta(p.alter(fit_const=True))
 
     diff = compare_deltas(deltas[2:], deltas_with_fit[2:])
 

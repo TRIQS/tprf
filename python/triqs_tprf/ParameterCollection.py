@@ -79,14 +79,21 @@ class ParameterCollection(object):
     def dict(self):
         return self.__dict__
 
-    def update(self, **kwargs):
-        self.__dict__.update(kwargs)
+    def alter(self, **kwargs):
+        """Change or add attributes
 
-    def copy(self, **kwargs):
-        """Shallow copy that allows for changing/adding attributes
+        Returns
+        -------
+        p : ``ParameterCollection``
+        """
+        p = self.copy()
+        p.__dict__.update(kwargs)
+        return p 
+
+    def copy(self):
+        """Shallow copy
         """
         p = ParameterCollection(**self.dict())
-        p.update(**kwargs)
         return p
 
     def __getitem__(self, key):
@@ -290,6 +297,6 @@ def parameter_scan(p, **kwargs):
     ps = []
     
     for parameter_value in itertools.product(*parameter_values):
-        ps.append(p.copy(**dict(parameter_value)))
+        ps.append(p.alter(**dict(parameter_value)))
 
     return ParameterCollections(ps)
