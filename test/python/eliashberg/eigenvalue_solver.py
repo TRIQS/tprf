@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     Es_pm, eigen_modes_pm = run_solve_eliashberg(p)
 
-    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.copy(solver='IRAM'))
+    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.alter(solver='IRAM'))
 
     print(Es_pm[0], Es_iram[0])
 
