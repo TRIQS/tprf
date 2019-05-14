@@ -118,4 +118,4 @@ Parameter collections
    :members:
 .. autoclass:: triqs_tprf.ParameterCollection.ParameterCollections
    :members:
-
+.. autofunction:: triqs_tprf.ParameterCollection.parameter_scan
