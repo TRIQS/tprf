@@ -64,7 +64,7 @@ def __dosplot_impl(top, obj, *opt_list, **opt_dict):
     lower_limit = np.min(obj.data.real)
     upper_limit = np.max(obj.data.real)
 
-    dos = gaussian_kde(obj.data[:,0,0].real)
+    dos = gaussian_kde(obj.data.real)
     xs = np.linspace(lower_limit, upper_limit, 500)
 
     dos.covariance_factor = lambda : .1
