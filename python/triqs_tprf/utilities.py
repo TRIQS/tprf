@@ -5,6 +5,8 @@
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
 # Copyright (C) 2019 S. Käser
+# Copyright (C) 2019 by The Simons Foundation
+# Author: H. U.R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -21,21 +23,7 @@
 #
 ################################################################################
 
-""" Collection of functions that can be useful in scripts """
-
 # ----------------------------------------------------------------------
-
-import subprocess
-import os
-import tarfile
-from tempfile import NamedTemporaryFile
-
-# ----------------------------------------------------------------------
-
-from pytriqs.archive import HDFArchive
-
-# ----------------------------------------------------------------------
-
 def show_version_info(info):
     """ Return a string that formats the version information
 
@@ -45,8 +33,13 @@ def show_version_info(info):
     string = "TPRF version %s of hash %s and TRIQS version %s of hash %s"%info
     return string
 
+# ----------------------------------------------------------------------
 def write_TarGZ_HDFArchive(filename, **kwargs):
 
+    import os
+    import tarfile
+    from pytriqs.archive import HDFArchive
+    
     filename = filename.split('.')[0]
     filename_h5 = filename + '.h5'
     filename_tar = filename + '.tar.gz'
@@ -60,7 +53,13 @@ def write_TarGZ_HDFArchive(filename, **kwargs):
 
     os.remove(filename_h5)
 
+# ----------------------------------------------------------------------
 def read_TarGZ_HDFArchive(filename):
+
+    import os
+    import tarfile
+    from tempfile import NamedTemporaryFile
+    from pytriqs.archive import HDFArchive
 
     tar = tarfile.open(filename, "r:gz")
     f = tar.extractfile(tar.getmembers()[0])
@@ -74,3 +73,57 @@ def read_TarGZ_HDFArchive(filename):
     os.remove(tmp.name)
 
     return data
+
+# ----------------------------------------------------------------------
+def BlockGf_data(G):
+    """ Returns a ndarray copy of all data in a BlockGf """
+
+    import numpy as np
+    
+    shape = [G.n_blocks] + list(G[G.indices.next()].data.shape)
+    data = np.zeros(shape, dtype=np.complex)
+    for bidx, (b, g) in enumerate(G):
+        data[bidx] = g.data.copy()
+
+    return data
+
+# ----------------------------------------------------------------------
+def legendre_filter(G_tau, order=100, G_l_cut=1e-19):
+    """ Filter binned imaginary time Green's function
+    using a Legendre filter of given order and coefficient threshold. 
+    
+    Parameters
+    ----------
+
+    G_tau : TRIQS imaginary time Block Green's function
+
+    order : int
+        Legendre expansion order in the filter
+
+    G_l_cut : float
+        Legendre coefficient cut-off 
+
+    Returns
+    -------
+
+    G_l : TRIQS Legendre Block Green's function
+        Fitted Green's function on a Legendre mesh
+
+    """
+    
+    import numpy as np
+    from pytriqs.gf import BlockGf
+    from pytriqs.gf.tools import fit_legendre
+    from pytriqs.gf.gf_fnt import enforce_discontinuity
+    
+    l_g_l = []
+
+    for b, g in G_tau:
+
+        g_l = fit_legendre(g, order=order)
+        g_l.data[:] *= (np.abs(g_l.data) > G_l_cut)
+        enforce_discontinuity(g_l, np.array([[1.]]))
+        l_g_l.append(g_l)
+
+    G_l = BlockGf(name_list=list(G_tau.indices), block_list=l_g_l)
+    return G_l
