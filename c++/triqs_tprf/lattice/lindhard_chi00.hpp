@@ -59,11 +59,11 @@ namespace triqs_tprf {
 	\\ =  
 	\frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij} 
 	  \left(
-	    [1-\delta(\epsilon_{\mathbf{k},i} - \epsilon_{\mathbf{k}+\mathbf{q}, j})]
+	    [1 - \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}})]
 	    \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
 	         {i\omega_n + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}}
 	    +
-  	    \delta(\epsilon_{\mathbf{k},i} - \epsilon_{\mathbf{k}+\mathbf{q}, j})
+  	    \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}}
 	    \frac{\beta}{4 \cosh^2 (\beta \epsilon_{\mathbf{k}, i} / 2) }
 	  \right)
 	  \\ \times
