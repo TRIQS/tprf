@@ -127,3 +127,30 @@ def legendre_filter(G_tau, order=100, G_l_cut=1e-19):
 
     G_l = BlockGf(name_list=list(G_tau.indices), block_list=l_g_l)
     return G_l
+
+# ----------------------------------------------------------------------
+def G2_loc_fixed_fermionic_window_python(g2, nwf):
+
+    """ Limit the last two fermionic freqiencies of a three
+    frequency Green's function object :math:`G(\omega, \nu, \nu')`
+    to ``nwf``. """
+
+    nw = (g2.data.shape[0] + 1) / 2
+    n = g2.data.shape[1]
+    beta = g2.mesh.components[0].beta
+    
+    assert(n/2 >= nwf)
+
+    from pytriqs.gf import Gf, MeshImFreq, MeshProduct
+    
+    mesh_iw = MeshImFreq(beta=beta, S='Boson', n_max=nw)
+    mesh_inu = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)
+    mesh_prod = MeshProduct(mesh_iw, mesh_inu, mesh_inu)
+
+    g2_out = Gf(mesh=mesh_prod, target_shape=g2.target_shape)
+
+    s = n/2 - nwf
+    e = n/2 + nwf
+    
+    g2_out.data[:] = g2.data[:, s:e, s:e]
+    return g2_out
