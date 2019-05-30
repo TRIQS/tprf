@@ -503,7 +503,8 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
   // for (auto const &w : wmesh) {
   //  for (auto const &q : qmesh) {
 
-  auto arr = mpi_view(gf_mesh{wmesh, qmesh});
+  auto wq_mesh = gf_mesh{wmesh, qmesh};
+  auto arr = mpi_view(wq_mesh); // FIXME Use library implementation
 
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
@@ -659,7 +660,8 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
 
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
-  auto arr = mpi_view(gf_mesh{kmesh, bmesh});
+  auto kb_mesh = gf_mesh{kmesh, bmesh};
+  auto arr = mpi_view(kb_mesh); // FIXME Use library implementation
 
   std::cout << "BSE rank " << c.rank() << " of " << c.size() << " has "
 	    << arr.size() << " jobs." << std::endl;
