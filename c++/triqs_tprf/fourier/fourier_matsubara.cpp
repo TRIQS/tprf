@@ -154,7 +154,7 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
                                gf_vec_cvt<imtime> gt, fourier_plan &p,
                                arrays::array_const_view<dcomplex, 2> mom_23) {
   if (mom_23.is_empty())
-    mom_23.rebind(fit_derivatives(gt));
+    return _fourier_impl(iw_mesh, gt, p, fit_derivatives(gt));
 
   double beta = gt.mesh().domain().beta;
   auto L = gt.mesh().size() - 1;
@@ -294,7 +294,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                   "0th moment\n  error is :" +
                       std::to_string(_abs_tail0));
     */
-    mom_123.rebind(tail(range(1, 4), range()));
+    return _fourier_impl(tau_mesh, gw, p, tail(range(1, 4), range()));
   }
 
   double beta = tau_mesh.domain().beta;
