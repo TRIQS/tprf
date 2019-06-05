@@ -124,7 +124,7 @@ Now we can compare the two results for the homogeneous static magnetic susceptib
 The results are in quantitative agreement
 
 .. math::
-   \chi_{\textrm{Field}} = \left. \frac{dM}{dB} \right|_{B \rightarrow 0} \approx 0.3479
+   \chi_{\textrm{Field}} \approx 0.3479
    \, ,
 
 .. math::
