@@ -174,7 +174,7 @@ The vertex BSEs defines :math:`\chi^r_0` and :math:`\stackrel{r}{*}`
 Matsubara frequency transforms
 ------------------------------
 
-Operators and response functions in imaginary time :math:`\tau` can be Fourier transformed to imagniary Matsubara frequencies
+Operators and response functions in imaginary time :math:`\tau` can be Fourier transformed to imaginary Matsubara frequencies
 
 .. math::
    \nu_n = \frac{\pi}{\beta}(2n + \vartheta)
