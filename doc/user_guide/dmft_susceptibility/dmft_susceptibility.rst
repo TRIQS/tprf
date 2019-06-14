@@ -34,7 +34,7 @@ The result is a magnetization :math:`M` vs. applied magnetic field :math:`B` cur
 .. image:: figure_field.svg
     :align: center
 
-The visulaization script is available here: :download:`plot_field.py <plot_field.py>`.
+The visualization script is available here: :download:`plot_field.py <plot_field.py>`.
 
 The resulting homogenous static spin susceptbility has the value
 
@@ -83,7 +83,7 @@ The resulting response functions are plotted below
 .. image:: figure_g2.svg
     :align: center
 
-The visulaization script is available here: :download:`plot_g2.py <plot_g2.py>`.
+The visualization script is available here: :download:`plot_g2.py <plot_g2.py>`.
 
 Lattice Bethe-Salpeter Equation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
