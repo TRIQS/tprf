@@ -90,7 +90,7 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
     W_wk[w, k] = W_arr;
   }
 
-  W_wk = mpi_all_reduce(W_wk);
+  W_wk = mpi::all_reduce(W_wk);
   return W_wk;
 }
   
