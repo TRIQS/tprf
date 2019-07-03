@@ -439,22 +439,24 @@ def k_space_path(paths, num=100, bz=None):
     
     k_vecs = []
 
-    def rel_to_abs(k_vec, cell):
-        return np.einsum('ba,ib->ia', cell, k_vec)
-
     for path in paths:
         ki, kf = path
         x = np.linspace(0., 1., num=num)[:, None]
         k_vec = (1. - x) * ki[None, :] + x * kf[None, :]
 
-        k_vecs.append(rel_to_abs(k_vec, cell))
+        k_vecs.append(k_vec)
+
+    def rel_to_abs(k_vec, cell):
+        return np.einsum('ba,ib->ia', cell, k_vec)
 
     k_vec = k_vecs[0]
-    k_plot = np.linalg.norm(k_vec - k_vec[0][None, :], axis=1)
+    k_vec_abs = rel_to_abs(k_vec, cell)
+    k_plot = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1)
 
     K_plot = [0.]
     for kidx, k_vec in enumerate(k_vecs[1:]):
-        k_plot_new = np.linalg.norm(k_vec - k_vec[0][None, :], axis=1) + k_plot[-1]
+        k_vec_abs = rel_to_abs(k_vec, cell)
+        k_plot_new = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1) + k_plot[-1]
         K_plot.append(k_plot[-1])
         k_plot = np.concatenate((k_plot, k_plot_new))
 
