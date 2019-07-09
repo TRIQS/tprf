@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 #include "eliashberg.hpp"
+#include "common.hpp"
+#include "../mpi.hpp"
 
 namespace triqs_tprf {
 
@@ -188,7 +190,6 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   using scalar_t = chi_wk_t::scalar_t;
 
   size_t nb = chi_c.target_shape()[0];
-  auto [wmesh, kmesh] = chi_c.mesh();
 
   auto Gamma_pp_wk = make_gf(chi_c);
   Gamma_pp_wk *= 0;
@@ -197,7 +198,11 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   auto U_c_matrix = make_matrix_view(group_indices_view(U_c, {0, 1}, {3, 2}));
   auto U_s_matrix = make_matrix_view(group_indices_view(U_s, {0, 1}, {3, 2}));
 
-  for (const auto [w, k] : Gamma_pp_wk.mesh()) {
+  auto meshes_mpi = mpi_view(Gamma_pp_wk.mesh());
+
+#pragma omp parallel for
+  for (int idx = 0; idx < meshes_mpi.size(); idx++){
+      auto &[w, k] = meshes_mpi(idx);
 
       array<scalar_t, 4> Gamma_pp_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
       array<scalar_t, 4> chi_c_arr{chi_c[w, k], memory_layout_t<4>{0, 1, 2, 3}};
@@ -209,12 +214,13 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
       auto chi_c_matrix = make_matrix_view(group_indices_view(chi_c_arr, {0, 1}, {3, 2}));
       auto chi_s_matrix = make_matrix_view(group_indices_view(chi_s_arr, {0, 1}, {3, 2}));
 
-      Gamma_pp_matrix = spin_factor * U_s_matrix * chi_s_matrix * U_s_matrix \
-                      + charge_factor * U_c_matrix * chi_c_matrix * U_c_matrix \
+      Gamma_pp_matrix = charge_factor * U_c_matrix * chi_c_matrix * U_c_matrix \
+                      + spin_factor * U_s_matrix * chi_s_matrix * U_s_matrix \
                       + 0.5 * (U_s_matrix + U_c_matrix);
 
       Gamma_pp_wk[w, k] = Gamma_pp_arr;
   }
+  Gamma_pp_wk = mpi_all_reduce(Gamma_pp_wk);
 
   return Gamma_pp_wk;
 }
