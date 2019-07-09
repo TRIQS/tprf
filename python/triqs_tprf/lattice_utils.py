@@ -238,7 +238,7 @@ def chi_contraction(chi, op1, op2):
                          ' must fit the shape of chi %s.'%(chi.target_shape,))
 
     chi_op1op2 = chi[0, 0, 0, 0].copy()
-    chi_op1op2.data[:] = np.einsum('wqabcd,ab,cd->wq', chi.data, op1, op2)
+    chi_op1op2.data[:] = np.einsum('...abcd,ab,cd->...', chi.data, op1, op2)
 
     return chi_op1op2
 
