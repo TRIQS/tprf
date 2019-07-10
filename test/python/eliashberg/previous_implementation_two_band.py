@@ -26,6 +26,7 @@ from triqs_tprf.lattice import solve_rpa_PH
 from triqs_tprf.lattice import gamma_PP_singlet
 from triqs_tprf.lattice import eliashberg_product_fft
 from triqs_tprf.eliashberg import preprocess_gamma_for_fft, solve_eliashberg
+from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
@@ -80,7 +81,7 @@ chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
 gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
 Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma) # This one is not tested
 next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
-E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM', initial_delta=g0_wk)
+E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')#, initial_delta=g0_wk)
 
 # -- Save results
 
@@ -116,9 +117,7 @@ print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark
 np.testing.assert_allclose(p_benchmark.gamma.data, p.gamma.data)
 np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data)
 np.testing.assert_allclose(p_benchmark.E, p.E) 
-try:
-    np.testing.assert_allclose(p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
-except AssertionError:
-    np.testing.assert_allclose(-p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
+assert allclose_by_scalar_multiplication(p_benchmark.eigen_mode, p.eigen_mode),\
+            "Eigenvectors are not the same."
 
 print('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info))

@@ -23,7 +23,8 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
 from triqs_tprf.lattice import gamma_PP_singlet
-from triqs_tprf.eliashberg import solve_eliashberg
+from triqs_tprf.eliashberg import solve_eliashberg, semi_random_initial_delta
+from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
@@ -73,9 +74,10 @@ def run_solve_eliashberg(p):
         gamma_const = None
     else:
         gamma_const = 0.5*(U_s + U_c)
-    
+
+    initial_delta = semi_random_initial_delta(g0_wk, seed=1337)
     Es, eigen_modes = solve_eliashberg(gamma, g0_wk, Gamma_pp_const_k=gamma_const, 
-                                        product=p.product, solver=p.solver)
+                                        product=p.product, solver=p.solver, initial_delta=initial_delta)
     
     return Es, eigen_modes
 
@@ -106,13 +108,9 @@ if __name__ == '__main__':
     Es_iram, eigen_modes_iram = run_solve_eliashberg(p.alter(solver='IRAM'))
 
     print(Es_pm[0], Es_iram[0])
-
     np.testing.assert_allclose(Es_pm[0], Es_iram[0])
 
-    try:
-        np.testing.assert_allclose(eigen_modes_pm[0].data, eigen_modes_iram[0].data, atol=1e-8)
-    except AssertionError:
-        np.testing.assert_allclose(-eigen_modes_pm[0].data, eigen_modes_iram[0].data, atol=1e-8)
+    assert allclose_by_scalar_multiplication(eigen_modes_pm[0], eigen_modes_iram[0]),\
+            "Eigenvectors are not the same."
 
     print('Both solvers yield the same results.')
-

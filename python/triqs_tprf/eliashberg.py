@@ -329,3 +329,42 @@ def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
         norm, v_k = power_method(init, offset=-norm, tol=tol)
     return norm, v_k
 
+def allclose_by_scalar_multiplication(delta_1, delta_2, atol=1e-10):
+    """Test if two eigenvectors are equal if multiplied by a scalar
+
+    Eigenvectors are not unique and can be multiplied by any complex scalar.
+    Therfore two eigenvalue solver could output different eigenvectors for 
+    the same non-degenerate eigenvalue.
+    This function checks if two eigenvectors are only different, because of a multiplication
+    by a scalar.
+
+    Parameters
+    ----------
+    delta_1 : Gf
+    delta_2 : Gf
+    tol : float, optional
+          The tolerance at which the eigenvector are considered to be equal up to a scalar 
+
+    Returns
+    -------
+    have_common_scalar_factor : bool,
+                                True if the two eigenvectors are equal up to a scalar.
+                                False otherwise.
+    """
+    delta_1_arr = delta_1.data.flatten()
+    delta_2_arr = delta_2.data.flatten()
+    
+    # Remove numerical zeroes
+    delta_1_arr = delta_1_arr[np.abs(delta_1_arr) > 1e-8]
+    delta_2_arr = delta_2_arr[np.abs(delta_2_arr) > 1e-8]
+
+    try:
+        division_of_deltas = np.divide(delta_1_arr, delta_2_arr)
+    except ValueError: # Arrays do not contain the same # of zeroes and are therefore not equal
+        return False 
+
+    # Check if elements share common scalar factor
+    have_common_scalar_factor = np.allclose(division_of_deltas, division_of_deltas[0], atol=atol)
+
+    return have_common_scalar_factor
+
