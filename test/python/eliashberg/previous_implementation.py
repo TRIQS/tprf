@@ -24,7 +24,7 @@ from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_t
 from triqs_tprf.lattice import solve_rpa_PH
 from triqs_tprf.lattice import gamma_PP_singlet
 from triqs_tprf.lattice import eliashberg_product
-from triqs_tprf.eliashberg import solve_eliashberg
+from triqs_tprf.eliashberg import solve_eliashberg, allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
@@ -122,9 +122,7 @@ print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark
 np.testing.assert_allclose(p_benchmark.gamma.data, p.gamma.data)
 np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data)
 np.testing.assert_allclose(p_benchmark.E, p.E) 
-try:
-    np.testing.assert_allclose(p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
-except AssertionError:
-    np.testing.assert_allclose(-p_benchmark.eigen_mode.data, p.eigen_mode.data, atol=1e-6) 
+assert allclose_by_scalar_multiplication(p_benchmark.eigen_mode, p.eigen_mode),\
+            "Eigenvectors are not the same."
 
 print('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info))
