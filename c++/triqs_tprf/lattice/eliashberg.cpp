@@ -23,29 +23,75 @@
 #include "eliashberg.hpp"
 #include "common.hpp"
 #include "../mpi.hpp"
+#include <triqs/utility/timer.hpp>
+#include "../fourier/fourier.hpp"
 
 namespace triqs_tprf {
 
+  namespace {
+    using namespace fourier;
+  }
+
 // Helper function computing F = GG \Delta
-  
+
 g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
+  triqs::utility::timer t_all, t_parallel;
+  t_all.start();
+
+  size_t norb = g_wk.target_shape()[0];
 
   auto [wmesh, kmesh] = delta_wk.mesh();
-  auto gf_wmesh = std::get<0>(g_wk.mesh());
+  auto wmesh_gf = std::get<0>(g_wk.mesh());
 
-  if (wmesh.size() > gf_wmesh.size())
+  if (wmesh.size() > wmesh_gf.size())
       TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
-          " (" << gf_wmesh.size() << ") must be atleast the size of the mesh of Delta (" <<
+          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
           wmesh.size() << ").";
 
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-  for (const auto [w, k] : delta_wk.mesh())
+/* The rest of this function contains a lot boiler plate code due to issue
+   #725 in the TRIQS library and not yet avaible functionality to use 
+   'pragma omp parallel loop for' over mesh objects.
+   It will be changed later
+*/
+  array<typename gf_mesh<brillouin_zone>::mesh_point_t, 1> k_arr(kmesh.size());
+    auto k_iter = kmesh.begin();
+    for (auto idx : range(0, kmesh.size())) {
+        auto k  = *k_iter;
+        k_arr(idx) = k;
+        k_iter++;
+    }
+
+  auto _ = all_t{};
+  t_parallel.start();
+#pragma omp parallel for
+ for(int idx_k = 0; idx_k < kmesh.size(); idx_k++){
+   auto k = k_arr(idx_k);
+
+   auto g_left_w = make_gf<imfreq>(wmesh, g_wk.target());
+   auto g_right_w = make_gf<imfreq>(wmesh, g_wk.target());
+   auto delta_w = make_gf<imfreq>(wmesh, delta_wk.target());
+   auto F_w = make_gf<imfreq>(wmesh, F_wk.target());
+
+   g_left_w = g_wk[_, k]; 
+   g_right_w = g_wk[_, -k]; 
+   delta_w = delta_wk[_, k];
+
+  for (const auto w : wmesh) {
     for (auto [A, B] : F_wk.target_indices())
       for (auto [c, d] : delta_wk.target_indices())
-        F_wk[w, k](A, B) +=
-            g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+        F_w[w](A, B) +=
+        g_left_w[w](A, c) * g_right_w[-w](B, d) * delta_w[w](c, d);
+     }
+     F_wk[_, k] = F_w;
+   }
+   t_parallel.stop();
+   t_all.stop();
+   std::cout << "all:\t" << double(t_all) << "\n" \
+              << "parallel:\t" << double(t_parallel) << "\n" \
+              << "sequential:\t" << double(t_all - t_parallel) << "\n";
 
   return F_wk;
 }
@@ -128,8 +174,15 @@ e_k_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
 g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
                                 g_wk_vt g_wk, g_wk_vt delta_wk) {
 
+  triqs::utility::timer t_g_delta_g_product, t_fft_F, t_dynamic_product, t_fft_delta, t_constant_product, t_combine;
+    
+  t_g_delta_g_product.start();
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  t_g_delta_g_product.stop();
+
+  t_fft_F.start();
   auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
+  t_fft_F.stop();
 
   auto [tmesh, rmesh] = F_tr.mesh();
 
@@ -137,30 +190,70 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   auto delta_tr_out = make_gf(F_tr);
   delta_tr_out *= 0.;
 
-  auto gamma_tmesh = std::get<0>(Gamma_pp_dyn_tr.mesh());
+  auto tmesh_gamma = std::get<0>(Gamma_pp_dyn_tr.mesh());
 
   // Test if the tau meshs of delta and gamma are compatible. If not raise an error, because
   // it would lead to wrong results.
-  if (tmesh.size() != gamma_tmesh.size()) 
+  if (tmesh.size() != tmesh_gamma.size()) 
       TRIQS_RUNTIME_ERROR << "The size of the imaginary time mesh of Gamma"
-          " (" << gamma_tmesh.size() << ") must be the size of the mesh of Delta (" <<
+          " (" << tmesh_gamma.size() << ") must be the size of the mesh of Delta (" <<
           tmesh.size() << ").";
 
-  for (const auto [t, r] : triqs::utility::product(tmesh, rmesh)) {
-    for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-      delta_tr_out[t, r](a, b) += -Gamma_pp_dyn_tr[t, r](A, a, B, b) * F_tr[t, r](A, B);
+  t_dynamic_product.start();
+/* This function contains a lot boiler plate code due to issue
+   #725 in the TRIQS library and not yet avaible functionality to use 
+   'pragma omp parallel loop for' over mesh objects.
+   It will be changed later
+*/
+
+  array<typename gf_mesh<cyclic_lattice>::mesh_point_t, 1> r_arr(rmesh.size());
+    auto r_iter = rmesh.begin();
+    for (auto idx : range(0, rmesh.size())) {
+        auto r  = *r_iter;
+        r_arr(idx) = r;
+        r_iter++;
+    }
+  auto _ = all_t{};
+#pragma omp parallel for
+  for(int idx_r = 0; idx_r < rmesh.size(); idx_r++){
+    auto r = r_arr(idx_r);
+
+    auto delta_t = make_gf<imtime>(tmesh, delta_tr_out.target());
+
+    auto Gamma_pp_dyn_t = Gamma_pp_dyn_tr[_, r];
+    auto F_t = F_tr[_, r];
+    
+    for (const auto t : tmesh) {
+      for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
+        delta_t[t](a, b) += -Gamma_pp_dyn_t[t](A, a, B, b) * F_t[t](A, B);
+    }
+    delta_tr_out[_, r] = delta_t;
   }
+  t_dynamic_product.stop();
   
   // FIXME
   // This raises warnings when used with random delta input, e.g. eigenvalue finder
+  t_fft_delta.start();
   auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
+  t_fft_delta.stop();
 
   // Constant part
+  t_constant_product.start();
   auto delta_k_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
+  t_constant_product.stop();
 
   // Combine dynamic and constant part
+  t_combine.start();
   for (const auto [w , k]: delta_wk_out.mesh())
       delta_wk_out[w, k] += delta_k_out[k];
+  t_combine.stop();
+
+  std::cout << "g_delta_g_product:\t" << double(t_g_delta_g_product) << "\n" \
+              << "fft_F:\t" << double(t_fft_F) << "\n" \
+              << "dynamic_product:\t" << double(t_dynamic_product) << "\n" \
+              << "fft_delta:\t" << double(t_fft_delta) << "\n" \
+              << "constant_product:\t" << double(t_constant_product) << "\n" \
+              << "combin:\t" << double(t_combine) << "\n" ;
 
   return delta_wk_out;
 }
