@@ -39,7 +39,10 @@ p = ParameterCollection(
         filename = 'eliashberg_benchmark_two_band_new.tar.gz',
         dim = 2,
         norbs = 2,
-        t = 1.0,
+        t1 = 1.0,
+        t2 = 0.5,
+        t12 = 0.1,
+        t21 = 0.1,
         mu = 0.0,
         beta = 1,
         U = 1.0,
@@ -54,8 +57,8 @@ full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
 all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
 non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
 
-# -- Make off-diagonal hoppings 10 percent the strength of diagonal ones. 
-t = -p.t * (0.9 * np.eye(p.norbs) + 0.1*np.ones((p.norbs, p.norbs)))
+# -- Create hopping matrix for two-band model
+t = -np.array([[p.t1, p.t12], [p.t21, p.t2]])
 
 H = TBLattice(
             units = full_units[:p.dim],
@@ -81,7 +84,7 @@ chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
 gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
 Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma) # This one is not tested
 next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
-E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')#, initial_delta=g0_wk)
+E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
 
 # -- Save results
 
@@ -100,11 +103,14 @@ p_benchmark = read_TarGZ_HDFArchive(filename)['p']
 # -- Check if the benchmark data was calculated for the same model,
 # -- otherwise a comparison does not make sense.
 
-model_parameters = ['dim', 'norbs', 't', 'mu', 'beta', 'U']
+model_parameters = ['dim', 'norbs', 't1', 't2', 't12', 't21', 'mu', 'beta', 'U']
 
 for model_parameter in model_parameters:
-    run_time, benchmark = p[model_parameter], p_benchmark[model_parameter]
-    if run_time != benchmark:
+    try:
+        run_time, benchmark = p[model_parameter], p_benchmark[model_parameter]
+    except KeyError:
+        raise AssertionError, "The model parameter %s does not exist."%model_parameter
+    if (run_time != benchmark):
         error = 'The model of the benchmark and the one used now are not the same.\n' 
         error += '\t\tNow: {0} = {1}, benchmark: {0} = {2}.'.format(model_parameter, run_time,
                                                                                     benchmark)
