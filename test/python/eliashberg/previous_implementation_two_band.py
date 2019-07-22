@@ -121,7 +121,7 @@ for model_parameter in model_parameters:
 print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info))
 
 np.testing.assert_allclose(p_benchmark.gamma.data, p.gamma.data)
-np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data)
+np.testing.assert_allclose(p_benchmark.next_delta.data, p.next_delta.data, atol=1e-9)
 np.testing.assert_allclose(p_benchmark.E, p.E) 
 assert allclose_by_scalar_multiplication(p_benchmark.eigen_mode, p.eigen_mode),\
             "Eigenvectors are not the same."
