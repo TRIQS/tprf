@@ -171,6 +171,158 @@ e_k_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
   return delta_k_out;
 }
 
+// BOILER PLATE CODE FOR FFT STARTS HERE ============================================================ 
+
+g_tr_t g_tr_from_g_wr(g_wr_cvt g_wr, int nt = -1) {
+  
+  auto _ = all_t{};
+  int nb = g_wr.target().shape()[0];
+
+  auto [wmesh, rmesh] = g_wr.mesh();
+
+  auto tmesh = make_adjoint_mesh(wmesh, nt);
+  g_tr_t g_tr{{tmesh, rmesh}, {nb, nb}};
+
+  auto r0 = *rmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(g_wr[_, r0]), gf_view(g_tr[_, r0]));
+
+  array<typename gf_mesh<cyclic_lattice>::mesh_point_t, 1> r_arr(rmesh.size());
+    auto r_iter = rmesh.begin();
+    for (auto idx : range(0, rmesh.size())) {
+        auto r  = *r_iter;
+        r_arr(idx) = r;
+        r_iter++;
+    }
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < r_arr.size(); idx++) {
+    auto &r = r_arr(idx);
+
+    auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
+    auto g_t = make_gf<imtime>(tmesh, g_tr.target());
+  
+    g_w = g_wr[_, r];
+
+    _fourier_with_plan<0>(gf_const_view(g_w), gf_view(g_t), p);
+
+    g_tr[_, r] = g_t;
+  }
+  return g_tr;
+}
+
+g_wr_t g_wr_from_g_wk(g_wk_cvt g_wk) {
+  
+  auto _ = all_t{};
+  int nb = g_wk.target().shape()[0];
+
+  auto [wmesh, kmesh] = g_wk.mesh();
+
+  auto rmesh = make_adjoint_mesh(kmesh);
+  g_wr_t g_wr{{wmesh, rmesh}, {nb, nb}};
+
+  auto w0 = *wmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
+
+  array<typename gf_mesh<imfreq>::mesh_point_t, 1> w_arr(wmesh.size());
+    auto w_iter = wmesh.begin();
+    for (auto idx : range(0, wmesh.size())) {
+        auto w  = *w_iter;
+        w_arr(idx) = w;
+        w_iter++;
+    }
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < w_arr.size(); idx++) {
+    auto &w = w_arr(idx);
+
+    auto g_k = make_gf<brillouin_zone>(kmesh, g_wk.target());
+    auto g_r = make_gf<cyclic_lattice>(rmesh, g_wr.target());
+  
+    g_k = g_wk[w, _];
+
+    _fourier_with_plan<0>(gf_const_view(g_k), gf_view(g_r), p);
+
+    g_wr[w, _] = g_r;
+  }
+  return g_wr;
+}
+
+g_wr_t g_wr_from_g_tr(g_tr_cvt g_tr) {
+  
+  auto _ = all_t{};
+  int nb = g_tr.target().shape()[0];
+
+  auto [tmesh, rmesh] = g_tr.mesh();
+
+  auto wmesh = make_adjoint_mesh(tmesh);
+  g_wr_t g_wr{{wmesh, rmesh}, {nb, nb}};
+
+  auto r0 = *rmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(g_tr[_, r0]), gf_view(g_wr[_, r0]));
+
+  array<typename gf_mesh<cyclic_lattice>::mesh_point_t, 1> r_arr(rmesh.size());
+    auto r_iter = rmesh.begin();
+    for (auto idx : range(0, rmesh.size())) {
+        auto r  = *r_iter;
+        r_arr(idx) = r;
+        r_iter++;
+    }
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < r_arr.size(); idx++) {
+    auto &r = r_arr(idx);
+
+    auto g_t = make_gf<imtime>(tmesh, g_tr.target());
+    auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
+  
+    g_t = g_tr[_, r];
+
+    _fourier_with_plan<0>(gf_const_view(g_t), gf_view(g_w), p);
+
+    g_wr[_, r] = g_w;
+  }
+  return g_wr;
+}
+
+g_wk_t g_wk_from_g_wr(g_wr_cvt g_wr) {
+  
+  auto _ = all_t{};
+  int nb = g_wr.target().shape()[0];
+
+  auto [wmesh, rmesh] = g_wr.mesh();
+
+  auto kmesh = make_adjoint_mesh(rmesh);
+  g_wk_t g_wk{{wmesh, kmesh}, {nb, nb}};
+
+  auto w0 = *wmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
+
+  array<typename gf_mesh<imfreq>::mesh_point_t, 1> w_arr(wmesh.size());
+    auto w_iter = wmesh.begin();
+    for (auto idx : range(0, wmesh.size())) {
+        auto w  = *w_iter;
+        w_arr(idx) = w;
+        w_iter++;
+    }
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < w_arr.size(); idx++) {
+    auto &w = w_arr(idx);
+
+    auto g_r = make_gf<cyclic_lattice>(rmesh, g_wr.target());
+    auto g_k = make_gf<brillouin_zone>(kmesh, g_wk.target());
+  
+    g_r = g_wr[w, _];
+
+    _fourier_with_plan<0>(gf_const_view(g_r), gf_view(g_k), p);
+
+    g_wk[w, _] = g_k;
+  }
+  return g_wk;
+}
+
+// BOILER PLATE CODE FOR FFT ENDS HERE ============================================================ 
+
 g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
                                 g_wk_vt g_wk, g_wk_vt delta_wk) {
 
@@ -181,7 +333,9 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   t_g_delta_g_product.stop();
 
   t_fft_F.start();
-  auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
+  //auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
+  auto F_wr = g_wr_from_g_wk(F_wk);
+  auto F_tr = g_tr_from_g_wr(F_wr);
   t_fft_F.stop();
 
   auto [tmesh, rmesh] = F_tr.mesh();
@@ -234,7 +388,9 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   // FIXME
   // This raises warnings when used with random delta input, e.g. eigenvalue finder
   t_fft_delta.start();
-  auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
+  //auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
+  auto delta_wr_out = g_wr_from_g_tr(delta_tr_out);
+  auto delta_wk_out = g_wk_from_g_wr(delta_wr_out);
   t_fft_delta.stop();
 
   // Constant part
