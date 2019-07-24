@@ -28,6 +28,7 @@
 #include "./lattice/gw.hpp"
 #include "./lattice/eliashberg.hpp"
 #include "./lattice/fourier_interpolation.hpp"
+#include "./lattice/fourier_gf.hpp"
 
 #include "./lattice/chi_imtime.hpp"
 #include "./lattice/chi_imfreq.hpp"
