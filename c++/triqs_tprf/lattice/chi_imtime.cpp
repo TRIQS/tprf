@@ -24,7 +24,7 @@
 #include "chi_imtime.hpp"
 
 #include "../fourier/fourier.hpp"
-#include "fourier_gf.hpp"
+#include "fourier.hpp"
 
 namespace triqs_tprf {
 
