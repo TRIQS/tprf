@@ -26,7 +26,7 @@ using triqs::arrays::inverse;
 
 #include <omp.h>
 #include "../mpi.hpp"
-#include "fourier_gf.hpp"
+#include "fourier.hpp"
 
 namespace triqs_tprf {
 
