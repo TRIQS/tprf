@@ -35,6 +35,7 @@ namespace triqs_tprf {
 namespace {
 using fourier::_fourier_plan;
 using fourier::_fourier_with_plan;
+placeholder<1> inu;
 } // namespace
 
 // ----------------------------------------------------
@@ -216,7 +217,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
                                                  g_wk_cvt g_wk) {
 
   int nb = g_wk.target().shape()[0];
-  auto [fmesh_large, kmesh] = g_wk.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
 
   double beta = fmesh.domain().beta;
 
@@ -287,7 +288,7 @@ chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
 
 chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
 
-  auto [fmesh_large, kmesh] = g_wk.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
 
   int nb = g_wk.target().shape()[0];
   double beta = std::get<0>(g_wk.mesh()).domain().beta;
@@ -776,8 +777,9 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
   auto _ = all_t{};
 
   auto target = gamma_ph_wnn.target();
-  auto [fmesh_large, kmesh] = g_wk.mesh();
-  auto [bmesh, fmesh, fmesh2] = gamma_ph_wnn.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
+  auto bmesh = std::get<0>(gamma_ph_wnn.mesh());
+  auto fmesh = std::get<1>(gamma_ph_wnn.mesh());
 
   double beta = fmesh.domain().beta;
 
@@ -904,7 +906,8 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
   auto kmesh = e_k.mesh();
   auto fmesh_large = sigma_w.mesh();
 
-  auto [bmesh, fmesh, fmesh2] = gamma_ph_wnn.mesh();
+  auto bmesh = std::get<0>(gamma_ph_wnn.mesh());
+  auto fmesh = std::get<1>(gamma_ph_wnn.mesh());
 
   double beta = fmesh.domain().beta;
 
