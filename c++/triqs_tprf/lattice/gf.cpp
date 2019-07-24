@@ -22,10 +22,10 @@
 #include <triqs/arrays/linalg/det_and_inverse.hpp>
 using triqs::arrays::inverse;
 
-#include "../mpi.hpp"
-#include "common.hpp"
 #include "gf.hpp"
 
+#include <omp.h>
+#include "../mpi.hpp"
 #include "fourier_gf.hpp"
 
 namespace triqs_tprf {

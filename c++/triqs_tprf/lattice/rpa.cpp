@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include "rpa.hpp"
-#include "common.hpp"
+#include <omp.h>
 #include "../mpi.hpp"
 
 namespace triqs_tprf {
