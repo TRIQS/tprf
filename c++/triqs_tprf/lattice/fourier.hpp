@@ -33,14 +33,14 @@ namespace triqs_tprf {
     using namespace fourier;
   }
 
-template <typename Target>
-auto fourier_wr_to_tr_general_target(gf_const_view<cartesian_product<imfreq, cyclic_lattice>, Target> g_wr, int n_tau = -1) {
+template <typename Gf_type>
+auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
 
   auto _ = all_t{};
   auto [wmesh, rmesh] = g_wr.mesh();
 
   auto tmesh = make_adjoint_mesh(wmesh, n_tau);
-  auto g_tr = gf<cartesian_product<imtime, cyclic_lattice>, Target>{{tmesh, rmesh}, g_wr.target_shape()};
+  auto g_tr = make_gf<cartesian_product<imtime, cyclic_lattice>>({tmesh, rmesh}, g_wr.target());
 
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[_, r0]), gf_view(g_tr[_, r0]));
@@ -64,14 +64,14 @@ auto fourier_wr_to_tr_general_target(gf_const_view<cartesian_product<imfreq, cyc
   return g_tr;
 }
 
-template <typename Target>
-auto fourier_tr_to_wr_general_target(gf_const_view<cartesian_product<imtime, cyclic_lattice>, Target> g_tr, int n_w = -1) {
+template <typename Gf_type>
+auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
   
   auto _ = all_t{};
   auto [tmesh, rmesh] = g_tr.mesh();
 
   auto wmesh = make_adjoint_mesh(tmesh, n_w);
-  auto g_wr = gf<cartesian_product<imfreq, cyclic_lattice>, Target>{{wmesh, rmesh}, g_tr.target_shape()};
+  auto g_wr = make_gf<cartesian_product<imfreq, cyclic_lattice>>({wmesh, rmesh}, g_tr.target());
 
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_tr[_, r0]), gf_view(g_wr[_, r0]));
@@ -95,15 +95,16 @@ auto fourier_tr_to_wr_general_target(gf_const_view<cartesian_product<imtime, cyc
   return g_wr;
 }
 
-template <typename Target>
-auto fourier_wk_to_wr_general_target(gf_const_view<cartesian_product<imfreq, brillouin_zone>, Target> g_wk) {
+template <typename Gf_type>
+auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
   
   auto _ = all_t{};
 
   auto [wmesh, kmesh] = g_wk.mesh();
 
   auto rmesh = make_adjoint_mesh(kmesh);
-  auto g_wr = gf<cartesian_product<imfreq, cyclic_lattice>, Target>{{wmesh, rmesh}, g_wk.target_shape()};
+  //auto g_wr = gf<cartesian_product<imfreq, cyclic_lattice>, Target>{{wmesh, rmesh}, g_wk.target_shape()};
+  auto g_wr = make_gf<cartesian_product<imfreq, cyclic_lattice>>({wmesh, rmesh}, g_wk.target());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
@@ -127,15 +128,15 @@ auto fourier_wk_to_wr_general_target(gf_const_view<cartesian_product<imfreq, bri
   return g_wr;
 }
 
-template <typename Target>
-auto fourier_wr_to_wk_general_target(gf_const_view<cartesian_product<imfreq, cyclic_lattice>, Target> g_wr) {
+template <typename Gf_type>
+auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   
   auto _ = all_t{};
 
   auto [wmesh, rmesh] = g_wr.mesh();
 
   auto kmesh = make_adjoint_mesh(rmesh);
-  auto g_wk = gf<cartesian_product<imfreq, brillouin_zone>, Target>{{wmesh, kmesh}, g_wr.target_shape()};
+  auto g_wk = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, g_wr.target());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
