@@ -197,7 +197,7 @@ if __name__ == '__main__':
             nr_factor = 0.5,
             fit_const = False,
             big_factor = 2,
-            atol = 1e-9,
+            atol = 1e-8,
             plot = False,
             )
 

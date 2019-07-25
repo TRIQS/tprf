@@ -26,6 +26,7 @@
 #include <triqs/utility/timer.hpp>
 
 #include "gf.hpp"
+#include "fourier.hpp"
 
 namespace triqs_tprf {
 
@@ -142,7 +143,9 @@ std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt G
 std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, 
                                                             chi_k_vt Gamma_pp_const_k) {
 
-    auto Gamma_pp_dyn_tr = make_gf_from_fourier<0, 1>(Gamma_pp_dyn_wk);
+    auto Gamma_pp_dyn_wr = fourier_wk_to_wr_general_target(Gamma_pp_dyn_wk);
+    auto Gamma_pp_dyn_tr = fourier_wr_to_tr_general_target(Gamma_pp_dyn_wr);
+
     auto Gamma_pp_const_r = make_gf_from_fourier<0>(Gamma_pp_const_k);
 
     return {Gamma_pp_dyn_tr, Gamma_pp_const_r};
