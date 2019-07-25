@@ -295,16 +295,24 @@ def general_susceptibility_from_charge_and_spin(chi_c, chi_s, spin_fast=True):
     return chi_general
 
 # ----------------------------------------------------------------------    
-def charge_and_spin_susceptibility_from_general(chi, spin_fast=True):
-    """Construct a chi spin and charge from a general susceptibility
+def charge_and_spin_susceptibility_from_general(chi, spin_fast=True, check_spin_conservation=True):
+    r"""Construct a chi spin and charge from a generalized susceptibility
 
-    Parameters:
+    Should only be used for a :math:`SU(2)` susceptibility.
 
-    chi: Greens function, the general susceptibility
-    spin_fast: bool, True if spin is the fast index, e.g.
-                        xz up, xz down, xy up, xy down, yz up, yz down,
-                    or False if spin is the slow index, e.g.
-                        xz up, xy up, yz up, xz down, xy down, yz down.
+    Parameters
+    ----------
+    chi : Gf,
+          Generalized susceptibility :math:`\chi_{a,b,c,d}` where :math:`a,b,c,d` are
+          combined indices of spin and orbital.
+    spin_fast : bool, optional
+                True if spin is the fast index, e.g.
+                xz up, xz down, xy up, xy down, yz up, yz down.
+                False if spin is the slow index, e.g.
+                xz up, xy up, yz up, xz down, xy down, yz down.
+    check_spin_conservation : bool, optional
+                              True if the susceptibility should be checked for spin
+                              conservation, False otherwise.           
     """
 
     norb = chi.target_shape[-1] / 2
@@ -321,20 +329,19 @@ def charge_and_spin_susceptibility_from_general(chi, spin_fast=True):
         up = slice(norb)
         down = slice(norb, None)
 
-    # -- Check spin-conservation
+    if check_spin_conservation:
+        np.testing.assert_allclose(chi[(up, up, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(up, up, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, up, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, up, up)].data, 0)
 
-    np.testing.assert_allclose(chi[(up, up, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(up, up, down, up)].data, 0)
-    np.testing.assert_allclose(chi[(up, down, up, up)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, up, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, down, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, down, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, down, down)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, down, down)].data, 0)
 
-    np.testing.assert_allclose(chi[(down, down, down, up)].data, 0)
-    np.testing.assert_allclose(chi[(down, down, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, down, down)].data, 0)
-    np.testing.assert_allclose(chi[(up, down, down, down)].data, 0)
-
-    np.testing.assert_allclose(chi[(up, down, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, down, up)].data, 0)
 
     chi_uu = chi[(up, up, up, up)]
     chi_ud = chi[(up, up, down, down)]
