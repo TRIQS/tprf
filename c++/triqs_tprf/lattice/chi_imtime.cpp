@@ -61,7 +61,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
   auto arr = mpi_view(rmesh);
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto & r = arr(idx);
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
@@ -107,7 +107,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
   auto arr = mpi_view(rmesh);
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto & r = arr(idx);
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
@@ -172,7 +172,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr) {
   auto arr = mpi_view(rmesh);
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto & r = arr(idx);
 
     auto _ = all_t{};

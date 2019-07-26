@@ -47,7 +47,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
   auto arr = mpi_view(g0_wk.mesh());
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
     g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
   }
@@ -97,7 +97,7 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   auto arr = mpi_view(g_wk.mesh());
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
   }

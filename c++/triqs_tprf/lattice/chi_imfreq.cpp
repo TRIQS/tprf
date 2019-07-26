@@ -88,7 +88,7 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
 
   t_calc.start();
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &r = arr(idx);
 
     auto chi0_wn =
@@ -167,7 +167,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
   t_calc.start();
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
+  for (unsigned int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
     auto chi0_wn =
@@ -349,7 +349,7 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(gf_mesh{bmesh, fmesh});
 
 #pragma omp parallel for shared(kmesh, rmesh)
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, n] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto n = std::get<1>(arr(idx));
@@ -422,7 +422,7 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
   t_calc.start();
   
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, n] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto n = std::get<1>(arr(idx));
@@ -473,7 +473,7 @@ chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(gf_mesh{wmesh, kmesh});
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
     for( auto &n : nmesh) chi_wk[w, k] += chi_wnk[w, n, k];
     chi_wk[w, k] /= beta * beta;
@@ -507,7 +507,7 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(wq_mesh); // FIXME Use library implementation
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, q] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto q = std::get<1>(arr(idx));
@@ -614,7 +614,7 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
   // for (auto const &k : mbz) {
 
 #pragma omp parallel for
-  for (int idx = 0; idx < mbz.size(); idx++) {
+  for (unsigned int idx = 0; idx < mbz.size(); idx++) {
     auto iter = mbz.begin();
     iter += idx;
     auto k = *iter;
@@ -670,7 +670,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
   t.start();
   
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[k, w] = arr(idx);
     auto k = std::get<0>(arr(idx));
     auto w = std::get<1>(arr(idx));

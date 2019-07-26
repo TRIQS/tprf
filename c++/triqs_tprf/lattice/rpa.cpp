@@ -44,7 +44,7 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
   auto meshes_mpi = mpi_view(chi0_wk.mesh());
 
 #pragma omp parallel for
-  for (int idx = 0; idx < meshes_mpi.size(); idx++){
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
       auto &[w, k] = meshes_mpi(idx);
 
       array<scalar_t, 4> chi_arr{nb, nb, nb, nb,
