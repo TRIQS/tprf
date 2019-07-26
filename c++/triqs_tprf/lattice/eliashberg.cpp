@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include "eliashberg.hpp"
-#include "common.hpp"
+#include <omp.h>
 #include "../mpi.hpp"
 #include <triqs/utility/timer.hpp>
 
@@ -34,8 +34,6 @@ namespace triqs_tprf {
 g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   triqs::utility::timer t_all, t_parallel;
   t_all.start();
-
-  size_t norb = g_wk.target_shape()[0];
 
   auto [wmesh, kmesh] = delta_wk.mesh();
   auto wmesh_gf = std::get<0>(g_wk.mesh());
@@ -64,7 +62,7 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   auto _ = all_t{};
   t_parallel.start();
 #pragma omp parallel for
- for(int idx_k = 0; idx_k < kmesh.size(); idx_k++){
+ for(unsigned int idx_k = 0; idx_k < kmesh.size(); idx_k++){
    auto k = k_arr(idx_k);
 
    auto g_left_w = make_gf<imfreq>(wmesh, g_wk.target());
@@ -132,7 +130,7 @@ std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt G
 
   for (const auto k : kmesh) {
     auto Gamma_w = Gamma_pp[_, k];
-    auto [tail, err] = fit_tail(Gamma_w);
+    auto tail = std::get<0>(fit_tail(Gamma_w));
     for (auto [a, b, c, d] : Gamma_pp.target_indices())
       Gamma_pp_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
     for( const auto w : wmesh ) Gamma_pp_dyn_wk[w, k] = Gamma_pp[w, k] - Gamma_pp_const_k[k];
@@ -214,7 +212,7 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
     }
   auto _ = all_t{};
 #pragma omp parallel for
-  for(int idx_r = 0; idx_r < rmesh.size(); idx_r++){
+  for(unsigned int idx_r = 0; idx_r < rmesh.size(); idx_r++){
     auto r = r_arr(idx_r);
 
     auto delta_t = make_gf<imtime>(tmesh, delta_tr_out.target());
@@ -295,7 +293,7 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   auto meshes_mpi = mpi_view(Gamma_pp_wk.mesh());
 
 #pragma omp parallel for
-  for (int idx = 0; idx < meshes_mpi.size(); idx++){
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
       auto &[w, k] = meshes_mpi(idx);
 
       array<scalar_t, 4> Gamma_pp_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};

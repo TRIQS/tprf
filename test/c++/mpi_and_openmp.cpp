@@ -79,7 +79,7 @@ TEST(mpi, mpi_view_openmp) {
   {
     auto arr = mpi_view(g_wk.mesh());
 #pragma omp parallel for
-    for (int idx = 0; idx < arr.size(); idx++) {
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
       auto &[w, k] = arr(idx);
 
       int tid = omp_get_thread_num();
@@ -96,7 +96,7 @@ TEST(mpi, mpi_view_openmp) {
   {
     auto arr = mpi_view(wmesh);
 #pragma omp parallel for
-    for (int idx = 0; idx < arr.size(); idx++) {
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
       auto &w = arr(idx);
 
       int tid = omp_get_thread_num();
@@ -112,7 +112,7 @@ TEST(mpi, mpi_view_openmp) {
   {
     auto arr = mpi_view(kmesh);
 #pragma omp parallel for
-    for (int idx = 0; idx < arr.size(); idx++) {
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
       auto &k = arr(idx);
 
       int tid = omp_get_thread_num();

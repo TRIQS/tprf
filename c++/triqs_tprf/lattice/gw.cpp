@@ -40,7 +40,7 @@ chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
   // MPI and openMP parallell loop
   auto arr = mpi_view(W_wk.mesh());
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
 
     array<scalar_t, 4> V_arr{V_k[k], memory_layout_t<4>{0, 1, 2, 3}};
@@ -80,7 +80,7 @@ g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
   // MPI and openMP parallell loop
   auto arr = mpi_view(g_tr.mesh());
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[t, r] = arr(idx);
 
     //for (const auto &[t, r] : g_tr.mesh()) {
