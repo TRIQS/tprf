@@ -33,8 +33,6 @@ namespace triqs_tprf {
 // Helper function computing F = GG \Delta
 
 g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
-  triqs::utility::timer t_all, t_parallel;
-  t_all.start();
 
   auto [wmesh, kmesh] = delta_wk.mesh();
   auto wmesh_gf = std::get<0>(g_wk.mesh());
@@ -47,21 +45,13 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-/* The rest of this function contains a lot boiler plate code due to issue
-   #725 in the TRIQS library and not yet avaible functionality to use 
-   'pragma omp parallel loop for' over mesh objects.
+/* The rest of this function contains a lot of boiler plate code due to issue
+   #725 in the TRIQS library.
    It will be changed later
 */
-  array<typename gf_mesh<brillouin_zone>::mesh_point_t, 1> k_arr(kmesh.size());
-    auto k_iter = kmesh.begin();
-    for (auto idx : range(0, kmesh.size())) {
-        auto k  = *k_iter;
-        k_arr(idx) = k;
-        k_iter++;
-    }
-
+  auto k_arr = mpi_view(kmesh);  
   auto _ = all_t{};
-  t_parallel.start();
+
 #pragma omp parallel for
  for(unsigned int idx_k = 0; idx_k < kmesh.size(); idx_k++){
    auto k = k_arr(idx_k);
@@ -83,11 +73,6 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
      }
      F_wk[_, k] = F_w;
    }
-   t_parallel.stop();
-   t_all.stop();
-   std::cout << "all:\t" << double(t_all) << "\n" \
-              << "parallel:\t" << double(t_parallel) << "\n" \
-              << "sequential:\t" << double(t_all - t_parallel) << "\n";
 
   return F_wk;
 }
@@ -151,7 +136,7 @@ std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dy
     return {Gamma_pp_dyn_tr, Gamma_pp_const_r};
 }
 
-e_k_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr) {
+e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr) {
 
   auto _ = all_t{};
 
@@ -164,29 +149,13 @@ e_k_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
         delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
   }
 
-  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
-
-  return delta_k_out;
+  return delta_r_out;
 }
 
-g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
-                                g_wk_vt g_wk, g_wk_vt delta_wk) {
-
-  triqs::utility::timer t_g_delta_g_product, t_fft_F, t_dynamic_product, t_fft_delta, t_constant_product, t_combine;
-    
-  t_g_delta_g_product.start();
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
-  t_g_delta_g_product.stop();
-
-  t_fft_F.start();
-  //auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
-  auto F_wr = fourier_wk_to_wr(F_wk);
-  auto F_tr = fourier_wr_to_tr(F_wr);
-  t_fft_F.stop();
+g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_tr) {
 
   auto [tmesh, rmesh] = F_tr.mesh();
 
-  // Dynamic part
   auto delta_tr_out = make_gf(F_tr);
   delta_tr_out *= 0.;
 
@@ -199,20 +168,12 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
           " (" << tmesh_gamma.size() << ") must be the size of the mesh of Delta (" <<
           tmesh.size() << ").";
 
-  t_dynamic_product.start();
 /* This function contains a lot boiler plate code due to issue
-   #725 in the TRIQS library and not yet avaible functionality to use 
-   'pragma omp parallel loop for' over mesh objects.
+   #725 in the TRIQS library.
    It will be changed later
 */
 
-  array<typename gf_mesh<cyclic_lattice>::mesh_point_t, 1> r_arr(rmesh.size());
-    auto r_iter = rmesh.begin();
-    for (auto idx : range(0, rmesh.size())) {
-        auto r  = *r_iter;
-        r_arr(idx) = r;
-        r_iter++;
-    }
+  auto r_arr = mpi_view(rmesh);  
   auto _ = all_t{};
 #pragma omp parallel for
   for(unsigned int idx_r = 0; idx_r < rmesh.size(); idx_r++){
@@ -229,28 +190,56 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
     }
     delta_tr_out[_, r] = delta_t;
   }
+
+  return delta_tr_out;
+}
+
+g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
+                                g_wk_vt g_wk, g_wk_vt delta_wk) {
+
+  triqs::utility::timer t_all, t_g_delta_g_product, t_fft_F, t_dynamic_product, t_fft_delta, t_constant_product, t_combine;
+  t_all.start();
+    
+  t_g_delta_g_product.start();
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  t_g_delta_g_product.stop();
+
+  t_fft_F.start();
+  auto F_wr = fourier_wk_to_wr(F_wk);
+  auto F_tr = fourier_wr_to_tr(F_wr);
+  t_fft_F.stop();
+
+  // Dynamic part
+  t_dynamic_product.start();
+  auto delta_tr_out = eliashberg_dynamic_gamma_f_product(Gamma_pp_dyn_tr, F_tr);
   t_dynamic_product.stop();
+
+  // Constant part
+  t_constant_product.start();
+  auto delta_r_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
+  t_constant_product.stop();
   
   // FIXME
   // This raises warnings when used with random delta input, e.g. eigenvalue finder
   t_fft_delta.start();
-  //auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
   auto delta_wr_out = fourier_tr_to_wr(delta_tr_out);
-  auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
   t_fft_delta.stop();
-
-  // Constant part
-  t_constant_product.start();
-  auto delta_k_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
-  t_constant_product.stop();
 
   // Combine dynamic and constant part
   t_combine.start();
-  for (const auto [w , k]: delta_wk_out.mesh())
-      delta_wk_out[w, k] += delta_k_out[k];
+  auto _ = all_t{};
+  for (const auto w : std::get<0>(delta_wr_out.mesh()))
+      delta_wr_out[w, _] += delta_r_out;
   t_combine.stop();
 
-  std::cout << "g_delta_g_product:\t" << double(t_g_delta_g_product) << "\n" \
+  t_fft_delta.start();
+  t_fft_delta.stop();
+  auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
+
+  t_all.stop();
+
+  std::cout << "all:\t" << double(t_all) << "\n" \
+              << "g_delta_g_product:\t" << double(t_g_delta_g_product) << "\n" \
               << "fft_F:\t" << double(t_fft_F) << "\n" \
               << "dynamic_product:\t" << double(t_dynamic_product) << "\n" \
               << "fft_delta:\t" << double(t_fft_delta) << "\n" \
@@ -265,15 +254,18 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
                                         g_wk_vt g_wk, g_wk_vt delta_wk) {
 
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
-  auto F_tr = make_gf_from_fourier<0, 1>(F_wk);
+  auto F_wr = fourier_wk_to_wr(F_wk);
+  auto F_tr = fourier_wr_to_tr(F_wr);
 
-  auto delta_k_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
+  auto delta_r_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
+  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
 
   auto delta_wk_out = make_gf(F_wk);
   delta_wk_out *= 0.;
 
-  for (const auto [w , k]: delta_wk_out.mesh())
-      delta_wk_out[w, k] += delta_k_out[k];
+  auto _ = all_t{};
+  for (const auto w : std::get<0>(delta_wk_out.mesh()))
+      delta_wk_out[w, _] += delta_k_out;
 
   return delta_wk_out;
 }
