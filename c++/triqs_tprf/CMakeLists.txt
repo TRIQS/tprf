@@ -2,14 +2,14 @@ file(GLOB_RECURSE sources *.cpp)
 add_library(triqs_tprf_c ${sources})
 
 # Link against dependencies
-target_link_libraries(triqs_tprf_c PUBLIC triqs)
+target_link_libraries(triqs_tprf_c PUBLIC triqs PRIVATE project_warnings)
 
 # Configure compilation
-target_compile_options(triqs_tprf_c PUBLIC -fPIC -fopenmp -std=c++17)
+target_compile_options(triqs_tprf_c PUBLIC -fPIC -fopenmp)
 target_link_libraries(triqs_tprf_c PUBLIC "-fopenmp") # We are using openmp
-target_include_directories(triqs_tprf_c PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/c++>)
+target_include_directories(triqs_tprf_c PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/c++>)
 target_compile_definitions(triqs_tprf_c PUBLIC
-				TPRF_GIT_HASH=${TPRF_GIT_HASH}
+  				TPRF_GIT_HASH=${PROJECT_GIT_HASH}
 				TRIQS_GIT_HASH=${TRIQS_GIT_HASH}
 				$<$<CONFIG:Debug>:TPRF_DEBUG>
 				$<$<CONFIG:Debug>:TRIQS_DEBUG>

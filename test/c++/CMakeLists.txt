@@ -6,12 +6,15 @@ endforeach()
 
 # List of all tests
 set(all_tests linalg_ops bubble gf_inverse g_wk_to_from_g_wr chi0_wk_to_from_chi0_wr hubbard_atom_test mpi_and_openmp)
+file(GLOB_RECURSE all_tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${all_tests})
 
 foreach(test ${all_tests})
   get_filename_component(test_name ${test} NAME_WE)
+  get_filename_component(test_dir ${test} DIRECTORY)
   add_executable(${test_name} ${test})
-  target_link_libraries(${test_name} triqs_tprf_c gtest)
-  add_test(${test_name} ${test_name})
+  set_property(TARGET ${test_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_dir})
+  target_link_libraries(${test_name} triqs_tprf_c triqs::gtest project_warnings)
+  add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_dir})
   # Run clang-tidy if found
   if(CLANG_TIDY_EXECUTABLE)
     set_target_properties(${test_name} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE}")

@@ -29,7 +29,7 @@ version = '@TPRF_VERSION@'
 
 math_number_all = True
 mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
-templates_path = ['@CMAKE_SOURCE_DIR@/doc/_templates']
+templates_path = ['@PROJECT_SOURCE_DIR@/doc/_templates']
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 html_theme = 'triqs'
@@ -41,7 +41,7 @@ html_context = {'header_title': 'tprf',
                                  ['Documentation', 'documentation'],
                                  ['Issues', 'issues'],
                                  ['About tprf', 'about']]}
-html_static_path = ['@CMAKE_SOURCE_DIR@/doc/_static']
+html_static_path = ['@PROJECT_SOURCE_DIR@/doc/_static']
 html_sidebars = {'index': ['sideb.html', 'searchbox.html']}
 
 htmlhelp_basename = 'TPRFdoc'

@@ -5,7 +5,7 @@
 set     name        triqs_tprf
 set     version     @TPRF_VERSION@
 set     root        @CMAKE_INSTALL_PREFIX@
-set     git_hash    @TPRF_GIT_HASH@
+set     git_hash    @PROJECT_GIT_HASH@
 
 set     url         "https://github.com/TRIQS/triqs_tprf"
 set     description "An example application using cpp2py and triqs."
