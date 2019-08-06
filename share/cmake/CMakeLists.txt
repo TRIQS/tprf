@@ -7,4 +7,4 @@ install(
   DESTINATION lib/cmake/triqs_tprf
 )
 
-install(EXPORT triqs_tprf-targets DESTINATION lib/cmake/triqs_tprf)
+install(EXPORT triqs_tprf-targets NAMESPACE triqs_tprf:: DESTINATION lib/cmake/triqs_tprf)
