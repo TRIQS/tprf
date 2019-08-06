@@ -48,6 +48,7 @@ import pytriqs.utility.mpi as mpi
 
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
+from triqs_tprf.OperatorUtils import is_operator_composed_of_only_fundamental_operators
 
 # ----------------------------------------------------------------------
 class HartreeFockSolver(object):
@@ -102,11 +103,11 @@ class HartreeFockSolver(object):
         self.triu_idxs = np.triu_indices(self.norb, k=1)
 
         if mpi.is_master_node():
-            print 'H_int =', H_int
             print 'beta =', self.beta
             print 'mu =', self.mu
             print 'bands =', self.norb
             print 'n_k =', len(self.e_k.mesh)
+            print 'H_int =', H_int
             print
 
         if gf_struct is None:
@@ -118,15 +119,21 @@ class HartreeFockSolver(object):
                 'Error: H_int = None, but gf_struct is not None'
 
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
-            self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
             if mpi.is_master_node():
                 print 'gf_struct =', gf_struct
                 print 'fundamental_operators =', fundamental_operators
+                print
+
+            assert( is_operator_composed_of_only_fundamental_operators(
+                H_int, fundamental_operators) ), \
+                'Error: H_int is incompatible with gf_struct and its fundamental_operators'
+            
+            self.U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
         else:
             self.U_abcd = np.zeros(self.shape_abcd)
-        
+
     # ------------------------------------------------------------------
     def update_mean_field(self, rho_ab):
 
