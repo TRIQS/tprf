@@ -341,3 +341,21 @@ def relabel_operators(op, from_list, to_list):
     return op_trans
 
 # ----------------------------------------------------------------------
+def is_operator_composed_of_only_fundamental_operators(
+        op, fundamental_operators):
+
+    """ Return `True` if the operator `op` only contains operators belonging
+    to the fundamental operator set `fundamental_operators`, else return
+    `False`."""
+    
+    is_fundamental = True
+
+    for term in op:
+        op_list, prefactor = term
+        d, t = zip(*op_list) # split in two lists with daggers and tuples resp
+        t = [tuple(x) for x in t]
+        for bidx, idx in t:
+            if c(bidx, idx) not in fundamental_operators:
+                is_fundamental = False
+
+    return is_fundamental
