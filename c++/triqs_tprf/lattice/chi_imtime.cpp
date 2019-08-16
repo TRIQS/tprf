@@ -139,7 +139,7 @@ chi_t_t::zero_t chi_trapz_tau(chi_t_cvt chi_t) {
   int ntau = tmesh.size();
   double beta = tmesh.domain().beta;
 
-  chi_t_t::zero_t I = chi_t.get_zero();
+  auto I = zeros<dcomplex>(chi_t.target_shape());
     
   // -- Trapetzoidal integration
 
