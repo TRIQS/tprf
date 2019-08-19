@@ -3,11 +3,10 @@ def projectName = "tprf" /* set to app/repo name */
 /* which platform to build documentation on */
 def documentationPlatform = "ubuntu-clang"
 /* depend on triqs upstream branch/project */
-/*def triqsBranch = env.CHANGE_TARGET ?: env.BRANCH_NAME*/
-def triqsBranch = '2.1.x'
+def triqsBranch = env.CHANGE_TARGET ?: env.BRANCH_NAME
 def triqsProject = '/TRIQS/triqs/' + triqsBranch.replaceAll('/', '%2F')
-/* whether to publish the results (disabled for template project) */
-def publish = !env.BRANCH_NAME.startsWith("PR-")
+/* whether to keep and publish the results */
+def keepInstall = !env.BRANCH_NAME.startsWith("PR-")
 
 properties([
   disableConcurrentBuilds(),
@@ -39,8 +38,7 @@ for (int i = 0; i < dockerPlatforms.size(); i++) {
       """
       /* build and tag */
       def img = docker.build("flatironinstitute/${projectName}:${env.BRANCH_NAME}-${env.STAGE_NAME}", "--build-arg APPNAME=${projectName} --build-arg BUILD_DOC=${platform==documentationPlatform} .")
-      if (!publish || platform != documentationPlatform) {
-        /* but we don't need the tag so clean it up (except for documentation) */
+      if (!keepInstall) {
         sh "docker rmi --no-prune ${img.imageName()}"
       }
     } }
@@ -60,7 +58,7 @@ for (int i = 0; i < osxPlatforms.size(); i++) {
       def srcDir = pwd()
       def tmpDir = pwd(tmp:true)
       def buildDir = "$tmpDir/build"
-      def installDir = "$tmpDir/install"
+      def installDir = keepInstall ? "${env.HOME}/install/${projectName}/${env.BRANCH_NAME}/${platform}" : "$tmpDir/install"
       def triqsDir = "${env.HOME}/install/triqs/${triqsBranch}/${platform}"
       dir(installDir) {
         deleteDir()
@@ -90,7 +88,7 @@ for (int i = 0; i < osxPlatforms.size(); i++) {
 /****************** wrap-up */
 try {
   parallel platforms
-  if (publish) { node("docker") {
+  if (keepInstall) { node("docker") {
     /* Publish results */
     stage("publish") { timeout(time: 1, unit: 'HOURS') {
       def commit = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
@@ -119,7 +117,7 @@ try {
           dir="${projectName}"
           [[ -d triqs_\$dir ]] && dir=triqs_\$dir || [[ -d \$dir ]]
           echo "160000 commit ${commit}\t\$dir" | git update-index --index-info
-          git commit --author='Flatiron Jenkins <jenkins@flatironinstitute.org>' --allow-empty -m 'Autoupdate ${projectName}' -m '${env.BUILD_TAG}'
+          git commit --author='Flatiron Jenkins <jenkins@flatironinstitute.org>' -m 'Autoupdate ${projectName}' -m '${env.BUILD_TAG}'
           git push origin ${env.BRANCH_NAME} || { git pull --rebase origin ${env.BRANCH_NAME} && git push origin ${env.BRANCH_NAME} ; }
         """
       } catch (err) {
