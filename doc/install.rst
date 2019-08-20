@@ -2,6 +2,16 @@
 
 .. _install:
 
+Packaged Versions of TPRF
+=========================
+
+A Docker image including the latest version of tprf is available `here <https://hub.docker.com/r/flatironinstitute/triqs>`_. For more information, please see the page on :ref:`TRIQS Docker <triqslibs:triqs_docker>`.
+
+We further provide a Debian package for the Ubuntu LTS Versions 16.04 (xenial) and 18.04 (bionic), which can be installed by following the steps outlined :ref:`here <triqslibs:triqs_debian>`, and the subsequent command::
+
+        sudo apt-get install -y triqs_tprf
+
+
 Compiling TPRF from source
 ==========================
 

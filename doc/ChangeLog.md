@@ -1,7 +1,5 @@
-Version 2.1.0
+Version 2.1.1
 -------------
 
-Some Changes 
-~~~~~~~~~~~~
-
-* ...
+* We now provide a debian packaged version of tprf which is also part of the [triqs docker image](https://hub.docker.com/r/flatironinstitute/triqs)
+* Updated documentation with debian package install instructions
