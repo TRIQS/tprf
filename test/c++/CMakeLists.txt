@@ -5,8 +5,7 @@ foreach(file ${all_h5_ref_files})
 endforeach()
 
 # List of all tests
-set(all_tests linalg_ops bubble gf_inverse g_wk_to_from_g_wr chi0_wk_to_from_chi0_wr hubbard_atom_test mpi_and_openmp)
-file(GLOB_RECURSE all_tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${all_tests})
+file(GLOB_RECURSE all_tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach(test ${all_tests})
   get_filename_component(test_name ${test} NAME_WE)
