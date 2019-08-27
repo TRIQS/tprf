@@ -139,7 +139,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
         nwf = len(fmesh) / 2
 
     mpi.barrier()
-    mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,1,2)][0,0]))
+    mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,0,0)][0,0]))
     n = np.sum(g_wk.data) / len(kmesh)
     mpi.report('n ' + str(n))
     mpi.barrier()
@@ -148,7 +148,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     g_wr = fourier_wk_to_wr(g_wk)
 
     mpi.barrier()
-    mpi.report('g_wr ' + str(g_wr[Idx(2), Idx(0,1,2)][0,0]))
+    mpi.report('g_wr ' + str(g_wr[Idx(2), Idx(0,0,0)][0,0]))
     n_r = np.sum(g_wr.data, axis=0)[0]
     mpi.report('n_r=0 ' + str(n_r[0,0]))
     mpi.barrier()
