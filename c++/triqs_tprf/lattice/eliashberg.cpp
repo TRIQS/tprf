@@ -68,7 +68,7 @@ gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk,
     for (const auto [n, q] : delta_wk.mesh())
       for (auto [A, a, B, b] : Gamma_pp.target_indices())
         delta_wk_out[w, k](a, b) +=
-            Gamma_pp[w-n, k - q](A, a, B, b) * F_wk[n, q](A, B);
+            Gamma_pp(w-n, k - q)(A, a, B, b) * F_wk[n, q](A, B);
 
   delta_wk_out /= -(wmesh.domain().beta * kmesh.size());
   

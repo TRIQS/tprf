@@ -229,7 +229,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
   for (auto const &n : fmesh) {
     for (auto const &k : kmesh) {
       auto g_da = g_wk[n, k];
-      auto g_bc = g_wk[n + w, k - q];
+      auto g_bc = g_wk(n + w, k - q);
       for (auto a : range(nb))
         for (auto b : range(nb))
           for (auto c : range(nb))
