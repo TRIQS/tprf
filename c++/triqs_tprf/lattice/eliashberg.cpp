@@ -34,7 +34,11 @@ namespace triqs_tprf {
 
 g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 
-  auto [wmesh, kmesh] = delta_wk.mesh();
+  // Get rid of structured binding declarations in this file due to issue #11
+  //auto [wmesh, kmesh] = delta_wk.mesh();
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
   auto wmesh_gf = std::get<0>(g_wk.mesh());
 
   if (wmesh.size() > wmesh_gf.size())
@@ -80,7 +84,10 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
                        g_wk_vt delta_wk) {
 
-  auto [wmesh, kmesh] = delta_wk.mesh();
+  //auto [wmesh, kmesh] = delta_wk.mesh();
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
   auto gamma_wmesh = std::get<0>(Gamma_pp.mesh());
 
   if (2*wmesh.size() > gamma_wmesh.size())
@@ -107,7 +114,9 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
 std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp) {
 
   auto _ = all_t{};
-  auto [wmesh, kmesh] = Gamma_pp.mesh();
+  //auto [wmesh, kmesh] = Gamma_pp.mesh();
+  auto wmesh = std::get<0>(Gamma_pp.mesh());
+  auto kmesh = std::get<1>(Gamma_pp.mesh());
     
   // Fit infinite frequency value
   auto Gamma_pp_dyn_wk = make_gf(Gamma_pp);
@@ -154,7 +163,9 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
 
 g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_tr) {
 
-  auto [tmesh, rmesh] = F_tr.mesh();
+  //auto [tmesh, rmesh] = F_tr.mesh();
+  auto tmesh = std::get<0>(F_tr.mesh());
+  auto rmesh = std::get<1>(F_tr.mesh());
 
   auto delta_tr_out = make_gf(F_tr);
   delta_tr_out *= 0.;

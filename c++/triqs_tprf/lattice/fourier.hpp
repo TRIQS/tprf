@@ -37,7 +37,10 @@ template <typename Gf_type>
 auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
 
   auto _ = all_t{};
-  auto [wmesh, rmesh] = g_wr.mesh();
+  // Get rid of structured binding declarations in this file due to issue #11
+  //auto [wmesh, rmesh] = g_wr.mesh();
+  auto wmesh = std::get<0>(g_wr.mesh());
+  auto rmesh = std::get<1>(g_wr.mesh());
 
   auto tmesh = make_adjoint_mesh(wmesh, n_tau);
   auto g_tr = make_gf<cartesian_product<imtime, cyclic_lattice>>({tmesh, rmesh}, g_wr.target());
@@ -68,7 +71,9 @@ template <typename Gf_type>
 auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
   
   auto _ = all_t{};
-  auto [tmesh, rmesh] = g_tr.mesh();
+  //auto [tmesh, rmesh] = g_tr.mesh();
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
 
   auto wmesh = make_adjoint_mesh(tmesh, n_w);
   auto g_wr = make_gf<cartesian_product<imfreq, cyclic_lattice>>({wmesh, rmesh}, g_tr.target());
@@ -100,7 +105,9 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
   
   auto _ = all_t{};
 
-  auto [wmesh, kmesh] = g_wk.mesh();
+  //auto [wmesh, kmesh] = g_wk.mesh();
+  auto wmesh = std::get<0>(g_wk.mesh());
+  auto kmesh = std::get<1>(g_wk.mesh());
 
   auto rmesh = make_adjoint_mesh(kmesh);
   //auto g_wr = gf<cartesian_product<imfreq, cyclic_lattice>, Target>{{wmesh, rmesh}, g_wk.target_shape()};
@@ -133,7 +140,9 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   
   auto _ = all_t{};
 
-  auto [wmesh, rmesh] = g_wr.mesh();
+  //auto [wmesh, rmesh] = g_wr.mesh();
+  auto wmesh = std::get<0>(g_wr.mesh());
+  auto rmesh = std::get<1>(g_wr.mesh());
 
   auto kmesh = make_adjoint_mesh(rmesh);
   auto g_wk = make_gf<cartesian_product<imfreq, brillouin_zone>>({wmesh, kmesh}, g_wr.target());
