@@ -134,9 +134,9 @@ def _check_frequency_symmetry(gf, atol=1e-08):
     """
     negative_half, positive_half = _split_frequency(gf)
 
-    if np.allclose(negative_half, positive_half, atol=atol):
+    if np.allclose(negative_half[::-1], positive_half, atol=atol):
         return +1
-    elif np.allclose(negative_half, -1*positive_half, atol=atol):
+    elif np.allclose(negative_half[::-1], -1*positive_half, atol=atol):
         return -1
     return None
 
@@ -155,14 +155,14 @@ def _symmetrize_frequency(gf, symmetry='even'):
                    'odd'  : sign change :math:`\nu_n\rightarrow\nu_{-n}`
     """
     negative_half, positive_half = _split_frequency(gf)
-    avg = _average_halfs(negative_half, positive_half)
+    avg = _average_halfs(negative_half[::-1], positive_half)
 
     # Use slice access so that the data in the Green's function get changed
     positive_half[:] = avg
     if symmetry == "even":
-        negative_half[:] = avg
+        negative_half[:] = avg[::-1]
     else:
-        negative_half[:] = -1* avg
+        negative_half[:] = -1* avg[::-1]
 
 # -- Momentum
 # ============================================================================
@@ -241,6 +241,13 @@ def _check_momentum_symmetry(gf, atol=1e-08):
     """
     signs= []
     for positive_half, negative_half in _split_momentum(gf):
+        
+        # If the k-point and its inverse are numercial zero the symmetry does
+        # not matter
+        if np.allclose(positive_half, 0.0, atol=atol) and \
+           np.allclose(negative_half, 0.0, atol=atol):
+            continue
+
         # Check if k = -k, if not equal to 0.0 the gf must be even 
         if id(positive_half) == id(negative_half):
             if not np.allclose(0.0, positive_half):
