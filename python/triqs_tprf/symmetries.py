@@ -8,10 +8,10 @@ def enforce_symmetry(gf, variables, symmetries):
     gf : Gf,
          One-particle fermionic Green's function with a MeshProduct containing
          a MeshImFreq on first and a MeshBrillouinZone in second position.
-    variables : str or list of str,
+    variables : str or iterator of str,
                 Tells what variable(s) shall be symmetrized, e.g. "momentum"
                 or ["frequency", "momentum"]
-    symmetries : str or list of str,
+    symmetries : str or iterator of str,
                  Gives the symmetry for the respective variable, e.g. "even"
                  or ["odd", "even"]
 
@@ -19,9 +19,9 @@ def enforce_symmetry(gf, variables, symmetries):
     -------
     gf : Gf
     """
-    if type(variables) != list:
+    if type(variables) == str:
         variables = [variables]
-    if type(symmetries) != list:
+    if type(symmetries) == str:
         symmetries = [symmetries]
     if len(variables) != len(symmetries):
         raise ValueError("Variables and symmetries must be of equal length.")
