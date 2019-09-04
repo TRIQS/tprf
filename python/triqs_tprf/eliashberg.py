@@ -122,8 +122,8 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
 
     return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
-def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None, tol=1e-10,
-                            product='FFT', solver='PM'):
+def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
+                     tol=1e-10, product='FFT', solver='PM', symmetrize_fct=lambda x : x):
 
     r""" Solve the linearized Eliashberg equation
     
@@ -165,6 +165,14 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
                  'PM' : Use the Power Method implemented in :func:`power_method_LR`.
 
                  'IRAM' : Use the Implicitly Restarted Arnoldi Method implemented in :func:`implicitly_restarted_arnoldi_method`.
+    symmetrize_fct : function, optional
+                     A function that takes one parameter: A Green's function 
+                     :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the
+                     Gf must be a MeshProduct with the components 
+                     (MeshImFreq, MeshBrillouinZone).
+                     This function is applied after every iteration of the
+                     eigenvalue solver and can be used to enforce a specific
+                     symmetry.
 
     Returns
     -------
@@ -210,6 +218,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
     def matvec(delta_x):
         delta_wk = from_x_to_wk(delta_x)
         delta_out_wk = eli_prod(delta_wk)
+        delta_out_wk = symmetrize_fct(delta_out_wk)
         delta_out_x = from_wk_to_x(delta_out_wk)
         return delta_out_x
 
