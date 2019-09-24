@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/linalg.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m linalg -o linalg -C pytriqs --moduledoc="Product, Inverse and Identity for two-particle response functions" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/linalg.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m linalg -o linalg -C pytriqs --moduledoc="Product, Inverse and Identity for two-particle response functions" --cxxflags="-std=c++17" --target_file_only
 from cpp2py.wrap_generator import *
 
 # The module

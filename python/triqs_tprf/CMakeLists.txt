@@ -1,19 +1,3 @@
-# Build the python modules
-add_cpp2py_module(lattice)
-target_link_libraries(lattice triqs_tprf_c)
-
-add_cpp2py_module(linalg)
-target_link_libraries(linalg triqs_tprf_c)
-
-add_cpp2py_module(chi_from_gg2)
-target_link_libraries(chi_from_gg2 triqs_tprf_c)
-
-add_cpp2py_module(freq_conv)
-target_link_libraries(freq_conv triqs_tprf_c)
-
-add_cpp2py_module(hubbard_atom)
-target_link_libraries(hubbard_atom triqs_tprf_c)
-
 # Configure the version
 configure_file(version.py.in version.py)
 
@@ -25,7 +9,14 @@ foreach(file ${python_sources})
   configure_file(${file} ${file} COPYONLY)
 endforeach()
 
-# Install python module to proper location
+# Build any python modules
+foreach(gen ${wrap_generators})
+  string(REPLACE "_desc.py" "" module_name ${gen})
+  add_cpp2py_module(${module_name})
+  target_link_libraries(${module_name} triqs_tprf_c)
+endforeach()
+
+# Install python modules to proper location
 set(PYTHON_LIB_DEST ${TRIQS_PYTHON_LIB_DEST_ROOT}/triqs_tprf)
 get_property(CPP2PY_MODULES_LIST GLOBAL PROPERTY CPP2PY_MODULES_LIST)
 install(TARGETS ${CPP2PY_MODULES_LIST} DESTINATION ${PYTHON_LIB_DEST})

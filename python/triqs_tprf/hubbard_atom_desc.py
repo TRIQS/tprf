@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/hubbard_atom.hpp --members_read_only -N triqs_tprf::hubbard_atom -a triqs_tprf -m hubbard_atom -o hubbard_atom -C pytriqs --moduledoc="Exact correlation functions for the hubbard atom" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/hubbard_atom.hpp --members_read_only -N triqs_tprf::hubbard_atom -a triqs_tprf -m hubbard_atom -o hubbard_atom -C pytriqs --moduledoc="Exact correlation functions for the hubbard atom" --cxxflags="-std=c++17" --target_file_only
 from cpp2py.wrap_generator import *
 
 # The module

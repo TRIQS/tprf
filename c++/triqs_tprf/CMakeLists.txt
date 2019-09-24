@@ -1,7 +1,7 @@
 file(GLOB_RECURSE sources *.cpp)
 add_library(triqs_tprf_c ${sources})
 
-# Link against dependencies
+# Link against triqs and enable warnings
 target_link_libraries(triqs_tprf_c PUBLIC triqs PRIVATE project_warnings)
 
 # Configure compilation
@@ -45,7 +45,7 @@ if(ANALYZE_SOURCES)
 	TARGET triqs_tprf_c
 	COMMAND ${CPPCHECK_EXECUTABLE}
 	  --enable=warning,style,performance,portability
-	  --std=c++14
+	  --std=c++17
 	  --template=gcc
 	  --verbose
 	  --quiet
@@ -60,32 +60,16 @@ endif()
 
 # ========= Dynamic Analyzer Checks ==========
 
-set(sanitizers "")
-# Address Sanitizer
 option(ASAN OFF "Compile library and executables with LLVM Address Sanitizer")
-if(ASAN)
-  list(APPEND sanitizers asan)
-  target_compile_options(triqs_tprf_c PRIVATE -fsanitize=address -fno-omit-frame-pointer -ggdb3)
-  target_link_libraries(triqs_tprf_c INTERFACE "-fsanitize=address -fno-omit-frame-pointer")
-  if(NOT DEFINED ENV{ASAN_OPTIONS})
-    message(WARNING "ASAN_OPTIONS is not set. Consider setting ASAN_OPTIONS=symbolize=1:detect_leaks=0 when running tests")
-  endif()
-endif()
-
-# Undefined Behavior Sanitizer
 option(UBSAN OFF "Compile library and executables with LLVM Undefined Behavior Sanitizer")
-if(UBSAN)
-  list(APPEND sanitizers ubsan)
-  target_compile_options(triqs_tprf_c PUBLIC -fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-omit-frame-pointer -ggdb3)
-  target_link_libraries(triqs_tprf_c INTERFACE "-fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-omit-frame-pointer")
-  if(NOT DEFINED ENV{UBSAN_OPTIONS})
-    message(WARNING "UBSAN_OPTIONS is not set. Consider setting UBSAN_OPTIONS=symbolize=1:print_stacktrace=1:halt_on_error=1 when running tests")
-  endif()
-endif()
 
-if(sanitizers)
-  find_package(sanitizer REQUIRED ${sanitizers})
-  if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    target_link_libraries(triqs_tprf_c INTERFACE "-fuse-ld=gold")
-  endif()
+if(ASAN)
+  find_package(sanitizer REQUIRED "asan")
+  target_link_libraries(triqs_tprf_c PUBLIC asan)
+  install(TARGETS asan EXPORT triqs_tprf-targets)
+endif()
+if(UBSAN)
+  find_package(sanitizer REQUIRED "ubsan")
+  target_link_libraries(triqs_tprf_c PUBLIC ubsan)
+  install(TARGETS ubsan EXPORT triqs_tprf-targets)
 endif()

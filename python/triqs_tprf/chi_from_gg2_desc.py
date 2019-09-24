@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/chi_from_gg2.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m chi_from_gg2 -o chi_from_gg2 -C pytriqs --moduledoc="Calculation of generalized susceptibilities" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/chi_from_gg2.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m chi_from_gg2 -o chi_from_gg2 -C pytriqs --moduledoc="Calculation of generalized susceptibilities" --cxxflags="-std=c++17" --target_file_only
 from cpp2py.wrap_generator import *
 
 # The module
