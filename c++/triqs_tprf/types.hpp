@@ -170,8 +170,6 @@ typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
 typedef g2_iw_t::const_view_type g2_iw_cvt;
 typedef g2_iw_t::view_type g2_iw_vt;
   
-using scalar_t = g2_iw_t::scalar_t;
-
 // block greens functions
 typedef block2_gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> b_g2_iw_t;
 typedef b_g2_iw_t::view_type b_g2_iw_vt;  

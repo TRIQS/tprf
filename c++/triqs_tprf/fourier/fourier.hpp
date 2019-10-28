@@ -123,12 +123,8 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
 gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                                gf_vec_cvt<imfreq> gw, fourier_plan &p,
                                array_const_view<dcomplex, 2> mom_123 = {});
-fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh,
-                           gf_vec_cvt<imtime> gt,
-                           array_const_view<dcomplex, 2> mom_23 = {});
-fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh,
-                           gf_vec_cvt<imfreq> gw,
-                           array_const_view<dcomplex, 2> mom_123 = {});
+fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt);
+fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw);
 
 // real
   /*
@@ -221,15 +217,12 @@ void _fourier_with_plan(gf_const_view<V1, T> gin, gf_view<V2, T> gout,
   else {
     // inverse operation as flatten_2d, exactly
     auto g_rot = rotate_index_view(gout.data(), N);
-    auto a_0 = g_rot(0, _);
     for (auto const &mp : out_mesh) {
       auto g_rot_sl = g_rot(
           mp.linear_index(),
           _); // if the array is long, it is faster to precompute the view ...
       auto gout_col = gout_flatten.data()(mp.linear_index(), _);
-      assign_foreach(g_rot_sl, [&gout_col, c = 0ll](auto &&... i) mutable {
-        return gout_col(c++);
-      });
+      assign_foreach(g_rot_sl, [&gout_col, c = 0ll](auto &&...) mutable { return gout_col(c++); });
     }
   }
 }

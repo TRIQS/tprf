@@ -125,9 +125,7 @@ array<dcomplex, 2> fit_derivatives(gf_const_view<imtime, tensor_valued<1>> gt) {
 // ------------------------ DIRECT TRANSFORM
 // --------------------------------------------
 
-fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh,
-                           gf_vec_cvt<imtime> gt,
-                           arrays::array_const_view<dcomplex, 2> mom_23) {
+fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt) {
 
   auto L = gt.mesh().size() - 1;
   if (L < 2 * (iw_mesh.last_index() + 1))
@@ -229,16 +227,14 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
 gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
                                gf_vec_cvt<imtime> gt,
                                arrays::array_const_view<dcomplex, 2> mom_23) {
-  auto p = _fourier_plan(iw_mesh, gt, mom_23);
+  auto p  = _fourier_plan(iw_mesh, gt);
   auto gw = _fourier_impl(iw_mesh, gt, p, mom_23);
   return gw;
 }
 // ------------------------ INVERSE TRANSFORM
 // --------------------------------------------
 
-fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh,
-                           gf_vec_cvt<imfreq> gw,
-                           arrays::array_const_view<dcomplex, 2> mom_123) {
+fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw) {
 
   TRIQS_ASSERT2(!gw.mesh().positive_only(),
                 "Fourier is only implemented for g(i omega_n) with full mesh "
@@ -369,7 +365,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
 gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
                                gf_vec_cvt<imfreq> gw,
                                arrays::array_const_view<dcomplex, 2> mom_123) {
-  auto p = _fourier_plan(tau_mesh, gw, mom_123);
+  auto p  = _fourier_plan(tau_mesh, gw);
   auto gt = _fourier_impl(tau_mesh, gw, p, mom_123);
   return gt;
 }

@@ -37,11 +37,8 @@ using namespace triqs_tprf;
 // Fill two-particle Green's function with random complex numbers Re/Im in [-1,
 // 1]
 void random_fill(g2_iw_t &G, int rng_seed = 23432) {
-  typedef size_t st;
   triqs::mc_tools::random_generator RNG("mt19937", rng_seed);
-  assign_foreach(G.data(), [&RNG](st n1, st n2, st n3, st i, st j, st k, st l) {
-    return std::complex<double>(RNG(2.) - 1., RNG(2.) - 1.);
-  });
+  for (auto &v : G.data()) { v = std::complex<double>(RNG(2.) - 1., RNG(2.) - 1.); }
 }
 
 void print(g2_iw_t const &G) {
