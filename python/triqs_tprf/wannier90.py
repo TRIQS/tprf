@@ -74,7 +74,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 
     deg = np.array([])
     for line in lines[:nlines]:
-        deg = np.concatenate((deg, np.loadtxt(StringIO(line), dtype=np.int)))
+        deg = np.concatenate((deg, np.loadtxt(StringIO(line), dtype=np.int, ndmin=1)))
     
     assert( deg.shape == (nrpts,) )
 
