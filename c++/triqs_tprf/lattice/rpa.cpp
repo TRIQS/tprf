@@ -61,7 +61,7 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
 
       chi_wk[w, k] = chi_arr; // assign back using the array_view 
     }
-  chi_wk = mpi_all_reduce(chi_wk);
+  chi_wk = mpi::all_reduce(chi_wk);
 
   return chi_wk;
 }

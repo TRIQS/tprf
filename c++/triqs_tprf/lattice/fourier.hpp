@@ -63,7 +63,7 @@ auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
 
     g_tr[_, r] = g_t;
   }
-  g_tr = mpi_all_reduce(g_tr);
+  g_tr = mpi::all_reduce(g_tr);
   return g_tr;
 }
 
@@ -96,7 +96,7 @@ auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
 
     g_wr[_, r] = g_w;
   }
-  g_wr = mpi_all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr);
   return g_wr;
 }
 
@@ -131,7 +131,7 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
 
     g_wr[w, _] = g_r;
   }
-  g_wr = mpi_all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr);
   return g_wr;
 }
 
@@ -165,7 +165,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
 
     g_wk[w, _] = g_k;
   }
-  g_wk = mpi_all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk);
   return g_wk;
 }
 

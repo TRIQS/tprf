@@ -318,7 +318,7 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
 
       Gamma_pp_wk[w, k] = Gamma_pp_arr;
   }
-  Gamma_pp_wk = mpi_all_reduce(Gamma_pp_wk);
+  Gamma_pp_wk = mpi::all_reduce(Gamma_pp_wk);
 
   return Gamma_pp_wk;
 }
