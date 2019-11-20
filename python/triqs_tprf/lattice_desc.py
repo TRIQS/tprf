@@ -14,7 +14,6 @@ module.add_include("triqs_tprf/lattice.hpp")
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
 #include <cpp2py/converters/complex.hpp>
-#include <cpp2py/converters/tuple.hpp>
 #include <triqs/cpp2py_converters/arrays.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
 
@@ -498,9 +497,13 @@ module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_cons
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
-module.add_function ("std::tuple<chi_wk_vt,chi_k_vt> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::get_dynamic_wk (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
 
-module.add_function ("std::tuple<chi_tr_vt,chi_r_vt> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""""")
+module.add_function ("triqs_tprf::chi_k_t triqs_tprf::get_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::dynamic_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_r_t triqs_tprf::constant_to_r (triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""""")
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 

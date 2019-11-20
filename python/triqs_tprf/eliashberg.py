@@ -32,9 +32,19 @@ from scipy.sparse.linalg import eigs
 from pytriqs.gf import Gf
 from lattice import eliashberg_product
 from lattice import eliashberg_product_fft, eliashberg_product_fft_constant
-from lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
+from lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
 
 # ----------------------------------------------------------------------
+
+def split_into_dynamic_wk_and_constant_k(Gamma_pp_wk):
+    Gamma_pp_dyn_wk = get_dynamic_wk(Gamma_pp_wk)
+    Gamma_pp_const_k = get_constant_k(Gamma_pp_wk)
+    return Gamma_pp_dyn_wk, Gamma_pp_const_k
+
+def dynamic_and_constant_to_tr(Gamma_pp_dyn_wk, Gamma_pp_const_k):
+    Gamma_pp_dyn_tr = dynamic_to_tr(Gamma_pp_dyn_wk)
+    Gamma_pp_const_r = constant_to_r(Gamma_pp_const_k) 
+    return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
 def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
 
@@ -115,7 +125,6 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     elif (const_type == Gf):
         Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
         Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
-
     # -- FFT dynamic and constant term to (tau, real) or (real)
     Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
                                                                     Gamma_pp_const_k_fit)
