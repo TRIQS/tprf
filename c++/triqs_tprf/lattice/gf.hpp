@@ -23,6 +23,17 @@
 #include "../types.hpp"
 
 namespace triqs_tprf {
+
+/** Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega + i\delta, \mathbf{k})`
+
+  Computes
+
+  ...
+
+  @param ...
+  @return ...
+*/
+g_fk_t lattice_dyson_g0_fk(double mu, h_k_cvt h_k, gf_mesh<refreq> mesh, double delta);
   
 /** Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
 

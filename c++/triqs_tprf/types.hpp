@@ -42,6 +42,10 @@ typedef g_iw_t::view_type g_iw_vt;
 typedef gf<brillouin_zone, matrix_valued> ek_t;
 typedef ek_t::const_view_type ek_cvt;
 typedef ek_t::view_type ek_vt;
+
+typedef gf<brillouin_zone, matrix_valued> hk_t;
+typedef hk_t::const_view_type hk_cvt;
+typedef hk_t::view_type hk_vt;
   
 typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> gk_iw_t;
 typedef gk_iw_t::const_view_type gk_iw_cvt;
@@ -103,6 +107,10 @@ typedef gf<brillouin_zone, matrix_valued> e_k_t;
 typedef e_k_t::const_view_type e_k_cvt;
 typedef e_k_t::view_type e_k_vt;
 
+typedef gf<brillouin_zone, matrix_valued> h_k_t;
+typedef h_k_t::const_view_type h_k_cvt;
+typedef h_k_t::view_type h_k_vt;
+
 typedef gf<imfreq, matrix_valued> g_w_t;
 typedef g_w_t::const_view_type g_w_cvt;
 typedef g_w_t::view_type g_w_vt;
@@ -110,6 +118,10 @@ typedef g_w_t::view_type g_w_vt;
 typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
+
+typedef gf<cartesian_product<refreq, brillouin_zone>, matrix_valued> g_fk_t;
+typedef g_fk_t::const_view_type g_fk_cvt;
+typedef g_fk_t::view_type g_fk_vt;
 
 typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> g_wk_t;
 typedef g_wk_t::const_view_type g_wk_cvt;

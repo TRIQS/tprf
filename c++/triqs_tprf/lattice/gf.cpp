@@ -28,6 +28,8 @@ using triqs::arrays::inverse;
 
 #include "../fourier/fourier.hpp"
 
+#include <complex>
+
 namespace triqs_tprf {
 
   namespace {
@@ -35,7 +37,7 @@ namespace triqs_tprf {
   }
   
 // ----------------------------------------------------
-// g
+// g0
 
 #ifdef TPRF_OMP
 
@@ -71,6 +73,32 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 }
   
 #endif
+
+// ----------------------------------------------------
+// g0 real frequencies
+
+g_fk_t lattice_dyson_g0_fk(double mu, h_k_cvt h_k, gf_mesh<refreq> mesh, 
+                           double delta) {
+
+  auto I = make_unit_matrix<hk_vt::scalar_t>(h_k.target_shape()[0]);
+  g_fk_t g0_fk({mesh, h_k.mesh()}, h_k.target_shape());
+  std::complex<double> idelta(0.0, delta);
+    
+  auto arr = mpi_view(g0_fk.mesh());
+#ifdef TPRF_OMP
+  #pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+    g0_fk[f, k] = inverse((f + idelta + mu)*I - h_k(k));
+  }
+#else
+  for (auto const &[f, k] : arr)
+      g0_fk[f, k] = inverse((f + idelta + mu)*I - h_k(k));
+#endif
+
+  g0_fk = mpi::all_reduce(g0_fk);
+  return g0_fk;
+}
 
 // ----------------------------------------------------
 
