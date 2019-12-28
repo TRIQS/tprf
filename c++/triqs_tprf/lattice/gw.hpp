@@ -89,6 +89,14 @@ chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k);
 
 chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k);
 
+/** G0W0 self energy calculator via spectral representation 
+
+    ...
+
+ */
+
+g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, h_k_cvt h_k, gf_mesh<refreq> mesh, chi_fk_cvt Wr_fk, chi_k_cvt v_k, double delta);
+
 /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator 
 
     Fourier transforms the screened interaction and the single-particle

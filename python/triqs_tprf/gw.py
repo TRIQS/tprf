@@ -49,6 +49,8 @@ from triqs_tprf.lattice import \
 from triqs_tprf.lattice import gw_sigma_wk_serial_fft as cpp_gw_sigma_wk_serial_fft
 from triqs_tprf.lattice import gw_sigma_tr as cpp_gw_sigma_tr
 
+from triqs_tprf.lattice import gw_sigma_fk_g0w0_spectral as cpp_gw_sigma_fk_g0w0_spectral
+
 # ----------------------------------------------------------------------
 def bubble_PI_wk(g_wk):
 
@@ -175,3 +177,7 @@ def gw_sigma_wk(Wr_wk, g_wk, fft_flag=False):
         sigma_wk = cpp_gw_sigma_wk_serial_fft(Wr_wk, g_wk)    
     
     return sigma_wk
+
+# ----------------------------------------------------------------------
+def gw_sigma_fk_g0w0_spectral(mu, beta, h_k, mesh, Wr_fk, v_k, delta):
+    return cpp_gw_sigma_fk_g0w0_spectral(mu, beta, h_k, mesh, Wr_fk, v_k, delta)

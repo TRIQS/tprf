@@ -377,6 +377,10 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::gw_sigma_fk_g0w0_spectral (double mu, double beta, triqs_tprf::h_k_cvt h_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt Wr_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""G0W0 self energy calculator via spectral representation
+
+    ...""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma_wk_serial_fft (triqs_tprf::chi_wk_cvt Wr_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
 
     Fourier transforms the screened interaction and the single-particle

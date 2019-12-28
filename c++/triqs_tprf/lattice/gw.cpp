@@ -20,6 +20,8 @@
  *
  ******************************************************************************/
 
+#include <triqs/arrays/linalg/eigenelements.hpp>
+
 #include "gw.hpp"
 #include "../mpi.hpp"
 
@@ -104,6 +106,9 @@ chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
   return W_wk;
 }
 
+// ----------------------------------------------------
+// dynamical_screened_interaction_W_wk_from_generalized_susceptibility
+
 chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
 
   if( std::get<1>(chi_wk.mesh()) != V_k.mesh() )
@@ -136,6 +141,97 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
 
   W_wk = mpi::all_reduce(W_wk);
   return W_wk;
+}
+
+// ----------------------------------------------------
+// helper functions
+
+double fermi2(double e) { return 1. / (exp(e) + 1.); }
+double bose2(double e)  { return 1. / (exp(e) - 1.); }
+
+// ----------------------------------------------------
+// gw_sigma_fk_g0w0_spectral
+
+g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, h_k_cvt h_k, 
+                                 gf_mesh<refreq> fmesh, chi_fk_cvt Wr_fk, 
+                                 chi_k_cvt v_k, double delta) {
+
+  auto kmesh = h_k.mesh();
+  int nb = h_k.target().shape()[0];
+  
+  std::complex<double> idelta(0.0, delta);
+  
+  g_fk_t sigma_fk_dyn({fmesh, kmesh}, h_k.target_shape());
+  g_fk_t sigma_fk_sta({fmesh, kmesh}, h_k.target_shape());
+  g_fk_t sigma_fk({fmesh, kmesh}, h_k.target_shape());
+  
+//#ifdef TPRF_OMP
+//  std::cout << "OMP ACTIVATED";
+//#endif
+
+  #pragma omp parallel for shared(sigma_fk_dyn, sigma_fk_sta)
+  for (int kidx = 0; kidx < kmesh.size(); kidx++) {
+  
+    auto k_iter = kmesh.begin();
+    k_iter += kidx;
+    auto k = *k_iter;
+
+    for (auto const &q : kmesh) {
+    
+      matrix<std::complex<double>> h_kq_mat(h_k(k + q) - mu);
+      auto eig_kq = linalg::eigenelements(h_kq_mat);
+      auto ekq = eig_kq.first;
+      auto Ukq = eig_kq.second;
+    
+      for (int i : range(nb)) {
+        for (int j : range(nb)) {
+      
+          for (auto const &f : fmesh) {
+
+            for (int l : range(nb)) {
+            
+              sigma_fk_sta[f,k](j,i) -= fermi2(ekq(l) * beta) * v_k[q](i, j, i, j) * Ukq(l, i) * dagger(Ukq)(j, l);
+      
+              for (auto const &fp : fmesh) {
+            
+                auto WSpec = -2.0 * (Wr_fk[fp, q](i, j, i, j) - v_k[q](i, j, i, j)).imag();
+                auto num   = bose2(fp * beta) + fermi2(ekq(l) * beta);
+                auto den   = f + idelta + fp - ekq(l);
+                
+//                std::cout << "num: " << num << "\n";
+//                std::cout << "den: " << 1.0/den << "\n";
+//                std::cout << "mat: " << Ukq(l, i) * dagger(Ukq)(j, l) << "\n";
+      
+                sigma_fk_dyn[f,k](j,i) += Ukq(l, i) * dagger(Ukq)(j, l) * WSpec * num / den;
+                
+              }
+          
+            }
+        
+          }
+          
+        }
+      }
+      
+    }
+  } 
+  
+  sigma_fk_dyn *= fmesh.delta() / (kmesh.size() * 2.0 * 3.141592653589793);
+  sigma_fk_sta *= 1.0 / kmesh.size();
+  
+  for (auto const &f : fmesh) {
+    for (auto const &k : kmesh) {
+      for (int i : range(nb)) {
+        for (int j : range(nb)) {
+            sigma_fk[f,k](i,j) = sigma_fk_dyn[f,k](i,j);
+            //std::cout << sigma_fk_dyn[f,k](i,j) << " - " << sigma_fk_sta[f,k](i,j) << "\n";
+        }
+      }
+    }
+  }
+
+  return sigma_fk;
+  
 }
 
 // ----------------------------------------------------
