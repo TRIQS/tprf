@@ -27,9 +27,80 @@
 namespace triqs_tprf {
 
 // ----------------------------------------------------
-// chi00 bubble in analytic form
+// helper functions
 
 double fermi(double e) { return 1. / (exp(e) + 1.); }
+
+// ----------------------------------------------------
+// chi00 bubble in analytic form in real frequencies
+
+chi_fk_t lindhard_chi00_fk(h_k_cvt h_k, gf_mesh<refreq> mesh, double beta, 
+                           double mu, double delta) {
+
+  auto kmesh = h_k.mesh();
+  int nb = h_k.target().shape()[0];
+
+  chi_fk_t chi_fk{{mesh, kmesh}, {nb, nb, nb, nb}};
+  
+  for (auto const & [ f, k ] : chi_fk.mesh())
+    chi_fk[f, k] = 0.;
+    
+  auto fmesh = std::get<0>(chi_fk.mesh());
+  
+  std::complex<double> idelta(0.0, delta);
+
+  for (auto const &k : kmesh) {
+
+#pragma omp parallel for 
+    for (int qidx = 0; qidx < kmesh.size(); qidx++) {
+    
+      auto q_iter = kmesh.begin();
+      q_iter += qidx;
+      auto q = *q_iter;
+      
+      // -- If this is moved out to the k-loop the threading breaks?!?
+      matrix<std::complex<double>> h_k_mat(h_k[k]);
+      auto eig_k = linalg::eigenelements(h_k_mat);
+      auto ek = eig_k.first;
+      auto Uk = eig_k.second;
+
+      matrix<std::complex<double>> h_kq_mat(h_k(k + q));
+      auto eig_kq = linalg::eigenelements(h_kq_mat);
+      auto ekq = eig_kq.first;
+      auto Ukq = eig_kq.second;
+      
+      // also works ... mu is subtracted just from the diagonal
+      //matrix<std::complex<double>> test_mat(h_k(k + q) - mu);
+
+      for (int i : range(nb)) {
+        for (int j : range(nb)) {
+
+          double de = ekq(j) - ek(i);
+          double dn = fermi((ek(i) - mu) * beta) - fermi((ekq(j) - mu) * beta);
+          
+          for (auto const &f : fmesh) {
+
+            chi_fk[f, q](a, b, c, d)
+                << chi_fk[f, q](a, b, c, d) + Uk( i, a) * dagger(Uk )(d, i) *
+                                              Ukq(j, c) * dagger(Ukq)(b, j) *
+                                              dn / (f + idelta + de);
+
+          } // f
+
+        }   // j
+      }     // i
+
+    }       // q
+  }         // k
+
+  chi_fk /= kmesh.size();
+    
+  return chi_fk;
+
+} 
+
+// ----------------------------------------------------
+// chi00 bubble in analytic form
 
 chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
                           double beta, double mu) {

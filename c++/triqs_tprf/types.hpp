@@ -151,6 +151,10 @@ typedef gf<cartesian_product<imfreq, cyclic_lattice>, tensor_valued<4>> chi_wr_t
 typedef chi_wr_t::const_view_type chi_wr_cvt;
 typedef chi_wr_t::view_type chi_wr_vt;
 
+typedef gf<cartesian_product<refreq, brillouin_zone>, tensor_valued<4>> chi_fk_t;
+typedef chi_fk_t::const_view_type chi_fk_cvt;
+typedef chi_fk_t::view_type chi_fk_vt;
+
 typedef gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;

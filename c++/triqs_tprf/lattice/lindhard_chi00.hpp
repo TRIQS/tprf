@@ -24,6 +24,16 @@
 
 namespace triqs_tprf {
 
+  /** Generalized Lindhard susceptibility in the particle-hole channel and real frequencies.
+   
+   ...
+
+   .. note::
+      ...
+
+   */
+chi_fk_t lindhard_chi00_fk(h_k_cvt h_k, gf_mesh<refreq> mesh, double beta, double mu, double delta);
+
   /** Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
    
    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
