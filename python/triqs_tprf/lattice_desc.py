@@ -305,6 +305,11 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`""")
 
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W_fk (triqs_tprf::chi_fk_cvt pi0_fk, triqs_tprf::chi_k_cvt v_k)", doc = r"""Dynamical screened interaction in real frequencies ... calculator
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    ...""")
+
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
     for static momentum-dependent interactions :math:`V(\mathbf{k})`.
 

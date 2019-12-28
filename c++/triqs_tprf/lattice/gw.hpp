@@ -25,6 +25,15 @@
 
 namespace triqs_tprf {
 
+/** Dynamical screened interaction in real frequencies ... calculator 
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    ...
+
+ */
+
+chi_fk_t dynamical_screened_interaction_W_fk(chi_fk_cvt pi0_fk, chi_k_cvt v_k);
+
 /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator 
     for static momentum-dependent interactions :math:`V(\mathbf{k})`.
 
