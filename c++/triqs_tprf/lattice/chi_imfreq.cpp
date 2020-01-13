@@ -139,6 +139,60 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
   return chi0_wnr;
 }
 
+chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
+
+  auto _ = all_t{};
+
+  int nb = g_nr.target().shape()[0];
+  auto rmesh = std::get<1>(g_nr.mesh());
+
+  double beta = std::get<0>(g_nr.mesh()).domain().beta;
+
+  // Create mesh were last point is the one desired 'nw_index'
+  auto wmesh_to_access = gf_mesh<imfreq>{beta, Boson, nw_index+1};
+  auto w = wmesh_to_access[wmesh_to_access.last_index()];
+  std::cout << wmesh_to_access.last_index() << "\n";
+
+  auto nmesh = gf_mesh<imfreq>{beta, Fermion, nn};
+
+
+  chi_nr_t chi0_nr{{nmesh, rmesh}, {nb, nb, nb, nb}};
+  chi0_nr *= 0.;
+  
+  auto chi_target = chi0_nr.target();
+  auto g_target = g_nr.target();
+
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr(idx);
+
+    auto chi0_n = make_gf<imfreq>(nmesh, chi_target);
+    auto g_pr_n = make_gf<imfreq>(nmesh, g_target);
+    auto g_mr_n = make_gf<imfreq>(nmesh, g_target);
+    
+#pragma omp critical
+    {
+      g_pr_n = g_nr[_, r];
+      g_mr_n = g_nr[_, -r];
+    }
+
+      for (auto const &n : nmesh)
+        chi0_n[n](a, b, c, d)
+            << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
+
+#pragma omp critical
+    chi0_nr[_, r] = chi0_n;
+  }
+
+
+  for( auto const & n : nmesh )
+    chi0_nr[n, _] = mpi_all_reduce(chi0_nr[n, _]);
+
+  return chi0_nr;
+}
+
 
   // ---
 
