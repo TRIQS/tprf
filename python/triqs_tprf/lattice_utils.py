@@ -49,6 +49,7 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
+from triqs_tprf.lattice import chi0_wr_from_grt_PH
 from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
@@ -140,7 +141,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
         return g_tr, sigma_w
 
 # ----------------------------------------------------------------------
-def imtime_bubble_chi0_wk(g_wk, nw=1):
+def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
     ncores = multiprocessing.cpu_count()
 
     wmesh, kmesh =  g_wk.mesh.components
@@ -202,13 +203,17 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
         chi0_wr = chi0_w0r_from_grt_PH(g_tr)
         del g_tr
     else:
-        mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
-        chi0_tr = chi0_tr_from_grt_PH(g_tr)
-        del g_tr
-        
-        mpi.report('--> chi_wr_from_chi_tr')
-        chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
-        del chi0_tr
+        if not save_memory:
+            mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
+            chi0_tr = chi0_tr_from_grt_PH(g_tr)
+            del g_tr
+            
+            mpi.report('--> chi_wr_from_chi_tr')
+            chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
+            del chi0_tr
+        elif save_memory:
+            chi0_wr = chi0_wr_from_grt_PH(g_tr, nw=nw)
+
         
     mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
