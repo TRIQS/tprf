@@ -71,6 +71,10 @@ typedef chi0r_t::view_type chi0r_vt;
 
   // new style
 
+typedef gf<cartesian_product<imfreq, cyclic_lattice>, tensor_valued<4>> chi_nr_t;
+typedef chi_nr_t::const_view_type chi_nr_cvt;
+typedef chi_nr_t::view_type chi_nr_vt;
+
 typedef gf<cartesian_product<imfreq, imfreq, cyclic_lattice>, tensor_valued<4>> chi_wnr_t;
 typedef chi_wnr_t::const_view_type chi_wnr_cvt;
 typedef chi_wnr_t::view_type chi_wnr_vt;
