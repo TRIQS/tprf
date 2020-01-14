@@ -121,10 +121,11 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
     for (auto const &t : tmesh)
       chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
 
-    auto chi0_w = make_gf_from_fourier(chi0_t, nw);
-    
 #pragma omp critical
+    {
+    auto chi0_w = make_gf_from_fourier(chi0_t, nw);
     chi0_wr[_, r] = chi0_w;
+    }
 
   }
 
