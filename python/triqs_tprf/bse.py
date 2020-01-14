@@ -37,11 +37,12 @@ from triqs_tprf.linalg import inverse_PH
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH
+from triqs_tprf.lattice import chi0_nr_from_gr_PH_at_specific_w
 from triqs_tprf.lattice import chi0r_from_gr_PH_nompi
 from triqs_tprf.lattice import chi0q_from_chi0r
 from triqs_tprf.lattice import chi0q_sum_nu 
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
+from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk, add_fake_bosonic_mesh
 
 # ----------------------------------------------------------------------
 def solve_local_bse(chi0_wnn, chi_wnn):
@@ -207,6 +208,61 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     mpi.barrier()
     
     return chi0_wnk    
+
+# ----------------------------------------------------------------------
+def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
+
+    r""" Compute the generalized lattice bubble susceptibility 
+    :math:`\chi^{(0)}_{abcd}(\nu, \mathbf{k})` from the single-particle
+    Green's function :math:`G_{ab}(\nu, \mathbf{k})` at a specififc
+    \omega.
+
+    Parameters
+    ----------
+
+    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+    nw_index : Index of a specififc bosonic frequency at which :math:`\chi`
+               shall be evaluated.
+    nwf : Number of fermionic freqiencies in :math:`\chi`.    
+
+    Returns
+    -------
+
+    chi0_nk : Generalized lattice bubble susceptibility at a specific \omega
+               :math:`\chi^{(0)}_{abcd}(\nu, \mathbf{k})`
+    """
+
+    fmesh = g_wk.mesh.components[0]
+    kmesh = g_wk.mesh.components[1]
+
+    if nwf is None:
+        nwf = len(fmesh) / 2
+
+    mpi.barrier()
+    mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,1,2)][0,0]))
+    n = np.sum(g_wk.data) / len(kmesh)
+    mpi.report('n ' + str(n))
+    mpi.barrier()
+
+    mpi.report('--> g_wr from g_wk')
+    g_wr = fourier_wk_to_wr(g_wk)
+    
+    mpi.report('--> chi0_wnr from g_wr')
+    chi0_nr = chi0_nr_from_gr_PH_at_specific_w(nw_index=nw_index, nn=nwf, g_nr=g_wr)
+    del g_wr
+
+    mpi.report('--> chi0_wnk from chi0_wnr')
+    # Create a 'fake' bosonic mesh to be able to use 'chi0q_from_chi0r'
+    chi0_wnr = add_fake_bosonic_mesh(chi0_nr)
+    del chi0_nr
+
+    chi0_wnk = chi0q_from_chi0r(chi0_wnr)
+    del chi0_wnr
+
+    chi0_nk = chi0_wnk[Idx(0), :, :]
+    del chi0_wnk
+
+    return chi0_nk    
         
 # ----------------------------------------------------------------------
 def solve_lattice_bse(g_wk, gamma_wnn):
