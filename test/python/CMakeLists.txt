@@ -19,5 +19,6 @@ add_python_test(1d_hubbard_hf_rpa_2site_AFM)
 add_python_test(compare_general_rpa_to_matrix_rpa)
 add_python_test(interaction_tensor_charge_spin_factorization)
 add_python_test(symmetrize_gf)
+add_python_test(add_fake_bosonic_mesh)
 
 add_subdirectory(eliashberg)

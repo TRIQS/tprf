@@ -56,6 +56,49 @@ from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
 
 # ----------------------------------------------------------------------
+def add_fake_bosonic_mesh(gf, beta=None):
+    """ Put a one value bosonic mesh as the first mesh argument of a 
+    Green's function object.
+
+    Parameters
+    ----------
+    gf : Gf,
+         Green's function on some arbitrary mesh. If 'beta' is not given
+         one mesh needs to be a 'MeshImFreq' to obtain a beta'
+    beta : float, optional
+           The inverse temperature used for the fake bosonic mesh.
+
+    Returns
+    -------
+    gf_w : Gf,
+           Green's function with an additional one value bosonic mesh
+           on its first position.
+    """
+    mesh = gf.mesh
+    if isinstance(mesh, MeshProduct):
+        meshes = mesh.components
+    else:
+        meshes = (mesh,)
+
+    # If beta is not given access it from a 'MeshImFreq' of the 'Gf'
+    if not beta:
+        betas = [mesh.beta for mesh in meshes if hasattr(mesh, "beta")]
+        if len(betas) == 0:
+            raise ValueError(
+            "No 'beta' was given and the Green's function does not contain"
+            " a 'MeshImFreq'")
+        beta = betas[0]
+
+    wmesh = MeshImFreq(beta, 'Boson', 1)
+    mesh = (wmesh,) + meshes
+    mesh = MeshProduct(*mesh)
+
+    gf_w = Gf(mesh=mesh, target_shape=gf.target_shape)
+    gf_w.data[0,...] = gf.data
+
+    return gf_w
+
+# ----------------------------------------------------------------------
 def put_gf_on_mesh(g_in, wmesh):
 
     assert( len(wmesh) <= len(g_in.mesh) )
