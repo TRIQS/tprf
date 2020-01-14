@@ -14,7 +14,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Idx
+from pytriqs.gf import MeshImFreq, Idx, MeshProduct
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.tight_binding import TBLattice
@@ -60,11 +60,8 @@ g0_wr = fourier_wk_to_wr(g0_wk)
 chi0_wnr = chi0r_from_gr_PH(nw=p.nw_chi, nn=p.nwf, g_nr=g0_wr)
 chi0_nr_at_specific_w = chi0_nr_from_gr_PH_at_specific_w(nw_index=p.nw_index, nn=p.nwf, g_nr=g0_wr)
 
-print(chi0_wnr)
-print(chi0_wnr.data.shape)
-print(chi0_nr_at_specific_w)
-print(chi0_nr_at_specific_w.data.shape)
-
-assert np.allclose(chi0_wnr[Idx(p.nw_index), :, :].data, chi0_nr_at_specific_w.data)
+assert isinstance(chi0_nr_at_specific_w.mesh, MeshProduct)
+assert isinstance(chi0_nr_at_specific_w.mesh[0], MeshImFreq)
+np.testing.assert_allclose(chi0_wnr[Idx(p.nw_index), :, :].data, chi0_nr_at_specific_w.data)
 
 
