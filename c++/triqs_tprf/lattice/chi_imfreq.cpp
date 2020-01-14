@@ -151,7 +151,6 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
   // Create mesh were last point is the one desired 'nw_index'
   auto wmesh_to_access = gf_mesh<imfreq>{beta, Boson, nw_index+1};
   auto w = wmesh_to_access[wmesh_to_access.last_index()];
-  std::cout << wmesh_to_access.last_index() << "\n";
 
   auto nmesh = gf_mesh<imfreq>{beta, Fermion, nn};
 
