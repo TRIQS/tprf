@@ -356,6 +356,107 @@ def solve_lattice_bse(g_wk, gamma_wnn):
     mpi.report('--> solve_lattice_bse, done.')
 
     return chi_kw, chi0_kw
+
+# ----------------------------------------------------------------------
+def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
+
+    r""" Compute the generalized lattice susceptibility 
+    :math:`\chi_{abcd}(\mathbf{k})` using the Bethe-Salpeter 
+    equation (BSE) at a specific \omega.
+
+    Parameters
+    ----------
+
+    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+    gamma_wnn : Local particle-hole vertex function 
+                :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
+    nw_index : int,
+               The \omega index at which the susceptibility shall be calculated.
+
+    Returns
+    -------
+
+    chi_k : Generalized lattice susceptibility
+              :math:`\chi_{abcd}(\mathbf{k})`
+    chi0_k : Generalized bare lattice susceptibility
+              :math:`\chi^0_{abcd}(\mathbf{k})`
+    """
+    # Only use \Gamma at the specific \omega
+    gamma_nn = gamma_wnn[Idx(nw_index), :, :]
+    # Keep fake bosonic mesh for usability with other functions
+    gamma_wnn = add_fake_bosonic_mesh(gamma_nn)
+
+    fmesh_g = g_wk.mesh.components[0]
+    kmesh = g_wk.mesh.components[1]
+    
+    bmesh = gamma_wnn.mesh.components[0]
+    fmesh = gamma_wnn.mesh.components[1]
+
+    nk = len(kmesh)
+    nwf = len(fmesh) / 2
+    nwf_g = len(fmesh_g) / 2
+
+    if mpi.is_master_node():
+        print tprf_banner(), "\n"
+        print 'Lattcie BSE with local vertex approximation at specific \omega.\n'
+        print 'nk    =', nk
+        print 'nw_index    =', nw_index
+        print 'nwf   =', nwf
+        print 'nwf_g =', nwf_g
+        print    
+
+    mpi.report('--> chi0_wk_tail_corr')
+    # Calculate chi0_wk up to the specific \omega
+    chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=nw_index+1, save_memory=True) 
+    # Only use specific \omega, but put back on fake bosonic mesh
+    chi0_k_tail_corr = chi0_wk_tail_corr[Idx(nw_index), :]
+    chi0_wk_tail_corr = add_fake_bosonic_mesh(chi0_k_tail_corr, beta=bmesh.beta)
+
+    chi0_nk = get_chi0_nk_at_specific_w(g_wk, nw_index=nw_index, nwf=nwf)
+    # Keep fake bosonic mesh for usability with other functions
+    chi0_wnk = add_fake_bosonic_mesh(chi0_nk)
+    
+    mpi.report('--> trace chi0_wnk')
+    chi0_wk = chi0q_sum_nu(chi0_wnk)
+
+    dchi_wk = chi0_wk_tail_corr - chi0_wk
+
+    chi0_kw = Gf(mesh=MeshProduct(kmesh, bmesh), target_shape=chi0_wk_tail_corr.target_shape)
+    chi0_kw.data[:] = chi0_wk_tail_corr.data.swapaxes(0, 1)
+
+    del chi0_wk
+    del chi0_wk_tail_corr
+
+    assert( chi0_wnk.mesh.components[0] == bmesh )
+    assert( chi0_wnk.mesh.components[1] == fmesh )
+    assert( chi0_wnk.mesh.components[2] == kmesh )
+
+    # -- Lattice BSE calc with built in trace
+    mpi.report('--> chi_kw from BSE')
+    #mpi.report('DEBUG BSE INACTIVE'*72)
+    chi_kw = chiq_sum_nu_from_chi0q_and_gamma_PH(chi0_wnk, gamma_wnn)
+    #chi_kw = chi0_kw.copy()
+
+    mpi.barrier()
+    mpi.report('--> chi_kw from BSE (done)')
+    
+    del chi0_wnk
+
+    mpi.report('--> chi_kw tail corrected (using chi0_wnk)')
+    for k in kmesh:
+        chi_kw[k, :] += dchi_wk[:, k] # -- account for high freq of chi_0 (better than nothing)
+
+    del dchi_wk
+
+    mpi.report('--> solve_lattice_bse, done.')
+
+    chi_k = chi_kw[:, Idx(0)]
+    del chi_kw
+    
+    chi0_k = chi0_kw[:, Idx(0)]
+    del chi0_kw
+
+    return chi_k, chi0_k
  
 # ----------------------------------------------------------------------
 def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
