@@ -123,7 +123,8 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
 def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
-                     tol=1e-10, product='FFT', solver='PM', symmetrize_fct=lambda x : x):
+                     tol=1e-10, product='FFT', solver='PM', symmetrize_fct=lambda x : x,
+                     k=6):
 
     r""" Solve the linearized Eliashberg equation
     
@@ -231,7 +232,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
         es, evs = [es], [evs]
 
     elif solver == 'IRAM':
-        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, tol=tol)
+        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, k=k, tol=tol)
 
     else:
         raise NotImplementedError('There is no solver called %s.'%solver)
@@ -240,7 +241,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
     return es, eigen_modes
 
-def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
+def implicitly_restarted_arnoldi_method(matvec, init, k=6, tol=1e-10):
 
     """Find the eigenvalue with the largest real value via the Implicitly Restarted 
     Arnoldi Method
@@ -270,7 +271,7 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
     """
     N = init.shape[0]
     linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
-    Es, U = eigs(linop, which='LR', tol=tol, v0=init)
+    Es, U = eigs(linop, k=k, which='LR', tol=tol, v0=init)
     Es = Es.real
     
     return list(Es), list(U.T)
