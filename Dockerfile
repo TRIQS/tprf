@@ -1,6 +1,6 @@
 # See ../triqs/packaging for other options
-FROM flatironinstitute/triqs:master-ubuntu-clang
-ARG APPNAME
+FROM flatironinstitute/triqs:unstable-ubuntu-clang
+ARG APPNAME=app4triqs
 
 COPY requirements.txt /src/$APPNAME/requirements.txt
 RUN pip install -r /src/$APPNAME/requirements.txt

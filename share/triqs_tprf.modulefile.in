@@ -3,7 +3,7 @@
 # To be installed as ${MODULEPATH}/triqs_tprf/@TPRF_VERSION@
 
 set     name        triqs_tprf
-set     version     @TPRF_VERSION@
+set     version     @PROJECT_VERSION@
 set     root        @CMAKE_INSTALL_PREFIX@
 set     git_hash    @PROJECT_GIT_HASH@
 

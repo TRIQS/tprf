@@ -25,7 +25,7 @@ source_suffix = '.rst'
 
 project = u'TPRF - Two-Particle Response Function tool box for TRIQS'
 copyright = u'2017, H. U.R. Strand'
-version = '@TPRF_VERSION@'
+version = '@PROJECT_VERSION@'
 
 math_number_all = True
 mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
