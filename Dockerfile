@@ -1,6 +1,6 @@
 # See ../triqs/packaging for other options
 FROM flatironinstitute/triqs:unstable-ubuntu-clang
-ARG APPNAME=app4triqs
+ARG APPNAME=tprf
 
 COPY requirements.txt /src/$APPNAME/requirements.txt
 RUN pip install -r /src/$APPNAME/requirements.txt
