@@ -262,6 +262,25 @@ g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
 
 // ----------------------------------------------------
 
+g_fr_t fourier_fk_to_fr(g_fk_cvt g_fk) {
+
+  auto [fmesh, kmesh] = g_fk.mesh();
+  auto rmesh = make_adjoint_mesh(kmesh);
+
+  g_fr_t g_fr({fmesh, rmesh}, g_fk.target_shape());
+
+  auto _ = all_t{};
+  for ( auto const &f : mpi_view(fmesh) )
+    g_fr[f, _]() = triqs::gfs::fourier(g_fk[f, _]);  
+
+  g_fr = mpi::all_reduce(g_fr);
+  
+  return g_fr;
+  
+}
+
+// ----------------------------------------------------
+
 #ifdef TPRF_OMP
   
 g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {

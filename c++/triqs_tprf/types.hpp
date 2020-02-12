@@ -131,6 +131,10 @@ typedef gf<cartesian_product<imfreq, cyclic_lattice>, matrix_valued> g_wr_t;
 typedef g_wr_t::const_view_type g_wr_cvt;
 typedef g_wr_t::view_type g_wr_vt;
 
+typedef gf<cartesian_product<refreq, cyclic_lattice>, matrix_valued> g_fr_t;
+typedef g_fr_t::const_view_type g_fr_cvt;
+typedef g_fr_t::view_type g_fr_vt;
+
 typedef gf<cartesian_product<imtime, cyclic_lattice>, matrix_valued> g_tr_t;
 typedef g_tr_t::const_view_type g_tr_cvt;
 typedef g_tr_t::view_type g_tr_vt;

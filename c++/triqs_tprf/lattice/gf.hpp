@@ -129,6 +129,8 @@ g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
     @return real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
 g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk);
+
+g_fr_t fourier_fk_to_fr(g_fk_cvt g_fk);
   
 /** Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 

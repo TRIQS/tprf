@@ -172,6 +172,8 @@ Returns
 out
      real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
 
+module.add_function ("triqs_tprf::g_fr_t triqs_tprf::fourier_fk_to_fr (triqs_tprf::g_fk_cvt g_fk)", doc = r"""""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::fourier_wr_to_wk (triqs_tprf::g_wr_cvt g_wr)", doc = r"""Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
     Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{r}) \right\}`
