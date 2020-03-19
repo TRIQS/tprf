@@ -752,6 +752,8 @@ out
 
 module.add_function ("chi_t_t::target_t::value_t triqs_tprf::chi_trapz_tau (triqs_tprf::chi_t_cvt chi_t)", doc = r"""""")
 
+module.add_function ("triqs_tprf::chi_fr_t triqs_tprf::chi_fr_from_chi_fk (triqs_tprf::chi_fk_cvt chi_fk)", doc = r"""""")
+
 module.add_function ("triqs_tprf::chi_wnr_t triqs_tprf::chi0r_from_gr_PH (int nw, int nn, triqs_tprf::g_wr_cvt g_nr)", doc = r"""Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})`.
 
   Computes

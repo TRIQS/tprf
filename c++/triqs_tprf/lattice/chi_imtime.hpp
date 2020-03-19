@@ -137,4 +137,6 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
 
 chi_t_t::target_t::value_t chi_trapz_tau(chi_t_cvt chi_t);
 
+chi_fr_t chi_fr_from_chi_fk(chi_fk_cvt chi_fk);
+
 } // namespace triqs_tprf

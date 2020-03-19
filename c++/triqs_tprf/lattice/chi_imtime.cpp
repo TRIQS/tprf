@@ -329,6 +329,48 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   chi_wr = mpi::all_reduce(chi_wr);
   return chi_wr;
 }  
+
+chi_fr_t chi_fr_from_chi_fk(chi_fk_cvt chi_fk) {
+
+  auto _ = all_t{};
+
+  int nb = chi_fk.target().shape()[0];
+
+  auto fmesh = std::get<0>(chi_fk.mesh());
+  auto kmesh = std::get<1>(chi_fk.mesh());
+
+  auto rmesh = gf_mesh<cyclic_lattice>{bravais_lattice{kmesh.domain()}, kmesh.periodization_matrix};
+  
+  chi_fr_t chi_fr{{fmesh, rmesh}, {nb, nb, nb, nb}};
+
+  auto f0 = *fmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(chi_fk[f0, _]), gf_view(chi_fr[f0, _]));
+
+  auto arr = mpi_view(fmesh);
+
+#pragma omp parallel for 
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto & f = arr(idx);
+  
+    auto chi_k = make_gf<brillouin_zone>(kmesh, chi_fr.target());
+    auto chi_r = make_gf<cyclic_lattice>(rmesh, chi_fr.target());
+
+#pragma omp critical
+    chi_k = chi_fk[f, _];
+
+    _fourier_with_plan<0>(gf_const_view(chi_k), gf_view(chi_r), p);
+
+#pragma omp critical
+    chi_fr[f, _] = chi_r;
+    
+    //for (auto const &w : wmesh)
+    //chi_wr[w, _] = triqs::gfs::fourier(chi_wk[w, _]);
+  }
+
+  chi_fr = mpi::all_reduce(chi_fr);
+  return chi_fr;
+  
+}
   
   /*
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
