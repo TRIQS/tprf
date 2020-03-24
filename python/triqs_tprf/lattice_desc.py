@@ -6,7 +6,7 @@ from cpp2py.wrap_generator import *
 module = module_(full_name = "lattice", doc = r"Lattice functionality", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['pytriqs.gf', 'pytriqs.lattice'])
+module.add_imports(*['pytriqs.gf', 'pytriqs.lattice', 'pytriqs.utility.mpi'])
 
 # Add here all includes
 module.add_include("triqs_tprf/lattice.hpp")
