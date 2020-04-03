@@ -13,7 +13,7 @@ import pytriqs.utility.mpi as mpi
 
 from pytriqs.gf import Gf, Idx, inverse, iOmega_n
 from pytriqs.operators import c, c_dag
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 
 from pytriqs.gf import MeshBrillouinZone, MeshProduct, MeshImFreq
 from pytriqs.lattice.lattice_tools import BravaisLattice, BrillouinZone

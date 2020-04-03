@@ -3,7 +3,7 @@
 import numpy as np
 
 from pytriqs.gf import *
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.utility import mpi
 
 from pytriqs.gf import Gf, MeshImFreq, iOmega_n, inverse

@@ -26,7 +26,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 import pytriqs.utility.mpi as mpi
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.gf import MeshImFreq, MeshProduct, Gf, Idx
 
 # ----------------------------------------------------------------------

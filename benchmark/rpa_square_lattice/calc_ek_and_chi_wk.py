@@ -7,7 +7,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from pytriqs.gf import MeshImFreq
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------

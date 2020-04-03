@@ -10,7 +10,7 @@ import numpy as np
 
 from pytriqs.gf import Gf, Idx
 from pytriqs.operators import c, c_dag
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.utility import mpi # needed for pomerol2triqs
 
 # ----------------------------------------------------------------------

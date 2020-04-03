@@ -38,7 +38,7 @@ def write_TarGZ_HDFArchive(filename, **kwargs):
 
     import os
     import tarfile
-    from pytriqs.archive import HDFArchive
+    from h5 import HDFArchive
     
     filename = filename.split('.')[0]
     filename_h5 = filename + '.h5'
@@ -59,7 +59,7 @@ def read_TarGZ_HDFArchive(filename):
     import os
     import tarfile
     from tempfile import NamedTemporaryFile
-    from pytriqs.archive import HDFArchive
+    from h5 import HDFArchive
 
     tar = tarfile.open(filename, "r:gz")
     f = tar.extractfile(tar.getmembers()[0])

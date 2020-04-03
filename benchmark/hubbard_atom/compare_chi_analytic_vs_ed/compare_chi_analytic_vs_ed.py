@@ -11,7 +11,7 @@ import numpy as np
 
 from pytriqs.gf import *
 from pytriqs.operators import *
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 
 # ----------------------------------------------------------------------
 

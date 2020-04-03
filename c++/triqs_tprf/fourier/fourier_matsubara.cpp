@@ -172,7 +172,7 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
 
   bool is_fermion = (iw_mesh.domain().statistic == Fermion);
   double fact = beta / L;
-  dcomplex iomega = M_PI * 1_j / beta;
+  dcomplex iomega = M_PI * 1i / beta;
 
   double b1, b2, b3;
   array<dcomplex, 1> m1, a1, a2, a3;
@@ -311,7 +311,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
 
   bool is_fermion = (gw.domain().statistic == Fermion);
   double fact = 1.0 / beta;
-  dcomplex iomega = M_PI * 1_j / beta;
+  dcomplex iomega = M_PI * 1i / beta;
 
   double b1, b2, b3;
   array<dcomplex, 1> a1, a2, a3;

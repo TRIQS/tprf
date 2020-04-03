@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 
 from pytriqs.gf import *
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.utility import mpi
 from triqs_ctint import SolverCore, version
 

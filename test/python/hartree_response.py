@@ -5,7 +5,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.operators import n, c, c_dag, Operator, dagger
 from pytriqs.statistics.histograms import Histogram
 

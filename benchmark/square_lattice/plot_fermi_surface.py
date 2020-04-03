@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
     
 # ----------------------------------------------------------------------
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.gf import MeshBrillouinZone
 
 # ----------------------------------------------------------------------

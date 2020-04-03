@@ -8,7 +8,7 @@ from scipy.interpolate import griddata
 
 # ----------------------------------------------------------------------
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.gf import MeshBrillouinZone, Idx
 from pytriqs.lattice import BrillouinZone, BravaisLattice
 

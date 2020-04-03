@@ -10,7 +10,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 import pytriqs.utility.mpi as mpi
 
 from pytriqs.lattice.lattice_tools import BravaisLattice as BravaisLattice

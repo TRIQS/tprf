@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 
 from pytriqs.applications.susceptibility.Dummy import Dummy
 

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
     
 # ----------------------------------------------------------------------
 
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 from pytriqs.gf import MeshBrillouinZone, Idx
 
 from triqs_tprf.lattice_utils import k_space_path

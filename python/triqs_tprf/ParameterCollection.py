@@ -56,7 +56,7 @@ class ParameterCollection(object):
     
     and can be stored and loaded to/from TRIQS hdf archives.
 
-    >>> from pytriqs.archive import HDFArchive
+    >>> from h5 import HDFArchive
     >>> with HDFArchive('data.h5', 'w') as arch: arch['p'] = p
     >>> with HDFArchive('data.h5', 'r') as arch: p_ref = arch['p']
     >>> print p_ref
@@ -93,7 +93,7 @@ class ParameterCollection(object):
                 self.dict()[key] = bool(value)
 
     def convert_keys_from_string_to_python(self, dict_key):
-        """ pytriqs.archive.HDFArchive incorrectly mangles tuple keys to string
+        """ h5.HDFArchive incorrectly mangles tuple keys to string
         running this on the affected dict tries to revert this by running eval
         on the string representation. UGLY FIX... """
 
@@ -147,9 +147,9 @@ class ParameterCollection(object):
         return ans
 
 
-# -- Register ParameterCollection in Triqs hdf_archive_schemes
+# -- Register ParameterCollection in Triqs formats
 
-from pytriqs.archive.hdf_archive_schemes import register_class 
+from h5.formats import register_class 
 register_class(ParameterCollection)
 
 # ----------------------------------------------------------------------
@@ -209,7 +209,7 @@ class ParameterCollections(object):
         return ret    
 
 # ----------------------------------------------------------------------
-# -- Register ParameterCollection in Triqs hdf_archive_schemes
+# -- Register ParameterCollection in Triqs formats
 
-from pytriqs.archive.hdf_archive_schemes import register_class 
+from h5.formats import register_class 
 register_class(ParameterCollections)

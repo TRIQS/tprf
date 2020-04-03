@@ -34,5 +34,5 @@ class Dummy(object):
         ret.__dict__.update(d)
         return ret
         
-from pytriqs.archive.hdf_archive_schemes import register_class 
+from h5.formats import register_class 
 register_class(Dummy)

@@ -12,7 +12,7 @@ import numpy as np
 
 from pytriqs.gf import Gf, Idx
 from pytriqs.operators import c, c_dag
-from pytriqs.archive import HDFArchive
+from h5 import HDFArchive
 
 from pytriqs.gf import MeshBrillouinZone, MeshProduct, MeshImFreq
 from pytriqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
