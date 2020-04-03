@@ -23,8 +23,8 @@ extensions = ['sphinx.ext.autodoc',
 
 source_suffix = '.rst'
 
-project = u'TPRF - Two-Particle Response Function tool box for TRIQS'
-copyright = u'2017, H. U.R. Strand'
+project = 'TPRF - Two-Particle Response Function tool box for TRIQS'
+copyright = '2017, H. U.R. Strand'
 version = '@PROJECT_VERSION@'
 
 math_number_all = True
