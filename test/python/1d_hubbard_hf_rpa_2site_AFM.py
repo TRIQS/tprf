@@ -62,17 +62,17 @@ if __name__ == '__main__':
     P = np.array([[ 2 ]]) 
     
     Units_prim = np.array(t_r_prim.Units)
-    print 'Units_prim =\n', Units_prim
+    print('Units_prim =\n', Units_prim)
     Units = np.dot(P, Units_prim)
-    print 'Units =\n', Units
+    print('Units =\n', Units)
     
     t_r = TBSuperLattice(t_r_prim, P)
     t_r.bz = BrillouinZone(t_r.bl)
     
     e_k = t_r.on_mesh_brillouin_zone(n_k)
-    print e_k.target_shape
+    print(e_k.target_shape)
     
-    print 'eps(k=0) =\n', e_k[Idx(0, 0, 0)]
+    print('eps(k=0) =\n', e_k[Idx(0, 0, 0)])
 
     # -- Local double occ and spin operators
 
@@ -80,15 +80,15 @@ if __name__ == '__main__':
 
     docc = n(0, 0) * n(0, 2) + n(0, 1) * n(0, 3)
 
-    print 'docc =', docc
+    print('docc =', docc)
     
     sigma_x = 0.5 * np.rot90(np.diag([1., 1.]))
     sigma_y = 0.5 * np.rot90(np.diag([1.j, -1.j]))
     sigma_z = 0.5 * np.diag([1., -1.])
 
-    print 'sigma_x =\n', sigma_x
-    print 'sigma_y =\n', sigma_y
-    print 'sigma_z =\n', sigma_z
+    print('sigma_x =\n', sigma_x)
+    print('sigma_y =\n', sigma_y)
+    print('sigma_z =\n', sigma_z)
     
     Sx1 = np.kron(sigma_x, np.diag([1., 0.]))
     Sx2 = np.kron(sigma_x, np.diag([0., 1.]))
@@ -102,9 +102,9 @@ if __name__ == '__main__':
     Sz = Sz1 + Sz2
     Sz_AF = Sz1 - Sz2
     
-    print Sz1
-    print Sz2
-    print Sz
+    print(Sz1)
+    print(Sz2)
+    print(Sz)
 
     # -- Sweep in interaction U
     
@@ -123,9 +123,9 @@ if __name__ == '__main__':
     
     for U in U_vec:
 
-        print '-'*72
-        print 'U =', U
-        print '-'*72
+        print('-'*72)
+        print('U =', U)
+        print('-'*72)
 
         mu0 = 0.5 * U # half-filling
         
@@ -136,12 +136,12 @@ if __name__ == '__main__':
             mu_min=-20., mu_max=+20.)
 
         # -- Solve without seeding FM symmetry breaking
-        print '-'*72
-        print '--> Restricted HF'
+        print('-'*72)
+        print('--> Restricted HF')
         hs.solve_newton(N_target=N_tot, M0=M0, mu0=mu0)
 
-        print '-'*72
-        print '--> RPA response on non-magnetic HF solution'
+        print('-'*72)
+        print('--> RPA response on non-magnetic HF solution')
 
         hr = HartreeFockResponse(hs)
         chi_FM = hr.response(Sz, Sz)
@@ -151,9 +151,9 @@ if __name__ == '__main__':
                 
         # -- Solve by seeding FM symmetry breaking
 
-        print '-'*72
-        print '--> FM Unrestricted HF'
-        print 'M_FM =\n', M_FM
+        print('-'*72)
+        print('--> FM Unrestricted HF')
+        print('M_FM =\n', M_FM)
         
         hs_fm = HartreeFockSolver(
             e_k, beta, H_int=H_int, gf_struct=gf_struct,
@@ -169,9 +169,9 @@ if __name__ == '__main__':
         mu_fm = hs_fm.mu
         M_FM = hs_fm.M.copy()
 
-        print '-'*72
-        print '--> AF Unrestricted HF'
-        print 'M_AF =\n', M_AF
+        print('-'*72)
+        print('--> AF Unrestricted HF')
+        print('M_AF =\n', M_AF)
 
         hs_af = HartreeFockSolver(
             e_k, beta, H_int=H_int, gf_struct=gf_struct,
@@ -210,11 +210,11 @@ if __name__ == '__main__':
 
     spl_chi_AF = InterpolatedUnivariateSpline(U[::-1], 1./chi_AF[::-1])
     U_AF = spl_chi_AF.roots()[0]
-    print 'U_AF =', U_AF
+    print('U_AF =', U_AF)
 
     spl_chi_FM = InterpolatedUnivariateSpline(U[::-1], 1./chi_FM[::-1])
     U_FM = spl_chi_FM.roots()[0]
-    print 'U_FM =', U_FM
+    print('U_FM =', U_FM)
 
     # -- Compare divergencies of chi with the
     
@@ -225,11 +225,11 @@ if __name__ == '__main__':
 
     spl_e_AF = InterpolatedUnivariateSpline(U[::-1], 1./e_AF[::-1])
     U_AF_ref = spl_e_AF.roots()[0]
-    print 'U_AF_ref =', U_AF_ref
+    print('U_AF_ref =', U_AF_ref)
     
     spl_e_FM = InterpolatedUnivariateSpline(U[::-1], 1./e_FM[::-1])
     U_FM_ref = spl_e_FM.roots()[0]
-    print 'U_FM_ref =', U_FM_ref
+    print('U_FM_ref =', U_FM_ref)
 
     np.testing.assert_almost_equal(U_AF, U_AF_ref, decimal=4)
     np.testing.assert_almost_equal(U_FM, U_FM_ref, decimal=4)

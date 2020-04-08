@@ -71,7 +71,7 @@ if __name__ == '__main__':
     np.testing.assert_array_almost_equal(pom.chi_m.data, ana.chi_m.data)
     np.testing.assert_array_almost_equal(pom.chi0_m.data, ana.chi0_m.data)
 
-    print 'ok! Analytic chi_m agrees with ED (pomerol).'
+    print('ok! Analytic chi_m agrees with ED (pomerol).')
 
     plot_res(ana, pom)
     

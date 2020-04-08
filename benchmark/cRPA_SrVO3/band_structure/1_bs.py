@@ -3,7 +3,7 @@ from ase.calculators.vasp import Vasp2
 
 import os
 
-print '='*72, '\n', '--> Band structure\n', '='*72
+print('='*72, '\n', '--> Band structure\n', '='*72)
 
 os.system('cp -r scf bs')
 calc = Vasp2(

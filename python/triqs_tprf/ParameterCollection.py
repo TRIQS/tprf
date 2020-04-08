@@ -70,10 +70,10 @@ class ParameterCollection(object):
         self.__dict__.update(kwargs)
 
     def items(self):
-        return self.__dict__.items()
+        return list(self.__dict__.items())
 
     def keys(self):
-   	return self.__dict__.keys()
+   	return list(self.__dict__.keys())
 
     def dict(self):
         return self.__dict__
@@ -88,7 +88,7 @@ class ParameterCollection(object):
         """ Fix for bug in Triqs that cast bool to numpy.bool_ 
         here we cast all numpy.bools_ to plain python bools """
         
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if type(value) == np.bool_:
                 self.dict()[key] = bool(value)
 
@@ -99,7 +99,7 @@ class ParameterCollection(object):
 
         d = self.dict()[dict_key]
         d_fix = {}
-        for key, value in d.items():
+        for key, value in list(d.items()):
             d_fix[eval(key)] = value            
         self.dict()[dict_key] = d_fix
     
@@ -117,7 +117,7 @@ class ParameterCollection(object):
 
     def __str__(self):
         out = ''
-        keys = np.sort(self.__dict__.keys()) # sort keys
+        keys = np.sort(list(self.__dict__.keys())) # sort keys
         for key in keys:
             value = self.__dict__[key]
             if type(value) is ParameterCollection:
@@ -139,8 +139,8 @@ class ParameterCollection(object):
     def get_my_name(self):
         ans = []
         frame = inspect.currentframe().f_back
-        tmp = dict(frame.f_globals.items() + frame.f_locals.items())
-        for k, var in tmp.items():
+        tmp = dict(list(frame.f_globals.items()) + list(frame.f_locals.items()))
+        for k, var in list(tmp.items()):
             if isinstance(var, self.__class__):
                 if hash(self) == hash(var):
                     ans.append(k)

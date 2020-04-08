@@ -87,7 +87,7 @@ def kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp):
     shape = [norb]*4
     U_c, U_s = np.zeros(shape, dtype=np.complex), np.zeros(shape, dtype=np.complex)
     
-    for a, abar, b, bbar in itertools.product(range(norb), repeat=4):
+    for a, abar, b, bbar in itertools.product(list(range(norb)), repeat=4):
 
         scalar_c, scalar_s = 0, 0
 
@@ -178,7 +178,7 @@ def quartic_tensor_from_charge_and_spin(U_c, U_s):
     U_uu = -0.5 * (U_c - U_s)
     U_ud = +0.5 * (U_c + U_s)
     
-    for s1, s2 in itertools.product(range(2), repeat=2):
+    for s1, s2 in itertools.product(list(range(2)), repeat=2):
         if s1 == s2:
             U_8[s1, s1, s1, s1] = U_uu
         else:

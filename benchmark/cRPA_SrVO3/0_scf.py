@@ -15,9 +15,9 @@ atoms = Atoms(
 
 from ase.calculators.vasp import Vasp2
 
-print '='*72
-print '--> SCF'
-print '='*72
+print('='*72)
+print('--> SCF')
+print('='*72)
 
 calc = Vasp2(
     command='mpirun vasp_std',

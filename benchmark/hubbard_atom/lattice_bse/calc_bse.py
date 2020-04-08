@@ -36,10 +36,10 @@ from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 # ----------------------------------------------------------------------
 def solve_lattice_bse(parm, momsus=False):
 
-    print '--> solve_lattice_bse'
+    print('--> solve_lattice_bse')
 
-    print 'nw =', parm.nw
-    print 'nwf =', parm.nwf
+    print('nw =', parm.nw)
+    print('nwf =', parm.nwf)
     
     # ------------------------------------------------------------------
     # -- Setup lattice
@@ -85,7 +85,7 @@ def solve_lattice_bse(parm, momsus=False):
     ref = np.squeeze(parm.chi_m.data.real)
     
     diff = np.max(np.abs(num - ref))
-    print 'diff =', diff
+    print('diff =', diff)
     
     parm.chi_w = chiq_sum_nu_q(parm.chi_wk) # static suscept
     
@@ -110,10 +110,10 @@ if __name__ == '__main__':
     # -- Tracing the numerical generalized susceptibility
     p.chi_w_ref = np.sum(p.chi_wk.data) / p.beta**2
 
-    print 'chi_w_analytic =', p.chi_w_analytic
-    print 'chi_w.data     =', p.chi_w.data.flatten()
-    print 'chi_w_ref      =', p.chi_w_ref
-    print 'chi_m_static   =', p.chi_m_static
+    print('chi_w_analytic =', p.chi_w_analytic)
+    print('chi_w.data     =', p.chi_w.data.flatten())
+    print('chi_w_ref      =', p.chi_w_ref)
+    print('chi_m_static   =', p.chi_m_static)
     
     np.testing.assert_array_almost_equal(
         np.squeeze(p.chi_w.data), p.chi_w_ref)

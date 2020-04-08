@@ -16,4 +16,4 @@ atoms = calc.get_atoms()
 
 u_q = read_vasp_crpa_momentum_space_interaction_to_triqs('./crpa', atoms.cell, calc.kpts, verbose=False)
 
-print u_q
+print(u_q)

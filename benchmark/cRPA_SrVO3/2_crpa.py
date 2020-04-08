@@ -3,9 +3,9 @@ import numpy as np
 
 from ase.calculators.vasp import Vasp2
 
-print '='*72
-print '--> cRPA'
-print '='*72
+print('='*72)
+print('--> cRPA')
+print('='*72)
 
 os.system('cp -r scf_exact crpa')
 
@@ -45,4 +45,4 @@ calc = Vasp2(
 try:
     calc.calculate(calc.atoms)
 except:
-    print '--> No energy from cRPA'
+    print('--> No energy from cRPA')

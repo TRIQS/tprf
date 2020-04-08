@@ -228,7 +228,7 @@ def find_Uc(t, beta):
 
     Uc = brentq(root_function, 0, 100.)
 
-    print 'Uc =', Uc
+    print('Uc =', Uc)
 
     return Uc
 
@@ -251,61 +251,61 @@ if __name__ == '__main__':
     n = 1.0
     
     E_kin_ref = get_kinetic_energy_mf_ref(t, beta, U, mu, n, m)
-    print 'E_kin_ref =', E_kin_ref
+    print('E_kin_ref =', E_kin_ref)
 
     E_tot_ref = get_total_energy_mf_ref(t, beta, U, mu, n, m)
-    print 'E_tot_ref =', E_tot_ref
+    print('E_tot_ref =', E_tot_ref)
 
-    print '--> tight binding model'
+    print('--> tight binding model')
     t_r = get_tb_model(t, U, n, m, mu=0.)
 
-    print '--> dispersion e_k'
+    print('--> dispersion e_k')
     e_k = t_r.on_mesh_brillouin_zone(n_k)
     kmesh = e_k.mesh
 
     #print e_k.data
     
-    print '--> lattice g0_wk'
+    print('--> lattice g0_wk')
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     E_kin = get_kinetic_energy(e_k, g0_wk)
-    print 'E_kin =', E_kin
+    print('E_kin =', E_kin)
     
     np.testing.assert_almost_equal(E_kin_ref, E_kin, decimal=6)
 
     rho = get_density_matrix(g0_wk)
-    print 'rho =\n', rho
+    print('rho =\n', rho)
 
     n = rho[0, 0] + rho[1, 1]
     m = 0.5 * (rho[0, 0] - rho[1, 1])
 
-    print 'n, m =', n, m
+    print('n, m =', n, m)
 
     E_tot = E_kin - U*(n**2/4 - m**2)
-    print 'E_tot =', E_tot
+    print('E_tot =', E_tot)
 
     np.testing.assert_almost_equal(E_tot_ref, E_tot, decimal=6)
 
     # ------------------------------------------------------------------
     # -- Lattice chi0
     
-    print '--> chi00_wk'
+    print('--> chi00_wk')
     chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
-    print 'chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4))
+    print('chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 
-    print '--> lindhard_chi00_wk'
+    print('--> lindhard_chi00_wk')
     chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=1, beta=beta, mu=mu)
-    print 'chi0_q0_analytic =\n', chi00_wk_analytic[
-        Idx(0), Idx(0, 0, 0)].real.reshape((4,4))
+    print('chi0_q0_analytic =\n', chi00_wk_analytic[
+        Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 
     np.testing.assert_almost_equal(
         chi00_wk.data, chi00_wk_analytic.data, decimal=5)
 
     chi0_q0_ref = chi0_q0_integral(t, beta)
     
-    print 'chi0_q0     =', chi00_wk[Idx(0), Idx(0, 0, 0)][0,0,0,0].real
-    print 'chi0_q0_ref =', chi0_q0_ref
+    print('chi0_q0     =', chi00_wk[Idx(0), Idx(0, 0, 0)][0,0,0,0].real)
+    print('chi0_q0_ref =', chi0_q0_ref)
 
     np.testing.assert_almost_equal(
         chi00_wk_analytic[Idx(0), Idx(0, 0, 0)][0,0,0,0], chi0_q0_ref)
@@ -317,16 +317,16 @@ if __name__ == '__main__':
     
     from pytriqs.operators import n, c, c_dag, Operator, dagger
     H_int = U * n(0, 0) * n(0, 1)
-    print 'H_int =', H_int
+    print('H_int =', H_int)
 
     from triqs_tprf.rpa_tensor import get_rpa_tensor
     from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
     fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
-    print fundamental_operators
+    print(fundamental_operators)
     U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
-    print 'U_abcd =\n', U_abcd.reshape((4, 4))
+    print('U_abcd =\n', U_abcd.reshape((4, 4)))
     
     # ------------------------------------------------------------------
     # -- RPA
@@ -334,16 +334,16 @@ if __name__ == '__main__':
     from triqs_tprf.lattice import solve_rpa_PH
 
     chi_wk = solve_rpa_PH(chi00_wk, U_abcd)
-    print 'chi_q0 =\n', chi_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4))
+    print('chi_q0 =\n', chi_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 
     Sz = 0.5 * np.diag([+1., -1.])
     chi_SzSz_wk = chi_wk[0,0,0,0].copy()
     chi_SzSz_wk.data[:] = np.einsum('wkabcd,ab,cd->wk', chi_wk.data, Sz, Sz)
-    print 'chi_SzSz_q0 =', chi_SzSz_wk[Idx(0), Idx(0, 0, 0)].real
+    print('chi_SzSz_q0 =', chi_SzSz_wk[Idx(0), Idx(0, 0, 0)].real)
 
     # Eq. 7.43 Fazekas (additional 0.5 factor)
     chi_q0_ref = 0.5 * chi0_q0_ref / (1. - U*chi0_q0_ref)
-    print 'chi_q0_ref =', chi_q0_ref
+    print('chi_q0_ref =', chi_q0_ref)
 
     np.testing.assert_almost_equal(
         chi_SzSz_wk[Idx(0), Idx(0, 0, 0)], chi_q0_ref)

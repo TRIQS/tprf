@@ -113,7 +113,7 @@ for model_parameter in model_parameters:
         error = 'The model of the benchmark and the one used now are not the same.\n' 
         error += '\t\tNow: {0} = {1}, benchmark: {0} = {2}.'.format(model_parameter, run_time,
                                                                                     benchmark)
-        raise AssertionError, error
+        raise AssertionError(error)
 
 # -- Compare the results. Raise an error if the are not the same within a tolerance.
 

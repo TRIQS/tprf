@@ -71,9 +71,9 @@ if __name__ == '__main__':
     
     for U in U_vec:
 
-        print '-'*72
-        print 'U =', U
-        print '-'*72
+        print('-'*72)
+        print('U =', U)
+        print('-'*72)
 
         mu0 = 0.5 * U # half-filling
         
@@ -130,9 +130,9 @@ if __name__ == '__main__':
         spl_Omega_h = InterpolatedUnivariateSpline(hs.h_vec, hs.Omega_vec)
         hs.chi_d2Omegadh2 = -spl_Omega_h(0., nu=2)
 
-        print 'chi            =', hs.chi
-        print 'chi_dmdh       =', hs.chi_dmdh
-        print 'chi_d2Omegadh2 =', hs.chi_d2Omegadh2
+        print('chi            =', hs.chi)
+        print('chi_dmdh       =', hs.chi_dmdh)
+        print('chi_d2Omegadh2 =', hs.chi_d2Omegadh2)
 
         #exit()
                 
@@ -173,8 +173,8 @@ if __name__ == '__main__':
     chi_diff1 = 1./chi - 1./chi_dmdh
     chi_diff2 = 1./chi - 1./chi_d2Omegadh2
 
-    print 'chi_diff1 =', np.max(np.abs(chi_diff1))
-    print 'chi_diff2 =', np.max(np.abs(chi_diff2))
+    print('chi_diff1 =', np.max(np.abs(chi_diff1)))
+    print('chi_diff2 =', np.max(np.abs(chi_diff2)))
 
     np.testing.assert_array_almost_equal(1./chi, 1./chi_dmdh)
     np.testing.assert_array_almost_equal(1./chi, 1./chi_d2Omegadh2, decimal=3)

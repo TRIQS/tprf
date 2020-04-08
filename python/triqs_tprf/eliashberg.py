@@ -62,7 +62,7 @@ def solve_eliashberg(Gamma_pp, g_wk, tol=1e-10):
     E, U = eigs(linop, which='LR', tol=tol, v0=v0)
 
     eigen_modes = []
-    for idx in xrange(U.shape[-1]):
+    for idx in range(U.shape[-1]):
         delta_wk = from_x_to_wk(U[:, idx])
         eigen_modes.append(delta_wk)
 
@@ -147,7 +147,7 @@ def solve_eliashberg_fft(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10):
     Es, U = eigs(linop, which='LR', tol=tol, v0=v0)
 
     eigen_modes = []
-    for idx in xrange(U.shape[-1]):
+    for idx in range(U.shape[-1]):
         delta_wk = from_x_to_wk(U[:, idx])
         eigen_modes.append(delta_wk)
 

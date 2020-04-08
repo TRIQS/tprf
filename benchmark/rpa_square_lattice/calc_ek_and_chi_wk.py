@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- tight binding
     
-    print '--> tight binding model'
+    print('--> tight binding model')
     t_r = TBLattice(
         units = [(1, 0, 0), (0, 1, 0)],
         hopping = {
@@ -66,10 +66,10 @@ if __name__ == '__main__':
         orbital_names = ['up_0', 'do_0'],
         )
 
-    print '--> e_k'
+    print('--> e_k')
     e_k = t_r.on_mesh_brillouin_zone(n_k)    
 
-    print '--> g0_wk'
+    print('--> g0_wk')
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=n_w)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
@@ -84,20 +84,20 @@ if __name__ == '__main__':
     U_vec = np.arange(1.0, 5.0, 1.0)
 
     for u in U_vec:
-        print '--> RPA chi_wk, U =', u
+        print('--> RPA chi_wk, U =', u)
 
         H_int = u * n(0, 0) * n(0, 1)
         U_int_abcd = quartic_tensor_from_operator(H_int, fundamental_operators)
 
-        print U_int_abcd.reshape((4, 4)).real
+        print(U_int_abcd.reshape((4, 4)).real)
         
         U_int_abcd = quartic_permutation_symmetrize(U_int_abcd)
-        print U_int_abcd.reshape((4, 4)).real
+        print(U_int_abcd.reshape((4, 4)).real)
         
         # -- Group in Gamma order cc^+cc^+ ( from c^+c^+cc )
 
         U_abcd = np.zeros_like(U_int_abcd)
-        for a, b, c, d in itertools.product(range(U_abcd.shape[0]), repeat=4):
+        for a, b, c, d in itertools.product(list(range(U_abcd.shape[0])), repeat=4):
             U_abcd[a, b, c, d] = U_int_abcd[b, d, a, c]
 
         chi_wk = solve_rpa_PH(chi00_wk, U_abcd)

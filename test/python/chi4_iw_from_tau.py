@@ -21,7 +21,7 @@ def mesh_product_iterator(mesh):
           for mesh in mesh.components])
 
 def mesh_product_iterator_numpy(mesh):
-    return [map(np.array, zip(*list(x)))
+    return [list(map(np.array, list(zip(*list(x)))))
             for x in mesh_product_iterator(chi4_tau.mesh)]
 
 # ----------------------------------------------------------------------
@@ -39,9 +39,9 @@ if __name__ == '__main__':
 
     chi4_tau = Gf(name=r'$g(\tau)$', mesh=imtime3, target_shape=[1, 1, 1, 1])
 
-    print dir(chi4_tau.indices)
+    print(dir(chi4_tau.indices))
     for i in chi4_tau.indices:
-        print i
+        print(i)
     exit()
     
     # -- Smooth anti-periodic function

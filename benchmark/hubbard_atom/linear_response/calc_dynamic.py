@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     for beta in beta_vec:
         path = 'dynamic_beta%6.6f' % beta
-        print '--> path:', path
+        print('--> path:', path)
         os.mkdir(path)
         os.chdir(path)
 

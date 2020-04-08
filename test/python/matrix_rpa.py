@@ -68,7 +68,7 @@ def get_rpa_us_tensor(norb, U, Up, J, Jp):
 
     U_abcd = np.zeros(4*[norb], dtype=complex)
 
-    for a,b,c,d in itertools.product(range(norb), repeat=4):
+    for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
         if a == b == c == d:
             U_abcd[a,b,c,d] = U
@@ -101,7 +101,7 @@ def get_rpa_uc_tensor(norb, U, Up, J, Jp):
 
     U_abcd = np.zeros(4*[norb], dtype=complex)
 
-    for a,b,c,d in itertools.product(range(norb), repeat=4):
+    for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
         if a == b == c == d:
             U_abcd[a,b,c,d] = U
@@ -130,7 +130,7 @@ def tensor_to_matrix(tensor):
     norb = tensor.shape[-1]
     non_orb_idx = tensor.shape[:-4]
     
-    idx = range(norb**2)
+    idx = list(range(norb**2))
     diag = idx[::norb+1]
     idx = diag + list(set(idx) - set(diag))
     
@@ -154,7 +154,7 @@ def matrix_to_tensor(matrix):
     norb = int(np.sqrt(matrix.shape[-1]))
     non_orb_idx = matrix.shape[:-2]
 
-    idx = range(norb**2)
+    idx = list(range(norb**2))
     diag = idx[::norb+1]
     idx = diag + list(set(idx) - set(diag))
     idx = [idx.index(l) for l in range(len(idx))]

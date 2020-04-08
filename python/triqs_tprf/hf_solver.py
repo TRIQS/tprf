@@ -33,7 +33,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 import itertools
 import numpy as np
-from numpy_compat import np_eigvalsh, np_eigh
+from .numpy_compat import np_eigvalsh, np_eigh
 
 # ----------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ class HartreeFockSolver(object):
                  mu0=0., mu_max=10, mu_min=-10.):
 
         if mpi.is_master_node():
-            print self.logo()
+            print(self.logo())
         
         self.mu = mu0
         self.beta = beta
@@ -103,12 +103,12 @@ class HartreeFockSolver(object):
         self.triu_idxs = np.triu_indices(self.norb, k=1)
 
         if mpi.is_master_node():
-            print 'beta =', self.beta
-            print 'mu =', self.mu
-            print 'bands =', self.norb
-            print 'n_k =', len(self.e_k.mesh)
-            print 'H_int =', H_int
-            print
+            print('beta =', self.beta)
+            print('mu =', self.mu)
+            print('bands =', self.norb)
+            print('n_k =', len(self.e_k.mesh))
+            print('H_int =', H_int)
+            print()
 
         if gf_struct is None:
             assert( H_int is None ), \
@@ -121,9 +121,9 @@ class HartreeFockSolver(object):
             fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
 
             if mpi.is_master_node():
-                print 'gf_struct =', gf_struct
-                print 'fundamental_operators =', fundamental_operators
-                print
+                print('gf_struct =', gf_struct)
+                print('fundamental_operators =', fundamental_operators)
+                print()
 
             assert( is_operator_composed_of_only_fundamental_operators(
                 H_int, fundamental_operators) ), \
@@ -298,11 +298,11 @@ class HartreeFockSolver(object):
 
         """
 
-        print 'MF: Forward iteration'
-        print 'nitermax =', nitermax
-        print 'mixing =', mixing
-        print 'tol =', tol
-        print
+        print('MF: Forward iteration')
+        print('nitermax =', nitermax)
+        print('mixing =', mixing)
+        print('tol =', tol)
+        print()
         
         assert( mixing >= 0. )
         assert( mixing <= 1. )
@@ -314,7 +314,7 @@ class HartreeFockSolver(object):
 
         rho_iter = []
         
-        for idx in xrange(self.nitermax):
+        for idx in range(self.nitermax):
 
             rho_iter.append(rho_vec)
 
@@ -324,16 +324,16 @@ class HartreeFockSolver(object):
             norm = np.linalg.norm(rho_vec_old)
             drho = np.linalg.norm(rho_vec_old - rho_vec_new) / norm
             
-            print 'MF: iter, drho = %3i, %2.2E' % (idx, drho)
+            print('MF: iter, drho = %3i, %2.2E' % (idx, drho))
             
             if drho < tol:
-                print 'MF: Converged drho = %3.3E\n' % drho
+                print('MF: Converged drho = %3.3E\n' % drho)
                 break
 
             rho_vec = (1. - mixing) * rho_vec_old + mixing * rho_vec_new
 
         self.update_total_energy()
-        print self.__str__()
+        print(self.__str__())
 
         rho_iter = np.array(rho_iter)
         return rho_iter
@@ -357,8 +357,8 @@ class HartreeFockSolver(object):
 
         """
 
-        print 'MF: Newton solver'
-        print
+        print('MF: Newton solver')
+        print()
         
         rho0_vec = self.solve_setup(N_target, M0, mu0)
         
@@ -369,7 +369,7 @@ class HartreeFockSolver(object):
         rho_vec = fsolve(target_function, rho0_vec)
 
         self.update_total_energy()
-        print self.__str__()
+        print(self.__str__())
         
         self.density_matrix_step(rho_vec)
 
@@ -389,8 +389,8 @@ class HartreeFockSolver(object):
 
         """
 
-        print 'MF: Newton solver'
-        print
+        print('MF: Newton solver')
+        print()
 
         self.mu = mu
 
@@ -411,7 +411,7 @@ class HartreeFockSolver(object):
         rho_vec = fsolve(target_function, rho0_vec)
 
         self.update_total_energy()
-        print self.__str__()
+        print(self.__str__())
         
         self.density_matrix_step(rho_vec)
         

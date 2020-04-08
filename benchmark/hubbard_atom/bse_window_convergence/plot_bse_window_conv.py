@@ -20,7 +20,7 @@ if __name__ == '__main__':
     for idx, nwf in enumerate(nwf_vec):
          d = analytic_hubbard_atom(beta=2.0, U=5.0, nw=1, nwf=nwf, nwf_gf=2*nwf)
          diff_vec[idx] = np.max(np.abs( d.gamma_m.data - d.gamma_m_num.data ))
-         print 'nwf, diff =', idx, nwf, diff_vec[idx]
+         print('nwf, diff =', idx, nwf, diff_vec[idx])
 
     # ------------------------------------------------------------------
     # -- Plot

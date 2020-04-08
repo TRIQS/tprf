@@ -198,7 +198,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
         p.chi0_wnr = chi0_wnr
         p.chi0_wnk = chi0_wnk
 
-        print '--> Writing debug info for BSE'
+        print('--> Writing debug info for BSE')
         with HDFArchive('data_debug_bse.h5', 'w') as arch:
             arch['p'] = p
 
@@ -241,14 +241,14 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
     nwf_g = len(fmesh_g) / 2
 
     if mpi.is_master_node():
-        print tprf_banner(), "\n"
-        print 'Lattcie BSE with local vertex approximation.\n'
-        print 'nk    =', nk
-        print 'nw    =', nw
-        print 'nwf   =', nwf
-        print 'nwf_g =', nwf_g
-        print 'tail_corr_nwf =', tail_corr_nwf
-        print    
+        print(tprf_banner(), "\n")
+        print('Lattcie BSE with local vertex approximation.\n')
+        print('nk    =', nk)
+        print('nw    =', nw)
+        print('nwf   =', nwf)
+        print('nwf_g =', nwf_g)
+        print('tail_corr_nwf =', tail_corr_nwf)
+        print()    
 
     if tail_corr_nwf is None:
         tail_corr_nwf = nwf
@@ -330,15 +330,15 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
     nwf_sigma = len(fmesh_huge) / 2
 
     if mpi.is_master_node():    
-        print tprf_banner(), "\n"
+        print(tprf_banner(), "\n")
 
-        print 'Lattcie BSE with local vertex approximation.\n'
-        print 'nk  = ', nk
-        print 'nw  = ', nw
-        print 'nwf = ', nwf
-        print 'nwf_sigma = ', nwf_sigma
-        print 'nwf = ', tail_corr_nwf, ' (gf)'
-        print    
+        print('Lattcie BSE with local vertex approximation.\n')
+        print('nk  = ', nk)
+        print('nw  = ', nw)
+        print('nwf = ', nwf)
+        print('nwf_sigma = ', nwf_sigma)
+        print('nwf = ', tail_corr_nwf, ' (gf)')
+        print()    
 
     # -- Lattice BSE calc with built in trace using g_wk
     from triqs_tprf.lattice import chiq_sum_nu_from_g_wk_and_gamma_PH
@@ -361,15 +361,15 @@ def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1)
     nwf_sigma = len(fmesh_huge) / 2
 
     if mpi.is_master_node():    
-        print tprf_banner(), "\n"
+        print(tprf_banner(), "\n")
 
-        print 'Lattcie BSE with local vertex approximation.\n'
-        print 'nk  =', nk
-        print 'nw  =', nw
-        print 'nwf           =', nwf
-        print 'nwf_sigma     =', nwf_sigma
-        print 'nwf_chi0_tail =', tail_corr_nwf
-        print    
+        print('Lattcie BSE with local vertex approximation.\n')
+        print('nk  =', nk)
+        print('nw  =', nw)
+        print('nwf           =', nwf)
+        print('nwf_sigma     =', nwf_sigma)
+        print('nwf_chi0_tail =', tail_corr_nwf)
+        print()    
 
     # -- Lattice BSE calc with built in trace using g_wk
     from triqs_tprf.lattice import chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH

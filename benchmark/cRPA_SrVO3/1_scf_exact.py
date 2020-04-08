@@ -4,9 +4,9 @@ import numpy as np
 
 from ase.calculators.vasp import Vasp2
 
-print '='*72
-print '--> SCF exact'
-print '='*72
+print('='*72)
+print('--> SCF exact')
+print('='*72)
 
 os.system('cp -r scf scf_exact')
 

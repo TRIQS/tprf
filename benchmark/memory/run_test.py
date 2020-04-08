@@ -3,7 +3,7 @@ import itertools
 
 for norb, nk, nw in itertools.product([1, 2, 4, 6, 10], [128, 256], [5000, 10000]):
 
-    print(norb, nk, nw)
+    print((norb, nk, nw))
 
     filename = './data/norb_%s_nk_%s_nw_%s.txt'%(norb, nk, nw)
 

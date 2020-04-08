@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     style = 'sk'
     for filename in filenames:
-        print '--> Loading:', filename
+        print('--> Loading:', filename)
 
         with HDFArchive(filename, 'r') as s:
             field = s['field']
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     styles = { 256:'^b', 128:'>r', 64:'<g', 32:'.m', 16:'.c', 8:'.y' }
 
     for filename in filenames:
-        print '--> Loading:', filename
+        print('--> Loading:', filename)
         with HDFArchive(filename, 'r') as s:
             p = s['p']
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
             style = styles[p.nwf]
             plt.plot(1./p.beta, p.chi, style, alpha=0.5)
 
-    for nw in np.sort(styles.keys()):
+    for nw in np.sort(list(styles.keys())):
         style = styles[nw]
         plt.plot([], [], style, alpha=0.5,
                  label=r'Analytic Tr$[\chi_m]/\beta^2$, $n_w=%i$' % nw)

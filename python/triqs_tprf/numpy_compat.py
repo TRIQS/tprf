@@ -25,7 +25,7 @@ def np_linalg_func(arr, func, version='1.8.0'):
         arr_out = func(arr)
     else:
         arr_out = np.empty_like(arr)
-        ranges = [xrange(N) for N in arr.shape[:-2]]
+        ranges = [range(N) for N in arr.shape[:-2]]
         for idx in itertools.product(*ranges):
             arr_out[idx] = func(arr[idx])
 
@@ -45,7 +45,7 @@ def np_eigh(A):
         assert(M == K)
         E = np.empty((N, M))
         U = np.empty((N, M, M), dtype=np.complex) 
-        for i in xrange(N):
+        for i in range(N):
             E[i], U[i] = np.linalg.eigh(A[i])
             
     #E_ref, U_ref = np.linalg.eigh(A)
@@ -59,7 +59,7 @@ def np_eigvalsh(arr):
         arr_out = np.linalg.eigvalsh(arr)
     else:
         arr_out = np.empty_like(np.squeeze(arr[...,0]))
-        ranges = [xrange(N) for N in arr.shape[:-2]]
+        ranges = [range(N) for N in arr.shape[:-2]]
         for idx in itertools.product(*ranges):
             arr_out[idx] = np.linalg.eigvalsh(arr[idx])
 

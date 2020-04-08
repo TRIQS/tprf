@@ -37,7 +37,7 @@ if __name__ == '__main__':
     beta, n_w, n_k = 1.0, 100, 4
 
     U, J = 2.3, 0.4
-    print 'U, J =', U, J
+    print('U, J =', U, J)
 
     spin_names = ['up', 'do']
     #orb_names = [0, 1, 2]
@@ -89,9 +89,9 @@ if __name__ == '__main__':
 
         Sz = np.kron(np.diag([+0.5, -0.5]), np.eye((1)))
 
-    print 'h_loc =\n', h_loc
-    print 'T = \n', T
-    print 'Sz =\n', Sz
+    print('h_loc =\n', h_loc)
+    print('T = \n', T)
+    print('Sz =\n', Sz)
     
     n_k = tuple([n_k, 1, 1])
     e_k = t_r.on_mesh_brillouin_zone(n_k)
@@ -128,10 +128,10 @@ if __name__ == '__main__':
     chi0_ab = hr.extract_dens_dens(chi0_abcd)
     chi0_SzSz = np.einsum('ab,abcd,cd->', Sz, chi0_abcd, Sz)
 
-    print 'chi0_abcd diff =', np.max(np.abs(chi0_abcd - hfr.chi0_abcd))
+    print('chi0_abcd diff =', np.max(np.abs(chi0_abcd - hfr.chi0_abcd)))
     np.testing.assert_almost_equal(chi0_abcd, hfr.chi0_abcd, decimal=6)
     
-    print 'chi0_ab diff =', np.max(np.abs(chi0_ab - hr.chi0_ab))
+    print('chi0_ab diff =', np.max(np.abs(chi0_ab - hr.chi0_ab)))
     np.testing.assert_almost_equal(chi0_ab, hr.chi0_ab)
     
     np.testing.assert_almost_equal(chi0_SzSz, hr.chi0_SzSz)
@@ -148,14 +148,14 @@ if __name__ == '__main__':
             B = hfr.chi0_k[k].reshape(4, 4)
             a = hr.extract_dens_dens(chi0_k[k])
             b = hr.extract_dens_dens(hfr.chi0_k[k])
-            print '-'*72
-            print k
-            print a.real
-            print b.real
-            print A.real
-            print B.real
+            print('-'*72)
+            print(k)
+            print(a.real)
+            print(b.real)
+            print(A.real)
+            print(B.real)
 
-        print 'chi0_k diff =', np.max(np.abs(chi0_k.data - hfr.chi0_k.data))
+        print('chi0_k diff =', np.max(np.abs(chi0_k.data - hfr.chi0_k.data)))
         np.testing.assert_almost_equal(chi0_k.data, hfr.chi0_k.data)
         
     # ------------------------------------------------------------------
@@ -168,10 +168,10 @@ if __name__ == '__main__':
     chi_SzSz = np.einsum('aa,ab,bb->', Sz, chi_ab, Sz)
     chi_SzSz_2 = np.einsum('ab,abcd,cd->', Sz, chi_abcd, Sz)
 
-    print 'chi_abcd diff =', np.max(np.abs(chi_abcd - hfr.chi_abcd))
+    print('chi_abcd diff =', np.max(np.abs(chi_abcd - hfr.chi_abcd)))
     np.testing.assert_almost_equal(chi_abcd, hfr.chi_abcd, decimal=6)
 
-    print 'chi_ab diff =', np.max(np.abs(chi_ab - hr.chi_ab))
+    print('chi_ab diff =', np.max(np.abs(chi_ab - hr.chi_ab)))
     np.testing.assert_almost_equal(chi_ab, hr.chi_ab)
     
     np.testing.assert_almost_equal(chi_SzSz, hr.chi_SzSz)

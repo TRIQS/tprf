@@ -45,7 +45,7 @@ def write_TarGZ_HDFArchive(filename, **kwargs):
     filename_tar = filename + '.tar.gz'
 
     with HDFArchive(filename_h5, 'w') as res:
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             res[key] = value
 
     with tarfile.open(filename_tar, 'w:gz') as tar:
@@ -80,7 +80,7 @@ def BlockGf_data(G):
 
     import numpy as np
     
-    shape = [G.n_blocks] + list(G[G.indices.next()].data.shape)
+    shape = [G.n_blocks] + list(G[next(G.indices)].data.shape)
     data = np.zeros(shape, dtype=np.complex)
     for bidx, (b, g) in enumerate(G):
         data[bidx] = g.data.copy()

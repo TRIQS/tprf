@@ -69,7 +69,7 @@ U = 1.0
 J = 0.1
 
 spin_names = ['up', 'do']
-orb_names = range(norb)
+orb_names = list(range(norb))
 
 # TRIQS uses spin as slow index
 gf_struct = [ [spin_name, orb_names] for spin_name in spin_names ]
@@ -98,17 +98,17 @@ from matrix_rpa import tensor_to_matrix, matrix_to_tensor
 
 test_chi = np.chararray([norb]*4, itemsize=4)
 
-for i,j,k,l in itertools.product(range(norb), repeat=4):
+for i,j,k,l in itertools.product(list(range(norb)), repeat=4):
     test_chi[i,j,k,l] = "%s%s%s%s"%(i,j,k,l)
 
-print
+print()
 print(tensor_to_matrix(test_chi))
-print
+print()
 np.testing.assert_equal(test_chi, matrix_to_tensor(tensor_to_matrix(test_chi)))
 
 test_us = np.chararray([norb]*4, itemsize=2)
 
-for a,b,c,d in itertools.product(range(norb), repeat=4):
+for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
     if a == b == c == d:
         test_us[a,b,c,d] = 'U'
@@ -124,14 +124,14 @@ for a,b,c,d in itertools.product(range(norb), repeat=4):
 
     else:
         test_us[a,b,c,d] = '0'
-print
+print()
 print(tensor_to_matrix(test_us))
-print
+print()
 np.testing.assert_equal(test_us, matrix_to_tensor(tensor_to_matrix(test_us)))
 
 test_uc = np.chararray([norb]*4, itemsize=6)
 
-for a,b,c,d in itertools.product(range(norb), repeat=4):
+for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
     if a == b == c == d:
         test_uc[a,b,c,d] = 'U'
@@ -148,9 +148,9 @@ for a,b,c,d in itertools.product(range(norb), repeat=4):
     else:
         test_uc[a,b,c,d] = '0'
 
-print
+print()
 print(tensor_to_matrix(test_uc))
-print
+print()
 np.testing.assert_equal(test_uc, matrix_to_tensor(tensor_to_matrix(test_uc)))
 
 # ----------------------------------------------------------------------

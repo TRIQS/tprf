@@ -27,7 +27,7 @@ if __name__ == '__main__':
     mu = 0.0
     t = 1.0
     
-    print '--> tight binding model'
+    print('--> tight binding model')
     T = - t * np.eye(1)
     t_r = TBLattice(
         units = [(1, 0, 0), (0, 1, 0)],
@@ -42,10 +42,10 @@ if __name__ == '__main__':
         orbital_names = ['0'],
         )
 
-    print '--> dispersion e_k'
+    print('--> dispersion e_k')
     e_k = t_r.on_mesh_brillouin_zone(n_k)
 
-    print '--> lattice g0_wk'
+    print('--> lattice g0_wk')
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
 
     # -- Analytic reference (Lindhard formula in momentum space)
-    print '--> lindhard_chi00_wk'
+    print('--> lindhard_chi00_wk')
     n_k = (32, 32, 1)
     e_k = t_r.on_mesh_brillouin_zone(n_k)
     chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=1, beta=beta, mu=mu)

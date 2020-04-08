@@ -19,8 +19,8 @@ source_parsers = {
             '.md': CommonMarkParser,		
         }
 master_doc = 'index'
-project = u'tprf'
-copyright = u'2016'
+project = 'tprf'
+copyright = '2016'
 version = 'latest'
 release = 'latest'
 exclude_patterns = ['_build']
@@ -29,6 +29,6 @@ htmlhelp_basename = 'tprf'
 html_theme = 'sphinx_rtd_theme'
 file_insertion_enabled = False
 latex_documents = [
-  ('index', 'tprf.tex', u'tprf Documentation',
-   u'', 'manual'),
+  ('index', 'tprf.tex', 'tprf Documentation',
+   '', 'manual'),
 ]

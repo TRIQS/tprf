@@ -31,14 +31,14 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 import itertools
 import numpy as np
-from numpy_compat import np_eigh
+from .numpy_compat import np_eigh
 
 # ----------------------------------------------------------------------
 class BaseResponse(object):
 
     def __init__(self, solver, eps=1e-9):
 
-        print self.logo()
+        print(self.logo())
         
         self.solver = solver
         self.eps = eps
@@ -58,10 +58,10 @@ class BaseResponse(object):
         I_ab = np.eye(self.norb)
         self.e_k.data[:] -= self.solver.mu * I_ab
 
-        print 'norb =', self.norb
-        print 'shape_abcd =', self.shape_abcd
-        print 'shape_AB =', self.shape_AB
-        print 'beta =', self.beta
+        print('norb =', self.norb)
+        print('shape_abcd =', self.shape_abcd)
+        print('shape_AB =', self.shape_AB)
+        print('beta =', self.beta)
         
     # ------------------------------------------------------------------
     def _compute_drho_dop(self, op):
@@ -110,7 +110,7 @@ class BaseResponse(object):
 
         R_abcd = np.zeros(self.shape_abcd, dtype=np.complex)
 
-        for a, b in itertools.product(range(self.norb), repeat=2):
+        for a, b in itertools.product(list(range(self.norb)), repeat=2):
 
             F_ab = np.zeros(self.shape_ab, dtype=np.complex)
             F_ab[a, b] += field_prefactor
@@ -126,7 +126,7 @@ class BaseResponse(object):
 
         R_kabcd = np.zeros(self.shape_kabcd, dtype=np.complex)
 
-        for a, b in itertools.product(range(self.norb), repeat=2):
+        for a, b in itertools.product(list(range(self.norb)), repeat=2):
 
             F_ab = np.zeros(self.shape_ab, dtype=np.complex)
             F_ab[a, b] += field_prefactor
@@ -306,7 +306,7 @@ class HartreeResponse(BaseResponse):
     def extract_dens_dens(self, chi_abcd):
         norb = chi_abcd.shape[0]
         chi_ab = np.zeros((norb, norb), dtype=np.complex)
-        for i1, i2 in itertools.product(range(norb), repeat=2):
+        for i1, i2 in itertools.product(list(range(norb)), repeat=2):
             chi_ab[i1, i2] = chi_abcd[i1, i1, i2, i2]
 
         return chi_ab    

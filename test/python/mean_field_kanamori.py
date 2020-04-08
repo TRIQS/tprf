@@ -83,8 +83,8 @@ g0_wk = lattice_dyson_g0_wk(mu=0., e_k=e_k, mesh=wmesh)
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
-print
-print 'chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16))
+print()
+print('chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16)))
 
 #print
 #import itertools
@@ -93,10 +93,10 @@ print 'chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16))
     
 chi0_q0_ref = chi0_q0_integral(t, beta)
 
-print
-print 'chi0_q0     =', chi00_wk[Idx(0), Idx(0, 0, 0)][0,0,0,0].real
-print 'chi0_q0_ref =', chi0_q0_ref
-print
+print()
+print('chi0_q0     =', chi00_wk[Idx(0), Idx(0, 0, 0)][0,0,0,0].real)
+print('chi0_q0_ref =', chi0_q0_ref)
+print()
 
 # ----------------------------------------------------------------------
 # -- Kanamori interaction
@@ -117,7 +117,7 @@ H_int = h_int_kanamori(
     spin_names, orb_names, U_ab, UPrime_ab, J_hund=J,
     off_diag=False, map_operator_structure=None, H_dump=None) # orbital diag
 
-print 'H_int =\n', H_int
+print('H_int =\n', H_int)
 
 # ----------------------------------------------------------------------
 # -- RPA rank 4 (antisymmetrized) interaction tensor
@@ -130,7 +130,7 @@ gf_struct = [['up_0', [0]], ['do_0',[0]], ['up_1', [0]], ['do_1', [0]]]
 fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
 U_abcd = get_rpa_tensor(H_int, fundamental_operators)
 
-print 'U_abdc =\n', U_abcd.reshape((16, 16)).real
+print('U_abdc =\n', U_abcd.reshape((16, 16)).real)
 
 # ----------------------------------------------------------------------
 # -- Lattice susceptbility in the RPA approximation
@@ -138,7 +138,7 @@ print 'U_abdc =\n', U_abcd.reshape((16, 16)).real
 from triqs_tprf.lattice import solve_rpa_PH
 chi_wk = solve_rpa_PH(chi00_wk, U_abcd)
 
-print 'chi_q0 =\n', chi_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16))
+print('chi_q0 =\n', chi_wk[Idx(0), Idx(0, 0, 0)].real.reshape((16,16)))
 
 #print
 #for idxs in itertools.product(range(4), repeat=4):
@@ -152,10 +152,10 @@ chi_SzSz_wk.data[:] = np.einsum('wkabcd,ab,cd->wk', chi_wk.data, Sz, Sz)
 Ueff = (U + (norb/2 - 1)*J)
 chi_q0_ref = chi0_q0_ref / (1. -  Ueff * chi0_q0_ref)
 
-print
-print 'chi_SzSz_q0 =', chi_SzSz_wk[Idx(0), Idx(0, 0, 0)].real
-print 'chi_q0_ref =', chi_q0_ref
-print
+print()
+print('chi_SzSz_q0 =', chi_SzSz_wk[Idx(0), Idx(0, 0, 0)].real)
+print('chi_q0_ref =', chi_q0_ref)
+print()
 
 np.testing.assert_array_almost_equal(
     chi_SzSz_wk[Idx(0), Idx(0, 0, 0)].real, chi_q0_ref)

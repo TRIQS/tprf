@@ -84,7 +84,7 @@ def red_to_2ind(uijkl, verbose=False):
     Uijij = np.zeros_like(Uij_anti)
     Uijji = np.zeros_like(Uij_anti)
 
-    for i, j in itertools.product(range(dim), repeat=2):
+    for i, j in itertools.product(list(range(dim)), repeat=2):
         # the indices in VASP are switched: U_ijkl ---VASP--> U_ikjl
         Uij_anti[i, j] = uijkl[i, i, j, j]
         Uijij[i, j] = uijkl[i, j, i, j]
@@ -93,10 +93,10 @@ def red_to_2ind(uijkl, verbose=False):
 
     if verbose:
         np.set_printoptions(precision=3,suppress=True)
-        print 'reduced U anti-parallel = U_mm\'\^oo\' = U_mm\'mm\' matrix : \n', Uij_anti
-        print 'reduced Uijij : \n', Uijij
-        print 'reduced Uijji : \n', Uijji
-        print 'reduced U parallel = U_mm\'\^oo = U_mm\'mm\' - U_mm\'m\'m matrix : \n', Uij_par
+        print('reduced U anti-parallel = U_mm\'\^oo\' = U_mm\'mm\' matrix : \n', Uij_anti)
+        print('reduced Uijij : \n', Uijij)
+        print('reduced Uijji : \n', Uijji)
+        print('reduced U parallel = U_mm\'\^oo = U_mm\'mm\' - U_mm\'m\'m matrix : \n', Uij_par)
 
     return Uij_anti, Uijij, Uijji, Uij_par
 
@@ -154,9 +154,9 @@ def calc_kan_params_egeg(uijkl,n_sites,n_orb,out=False):
     int_params['J'] = J
 
     if out:
-        print 'U= ', "{:.4f}".format(U)
-        print 'U\'= ', "{:.4f}".format(Uprime)
-        print 'J= ', "{:.4f}".format(J)
+        print('U= ', "{:.4f}".format(U))
+        print('U\'= ', "{:.4f}".format(Uprime))
+        print('J= ', "{:.4f}".format(J))
 
     return int_params
 
@@ -215,7 +215,7 @@ def calc_u_avg_fulld(uijkl,n_sites,n_orb,out=False):
     int_params['J'] = J
 
     if out:
-        print 'U= ', "{:.4f}".format(U)
-        print 'J= ', "{:.4f}".format(J)
+        print('U= ', "{:.4f}".format(U))
+        print('J= ', "{:.4f}".format(J))
 
     return int_params

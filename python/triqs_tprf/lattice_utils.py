@@ -89,23 +89,23 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
 # ----------------------------------------------------------------------
 def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
-    print tprf_banner(), "\n"
+    print(tprf_banner(), "\n")
 
-    print 'beta  =', beta
-    print 'mu    =', mu
-    print 'sigma =', (not (sigma == None))
+    print('beta  =', beta)
+    print('mu    =', mu)
+    print('sigma =', (not (sigma == None)))
 
     norb = tb_lattice.NOrbitalsInUnitCell
-    print 'nk    =', nk
-    print 'nw    =', nw
-    print 'norb  =', norb
-    print
+    print('nk    =', nk)
+    print('nw    =', nw)
+    print('norb  =', norb)
+    print()
 
     ntau = 4 * nw
     ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw + ntau) * norb**2
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
-    print 'Approx. Memory Utilization: %2.2f GB\n' % ngb
+    print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
     
     periodization_matrix = np.diag(np.array(list(nk), dtype=np.int32))
     #print 'periodization_matrix =\n', periodization_matrix
@@ -113,23 +113,23 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
     bz = BrillouinZone(tb_lattice.bl)
     bzmesh = MeshBrillouinZone(bz, periodization_matrix)
 
-    print '--> ek'
+    print('--> ek')
     e_k = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
 
     if sigma is None:
-        print '--> g0k'
+        print('--> g0k')
         wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
         g_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
     else:
-        print '--> gk'
+        print('--> gk')
         sigma_w = strip_sigma(nw, beta, sigma)
         g_wk = lattice_dyson_g_wk(mu=mu, e_k=e_k, sigma_w=sigma_w)
 
-    print '--> gr_from_gk (k->r)'
+    print('--> gr_from_gk (k->r)')
     g_wr = fourier_wk_to_wr(g_wk)
     del g_wk
 
-    print '--> grt_from_grw (w->tau)' 
+    print('--> grt_from_grw (w->tau)') 
     g_tr = fourier_wr_to_tr(g_wr)
     del g_wr
 
@@ -180,13 +180,13 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
     ngb = nbytes / 1024.**3
 
     if mpi.is_master_node():
-        print tprf_banner(), "\n"
-        print 'beta  =', beta
-        print 'nk    =', nk
-        print 'nw    =', nw_g
-        print 'norb  =', norb
-        print
-        print 'Approx. Memory Utilization: %2.2f GB\n' % ngb
+        print(tprf_banner(), "\n")
+        print('beta  =', beta)
+        print('nk    =', nk)
+        print('nw    =', nw_g)
+        print('norb  =', norb)
+        print()
+        print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
 
     mpi.report('--> fourier_wk_to_wr')
     g_wr = fourier_wk_to_wr(g_wk)
@@ -223,11 +223,11 @@ def chi0_w0k_tau_bubble(beta, mu, tb_lattice, nk, nw, sigma_w=None):
     else:
         g_tr, sigma_w_cut = bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=sigma_w)
     
-    print '--> chi0_w0r_from_grt_PH (bubble in tau & r)'
+    print('--> chi0_w0r_from_grt_PH (bubble in tau & r)')
     chi0_wr = chi0_w0r_from_grt_PH(g_tr)
     del grt
 
-    print '--> chi_wk_from_chi_wr (r->k)'
+    print('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
     del chi0_wr
 
@@ -275,7 +275,7 @@ def get_k_components_from_k_vec(k_vec, nk):
     # -- cut out values for each axis
     
     k_out = []
-    for axis in xrange(dim):
+    for axis in range(dim):
         cut = [0]*dim
         cut[axis] = slice(None)
         cut = [axis] + cut

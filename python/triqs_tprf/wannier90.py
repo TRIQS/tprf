@@ -21,7 +21,7 @@
 ################################################################################
 
 import numpy as np
-from StringIO import StringIO
+from io import StringIO
 from collections import OrderedDict
 
 # ----------------------------------------------------------------------
@@ -94,7 +94,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 
     r_dict = OrderedDict()
     hopp_dict = {}
-    for idx in xrange(R.shape[0]):
+    for idx in range(R.shape[0]):
         r = tuple(R[idx])
 
         if r not in r_dict:
@@ -110,7 +110,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 
     # -- Account for degeneracy of the Wigner-Seitz points
     
-    for r, weight in zip(r_dict.keys(), deg):
+    for r, weight in zip(list(r_dict.keys()), deg):
         hopp_dict[r] /= weight
 
     return hopp_dict, num_wann
@@ -160,7 +160,7 @@ def parse_lattice_vectors_from_wannier90_wout(filename):
     # -- convert 3x3 array to list of tuples
     
     vectors = []
-    for idx in xrange(array.shape[0]):
+    for idx in range(array.shape[0]):
         v = tuple(array[idx])
         vectors.append(v)
 
@@ -200,7 +200,7 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
     # -- convert 3x3 array to list of tuples
     
     vectors = []
-    for idx in xrange(array.shape[0]):
+    for idx in range(array.shape[0]):
         v = tuple(array[idx])
         vectors.append(v)
 

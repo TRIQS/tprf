@@ -25,4 +25,4 @@ wmesh = MeshImFreq(beta=1.0, S='Fermion', n_max=nw)
 
 g0_wk = lattice_dyson_g0_wk(mu=0.0, e_k=e_k, mesh=wmesh)
 
-print g0_wk.data.shape
+print(g0_wk.data.shape)

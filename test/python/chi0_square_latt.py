@@ -57,17 +57,17 @@ chi0w0 = chi0q_sum_nu(chi0q)
 
 if False: # python implementation
     chi0w0 = np.zeros((len(q_list)), dtype=np.complex)
-    for i1, i2 in itertools.product(range(n_k), repeat=2):
+    for i1, i2 in itertools.product(list(range(n_k)), repeat=2):
         qidx = [i1, i2, 0]
         qidx_lin = bzmesh.index_to_linear(qidx)
         q = np.array(q_list[qidx_lin])/np.pi
 
-        print qidx, q
+        print(qidx, q)
 
         chi0 = get_at_q(chi0q, qidx)
         chiw = np.sum(chi0.data, axis=1)
         chiw = np.squeeze(chiw)
-        print chiw
+        print(chiw)
 
         chi0w0[qidx_lin] = chiw
         
@@ -106,14 +106,14 @@ for q in [ [0,0,0], [n_k/2, n_k/2, 0], [n_k/2, 0, 0] ]:
 
     qidx = bzmesh.index_to_linear(q)
 
-    print '-'*72
-    print 'q =', q
-    print 'qidx =', qidx
-    print 'q_list[qidx] =', q_list[qidx]
-    print 'q_list[qidx]/np.pi =', np.array(q_list[qidx])/np.pi
+    print('-'*72)
+    print('q =', q)
+    print('qidx =', qidx)
+    print('q_list[qidx] =', q_list[qidx])
+    print('q_list[qidx]/np.pi =', np.array(q_list[qidx])/np.pi)
     
     data = np.squeeze(chi0w0.data[:, qidx])
-    print data.shape
+    print(data.shape)
     
     plt.subplot(*subp); subp[-1] += 1
     plt.title(r'$q = \pi \times$ %s' % str(np.array(q_list[qidx])/np.pi))

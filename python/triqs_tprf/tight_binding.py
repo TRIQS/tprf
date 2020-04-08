@@ -66,7 +66,7 @@ class TBLattice(object):
 
         # the k are int32 which boost python does like to convert 
         def reg(k) : return tuple( int(x) for x in k) 
-        self._hop = dict ( ( reg(k), np.array(v)) for k, v in hopping.items())
+        self._hop = dict ( ( reg(k), np.array(v)) for k, v in list(hopping.items()))
         orb = dict ( (str(i), orb) for (i, orb) in enumerate(orbital_positions ))
         self.bl = BravaisLattice(units, orbital_positions)
         self.bz = BrillouinZone(self.bl)

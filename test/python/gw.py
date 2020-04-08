@@ -37,7 +37,7 @@ t_r = TBLattice(
 
 e_k = t_r.on_mesh_brillouin_zone(n_k=(8, 1, 1))
 
-print e_k.data
+print(e_k.data)
 
 kmesh = e_k.mesh
 wmesh = MeshImFreq(beta, 'Fermion', nw)

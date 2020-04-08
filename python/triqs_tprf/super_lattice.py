@@ -76,7 +76,7 @@ class TBSuperLattice(TBLattice):
             self.__super_lattice_units = numpy.array(super_lattice_units, copy=True)
             assert self.__super_lattice_units.shape == (dim, dim)
         except:
-            raise ValueError, "super_lattice_units is not correct. Cf Doc. value is %s, dim = %s "%(super_lattice_units,dim)
+            raise ValueError("super_lattice_units is not correct. Cf Doc. value is %s, dim = %s "%(super_lattice_units,dim))
 
         Ncluster_sites = int(numpy.rint(abs(numpy.linalg.det(self.__super_lattice_units ))))
         assert Ncluster_sites >0, "Superlattice vectors are not independant !"
@@ -105,8 +105,8 @@ class TBSuperLattice(TBLattice):
             if dim==1:  a=(max(M[0,:]), 0, 0 )
             elif dim==2:  a=(2*max(M[0,:]), 2*max(M[1,:]), 0 )
             elif dim==3: a= (3*max(M[0,:]), 3*max(M[1,:]), 3*max(M[2,:]))
-            else: raise ValueError, "dim is not between 1 and 3 !!"
-            r = lambda i:  range(-a[i] , a[i]+1)
+            else: raise ValueError("dim is not between 1 and 3 !!")
+            r = lambda i:  list(range(-a[i] , a[i]+1))
             for nx in r(0):
                 for ny in r(1):
                     for nz in r(2):
@@ -132,9 +132,9 @@ class TBSuperLattice(TBLattice):
         # Compute the new Hopping in the supercell
         Hopping = self.fold(tb_lattice.hopping_dict(), remove_internal_hoppings)
         if 0:
-            for k, v in Hopping.items():
-                print k
-                print v.real
+            for k, v in list(Hopping.items()):
+                print(k)
+                print(v.real)
 
         # Compute the new units of the lattice in real coordinates
         Units = numpy.dot(self.__super_lattice_units, tb_lattice.Units)
@@ -144,7 +144,7 @@ class TBSuperLattice(TBLattice):
         Orbital_Positions = [POS + tb_lattice.latt_to_real_x(CS) for POS in tb_lattice.OrbitalPositions for CS in self.__cluster_sites]
 
         #Orbital_Names = [ '%s%s'%(n, s) for n in tb_lattice.OrbitalNames for s in range(Ncluster_sites)]
-        site_index_list, orbital_index_list = range(1, Ncluster_sites+1), tb_lattice.OrbitalNames
+        site_index_list, orbital_index_list = list(range(1, Ncluster_sites+1)), tb_lattice.OrbitalNames
         if len(orbital_index_list)==1:
             Orbital_Names= [ s for s in site_index_list ]
         elif len(site_index_list)==1 and len(orbital_index_list)>1:
@@ -170,10 +170,10 @@ class TBSuperLattice(TBLattice):
             Hence f(r) can be a numpy, a GFBloc, etc...
             """
         #Res , norb = {} , self.__BaseLattice.NOrbitalsInUnitCell
-        Res , norb = {} , len(D1.values()[0])
+        Res , norb = {} , len(list(D1.values())[0])
         pack = self.pack_index_site_orbital
         for nsite, CS in enumerate(self.__cluster_sites):
-            for disp, t in D1.items():
+            for disp, t in list(D1.items()):
                 #print 'CS, disp =', CS, disp
                 R, alpha = self.change_coordinates_L_to_SL(numpy.array(CS)+numpy.array(disp))
                 if R not in Res: Res[R] = create_zero() if create_zero else numpy.zeros((self.Norb, self.Norb), dtype = type(t[0,0]))
@@ -197,10 +197,10 @@ class TBSuperLattice(TBLattice):
             #dr = numpy.dot(self._Mtilde, dx)
             #dr = aux - self.Ncluster_sites * R
 
-            print 'M * R =', numpy.dot(self._M, R)
-            print 'aux =', aux
-            print 'R, dx =', R, dx
-            print 'dr =', dr
+            print('M * R =', numpy.dot(self._M, R))
+            print('aux =', aux)
+            print('R, dx =', R, dx)
+            print('dr =', dr)
         
         return tuple(R), self.__cluster_sites.index(dx)
 

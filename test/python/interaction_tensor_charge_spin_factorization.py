@@ -28,8 +28,8 @@ from triqs_tprf.rpa_tensor import quartic_tensor_from_charge_and_spin
 def print_tensors(T1, T2):
 
     assert( T1.shape == T2.shape )
-    for idxs in itertools.product(*[ range(x) for x in T1.shape ]):
-        print idxs, T1[idxs], T2[idxs]
+    for idxs in itertools.product(*[ list(range(x)) for x in T1.shape ]):
+        print(idxs, T1[idxs], T2[idxs])
         
 # ----------------------------------------------------------------------    
 if __name__ == '__main__':

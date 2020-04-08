@@ -131,23 +131,23 @@ def make_calc():
     lat_rpa.chi0_w = lat_rpa.chi0_wk[:, Idx(0,0,0)]
     lat_rpa.chi_w = lat_rpa.chi_wk[:, Idx(0,0,0)]
 
-    print '--> cf Tr[chi0] and chi0_wk'
-    print loc_rpa.chi0_w.data.reshape((4, 4)).real
-    print lat_rpa.chi0_w.data.reshape((4, 4)).real
+    print('--> cf Tr[chi0] and chi0_wk')
+    print(loc_rpa.chi0_w.data.reshape((4, 4)).real)
+    print(lat_rpa.chi0_w.data.reshape((4, 4)).real)
 
     np.testing.assert_array_almost_equal(
         loc_rpa.chi0_w.data, lat_rpa.chi0_w.data, decimal=2)
 
-    print 'ok!'
+    print('ok!')
 
-    print '--> cf Tr[chi_rpa] and chi_wk_rpa'
-    print loc_rpa.chi_w.data.reshape((4, 4)).real
-    print lat_rpa.chi_w.data.reshape((4, 4)).real
+    print('--> cf Tr[chi_rpa] and chi_wk_rpa')
+    print(loc_rpa.chi_w.data.reshape((4, 4)).real)
+    print(lat_rpa.chi_w.data.reshape((4, 4)).real)
 
     np.testing.assert_array_almost_equal(
         loc_rpa.chi_w.data, lat_rpa.chi_w.data, decimal=2)
 
-    print 'ok!'
+    print('ok!')
     
     # ------------------------------------------------------------------
     # -- Lattice BSE
@@ -182,10 +182,10 @@ def make_calc():
     lat_bse.chi0_w = lat_bse.chi0_wk[:, Idx(0, 0, 0)]
     lat_bse.chi_w = lat_bse.chi_kw[Idx(0, 0, 0), :]
     
-    print '--> cf Tr[chi0_wnk] and chi0_wk'
-    print lat_bse.chi0_w_tail_corr.data.reshape((4, 4)).real
-    print lat_bse.chi0_w.data.reshape((4, 4)).real
-    print lat_rpa.chi0_w.data.reshape((4, 4)).real
+    print('--> cf Tr[chi0_wnk] and chi0_wk')
+    print(lat_bse.chi0_w_tail_corr.data.reshape((4, 4)).real)
+    print(lat_bse.chi0_w.data.reshape((4, 4)).real)
+    print(lat_rpa.chi0_w.data.reshape((4, 4)).real)
 
     np.testing.assert_array_almost_equal(
         lat_bse.chi0_w_tail_corr.data, lat_rpa.chi0_w.data)
@@ -193,16 +193,16 @@ def make_calc():
     np.testing.assert_array_almost_equal(
         lat_bse.chi0_w.data, lat_rpa.chi0_w.data, decimal=2)
     
-    print 'ok!'
+    print('ok!')
     
-    print '--> cf Tr[chi_kwnn] and chi_wk'
-    print lat_bse.chi_w.data.reshape((4, 4)).real
-    print loc_bse.chi_w.data.reshape((4, 4)).real
+    print('--> cf Tr[chi_kwnn] and chi_wk')
+    print(lat_bse.chi_w.data.reshape((4, 4)).real)
+    print(loc_bse.chi_w.data.reshape((4, 4)).real)
 
     np.testing.assert_array_almost_equal(
         lat_bse.chi_w.data, loc_bse.chi_w.data)
 
-    print 'ok!'
+    print('ok!')
     
     # ------------------------------------------------------------------
     # -- Store to hdf5

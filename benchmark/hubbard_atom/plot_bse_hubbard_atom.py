@@ -78,8 +78,8 @@ def max_abs_diff_in_window(g2_a, g2_b, nwf):
     g2_a = fixed_fermionic_window(g2_a, nwf)
     g2_b = fixed_fermionic_window(g2_b, nwf)
 
-    print g2_a.data.shape
-    print g2_b.data.shape
+    print(g2_a.data.shape)
+    print(g2_b.data.shape)
     
     return np.max(np.abs( g2_a.data - g2_b.data ))
      
@@ -93,9 +93,9 @@ def window_conv_depr():
          d = analytic_solution(beta=2.0, U=5.0, nw=1, nwf=nwf)
          diff = np.max(np.abs( d.gamma_m.data - d.gamma_m_num.data ))
          diff_vec[idx] = diff
-         print 'nwf, diff =', idx, nwf, diff
+         print('nwf, diff =', idx, nwf, diff)
 
-    print diff_vec
+    print(diff_vec)
          
     from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
@@ -129,10 +129,10 @@ if __name__ == '__main__':
     #    np.testing.assert_array_almost_equal(data.imag, np.zeros_like(data))
     
     diff = np.max(np.abs( ana.gamma_m_num.data.imag - ana.gamma_m.data.imag ))
-    print 'max(abs(Im[diff])) =', diff
+    print('max(abs(Im[diff])) =', diff)
 
     diff = np.max(np.abs( ana.gamma_m_num.data.real - ana.gamma_m.data.real ))
-    print 'max(abs(Re[diff])) =', diff
+    print('max(abs(Re[diff])) =', diff)
         
     #exit()
     

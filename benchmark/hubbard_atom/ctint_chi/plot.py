@@ -23,7 +23,7 @@ if __name__ == '__main__':
     with HDFArchive("data_ctint.h5", 'r') as results:
         p = results["p"]
 
-    print p
+    print(p)
     p.G_iw['up'].name = r'$G_{ctint, \uparrow}$'
     p.G_iw['dn'].name = r'$G_{ctint, \downarrow}$'
 

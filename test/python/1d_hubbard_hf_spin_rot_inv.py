@@ -58,9 +58,9 @@ if __name__ == '__main__':
     Sy = 0.5 * np.rot90(np.diag([1.j, -1.j]))
     Sz = 0.5 * np.diag([1., -1.])
 
-    print 'Sx =\n', Sx
-    print 'Sy =\n', Sy
-    print 'Sz =\n', Sz
+    print('Sx =\n', Sx)
+    print('Sy =\n', Sy)
+    print('Sz =\n', Sz)
 
     U = 2.4
     h = 0.5
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     hs_z.solve_newton(N_target=N_tot, M0=M0, mu0=mu0)
 
     sz_exp = np.einsum('ab,ba', Sz, hs_z.density_matrix())
-    print 'sz_exp =', sz_exp
+    print('sz_exp =', sz_exp)
 
     S_vec = [
         Sx, Sy, Sz,
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     
     for Si in S_vec:
 
-        print 'Si =\n', Si
+        print('Si =\n', Si)
         
         e_k_h = e_k.copy()
         e_k_h.data[:] += h * Si[None, ...]
@@ -98,12 +98,12 @@ if __name__ == '__main__':
         hs.solve_newton(N_target=N_tot, M0=M0, mu0=mu0)
         
         si_exp = np.einsum('ab,ba', Si, hs.density_matrix())
-        print 'si_exp =', si_exp
+        print('si_exp =', si_exp)
 
         np.testing.assert_almost_equal(si_exp, sz_exp)
 
         for attr in ['N_tot', 'E_int', 'E_kin', 'Omega0', 'E_tot', 'Omega']:
             v1 = getattr(hs_z, attr)
             v2 = getattr(hs, attr)
-            print attr, v1, v2 
+            print(attr, v1, v2) 
             np.testing.assert_almost_equal(v1, v2)

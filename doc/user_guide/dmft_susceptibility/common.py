@@ -64,7 +64,7 @@ def setup_dmft_calculation(p):
 def solve_self_consistent_dmft(p):
 
     ps = []
-    for dmft_iter in xrange(p.n_iter):
+    for dmft_iter in range(p.n_iter):
         mpi.report('--> DMFT Iteration: {:d}'.format(p.iter))
         p = dmft_self_consistent_step(p)
         ps.append(p)

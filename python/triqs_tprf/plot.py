@@ -22,7 +22,7 @@ def plot_g2(G2, cplx=None, idx_labels=None, w=Idx(0), opt={}, title=None):
     colorbar_flag = True
     
     import itertools
-    for idxs in itertools.product(xrange(n), repeat=4):
+    for idxs in itertools.product(range(n), repeat=4):
 
         i1, i2, i3, i4 = idxs
         d = data[:, :, i1, i2, i3, i4]
