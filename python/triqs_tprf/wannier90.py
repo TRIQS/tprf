@@ -242,7 +242,7 @@ def parse_band_structure_from_wannier90_band_dat(filename):
     data = np.loadtxt(StringIO(lines)).T
     n_pts = data.shape[-1]
 
-    data = data.reshape(2, num_wann, n_pts/num_wann)    
+    data = data.reshape(2, num_wann, n_pts//num_wann)
     w, E = data[0], data[1]
 
     return E, w
