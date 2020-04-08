@@ -210,9 +210,9 @@ class TBSuperLattice(TBLattice):
 
     def unpack_index_site_orbital (self, index):
         """Inverse of pack_index_site_orbital"""
-	n_orbital  =   (index)//self.Ncluster_sites
-	n_site =  index - n_orbital*self.Ncluster_sites
-	return n_site, n_orbital
+        n_orbital  =   (index)//self.Ncluster_sites
+        n_site =  index - n_orbital*self.Ncluster_sites
+        return n_site, n_orbital
 
     def cluster_sites(self):
         """

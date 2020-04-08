@@ -73,7 +73,7 @@ class ParameterCollection(object):
         return list(self.__dict__.items())
 
     def keys(self):
-   	return list(self.__dict__.keys())
+        return list(self.__dict__.keys())
 
     def dict(self):
         return self.__dict__
