@@ -135,11 +135,11 @@ def G2_loc_fixed_fermionic_window_python(g2, nwf):
     frequency Green's function object :math:`G(\omega, \nu, \nu')`
     to ``nwf``. """
 
-    nw = (g2.data.shape[0] + 1) / 2
+    nw = (g2.data.shape[0] + 1) // 2
     n = g2.data.shape[1]
     beta = g2.mesh.components[0].beta
     
-    assert(n/2 >= nwf)
+    assert(n//2 >= nwf)
 
     from pytriqs.gf import Gf, MeshImFreq, MeshProduct
     
@@ -149,8 +149,8 @@ def G2_loc_fixed_fermionic_window_python(g2, nwf):
 
     g2_out = Gf(mesh=mesh_prod, target_shape=g2.target_shape)
 
-    s = n/2 - nwf
-    e = n/2 + nwf
+    s = n//2 - nwf
+    e = n//2 + nwf
     
     g2_out.data[:] = g2.data[:, s:e, s:e]
     return g2_out

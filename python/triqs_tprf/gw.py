@@ -72,7 +72,7 @@ def bubble_PI_wk(g_wk):
             Particle hole bubble.
     """
 
-    nw = len(g_wk.mesh.components[0]) / 2
+    nw = len(g_wk.mesh.components[0]) // 2
     
     g_wr = fourier_wk_to_wr(g_wk)
     g_tr = fourier_wr_to_tr(g_wr)
@@ -143,7 +143,7 @@ def gw_sigma_wk(Wr_wk, g_wk, fft_flag=False):
 
     if fft_flag:
 
-        nw = len(g_wk.mesh.components[0]) / 2
+        nw = len(g_wk.mesh.components[0]) // 2
         ntau = nw * 6 + 1
         
         mpi.report('g wk -> wr')

@@ -104,8 +104,8 @@ def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
     chi_wnk_out = Gf(mesh=MeshProduct(wmesh, nmesh_small, kmesh), target_shape=g2.target_shape)
 
     n = g2.data.shape[1]
-    s = n/2 - nwf
-    e = n/2 + nwf
+    s = n//2 - nwf
+    e = n//2 + nwf
     
     chi_wnk_out.data[:] = g2.data[:, s:e, :]
 
@@ -136,7 +136,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     kmesh = g_wk.mesh.components[1]
 
     if nwf is None:
-        nwf = len(fmesh) / 2
+        nwf = len(fmesh) // 2
 
     mpi.barrier()
     mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,0,0)][0,0]))
@@ -236,9 +236,9 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
     fmesh = gamma_wnn.mesh.components[1]
 
     nk = len(kmesh)
-    nw = (len(bmesh) + 1) / 2
-    nwf = len(fmesh) / 2
-    nwf_g = len(fmesh_g) / 2
+    nw = (len(bmesh) + 1) // 2
+    nwf = len(fmesh) // 2
+    nwf_g = len(fmesh_g) // 2
 
     if mpi.is_master_node():
         print(tprf_banner(), "\n")
@@ -325,9 +325,9 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
     fmesh = gamma_wnn.mesh.components[1]
 
     nk = len(kmesh)
-    nw = (len(bmesh) + 1) / 2
-    nwf = len(fmesh) / 2
-    nwf_sigma = len(fmesh_huge) / 2
+    nw = (len(bmesh) + 1) // 2
+    nwf = len(fmesh) // 2
+    nwf_sigma = len(fmesh_huge) // 2
 
     if mpi.is_master_node():    
         print(tprf_banner(), "\n")
@@ -356,9 +356,9 @@ def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1)
     fmesh = gamma_wnn.mesh.components[1]
 
     nk = len(kmesh)
-    nw = (len(bmesh) + 1) / 2
-    nwf = len(fmesh) / 2
-    nwf_sigma = len(fmesh_huge) / 2
+    nw = (len(bmesh) + 1) // 2
+    nwf = len(fmesh) // 2
+    nwf_sigma = len(fmesh_huge) // 2
 
     if mpi.is_master_node():    
         print(tprf_banner(), "\n")

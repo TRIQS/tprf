@@ -129,7 +129,7 @@ def split_quartic_tensor_in_charge_and_spin(U_4):
     U_s : Spin channel rank 4 interaction tensor """
 
     shape_4 = np.array(U_4.shape)
-    shape_8 = np.vstack(([2]*4, shape_4 / 2)).T.flatten()
+    shape_8 = np.vstack(([2]*4, shape_4 // 2)).T.flatten()
 
     U_8 = U_4.reshape(shape_8)
 
@@ -203,7 +203,7 @@ def lose_spin_degree_of_freedom(gf, spin_fast=True):
                     xz up, xy up, yz up, xz down, xy down, yz down.
     """
     
-    norb = gf.target_shape[-1] / 2
+    norb = gf.target_shape[-1] // 2
 
     if spin_fast:
         idx = gf.target_rank*(slice(None, None, 2),)
@@ -269,7 +269,7 @@ def charge_and_spin_susceptibility_from_general(chi, spin_fast=True):
                         xz up, xy up, yz up, xz down, xy down, yz down.
     """
 
-    norb = chi.target_shape[-1] / 2
+    norb = chi.target_shape[-1] // 2
     rank = chi.rank
     target_rank = chi.target_rank
 

@@ -69,7 +69,7 @@ if __name__ == '__main__':
         orbital_names = ['up_0', 'up_1', 'up_2', 'do_0', 'do_1', 'do_2'],
         )
 
-    Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb/2))
+    Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb//2))
 
     if True:
         h_loc = np.kron(np.eye(2), np.diag([0.]))

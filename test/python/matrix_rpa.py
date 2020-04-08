@@ -37,7 +37,7 @@ def lose_spin_degree_of_freedom(gf, rank=2, spin_fast=True):
                     xz up, xy up, yz up, xz down, xy down, yz down.
     """
 
-    norb = gf.shape[-1] / 2
+    norb = gf.shape[-1] // 2
 
     idx = (len(gf.shape)-rank) * [slice(None)]
     
