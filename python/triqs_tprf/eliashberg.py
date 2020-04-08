@@ -28,9 +28,9 @@ from scipy.sparse.linalg import eigs
 
 # ----------------------------------------------------------------------
 
-from lattice import eliashberg_product
-from lattice import eliashberg_product_fft
-from lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
+from .lattice import eliashberg_product
+from .lattice import eliashberg_product_fft
+from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 
 # ----------------------------------------------------------------------
 def solve_eliashberg(Gamma_pp, g_wk, tol=1e-10):
