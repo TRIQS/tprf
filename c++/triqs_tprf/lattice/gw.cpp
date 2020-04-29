@@ -28,6 +28,47 @@
 namespace triqs_tprf {
 
 // ----------------------------------------------------
+// dynamical_screened_interaction_W_fk_from_U_fk
+
+chi_fk_t dynamical_screened_interaction_W_fk_from_U_fk(chi_fk_cvt pi0_fk, chi_fk_cvt U_k) {
+
+  if( pi0_fk.mesh() != U_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W_fk: k-space meshes are not the same\n";
+  
+  auto W_fk = make_gf(pi0_fk);
+  W_fk *= 0.;
+  size_t nb = pi0_fk.target_shape()[0];
+
+  using scalar_t = chi_fk_t::scalar_t;
+  auto I = make_unit_matrix<scalar_t>(nb * nb);
+
+  // MPI and openMP parallell loop
+  auto arr = mpi_view(W_fk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+
+    array<scalar_t, 4> U_arr{U_k[f, k], memory_layout_t<4>{0, 1, 2, 3}};
+    array<scalar_t, 4> pi0_arr{pi0_fk[f, k], memory_layout_t<4>{0, 1, 2, 3}};
+    array<scalar_t, 4> W_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
+
+    auto U   = make_matrix_view(group_indices_view(U_arr,   {0, 1}, {3, 2}));
+    auto pi0 = make_matrix_view(group_indices_view(pi0_arr, {0, 1}, {3, 2}));
+    auto W   = make_matrix_view(group_indices_view(W_arr,   {0, 1}, {3, 2}));
+
+    W = U * inverse(I - pi0 * U);
+
+    W_fk[f, k] = W_arr;
+
+  }
+
+  W_fk = mpi::all_reduce(W_fk);
+
+  return W_fk;
+  
+}
+
+// ----------------------------------------------------
 // dynamical_screened_interaction_W_fk
 
 chi_fk_t dynamical_screened_interaction_W_fk(chi_fk_cvt pi0_fk, chi_k_cvt v_k) {

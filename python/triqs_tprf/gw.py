@@ -43,8 +43,12 @@ from triqs_tprf.lattice import chi0_tr_from_grt_PH
 
 from triqs_tprf.lattice import dynamical_screened_interaction_W_wk \
     as cpp_dynamical_screened_interaction_W_wk
+    
 from triqs_tprf.lattice import dynamical_screened_interaction_W_fk \
     as cpp_dynamical_screened_interaction_W_fk
+    
+from triqs_tprf.lattice import dynamical_screened_interaction_W_fk_from_U_fk \
+    as cpp_dynamical_screened_interaction_W_fk_from_U_fk
 
 from triqs_tprf.lattice import \
     dynamical_screened_interaction_W_wk_from_generalized_susceptibility \
@@ -99,6 +103,10 @@ def dynamical_screened_interaction_W_wk(PI_wk, V_k):
 # ----------------------------------------------------------------------
 def dynamical_screened_interaction_W_fk(pi0_fk, v_k):
     return cpp_dynamical_screened_interaction_W_fk(pi0_fk, v_k)
+
+# ----------------------------------------------------------------------
+def dynamical_screened_interaction_W_fk_from_U_fk(pi0_fk, U_fk):
+    return cpp_dynamical_screened_interaction_W_fk_from_U_fk(pi0_fk, U_fk)
 
 # ----------------------------------------------------------------------
 def dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi_wk, V_k):
