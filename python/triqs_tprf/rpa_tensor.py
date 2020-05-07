@@ -26,8 +26,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf
-from pytriqs.operators import n, c, c_dag, Operator, dagger
+from triqs.gf import Gf
+from triqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------
 

@@ -6,16 +6,16 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from pytriqs.operators import n, c, c_dag, Operator, dagger
-from pytriqs.statistics.histograms import Histogram
+from triqs.operators import n, c, c_dag, Operator, dagger
+from triqs.statistics.histograms import Histogram
 
-from pytriqs.operators.util.op_struct import set_operator_structure
-from pytriqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
-from pytriqs.operators.util.hamiltonians import h_int_kanamori
+from triqs.operators.util.op_struct import set_operator_structure
+from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
+from triqs.operators.util.hamiltonians import h_int_kanamori
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Idx
+from triqs.gf import MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 

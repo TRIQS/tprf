@@ -24,7 +24,7 @@
 
 import numpy
 
-#from pytriqs.lattice.tight_binding import TBLattice
+#from triqs.lattice.tight_binding import TBLattice
 from triqs_tprf.tight_binding import TBLattice
 
 __all__ = ['TBSuperLattice']

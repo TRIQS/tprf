@@ -24,9 +24,9 @@ import copy
 import glob
 import numpy as np
 
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 from h5 import HDFArchive
-from pytriqs.gf import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx
+from triqs.gf import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx
 
 import triqs_cthyb
 
@@ -41,7 +41,7 @@ def setup_dmft_calculation(p):
     p.iter = 0
 
     # -- Local Hubbard interaction
-    from pytriqs.operators import n
+    from triqs.operators import n
     p.solve.h_int = p.U*n('up', 0)*n('do', 0) - 0.5*p.U*(n('up', 0) + n('do', 0))
 
     # -- 2D square lattice w. nearest neighbour hopping t

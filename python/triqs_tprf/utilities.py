@@ -112,9 +112,9 @@ def legendre_filter(G_tau, order=100, G_l_cut=1e-19):
     """
     
     import numpy as np
-    from pytriqs.gf import BlockGf
-    from pytriqs.gf.tools import fit_legendre
-    from pytriqs.gf.gf_fnt import enforce_discontinuity
+    from triqs.gf import BlockGf
+    from triqs.gf.tools import fit_legendre
+    from triqs.gf.gf_fnt import enforce_discontinuity
     
     l_g_l = []
 
@@ -141,7 +141,7 @@ def G2_loc_fixed_fermionic_window_python(g2, nwf):
     
     assert(n//2 >= nwf)
 
-    from pytriqs.gf import Gf, MeshImFreq, MeshProduct
+    from triqs.gf import Gf, MeshImFreq, MeshProduct
     
     mesh_iw = MeshImFreq(beta=beta, S='Boson', n_max=nw)
     mesh_inu = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)

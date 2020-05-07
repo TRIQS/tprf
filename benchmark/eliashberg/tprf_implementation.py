@@ -11,11 +11,11 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 
-from pytriqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
-from pytriqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
-from pytriqs.gf import Gf, MeshBrillouinZone, MeshImFreq
+from triqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
+from triqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
+from triqs.gf import Gf, MeshBrillouinZone, MeshImFreq
 
 # ----------------------------------------------------------------------
 

@@ -10,12 +10,12 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import os
 import numpy as np
 
-from pytriqs.gf import Gf, Idx
-from pytriqs.operators import c, c_dag
+from triqs.gf import Gf, Idx
+from triqs.operators import c, c_dag
 from h5 import HDFArchive
 
-from pytriqs.gf import MeshBrillouinZone, MeshProduct, MeshImFreq
-from pytriqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
+from triqs.gf import MeshBrillouinZone, MeshProduct, MeshImFreq
+from triqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
 
 # ----------------------------------------------------------------------
 

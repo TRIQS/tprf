@@ -6,7 +6,7 @@
 import itertools
 import numpy as np
 
-from pytriqs.gf import Gf, MeshImFreq, MeshImTime, MeshProduct
+from triqs.gf import Gf, MeshImFreq, MeshImTime, MeshProduct
 
 # ----------------------------------------------------------------------
 def first_index(mesh):
@@ -53,17 +53,17 @@ if __name__ == '__main__':
 
     # -- Test fourier
 
-    from pytriqs.applications.susceptibility.fourier import chi4_iw_from_tau
+    from triqs.applications.susceptibility.fourier import chi4_iw_from_tau
     chi4_iw = chi4_iw_from_tau(chi4_tau, nw)
 
-    from pytriqs.applications.susceptibility.fourier import chi4_tau_from_iw
+    from triqs.applications.susceptibility.fourier import chi4_tau_from_iw
     chi4_tau_ref = chi4_tau_from_iw(chi4_iw, nt)
     
     np.testing.assert_array_almost_equal(chi4_tau_ref.data, chi4_tau.data)
 
     # ------------------------------------------------------------------
     if False:
-        from pytriqs.plot.mpl_interface import oplot, plt
+        from triqs.plot.mpl_interface import oplot, plt
 
         subp = [2, 2, 1]
         plt.subplot(*subp); subp[-1] += 1

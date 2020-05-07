@@ -4,7 +4,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import *
+from triqs.gf import *
 
 # ----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ g2_iw_t fixed_fermionic_window(g2_iw_t g2_in, int nwf) {
      
      cxxflags = '-O3 -march=native -Ofast -mavx -mfma -mavx2 -g -ggdb -Wno-invalid-partial-specialization '
      includes = ' -I /opt/local/include/ -I /opt/local/include/openmpi-clang50'
-     M = compile(code, modules = "pytriqs", cxxflags=cxxflags + includes)
+     M = compile(code, modules = "triqs", cxxflags=cxxflags + includes)
 
      g2_out = M.fixed_fermionic_window(g2, nwf)
 
@@ -97,7 +97,7 @@ def window_conv_depr():
 
     print(diff_vec)
          
-    from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+    from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
     x = 1./nwf_vec
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         
     #exit()
     
-    from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+    from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
     plt.figure(figsize=(6*2, 8))
 
     #subp = [3, 6, 1]

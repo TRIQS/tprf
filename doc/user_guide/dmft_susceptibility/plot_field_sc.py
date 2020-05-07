@@ -1,7 +1,7 @@
 
 from common import *
 
-from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
 def plot_ps(ps):    
 

@@ -1,12 +1,12 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C pytriqs --moduledoc="Lattice functionality" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C triqs --moduledoc="Lattice functionality" --cxxflags="-std=c++17"
 from cpp2py.wrap_generator import *
 
 # The module
 module = module_(full_name = "lattice", doc = r"Lattice functionality", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['pytriqs.gf', 'pytriqs.lattice', 'pytriqs.utility.mpi'])
+module.add_imports(*['triqs.gf', 'triqs.lattice', 'triqs.utility.mpi'])
 
 # Add here all includes
 module.add_include("triqs_tprf/lattice.hpp")

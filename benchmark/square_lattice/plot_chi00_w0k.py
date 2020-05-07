@@ -9,7 +9,7 @@ from scipy.interpolate import griddata
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from pytriqs.gf import MeshBrillouinZone, Idx
+from triqs.gf import MeshBrillouinZone, Idx
 
 # ----------------------------------------------------------------------
 def plot_chi(chi, title):

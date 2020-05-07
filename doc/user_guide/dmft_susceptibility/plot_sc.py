@@ -21,7 +21,7 @@
 ################################################################################
 
 from common import *
-from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
 with HDFArchive('data_sc.h5', 'r') as a: ps = a['ps']
 p = ps.objects[-1]

@@ -75,7 +75,7 @@ e_k = t_r.on_mesh_brillouin_zone(n_k=(256, 1, 1))
 nw = 20
 beta = 0.544
 
-from pytriqs.gf import MeshImFreq, Idx
+from triqs.gf import MeshImFreq, Idx
 wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
@@ -104,8 +104,8 @@ print()
 U = 2.4
 J = 0.6
 
-from pytriqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
-from pytriqs.operators.util.hamiltonians import h_int_kanamori
+from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
+from triqs.operators.util.hamiltonians import h_int_kanamori
 
 orb_names = [0, 1]
 spin_names = ['up', 'do']

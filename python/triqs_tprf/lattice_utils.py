@@ -27,15 +27,15 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 
-from pytriqs.gf import Gf
-from pytriqs.gf import Idx
-from pytriqs.gf import MeshImFreq
-from pytriqs.gf import MeshProduct
-from pytriqs.gf import MeshBrillouinZone
+from triqs.gf import Gf
+from triqs.gf import Idx
+from triqs.gf import MeshImFreq
+from triqs.gf import MeshProduct
+from triqs.gf import MeshBrillouinZone
 
-from pytriqs.lattice import BrillouinZone
+from triqs.lattice import BrillouinZone
 
 # ----------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
         sigma[w] = sigma_in[Idx(index)]
 
     if debug:
-        from pytriqs.plot.mpl_interface import oplot, plt
+        from triqs.plot.mpl_interface import oplot, plt
         oplot(p.Sigmalatt_iw)
         oplot(sigma,'x')
         plt.show(); exit()

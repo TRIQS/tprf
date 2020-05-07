@@ -25,9 +25,9 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 from h5 import HDFArchive
-from pytriqs.gf import MeshImFreq, MeshProduct, Gf, Idx
+from triqs.gf import MeshImFreq, MeshProduct, Gf, Idx
 
 # ----------------------------------------------------------------------
 

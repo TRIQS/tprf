@@ -14,7 +14,7 @@ from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import retarded_screened_interaction_Wr_wk
 from triqs_tprf.gw import gw_sigma_wk
 
-from pytriqs.gf import Gf, MeshImFreq, Idx
+from triqs.gf import Gf, MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 

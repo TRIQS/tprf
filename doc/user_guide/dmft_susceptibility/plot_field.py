@@ -21,7 +21,7 @@
 ################################################################################
 
 from common import *
-from pytriqs.plot.mpl_interface import oplot, oplotr, plt
+from triqs.plot.mpl_interface import oplot, oplotr, plt
 
 ps = [] 
 filenames = np.sort(glob.glob('data_B_*.h5'))

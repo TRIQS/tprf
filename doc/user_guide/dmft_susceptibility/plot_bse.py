@@ -22,7 +22,7 @@
 
 from common import *
 
-from pytriqs.plot.mpl_interface import oplot, oplotr, plt
+from triqs.plot.mpl_interface import oplot, oplotr, plt
 from triqs_tprf.lattice_utils import k_space_path
 
 def get_path():    

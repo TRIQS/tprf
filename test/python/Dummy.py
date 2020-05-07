@@ -3,7 +3,7 @@ import numpy as np
 
 from h5 import HDFArchive
 
-from pytriqs.applications.susceptibility.Dummy import Dummy
+from triqs.applications.susceptibility.Dummy import Dummy
 
 d = Dummy()
 d.test_data = np.random.random(100)

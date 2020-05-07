@@ -2,8 +2,8 @@
 import itertools
 import numpy as np
 
-from pytriqs.gf import Idx
-from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+from triqs.gf import Idx
+from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
 # ----------------------------------------------------------------------
 def plot_g2(G2, cplx=None, idx_labels=None, w=Idx(0), opt={}, title=None):

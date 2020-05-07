@@ -49,7 +49,7 @@ print(e_k)
 # ----------------------------------------------------------------------
 # -- Bare susceptibility from Green's function bubble
 
-from pytriqs.gf import MeshImFreq
+from triqs.gf import MeshImFreq
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 
 wmesh = MeshImFreq(beta=5.0, S='Fermion', n_max=30)
@@ -61,7 +61,7 @@ chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
 # ----------------------------------------------------------------------
 # -- Kanamori interaction
 
-from pytriqs.operators.util import U_matrix_kanamori, h_int_kanamori
+from triqs.operators.util import U_matrix_kanamori, h_int_kanamori
 from triqs_tprf.OperatorUtils import fundamental_operators_from_gf_struct
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 

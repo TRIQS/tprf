@@ -15,7 +15,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 # ----------------------------------------------------------------------
 
-from pytriqs.operators import n, c, c_dag, Operator, dagger
+from triqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------
 

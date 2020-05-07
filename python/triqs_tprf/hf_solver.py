@@ -42,7 +42,7 @@ from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------
 
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 
 # ----------------------------------------------------------------------
 

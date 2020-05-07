@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from pytriqs.gf import MeshBrillouinZone, Idx
+from triqs.gf import MeshBrillouinZone, Idx
 
 from triqs_tprf.lattice_utils import k_space_path
 

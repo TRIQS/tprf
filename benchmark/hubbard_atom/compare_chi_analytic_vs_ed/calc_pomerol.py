@@ -8,10 +8,10 @@ Author: Hugo U.R. Strand (2017) hugo.strand@gmail.com """
 
 import numpy as np
 
-from pytriqs.gf import Gf
-from pytriqs.operators import c, c_dag
+from triqs.gf import Gf
+from triqs.operators import c, c_dag
 from h5 import HDFArchive
-from pytriqs.utility import mpi # needed for pomerol2triqs
+from triqs.utility import mpi # needed for pomerol2triqs
 
 # ----------------------------------------------------------------------
 

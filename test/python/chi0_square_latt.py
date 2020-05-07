@@ -4,15 +4,15 @@
 import itertools
 import numpy as np
 
-from pytriqs.gf import Gf, MeshImFreq, MeshProduct, MeshBrillouinZone
-from pytriqs.lattice import BrillouinZone, BravaisLattice
+from triqs.gf import Gf, MeshImFreq, MeshProduct, MeshBrillouinZone
+from triqs.lattice import BrillouinZone, BravaisLattice
 
-from pytriqs.applications.tprf.lattice import g0k_from_ek
-from pytriqs.applications.tprf.lattice import gr_from_gk
+from triqs.applications.tprf.lattice import g0k_from_ek
+from triqs.applications.tprf.lattice import gr_from_gk
 
-from pytriqs.applications.tprf.lattice import chi0r_from_gr_PH
-from pytriqs.applications.tprf.lattice import chi0q_from_chi0r
-from pytriqs.applications.tprf.lattice import chi0q_sum_nu
+from triqs.applications.tprf.lattice import chi0r_from_gr_PH
+from triqs.applications.tprf.lattice import chi0q_from_chi0r
+from triqs.applications.tprf.lattice import chi0q_sum_nu
 
 beta = 20.0
 n_k = 20
@@ -73,7 +73,7 @@ if False: # python implementation
         
 # -- Plot static w=0 susceptibility in k-space
 
-from pytriqs.plot.mpl_interface import oplot, oploti, oplotr, plt
+from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
 
 # plot zeroth bosonic matsubara freq susceptibility
 

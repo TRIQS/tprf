@@ -1,12 +1,12 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/freq_conv.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m freq_conv -o freq_conv -C pytriqs --moduledoc="functionality for changing frequency conventions" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/freq_conv.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m freq_conv -o freq_conv -C triqs --moduledoc="functionality for changing frequency conventions" --cxxflags="-std=c++17"
 from cpp2py.wrap_generator import *
 
 # The module
 module = module_(full_name = "freq_conv", doc = r"functionality for changing frequency conventions", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['pytriqs.gf'])
+module.add_imports(*['triqs.gf'])
 
 # Add here all includes
 module.add_include("triqs_tprf/freq_conv.hpp")

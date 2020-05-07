@@ -23,17 +23,17 @@
 
 import numpy as np
 
-from pytriqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
-from pytriqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
-from pytriqs.lattice.lattice_tools import TightBinding as TightBinding
+from triqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
+from triqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
+from triqs.lattice.lattice_tools import TightBinding as TightBinding
 
-from pytriqs.lattice.lattice_tools import dos as dos_c
-from pytriqs.lattice.lattice_tools import dos_patch as dos_patch_c
+from triqs.lattice.lattice_tools import dos as dos_c
+from triqs.lattice.lattice_tools import dos_patch as dos_patch_c
 
-from pytriqs.lattice.lattice_tools import energies_on_bz_grid, energies_on_bz_path, hopping_stack, energy_matrix_on_bz_path
+from triqs.lattice.lattice_tools import energies_on_bz_grid, energies_on_bz_path, hopping_stack, energy_matrix_on_bz_path
 
-from pytriqs.dos import DOS
-from pytriqs.gf import Gf, MeshBrillouinZone, MeshCyclicLattice
+from triqs.dos import DOS
+from triqs.gf import Gf, MeshBrillouinZone, MeshCyclicLattice
 
 class TBLattice(object):
 

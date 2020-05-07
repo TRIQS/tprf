@@ -1,11 +1,11 @@
 
 import numpy as np
 
-import pytriqs.utility.mpi as mpi
+import triqs.utility.mpi as mpi
 
-from pytriqs.gf import Gf, MeshImFreq, MeshProduct
-from pytriqs.gf import MeshBrillouinZone, MeshCyclicLattice
-from pytriqs.lattice import BrillouinZone, BravaisLattice
+from triqs.gf import Gf, MeshImFreq, MeshProduct
+from triqs.gf import MeshBrillouinZone, MeshCyclicLattice
+from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import fourier_wk_to_wr

@@ -6,9 +6,9 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq
+from triqs.gf import MeshImFreq
 from h5 import HDFArchive
-from pytriqs.operators import n, c, c_dag, Operator, dagger
+from triqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------
 

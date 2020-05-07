@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import *
+from triqs.gf import *
 from h5 import HDFArchive
-from pytriqs.utility import mpi
+from triqs.utility import mpi
 from triqs_ctint import SolverCore, version
 
-from pytriqs.gf import Gf, MeshImFreq, iOmega_n, inverse
-from pytriqs.operators import c, c_dag, n
+from triqs.gf import Gf, MeshImFreq, iOmega_n, inverse
+from triqs.operators import c, c_dag, n
 from itertools import product
 
 # ----------------------------------------------------------------------

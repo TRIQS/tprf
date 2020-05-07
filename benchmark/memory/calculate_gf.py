@@ -2,7 +2,7 @@ import sys
 
 import numpy as np
 
-from pytriqs.gf import Gf, MeshImFreq, Idx
+from triqs.gf import Gf, MeshImFreq, Idx
 
 from triqs_tprf.tight_binding import TBLattice
 from triqs_tprf.lattice import lattice_dyson_g0_wk

@@ -15,7 +15,7 @@ from scipy.optimize import brentq
     
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Idx
+from triqs.gf import MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 
@@ -130,7 +130,7 @@ def get_tb_model(t, U, n, m, mu=0., vanilla_tb=False):
     T = - t * np.eye(2)
 
     if vanilla_tb:
-        from pytriqs.lattice.tight_binding import TBLattice
+        from triqs.lattice.tight_binding import TBLattice
     else:
         from triqs_tprf.tight_binding import TBLattice
         
@@ -190,7 +190,7 @@ def test_tb_model(verbose=False):
     
     t_r = get_tb_model(t, U, n, m, mu=0., vanilla_tb=True)
 
-    from pytriqs.lattice.tight_binding import dos
+    from triqs.lattice.tight_binding import dos
     rhos = dos(t_r.tb, n_kpts=100000, n_eps=100, name='foobar')
 
     eps = rhos[0].eps
@@ -316,7 +316,7 @@ if __name__ == '__main__':
     
     gf_struct = [[0, [0, 1]]]
     
-    from pytriqs.operators import n, c, c_dag, Operator, dagger
+    from triqs.operators import n, c, c_dag, Operator, dagger
     H_int = U * n(0, 0) * n(0, 1)
     print('H_int =', H_int)
 

@@ -5,7 +5,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Idx
+from triqs.gf import MeshImFreq, Idx
 
 # ----------------------------------------------------------------------
 

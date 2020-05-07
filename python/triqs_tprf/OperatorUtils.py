@@ -31,7 +31,7 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import itertools
 import numpy as np
 
-from pytriqs.operators import c, c_dag, Operator, dagger
+from triqs.operators import c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------    
 def fundamental_operators_from_gf_struct(gf_struct):

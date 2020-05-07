@@ -21,7 +21,7 @@
 ################################################################################
 
 from common import *
-from pytriqs.plot.mpl_interface import oplot, oplotr, plt
+from triqs.plot.mpl_interface import oplot, oplotr, plt
 
 with HDFArchive('data_g2.h5', 'r') as a: p = a['p']
 

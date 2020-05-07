@@ -4,10 +4,10 @@ import numpy as np
 
 # ----------------------------------------------------------------------    
 
-from pytriqs.operators import Operator
-from pytriqs.operators.util.U_matrix import U_matrix_kanamori
-from pytriqs.operators.util.hamiltonians import h_int_kanamori
-from pytriqs.operators.util.op_struct import set_operator_structure
+from triqs.operators import Operator
+from triqs.operators.util.U_matrix import U_matrix_kanamori
+from triqs.operators.util.hamiltonians import h_int_kanamori
+from triqs.operators.util.op_struct import set_operator_structure
 
 # ----------------------------------------------------------------------    
 

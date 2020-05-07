@@ -8,7 +8,7 @@ Author: Hugo U.R. Strand (2017), hugo.strand@gmail.com """
 # ----------------------------------------------------------------------
 
 import numpy as np
-from pytriqs.gf import *
+from triqs.gf import *
 from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 
 # ----------------------------------------------------------------------
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- Plot
     
-    from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+    from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
     x = 1./nwf_vec
 

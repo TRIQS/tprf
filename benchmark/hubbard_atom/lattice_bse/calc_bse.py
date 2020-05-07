@@ -4,13 +4,13 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf
-from pytriqs.gf import inverse
-from pytriqs.gf import iOmega_n
-from pytriqs.gf import MeshImFreq
-from pytriqs.gf import MeshBrillouinZone
+from triqs.gf import Gf
+from triqs.gf import inverse
+from triqs.gf import iOmega_n
+from triqs.gf import MeshImFreq
+from triqs.gf import MeshBrillouinZone
 
-from pytriqs.lattice import BrillouinZone, BravaisLattice
+from triqs.lattice import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------
 

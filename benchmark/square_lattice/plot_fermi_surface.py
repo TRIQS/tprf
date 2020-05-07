@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from pytriqs.gf import MeshBrillouinZone
+from triqs.gf import MeshBrillouinZone
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':

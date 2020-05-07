@@ -243,7 +243,7 @@ class HartreeFockResponse(BaseResponse):
 
     def compute_chi0_k(self):
 
-        from pytriqs.gf import Gf
+        from triqs.gf import Gf
 
         chi0_k = Gf(mesh=self.e_k.mesh, target_shape=self.shape_abcd)
         chi0_k.data[:] = self.chi0_kabcd

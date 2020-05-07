@@ -2,12 +2,12 @@
 
 import numpy as np
 
-from pytriqs.gf import *
+from triqs.gf import *
 from h5 import HDFArchive
-from pytriqs.utility import mpi
+from triqs.utility import mpi
 
-from pytriqs.gf import Gf, MeshImFreq, iOmega_n, inverse
-from pytriqs.operators import c, c_dag, n
+from triqs.gf import Gf, MeshImFreq, iOmega_n, inverse
+from triqs.operators import c, c_dag, n
 from itertools import product
 
 # ----------------------------------------------------------------------
@@ -15,7 +15,7 @@ from itertools import product
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 
-from pytriqs.plot.mpl_interface import plt, oplot, oploti, oplotr
+from triqs.plot.mpl_interface import plt, oplot, oploti, oplotr
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':

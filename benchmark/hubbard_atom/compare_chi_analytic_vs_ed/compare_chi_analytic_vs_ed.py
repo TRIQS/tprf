@@ -9,8 +9,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import *
-from pytriqs.operators import *
+from triqs.gf import *
+from triqs.operators import *
 from h5 import HDFArchive
 
 # ----------------------------------------------------------------------
@@ -22,7 +22,7 @@ from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 def plot_res(ana, pom):
 
     from triqs_tprf.plot import plot_g2, get_g2_opt
-    from pytriqs.plot.mpl_interface import oplot, oplotr, oploti, plt
+    from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
     opt = get_g2_opt(pom.chi, cplx='re', cut=0.1)
     
