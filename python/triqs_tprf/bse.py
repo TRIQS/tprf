@@ -408,7 +408,7 @@ def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
 
     mpi.report('--> chi0_wk_tail_corr')
     # Calculate chi0_wk up to the specific \omega
-    chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=nw_index+1, save_memory=True) 
+    chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=np.abs(nw_index)+1, save_memory=True) 
     # Only use specific \omega, but put back on fake bosonic mesh
     chi0_k_tail_corr = chi0_wk_tail_corr[Idx(nw_index), :]
     chi0_wk_tail_corr = add_fake_bosonic_mesh(chi0_k_tail_corr, beta=bmesh.beta)
