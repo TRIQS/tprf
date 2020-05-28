@@ -19,20 +19,12 @@
 #
 ################################################################################
 
-class Dummy(object):
-    """ Dummy class that is writable to a HDFArchive. """
-    
-    def __init__(self):
-        pass
+version = "@PROJECT_VERSION@"
+triqs_hash = "@TRIQS_GIT_HASH@"
+@PROJECT_NAME@_hash = "@PROJECT_GIT_HASH@"
 
-    def __reduce_to_dict__(self):
-        return self.__dict__
+def show_version():
+  print("\nYou are using @PROJECT_NAME@ version %s\n"%version)
 
-    @classmethod
-    def __factory_from_dict__(cls, name, d):
-        ret = cls()
-        ret.__dict__.update(d)
-        return ret
-        
-from h5.formats import register_class 
-register_class(Dummy)
+def show_git_hash():
+  print("\nYou are using @PROJECT_NAME@ git hash %s based on triqs git hash %s\n"%("@PROJECT_GIT_HASH@", triqs_hash))

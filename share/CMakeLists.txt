@@ -1,21 +1,26 @@
 add_subdirectory(cmake)
 
-if(NOT CMAKE_INSTALL_PREFIX STREQUAL TRIQS_ROOT)
+if(NOT CMAKE_INSTALL_PREFIX STREQUAL TRIQS_ROOT AND NOT IS_SUBPROJECT)
 
-  configure_file(triqs_tprf.modulefile.in triqs_tprf.modulefile @ONLY)
-  configure_file(triqs_tprfvars.sh.in triqs_tprfvars.sh @ONLY)
+  if(PythonSupport)
+    set(EXPORT_PYTHON_PATH "export PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CPP2PY_PYTHON_LIB_DEST_ROOT}:$PYTHONPATH")
+    set(MODFILE_PYTHON_PATH "prepend-path    PYTHONPATH          $root/${CPP2PY_PYTHON_LIB_DEST_ROOT}")
+  endif()
+
+  configure_file(${PROJECT_NAME}.modulefile.in ${PROJECT_NAME}.modulefile @ONLY)
+  configure_file(${PROJECT_NAME}vars.sh.in ${PROJECT_NAME}vars.sh @ONLY)
 
   install(
     FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/triqs_tprf.modulefile
-      ${CMAKE_CURRENT_BINARY_DIR}/triqs_tprfvars.sh
+      ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.modulefile
+      ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}vars.sh
     DESTINATION share
   )
  
   message(STATUS "***************************************************************")
   message(STATUS "* Custom install Location. Use:                                ")
   message(STATUS "*                                                              ")
-  message(STATUS "*   source ${CMAKE_INSTALL_PREFIX}/share/triqs_tprfvars.sh     ")
+  message(STATUS "*   source ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}vars.sh      ")
   message(STATUS "*                                                              ")
   message(STATUS "* to set up the environment variables                          ")
   message(STATUS "***************************************************************")

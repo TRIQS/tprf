@@ -3,8 +3,8 @@
 # TRIQS documentation build configuration file
 
 import sys
-sys.path.insert(0, "@TRIQS_SPHINXEXT_PATH@/autorun")
-sys.path.insert(0, "@TRIQS_SPHINXEXT_PATH@/numpydoc")
+sys.path.insert(0, "@CMAKE_CURRENT_SOURCE_DIR@/sphinxext/autorun")
+sys.path.insert(0, "@CMAKE_CURRENT_SOURCE_DIR@/sphinxext/numpydoc")
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
@@ -13,35 +13,35 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
-              'numpydoc',
-              'plot_directive',
-              'autorun',
-              'nbsphinx',
               'sphinx.ext.githubpages',
+              'matplotlib.sphinxext.plot_directive',
+              'autorun',
+              'numpydoc',
+              'nbsphinx',
               'IPython.sphinxext.ipython_console_highlighting',
               ]
 
 source_suffix = '.rst'
 
 project = 'TPRF - Two-Particle Response Function tool box for TRIQS'
-copyright = '2017, H. U.R. Strand'
+
 version = '@PROJECT_VERSION@'
 
-math_number_all = True
-mathjax_path = "@TRIQS_MATHJAX_PATH@/MathJax.js?config=default"
-templates_path = ['@PROJECT_SOURCE_DIR@/doc/_templates']
-exclude_patterns = ['_build', '**.ipynb_checkpoints']
+copyright = '2017, H. U.R. Strand'
+
+mathjax_path = "https://raw.githubusercontent.com/mathjax/MathJax/2.7.8/MathJax.js"
+templates_path = ['@CMAKE_CURRENT_SOURCE_DIR@/_templates']
 
 html_theme = 'triqs'
-html_theme_path = ['@TRIQS_THEMES_PATH@']
+html_theme_path = ['@CMAKE_CURRENT_SOURCE_DIR@/themes']
 html_show_sphinx = False
-html_context = {'header_title': 'tprf',
-                'header_subtitle': 'two-particle response function tools based on the <a class="triqs" style="font-size: 12px" href="https://triqs.github.io">TRIQS</a> library',
+html_context = {'header_title': '@PROJECT_NAME@',
+                'header_subtitle': 'An example application using cpp2py and <a class="triqs" style="font-size: 12px" href="https://triqs.github.io">TRIQS</a>',
                 'header_links': [['Install', 'install'],
                                  ['Documentation', 'documentation'],
                                  ['Issues', 'issues'],
                                  ['About tprf', 'about']]}
-html_static_path = ['@PROJECT_SOURCE_DIR@/doc/_static']
+html_static_path = ['@CMAKE_CURRENT_SOURCE_DIR@/_static']
 html_sidebars = {'index': ['sideb.html', 'searchbox.html']}
 
 htmlhelp_basename = 'TPRFdoc'
