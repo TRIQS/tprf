@@ -23,7 +23,7 @@ macro(generate_docs header_file)
   )
 endmacro(generate_docs)
 
-generate_docs(${PROJECT_SOURCE_DIR}/c++/${PROJECT_NAME}/${PROJECT_NAME}.hpp)
+generate_docs(${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp)
 
 # --------------------------------------------------------
 # Build & Run the C++ doc examples and capture the output
