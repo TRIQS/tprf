@@ -22,10 +22,21 @@
 #
 ################################################################################
 
+import sys
+
 def tprf_banner():
-    banner = r"""
+    if 'UTF' in sys.stdout.encoding:
+        banner = r"""
 ╔╦╗╦═╗╦╔═╗ ╔═╗  ┌┬┐┌─┐┬─┐┌─┐
  ║ ╠╦╝║║═╬╗╚═╗   │ ├─┘├┬┘├┤ 
  ╩ ╩╚═╩╚═╝╚╚═╝   ┴ ┴  ┴└─└  
 Two-Particle Response Function tool-box"""
+    else:
+        banner = r"""
+ _____ ___ ___ ___  ___   _____ ___ ___ ___
+|_   _| _ \_ _/ _ \/ __| |_   _| _ \ _ \ __|
+  | | |   /| | (_) \__ \   | | |  _/   / _|
+  |_| |_|_\___\__\_\___/   |_| |_| |_|_\_|
+
+  Two-Particle Response Function tool-box"""
     return banner
