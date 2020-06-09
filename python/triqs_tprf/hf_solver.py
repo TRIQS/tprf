@@ -31,6 +31,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 # ----------------------------------------------------------------------
 
+import sys
 import itertools
 import numpy as np
 from .numpy_compat import np_eigvalsh, np_eigh
@@ -496,12 +497,21 @@ class HartreeFockSolver(object):
     
     # ------------------------------------------------------------------
     def logo(self):
-        
-        logo = """
+        if 'UTF' in sys.stdout.encoding:
+            logo = """
 ╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐
  ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤ 
  ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└  
 TRIQS: Hartree-Fock solver
+"""
+        else:
+            logo = """
+ _____ ___ ___ ___  ___   _  _ ___
+|_   _| _ \_ _/ _ \/ __| | || | __|
+  | | |   /| | (_) \__ \ | __ | _|
+  |_| |_|_\___\__\_\___/ |_||_|_|
+
+    TRIQS: Hartree-Fock solver
 """
         return logo
     
