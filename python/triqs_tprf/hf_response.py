@@ -29,6 +29,7 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 
 # ----------------------------------------------------------------------
 
+import sys
 import itertools
 import numpy as np
 from .numpy_compat import np_eigh
@@ -157,10 +158,20 @@ class BaseResponse(object):
     
     # ----------------------------------------------------------------------
     def logo(self):
-        txt = """
+        if 'UTF' in sys.stdout.encoding:
+            txt = """
 ╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬┌─┐  ┬─┐┌─┐┌─┐
  ║ ╠╦╝║║═╬╗╚═╗  ├─┤├┤───├┬┘├─┘├─┤
  ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴└    ┴└─┴  ┴ ┴
+Triqs: Hartree-Fock Random Phase Approximation susceptibility
+"""
+        else:
+            txt = r"""
+ _____ ___ ___ ___  ___   _  _ ___    ___ ___  _
+|_   _| _ \_ _/ _ \/ __| | || | __|__| _ \ _ \/_\
+  | | |   /| | (_) \__ \ | __ | _|___|   /  _/ _ \
+  |_| |_|_\___\__\_\___/ |_||_|_|    |_|_\_|/_/ \_\
+
 Triqs: Hartree-Fock Random Phase Approximation susceptibility
 """
         return txt
