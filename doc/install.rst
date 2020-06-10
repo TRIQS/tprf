@@ -93,7 +93,7 @@ Custom CMake options
 
 The compilation of ``tprf`` can be configured using CMake-options::
 
-    cmake ../tprf.src -DOPTION1=value1 -DOPTION2=value2 ... ../tprf.src
+    cmake ../tprf.src -DOPTION1=value1 -DOPTION2=value2 ...
 
 +-----------------------------------------------------------------+-----------------------------------------------+
 | Options                                                         | Syntax                                        |
