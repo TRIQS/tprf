@@ -89,7 +89,8 @@ macro(extract_flags)
     endif()
   endforeach()
 
-  # We have to replace generator expressions explicitly
+  # ==== We have to replace generator expressions explicitly ====
+
   if(ARG_BUILD_INTERFACE)
     string(REGEX REPLACE "\\$<BUILD_INTERFACE:([^ ]*)>" "\\1" ${target}_LDFLAGS "${${target}_LDFLAGS}")
     string(REGEX REPLACE "\\$<BUILD_INTERFACE:([^ ]*)>" "\\1" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
@@ -97,6 +98,25 @@ macro(extract_flags)
     string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^ ]*)>" "\\1" ${target}_LDFLAGS "${${target}_LDFLAGS}")
     string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^ ]*)>" "\\1" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
   endif()
+
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:GNU>:([^ ]*)>" "\\1" ${target}_LDFLAGS "${${target}_LDFLAGS}")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:GNU>:([^ ]*)>" "\\1" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:Clang>:([^ ]*)>" "\\1" ${target}_LDFLAGS "${${target}_LDFLAGS}")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:Clang>:([^ ]*)>" "\\1" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:AppleClang>:([^ ]*)>" "\\1" ${target}_LDFLAGS "${${target}_LDFLAGS}")
+    string(REGEX REPLACE "\\$<\\$<CXX_COMPILER_ID:AppleClang>:([^ ]*)>" "\\1" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+  endif()
+
+  # Remove all remaining generator expressions
   string(REGEX REPLACE " [^ ]*\\$<[^ ]*:[^>]*>" "" ${target}_LDFLAGS "${${target}_LDFLAGS}")
   string(REGEX REPLACE " [^ ]*\\$<[^ ]*:[^>]*>" "" ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+
+  # Filter out system directories from LDFLAGS and CXXFLAGS
+  string(REGEX REPLACE " -L/usr/lib " " " ${target}_LDFLAGS "${${target}_LDFLAGS}")
+  string(REGEX REPLACE " -I/usr/include " " " ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+  string(REGEX REPLACE " -isystem/usr/include " " " ${target}_CXXFLAGS "${${target}_CXXFLAGS}")
+
 endmacro()
