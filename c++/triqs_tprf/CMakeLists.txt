@@ -7,8 +7,6 @@ target_link_libraries(${PROJECT_NAME}_c PUBLIC triqs PRIVATE $<BUILD_INTERFACE:$
 
 # Configure target and compilation
 set_property(TARGET ${PROJECT_NAME}_c PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_compile_options(${PROJECT_NAME}_c PUBLIC -fPIC -fopenmp)
-target_link_libraries(${PROJECT_NAME}_c PUBLIC "-fopenmp") # We are using openmp
 target_include_directories(${PROJECT_NAME}_c PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/c++>)
 target_include_directories(${PROJECT_NAME}_c SYSTEM INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
 target_compile_definitions(${PROJECT_NAME}_c PUBLIC
@@ -23,6 +21,16 @@ target_compile_definitions(${PROJECT_NAME}_c PUBLIC
 install(TARGETS ${PROJECT_NAME}_c EXPORT ${PROJECT_NAME}-targets DESTINATION lib)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 
+# ========= Additional Depdencies ==========
+
+# OpenMP
+find_package(OpenMP REQUIRED COMPONENTS CXX)
+add_library(openmp INTERFACE)
+target_compile_options(openmp INTERFACE ${OpenMP_CXX_FLAGS})
+target_link_libraries(openmp INTERFACE ${OpenMP_CXX_FLAGS})
+
+target_link_libraries(${PROJECT_NAME}_c PUBLIC openmp)
+install(TARGETS openmp EXPORT ${PROJECT_NAME}-targets)
 
 # ========= Static Analyzer Checks ==========
 
