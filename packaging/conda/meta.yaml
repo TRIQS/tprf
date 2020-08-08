@@ -1,0 +1,58 @@
+{% set version = "3.0.0" %}
+
+package:
+  name: triqs_tprf
+  version: {{ version }}
+
+source:
+  url: https://github.com/TRIQS/tprf/releases/download/{{ version }}/tprf-{{ version }}.tar.gz
+  sha256: PUT HERE THE SHA256 OF YOUR RELEASE TARBALL
+
+build:
+  number: 0
+  skip: True  # [win or py<30]
+
+requirements:
+  build:
+    - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - triqs {{ '.'.join(version.split('.')[:2]) }}
+    - boost-cpp
+    - fftw
+    - {{ mpi }}
+    - libblas
+    - liblapack
+    - python
+  run:
+    - {{ pin_compatible("triqs", max_pin="x.x") }}
+    - fftw
+    - {{ mpi }}
+    - libblas
+    - liblapack
+    - python
+
+test:
+  commands:
+    - export OMPI_MCA_btl=self,tcp
+    - export OMPI_MCA_plm=isolated
+    - export OMPI_MCA_rmaps_base_oversubscribe=yes
+    - export OMPI_MCA_btl_vader_single_copy_mechanism=none
+    - export mpiexec="mpiexec --allow-run-as-root"
+    - python -c "import triqs_tprf"
+
+about:
+  home: https://triqs.github.io/tprf
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: 'The Two-Particle Response Function tool box for TRIQS'
+
+extra:
+  recipe-maintainers:
+    - wentzell
+    - pgunn
