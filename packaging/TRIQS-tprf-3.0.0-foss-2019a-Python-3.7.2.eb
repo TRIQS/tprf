@@ -49,7 +49,7 @@ separate_build_dir = True
 runtest = 'test'
 
 sanity_check_paths = {
-    'files': ['lib/libtriqs_tprf_c.a'],
+    'files': ['lib/libtriqs_tprf_c.%s' % SHLIB_EXT],
     'dirs': ['include/triqs_tprf', 'lib', 'share',
              'lib/python%(pyshortver)s/site-packages/triqs_tprf'],
 }
