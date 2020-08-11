@@ -319,7 +319,6 @@ def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
         it = 1
         while True:
             norm, new_v_k = iteration(v_k, offset)
-            print(norm)
             
             # -- Convergence criterion
             add = np.max(np.abs(v_k + new_v_k))
@@ -380,7 +379,6 @@ def allclose_by_scalar_multiplication(delta_1, delta_2, atol=1e-10):
     try:
         division_of_deltas = np.divide(delta_1_arr, delta_2_arr)
     except ValueError: # Arrays do not contain the same # of zeroes and are therefore not equal
-        print('FUUUCK')
         return False 
 
     # Check if elements share common scalar factor
