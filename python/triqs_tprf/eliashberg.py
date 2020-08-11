@@ -36,104 +36,8 @@ from lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
 
 # ----------------------------------------------------------------------
 
-def split_into_dynamic_wk_and_constant_k(Gamma_pp_wk):
-    Gamma_pp_dyn_wk = get_dynamic_wk(Gamma_pp_wk)
-    Gamma_pp_const_k = get_constant_k(Gamma_pp_wk)
-    return Gamma_pp_dyn_wk, Gamma_pp_const_k
-
-def dynamic_and_constant_to_tr(Gamma_pp_dyn_wk, Gamma_pp_const_k):
-    Gamma_pp_dyn_tr = dynamic_to_tr(Gamma_pp_dyn_wk)
-    Gamma_pp_const_r = constant_to_r(Gamma_pp_const_k) 
-    return Gamma_pp_dyn_tr, Gamma_pp_const_r
-
-def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
-
-    r"""Create a delta based on the GF with random elements
-
-    Returns an anomalous self-energy that can be used as an inital input for the iterative
-    solvers. The momentum space is random, while the Matsubara space is only partialy 
-    randomized to ensure working tail fits for the Fourier transformations.
-
-    Parameters
-    ----------
-    g_wk : Gf, 
-           Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
-           be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
-    nr_factor : float, optional
-                Percentage of :math:`\omega` points which shall not be randomized. This is needed
-                to assure a working tail fit for the Fourier transformations. The default is 0.5,
-                meaning that 50% of the :math:`\omega` points will not be randomized.
-    seed : int, optional
-           Set a np.random.seed to enforce predictable results.
-
-    Returns
-    -------
-    delta : Gf,
-            An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
-            an iterative solver, given as a Gf with MeshProduct with the components
-            (MeshImFreq, MeshBrillouinZone).
-    """
-
-    np.random.seed(seed)
-
-    delta = g_wk.copy()
-    shape = delta.data.shape
-    delta.data[:] = delta.data.real # Pure real delta is sufficient w/o magnetic field
-    random_data = np.random.random(shape[1:])
-    freq_data = np.mean(np.abs(delta.data), axis=tuple(range(len(shape))[1:]))
-    not_randomized = int(nr_factor*shape[0] / 2.)
-    start, stop = not_randomized, shape[0]-not_randomized
-    freq_data[start:stop] *= np.random.random(stop-start)
-
-    delta.data[:] = np.tensordot(freq_data, random_data, axes=0)
-
-    return delta
-
-def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
-    r""" Prepare Gamma to be used with the FFT implementation
-
-    Parameters
-    ----------
-    Gamma_pp_wk : Gf,
-               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
-               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
-    Gamma_pp_const_k : float or np.ndarray or Gf
-                       Part of the pairing vertex that is constant in Matsubara frequency space
-                       :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
-                       be a MeshBrillouinZone.
-
-    Returns
-    -------
-    Gamma_pp_dyn_tr : Gf,
-                      The dynamic part of Gamma, which converges to zero for
-                      :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space.
-                      Its mesh attribute is MeshProduct with the components
-                      (MeshImTime, MeshCyclicLattice).
-    Gamma_pp_const_r : Gf,
-                       The constant part of Gamma with mesh attribute MeshCyclicLattice.
-    """
-
-    # -- Determine the dynamic and constant part via a tail fit
-    # -- (This is done even if the constant term is given to get the specific Gf types)
-    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(Gamma_pp_wk)
-
-    # -- Use a constant term if explicitly given
-    const_type = type(Gamma_pp_const_k)
-    if (const_type == float) or (const_type == np.ndarray):
-        Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
-        Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k
-    elif (const_type == Gf):
-        Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
-        Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
-    # -- FFT dynamic and constant term to (tau, real) or (real)
-    Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
-                                                                    Gamma_pp_const_k_fit)
-
-    return Gamma_pp_dyn_tr, Gamma_pp_const_r
-
 def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
                      tol=1e-10, product='FFT', solver='PM', symmetrize_fct=lambda x : x):
-
     r""" Solve the linearized Eliashberg equation
     
     Returns the biggest eigenvalues and corresponding eigenvectors of the linearized Eliashberg
@@ -249,8 +153,144 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
     return es, eigen_modes
 
-def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
+def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
+    r""" Prepare Gamma to be used with the FFT implementation
 
+    Parameters
+    ----------
+    Gamma_pp_wk : Gf,
+               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    Gamma_pp_const_k : float or np.ndarray or Gf
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
+                       be a MeshBrillouinZone.
+
+    Returns
+    -------
+    Gamma_pp_dyn_tr : Gf,
+                      The dynamic part of Gamma, which converges to zero for
+                      :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space.
+                      Its mesh attribute is MeshProduct with the components
+                      (MeshImTime, MeshCyclicLattice).
+    Gamma_pp_const_r : Gf,
+                       The constant part of Gamma with mesh attribute MeshCyclicLattice.
+    """
+
+    # -- Determine the dynamic and constant part via a tail fit
+    # -- (This is done even if the constant term is given to get the specific Gf types)
+    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(Gamma_pp_wk)
+
+    # -- Use a constant term if explicitly given
+    const_type = type(Gamma_pp_const_k)
+    if (const_type == float) or (const_type == np.ndarray):
+        Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
+        Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k
+    elif (const_type == Gf):
+        Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
+        Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
+    # -- FFT dynamic and constant term to (tau, real) or (real)
+    Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
+                                                                    Gamma_pp_const_k_fit)
+
+    return Gamma_pp_dyn_tr, Gamma_pp_const_r
+
+def split_into_dynamic_wk_and_constant_k(Gamma_pp_wk):
+    r""" Split Gamma by tail fitting constant part in frequency
+
+    Parameters
+    ----------
+    Gamma_pp_wk : Gf,
+               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+
+    Returns
+    -------
+    Gamma_pp_dyn_wk : Gf,
+                      The dynamic part of Gamma, which converges to zero for
+                      :math:`\omega_n \rightarrow \infty`.
+                      Its mesh attribute is MeshProduct with the components
+                      (MeshImFreq, MeshBrillouinZone).
+    Gamma_pp_const_k : Gf,
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. Returned as a Gf with mesh attribute
+                       MeshBrillouinZone.
+    """
+    Gamma_pp_dyn_wk = get_dynamic_wk(Gamma_pp_wk)
+    Gamma_pp_const_k = get_constant_k(Gamma_pp_wk)
+    return Gamma_pp_dyn_wk, Gamma_pp_const_k
+
+def dynamic_and_constant_to_tr(Gamma_pp_dyn_wk, Gamma_pp_const_k):
+    r""" Fourier transform Gamma parts to imaginary time and real-space  
+
+    Parameters
+    ----------
+    Gamma_pp_dyn_wk : Gf,
+                      The dynamic part of Gamma, which converges to zero for
+                      :math:`\omega_n \rightarrow \infty`.
+                      Its mesh attribute is MeshProduct with the components
+                      (MeshImFreq, MeshBrillouinZone).
+    Gamma_pp_const_k : Gf,
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. Its mesh attribute is MeshBrillouinZone.
+
+    Returns
+    -------
+    Gamma_pp_dyn_tr : Gf,
+                      The dynamic part of Gamma, which converges to zero for
+                      :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space.
+                      Its mesh attribute is MeshProduct with the components
+                      (MeshImTime, MeshCyclicLattice).
+    Gamma_pp_const_r : Gf,
+                       The constant part of Gamma with mesh attribute MeshCyclicLattice.
+    """
+    Gamma_pp_dyn_tr = dynamic_to_tr(Gamma_pp_dyn_wk)
+    Gamma_pp_const_r = constant_to_r(Gamma_pp_const_k) 
+    return Gamma_pp_dyn_tr, Gamma_pp_const_r
+
+def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
+    r"""Create a delta based on the GF with random elements
+
+    Returns an anomalous self-energy that can be used as an inital input for the iterative
+    solvers. The momentum space is random, while the Matsubara space is only partialy 
+    randomized to ensure working tail fits for the Fourier transformations.
+
+    Parameters
+    ----------
+    g_wk : Gf, 
+           Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
+           be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    nr_factor : float, optional
+                Percentage of :math:`\omega` points which shall not be randomized. This is needed
+                to assure a working tail fit for the Fourier transformations. The default is 0.5,
+                meaning that 50% of the :math:`\omega` points will not be randomized.
+    seed : int, optional
+           Set a np.random.seed to enforce predictable results.
+
+    Returns
+    -------
+    delta : Gf,
+            An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
+            an iterative solver, given as a Gf with MeshProduct with the components
+            (MeshImFreq, MeshBrillouinZone).
+    """
+
+    np.random.seed(seed)
+
+    delta = g_wk.copy()
+    shape = delta.data.shape
+    delta.data[:] = delta.data.real # Pure real delta is sufficient w/o magnetic field
+    random_data = np.random.random(shape[1:])
+    freq_data = np.mean(np.abs(delta.data), axis=tuple(range(len(shape))[1:]))
+    not_randomized = int(nr_factor*shape[0] / 2.)
+    start, stop = not_randomized, shape[0]-not_randomized
+    freq_data[start:stop] *= np.random.random(stop-start)
+
+    delta.data[:] = np.tensordot(freq_data, random_data, axes=0)
+
+    return delta
+
+def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
     """Find the eigenvalue with the largest real value via the Implicitly Restarted 
     Arnoldi Method
 
@@ -285,7 +325,6 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
     return list(Es), list(U.T)
 
 def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
-
     """Find the eigenvalue with the largest real value via the power method
 
     Parameters
