@@ -21,6 +21,8 @@
 #
 ################################################################################
 
+import itertools
+
 import numpy as np
 
 from pytriqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
@@ -201,3 +203,25 @@ def create_square_lattice(norb, t, tp=0.0, zeeman=0.0, spin=False, **kwargs):
     square_lattice = TBLattice(units, hopping, orbital_positions)
 
     return square_lattice
+
+# ----------------------------------------------------------------------
+def create_model_for_tests(norb, dim, t=0, t1=0, t2=0, t12=0, t21=0, **kwargs):
+    full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+    units = full_units[:dim]
+
+    if norb == 1:
+        t_matrix = -t * np.eye(norb)
+    elif norb == 2:
+        t_matrix = -np.array([[t1, t12], [t21, t2]])
+    else:
+        raise NotImplementedError
+
+    all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=dim)) 
+    non_diagonal_hoppings = [hopping for hopping in all_nn_hoppings if sum(np.abs(hopping)) == 1] 
+    hoppings = {hopping : t_matrix for hopping in non_diagonal_hoppings}
+
+    orbital_positions = [(0, 0, 0)] * norb
+
+    model_for_tests = TBLattice(units, hoppings, orbital_positions)
+
+    return model_for_tests

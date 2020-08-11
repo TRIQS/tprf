@@ -21,7 +21,7 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from triqs_tprf.eliashberg import semi_random_initial_delta, preprocess_gamma_for_fft
 
-from triqs_tprf.tight_binding import create_square_lattice
+from triqs_tprf.tight_binding import create_model_for_tests
 from triqs_tprf.ParameterCollection import ParameterCollection
 
 # ----------------------------------------------------------------------
@@ -29,6 +29,7 @@ from triqs_tprf.ParameterCollection import ParameterCollection
 if __name__ == '__main__':
 
     p = ParameterCollection(
+                            dim = 2,
                             norb = 1,
                             t = 2.0,
                             mu = 0.0,
@@ -38,7 +39,7 @@ if __name__ == '__main__':
                             nw = 200,
                                 )
 
-    H = create_square_lattice(**p)
+    H = create_model_for_tests(**p)
     e_k = H.on_mesh_brillouin_zone(n_k=(p.nk, p.nk, 1))
 
     wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)

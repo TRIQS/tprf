@@ -18,7 +18,7 @@ import numpy as np
 from triqs_tprf.ParameterCollection import ParameterCollection
 from pytriqs.gf import Gf, MeshImFreq, Idx
 
-from triqs_tprf.tight_binding import TBLattice
+from triqs_tprf.tight_binding import create_model_for_tests
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
@@ -33,18 +33,7 @@ def run_solve_eliashberg(p):
 
     # -- Setup model, RPA susceptibilities and spin/charge interaction
 
-    full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
-    all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
-    non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
-
-    t = -p.t * np.eye(p.norbs)
-
-    H = TBLattice(
-                units = full_units[:p.dim],
-                hopping = {hop : t for hop in non_diagonal_hoppings},
-                orbital_positions = [(0,0,0)]*p.norbs,
-                )
-
+    H = create_model_for_tests(**p)
     e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
 
     # A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
@@ -58,7 +47,7 @@ def run_solve_eliashberg(p):
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
     chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(p.big_factor*p.nw)+1)
 
-    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norbs, p.U, p.Up, p.J,p.Jp)
+    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, p.Up, p.J,p.Jp)
 
     chi_s = solve_rpa_PH(chi0_wk, U_s)
     chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
@@ -88,7 +77,7 @@ if __name__ == '__main__':
 
     p = ParameterCollection(
             dim = 1,
-            norbs = 1,
+            norb = 1,
             t = 1.0,
             mu = 0.0,
             beta = 5,

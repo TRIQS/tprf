@@ -18,7 +18,9 @@ import numpy as np
 from pytriqs.gf import MeshImFreq
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-from triqs_tprf.tight_binding import TBLattice
+
+from triqs_tprf.tight_binding import create_model_for_tests
+
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
@@ -38,7 +40,7 @@ import triqs_tprf.version as version
 p = ParameterCollection(
         filename = 'eliashberg_benchmark_two_band_new.tar.gz',
         dim = 2,
-        norbs = 2,
+        norb = 2,
         t1 = 1.0,
         t2 = 0.5,
         t12 = 0.1,
@@ -52,20 +54,7 @@ p = ParameterCollection(
         )
 
 # -- Setup model, RPA susceptibilities and spin/charge interaction
-
-full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
-all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
-non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
-
-# -- Create hopping matrix for two-band model
-t = -np.array([[p.t1, p.t12], [p.t21, p.t2]])
-
-H = TBLattice(
-            units = full_units[:p.dim],
-            hopping = {hop : t for hop in non_diagonal_hoppings},
-            orbital_positions = [(0,0,0)]*p.norbs,
-            )
-
+H = create_model_for_tests(**p)
 e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
 
 wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
@@ -74,7 +63,7 @@ g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
 
 chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
 
-U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norbs, p.U, 0, 0, 0)
+U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, 0, 0, 0)
 
 chi_s = solve_rpa_PH(chi0_wk, U_s)
 chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
@@ -103,7 +92,7 @@ p_benchmark = read_TarGZ_HDFArchive(filename)['p']
 # -- Check if the benchmark data was calculated for the same model,
 # -- otherwise a comparison does not make sense.
 
-model_parameters = ['dim', 'norbs', 't1', 't2', 't12', 't21', 'mu', 'beta', 'U']
+model_parameters = ['dim', 'norb', 't1', 't2', 't12', 't21', 'mu', 'beta', 'U']
 
 for model_parameter in model_parameters:
     try:
