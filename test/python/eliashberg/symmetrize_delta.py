@@ -47,7 +47,7 @@ p = ParameterCollection(
         Up = 0.8,
         J = 0.1,
         Jp = 0.1,
-        nk = 4,
+        nk = 3,
         nw = 50,
         plot=False
         )

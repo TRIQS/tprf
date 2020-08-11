@@ -97,7 +97,7 @@ if __name__ == '__main__':
             J = 0.1,
             Jp = 0.1,
             nk = 4,
-            nw = 350,
+            nw = 200,
             fit_const = False,
             big_factor = 2,
             product = 'FFT',
