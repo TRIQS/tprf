@@ -1,7 +1,8 @@
 # ----------------------------------------------------------------------
 
-""" Compare the summation implementation of the linearized Eliashberg product
-and the one using Fourier transformations.
+""" Compare the output of the implemented eigenvalue solver:
+The Power Method and the Implicitly Restarted Arnoldi Method.
+
 """
 
 # ----------------------------------------------------------------------

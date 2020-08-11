@@ -1,4 +1,3 @@
-
 # ----------------------------------------------------------------------
 
 """ Test the symmetrizing feature of the solve_eliashberg function

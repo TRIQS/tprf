@@ -1,4 +1,3 @@
-
 # ----------------------------------------------------------------------
 
 """ Goes through the steps of solving the linearized Eliashberg equation for singlet pairing in

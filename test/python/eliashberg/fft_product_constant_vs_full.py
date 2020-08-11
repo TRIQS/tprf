@@ -2,9 +2,9 @@
 
 """ Compare the implementations of the eliashberg products that use FFT.
 
-One can only handle Gammas that are constant in frequecny space while the
-other can also treat dynamic Gammas.
-Here we test if bot implementations give the same result for a Gamma that
+The function `eliashberg_product_fft_constant` can only handle Gammas that are
+constant in frequecny space, while `eliashberg_product_fft` can treat dynamic Gammas.
+Here we test if both implementations give the same result for a Gamma that
 is constant in momentum space.
 This also tests the function 'split_into_dynamic_wk_and_constant_k', to
 see if the split is done correctly.
