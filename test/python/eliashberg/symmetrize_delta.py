@@ -13,17 +13,10 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq, Idx
+from pytriqs.gf import Idx
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-
-from triqs_tprf.tight_binding import create_model_for_tests
-
-from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
-from triqs_tprf.lattice import solve_rpa_PH
-from triqs_tprf.lattice import gamma_PP_singlet
+from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.eliashberg import solve_eliashberg
 
 # ----------------------------------------------------------------------
@@ -54,22 +47,10 @@ p = ParameterCollection(
         plot=False
         )
 
-# -- Setup model, RPA susceptibilities, spin/charge interaction and gamma
-H = create_model_for_tests(**p)
-e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
-
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-
-chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
-
-U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, p.Up,
-                                                                        p.J, p.Jp)
-
-chi_s = solve_rpa_PH(chi0_wk, U_s)
-chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
-
-gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
+# -- Setup non-interacing GF and particle-particle vertex 
+eliashberg_ingredients = create_eliashberg_ingredients(p)
+g0_wk = eliashberg_ingredients.g0_wk
+gamma = eliashberg_ingredients.gamma
 
 # -- Test symmetrizing function on eliashberg
 variables=["frequency", "momentum", "orbital"]

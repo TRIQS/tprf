@@ -16,14 +16,7 @@ import numpy as np
 from pytriqs.gf import MeshImFreq
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-
-from triqs_tprf.tight_binding import create_model_for_tests
-
-from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
-from triqs_tprf.lattice import solve_rpa_PH
-from triqs_tprf.lattice import gamma_PP_singlet
+from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.lattice import eliashberg_product
 from triqs_tprf.eliashberg import solve_eliashberg, allclose_by_scalar_multiplication
 
@@ -42,40 +35,28 @@ p = ParameterCollection(
         mu = 0.0,
         beta = 1,
         U = 1.0,
+        Up = 0.0,
+        J = 0.0,
+        Jp = 0.0,
         nk = 2,
         nw = 100,
         version_info = version.info,
         )
 
+eliashberg_ingredients = create_eliashberg_ingredients(p)
+g0_wk = eliashberg_ingredients.g0_wk
+gamma = eliashberg_ingredients.gamma
+U_c = eliashberg_ingredients.U_c
+U_s = eliashberg_ingredients.U_s
+
+## A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
+big_nw = 2*p.nw + 1
+eliashberg_ingredients_big = create_eliashberg_ingredients(p.alter(nw=big_nw))
+gamma_big = eliashberg_ingredients_big.gamma
+
 # -- Setup model, RPA susceptibilities and spin/charge interaction
 
-
-H = create_model_for_tests(**p)
-e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
-
-# A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
-big_factor = 2.0
-
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
-wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(big_factor*p.nw))
-
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
-
-chi0_wk = imtime_bubble_chi0_wk(g0_wk_big, nw=p.nw)
-chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(big_factor*p.nw)+1)
-
-U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, 0, 0, 0)
-
-chi_s = solve_rpa_PH(chi0_wk, U_s)
-chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
-chi_s_big = solve_rpa_PH(chi0_wk_big, U_s)
-chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equation
-
-# -- The output of the following three functions shall be tested
-
-gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
-gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
+# -- The output of the following functions shall be tested
 next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk) 
 E, eigen_modes = solve_eliashberg(gamma_big, g0_wk, product='SUM', solver='IRAM')
 

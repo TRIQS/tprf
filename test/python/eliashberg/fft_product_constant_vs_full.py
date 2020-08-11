@@ -17,11 +17,9 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from pytriqs.gf import Gf, MeshImFreq, MeshProduct
-from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from triqs_tprf.eliashberg import semi_random_initial_delta, preprocess_gamma_for_fft
-
-from triqs_tprf.tight_binding import create_model_for_tests
+from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.ParameterCollection import ParameterCollection
 
 # ----------------------------------------------------------------------
@@ -35,15 +33,15 @@ if __name__ == '__main__':
                             mu = 0.0,
                             beta = 5,
                             U = 1.0,
+                            Up = 0.0,
+                            J = 0.0,
+                            Jp = 0.0,
                             nk = 4,
                             nw = 200,
                                 )
 
-    H = create_model_for_tests(**p)
-    e_k = H.on_mesh_brillouin_zone(n_k=(p.nk, p.nk, 1))
-
-    wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
-    g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
+    eliashberg_ingredients = create_eliashberg_ingredients(p)
+    g0_wk = eliashberg_ingredients.g0_wk
         
     wmesh_boson = MeshImFreq(beta=p.beta, S='Boson', n_max=p.nw)
     gamma_pp_wk = Gf(mesh=MeshProduct(wmesh_boson, g0_wk.mesh[1]),

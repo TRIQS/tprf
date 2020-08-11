@@ -21,12 +21,8 @@ from triqs_tprf.ParameterCollection import ParameterCollection
 
 from triqs_tprf.tight_binding import create_model_for_tests
 
-from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
-from triqs_tprf.lattice import solve_rpa_PH
-from triqs_tprf.lattice import gamma_PP_singlet
 from triqs_tprf.lattice import eliashberg_product_fft
+from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.eliashberg import preprocess_gamma_for_fft, solve_eliashberg
 from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
@@ -48,30 +44,20 @@ p = ParameterCollection(
         mu = 0.0,
         beta = 1,
         U = 1.0,
+        Up = 0.0,
+        J = 0.0,
+        Jp = 0.0,
         nk = 2,
         nw = 100,
         version_info = version.info,
         )
 
-# -- Setup model, RPA susceptibilities and spin/charge interaction
-H = create_model_for_tests(**p)
-e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
+eliashberg_ingredients = create_eliashberg_ingredients(p)
+g0_wk = eliashberg_ingredients.g0_wk
+gamma = eliashberg_ingredients.gamma
 
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
-
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-
-chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
-
-U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, 0, 0, 0)
-
-chi_s = solve_rpa_PH(chi0_wk, U_s)
-chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
-
-# -- The output of the following three functions shall be tested
-
-gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
-Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma) # This one is not tested
+Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma)
+# -- The output of the following functions shall be tested
 next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
 E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
 

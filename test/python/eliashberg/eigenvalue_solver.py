@@ -17,45 +17,23 @@ import numpy as np
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from pytriqs.gf import Gf, MeshImFreq, Idx
-
-from triqs_tprf.tight_binding import create_model_for_tests
-
-from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH
-from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
-from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
-from triqs_tprf.lattice import gamma_PP_singlet
+from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.eliashberg import solve_eliashberg, semi_random_initial_delta
 from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
 def run_solve_eliashberg(p):
+    eliashberg_ingredients = create_eliashberg_ingredients(p)
+    g0_wk = eliashberg_ingredients.g0_wk
+    gamma = eliashberg_ingredients.gamma
+    U_c = eliashberg_ingredients.U_c
+    U_s = eliashberg_ingredients.U_s
 
-    # -- Setup model, RPA susceptibilities and spin/charge interaction
-
-    H = create_model_for_tests(**p)
-    e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
-
-    # A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
-
-    wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
-    wmesh_big = MeshImFreq(beta=p.beta, S='Fermion', n_max=int(p.big_factor*p.nw)+1)
-
-    g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-    g0_wk_big = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh_big)
-
-    chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
-    chi0_wk_big = imtime_bubble_chi0_wk(g0_wk_big, nw=int(p.big_factor*p.nw)+1)
-
-    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(p.norb, p.U, p.Up, p.J,p.Jp)
-
-    chi_s = solve_rpa_PH(chi0_wk, U_s)
-    chi_c = solve_rpa_PH(chi0_wk, -U_c) # Minus for correct charge rpa equation
-    chi_s_big = solve_rpa_PH(chi0_wk_big, U_s)
-    chi_c_big = solve_rpa_PH(chi0_wk_big, -U_c) # Minus for correct charge rpa equation
-
-    gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
-    gamma_big = gamma_PP_singlet(chi_c_big, chi_s_big, U_c, U_s)
+    ## A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
+    big_nw = 2*p.nw + 1
+    eliashberg_ingredients_big = create_eliashberg_ingredients(p.alter(nw=big_nw))
+    gamma_big = eliashberg_ingredients_big.gamma
 
     if p.product == 'SUM':
         gamma = gamma_big
