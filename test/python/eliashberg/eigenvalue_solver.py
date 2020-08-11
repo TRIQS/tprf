@@ -27,25 +27,10 @@ def run_solve_eliashberg(p):
     eliashberg_ingredients = create_eliashberg_ingredients(p)
     g0_wk = eliashberg_ingredients.g0_wk
     gamma = eliashberg_ingredients.gamma
-    U_c = eliashberg_ingredients.U_c
-    U_s = eliashberg_ingredients.U_s
-
-    ## A bigger w-mesh is needed to construct a Gamma with a twice as big w-mesh than GF
-    big_nw = 2*p.nw + 1
-    eliashberg_ingredients_big = create_eliashberg_ingredients(p.alter(nw=big_nw))
-    gamma_big = eliashberg_ingredients_big.gamma
-
-    if p.product == 'SUM':
-        gamma = gamma_big
-
-    if p.fit_const:
-        gamma_const = None
-    else:
-        gamma_const = 0.5*(U_s + U_c)
 
     initial_delta = semi_random_initial_delta(g0_wk, seed=1337)
-    Es, eigen_modes = solve_eliashberg(gamma, g0_wk, Gamma_pp_const_k=gamma_const, 
-                                        product=p.product, solver=p.solver, initial_delta=initial_delta)
+    Es, eigen_modes = solve_eliashberg(gamma, g0_wk, 
+                                        product="FFT", solver=p.solver, initial_delta=initial_delta)
     
     return Es, eigen_modes
 
@@ -65,9 +50,6 @@ if __name__ == '__main__':
             Jp = 0.1,
             nk = 4,
             nw = 200,
-            fit_const = False,
-            big_factor = 2,
-            product = 'FFT',
             solver = 'PM',
             )
 
