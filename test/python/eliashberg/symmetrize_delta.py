@@ -10,6 +10,7 @@ import functools
 # ----------------------------------------------------------------------
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------
 
@@ -21,78 +22,74 @@ from triqs_tprf.eliashberg import solve_eliashberg
 
 # ----------------------------------------------------------------------
 
-import matplotlib.pyplot as plt
-
-# ----------------------------------------------------------------------
-
 from triqs_tprf.symmetries import enforce_symmetry, check_symmetry
 
 # ----------------------------------------------------------------------
 
-p = ParameterCollection(
-        dim = 2,
-        norb = 2,
-        t1 = 1.0,
-        t2 = 0.5,
-        t12 = 0.1,
-        t21 = 0.1,
-        mu = 0.1,
-        beta = 1,
-        U = 1.0,
-        Up = 0.8,
-        J = 0.1,
-        Jp = 0.1,
-        nk = 3,
-        nw = 50,
-        plot=False
-        )
+def test_symmetry_of_symmetry_enforced_deltas(g0_wk, gamma):
+    variables = ["frequency", "momentum", "orbital"]
+    all_symmetries = list(itertools.product(["even", "odd"], repeat=3))
 
-# -- Setup non-interacing GF and particle-particle vertex 
-eliashberg_ingredients = create_eliashberg_ingredients(p)
-g0_wk = eliashberg_ingredients.g0_wk
-gamma = eliashberg_ingredients.gamma
+    for symmetries in all_symmetries:
+        symmetrize_fct = functools.partial(enforce_symmetry, 
+                                       variables=variables,
+                                       symmetries=symmetries)
 
-# -- Test symmetrizing function on eliashberg
-variables=["frequency", "momentum", "orbital"]
+        E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM',
+                                            symmetrize_fct=symmetrize_fct)
 
-# Use all combinations
-symmetry_set = list(itertools.product(["even", "odd"], repeat=3))
+        translate_symmetries = {"even" : +1, "odd" : -1, None : None}
+        expected_symmetries = {variable : translate_symmetries[symmetry] \
+                        for (variable, symmetry) in zip(variables, symmetries)}
 
-translate_symmetries = {"even" : +1, "odd" : -1, None : None}
+        for delta in eigen_modes:
+            produced_symmetries = check_symmetry(delta)
+            if not expected_symmetries == produced_symmetries:
+                raise AssertionError("Incorrect symmetries were produced.")
 
-for symmetries in symmetry_set:
-    symmetrize = functools.partial(enforce_symmetry, 
-                                   variables=variables,
-                                   symmetries=symmetries)
+            #plot_delta(delta)
 
-    E, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM',
-                                        symmetrize_fct=symmetrize)
+def plot_delta(delta):
+    fig, axes = plt.subplots(3, 3)
 
-    expected_symmetries = {variable : translate_symmetries[symmetry] \
-                    for (variable, symmetry) in zip(variables, symmetries)}
+    vmax = np.max(np.abs(delta[Idx(0),:].data))
 
-    for delta in eigen_modes:
-        produced_symmetries = check_symmetry(delta)
-        if not expected_symmetries == produced_symmetries:
-            raise AssertionError("Incorrect symmetries were produced.")
+    for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
+        shape = (p.nk, p.nk, p.norb, p.norb)
+        data = delta[Idx(0), :].data.reshape(shape)
+        plt.sca(axes[orb1,orb2])
+        plt.imshow(data[:,:,orb1,orb2].real, cmap="RdBu_r",
+                                                 vmax=vmax, vmin=-vmax)
+        plt.colorbar()
 
-        if p.plot:
-            fig, axes = plt.subplots(3, 3)
+    plt.sca(axes[-1,-1])
+    for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
+        plt.plot(delta.data[:, 1, orb1, orb2].real)
+        plt.plot(delta.data[:, 1, orb1, orb2].imag)
 
-            vmax = np.max(np.abs(delta[Idx(0),:].data))
+    plt.show()
 
-            for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
-                shape = (p.nk, p.nk, p.norb, p.norb)
-                data = delta[Idx(0), :].data.reshape(shape)
-                plt.sca(axes[orb1,orb2])
-                plt.imshow(data[:,:,orb1,orb2].real, cmap="RdBu_r",
-                                                         vmax=vmax, vmin=-vmax)
-                plt.colorbar()
+if __name__ == "__main__":
+    p = ParameterCollection(
+            dim = 2,
+            norb = 2,
+            t1 = 1.0,
+            t2 = 0.5,
+            t12 = 0.1,
+            t21 = 0.1,
+            mu = 0.1,
+            beta = 1,
+            U = 1.0,
+            Up = 0.8,
+            J = 0.1,
+            Jp = 0.1,
+            nk = 3,
+            nw = 50,
+            plot=False
+            )
 
-            plt.sca(axes[-1,-1])
-            for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
-                plt.plot(delta.data[:, 10, orb1, orb2].real)
-                plt.plot(delta.data[:, 10, orb1, orb2].imag)
+    eliashberg_ingredients = create_eliashberg_ingredients(p)
+    g0_wk = eliashberg_ingredients.g0_wk
+    gamma = eliashberg_ingredients.gamma
 
-            plt.show()
-
+    test_symmetry_of_symmetry_enforced_deltas(g0_wk, gamma)

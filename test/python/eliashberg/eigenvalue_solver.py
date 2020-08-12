@@ -23,17 +23,17 @@ from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
-def run_solve_eliashberg(p):
-    eliashberg_ingredients = create_eliashberg_ingredients(p)
-    g0_wk = eliashberg_ingredients.g0_wk
-    gamma = eliashberg_ingredients.gamma
-
+def test_equality_of_eigenvalue_solvers(g0_wk, gamma):
     initial_delta = semi_random_initial_delta(g0_wk, seed=1337)
-    Es, eigen_modes = solve_eliashberg(gamma, g0_wk, 
-                                        product="FFT", solver=p.solver, initial_delta=initial_delta)
-    
-    return Es, eigen_modes
 
+    Es_PM, eigen_modes_PM = solve_eliashberg(gamma, g0_wk, product="FFT", solver="PM", initial_delta=initial_delta)
+    Es_IRAM, eigen_modes_IRAM = solve_eliashberg(gamma, g0_wk, product="FFT", solver="IRAM", initial_delta=initial_delta)
+
+    np.testing.assert_allclose(Es_PM[0], Es_IRAM[0])
+    assert allclose_by_scalar_multiplication(eigen_modes_PM[0], eigen_modes_IRAM[0]),\
+            "Eigenvectors are not the same."
+
+    print('Both solvers yield the same results.')
 #================================================================================ 
 
 if __name__ == '__main__':
@@ -52,15 +52,8 @@ if __name__ == '__main__':
             nw = 200,
             solver = 'PM',
             )
+    eliashberg_ingredients = create_eliashberg_ingredients(p)
+    g0_wk = eliashberg_ingredients.g0_wk
+    gamma = eliashberg_ingredients.gamma
 
-    Es_pm, eigen_modes_pm = run_solve_eliashberg(p)
-
-    Es_iram, eigen_modes_iram = run_solve_eliashberg(p.alter(solver='IRAM'))
-
-    print(Es_pm[0], Es_iram[0])
-    np.testing.assert_allclose(Es_pm[0], Es_iram[0])
-
-    assert allclose_by_scalar_multiplication(eigen_modes_pm[0], eigen_modes_iram[0]),\
-            "Eigenvectors are not the same."
-
-    print('Both solvers yield the same results.')
+    test_equality_of_eigenvalue_solvers(g0_wk, gamma)

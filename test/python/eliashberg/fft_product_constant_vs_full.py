@@ -24,6 +24,21 @@ from triqs_tprf.ParameterCollection import ParameterCollection
 
 # ----------------------------------------------------------------------
 
+def test_eliashberg_product_fft_constant(g0_wk, gamma):
+    gamma.data[:] = np.random.rand(*gamma.data.shape[1:])
+    gamma_dyn_tr, gamma_const_r = preprocess_gamma_for_fft(gamma)
+
+    initial_delta = semi_random_initial_delta(g0_wk)
+
+    delta_1 = eliashberg_product_fft_constant(gamma_const_r, g0_wk, initial_delta)
+    delta_2 = eliashberg_product_fft(gamma_dyn_tr, gamma_const_r, g0_wk, initial_delta)
+
+    np.testing.assert_allclose(delta_1.data, delta_2.data)
+
+    print('The functions eliashberg_product_fft and eliashberg_product_fft_constant'
+          ' yield the same result for a Gamma that is only constant in momentum space.'
+          '\nThe function split_into_dynamic_wk_and_constant_k therefore also worked correcty.')
+
 if __name__ == '__main__':
 
     p = ParameterCollection(
@@ -39,23 +54,8 @@ if __name__ == '__main__':
                             nk = 4,
                             nw = 200,
                                 )
-
     eliashberg_ingredients = create_eliashberg_ingredients(p)
     g0_wk = eliashberg_ingredients.g0_wk
-        
-    wmesh_boson = MeshImFreq(beta=p.beta, S='Boson', n_max=p.nw)
-    gamma_pp_wk = Gf(mesh=MeshProduct(wmesh_boson, g0_wk.mesh[1]),
-                  target_shape=g0_wk.target_shape*2)
-    gamma_pp_wk.data[:] = np.random.rand(p.nk**2, 1, 1, 1, 1) 
-    gamma_pp_dyn_tr, gamma_pp_const_r = preprocess_gamma_for_fft(gamma_pp_wk)
+    gamma = eliashberg_ingredients.gamma
 
-    initial_delta = semi_random_initial_delta(g0_wk)
-
-    delta_1 = eliashberg_product_fft_constant(gamma_pp_const_r, g0_wk, initial_delta)
-    delta_2 = eliashberg_product_fft(gamma_pp_dyn_tr, gamma_pp_const_r, g0_wk, initial_delta)
-
-    np.testing.assert_allclose(delta_1.data, delta_2.data)
-
-    print('The functions eliashberg_product_fft and eliashberg_product_fft_constant'
-          ' yield the same result for a Gamma that is only constant in momentum space.'
-          '\nThe function split_into_dynamic_wk_and_constant_k therefore also worked correcty.')
+    test_eliashberg_product_fft_constant(g0_wk, gamma)

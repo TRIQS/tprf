@@ -197,5 +197,16 @@ def create_eliashberg_ingredients(p):
                                 gamma = gamma,
                                 U_s = U_s,
                                 U_c = U_c,
+                                chi_s = chi_s,
+                                chi_c = chi_c,
                                 )
     return eliashberg_ingredients
+
+# ----------------------------------------------------------------------
+def assert_parameter_collection_not_equal_model_parameters(p1, p2, model_parameters):
+    for model_parameter in model_parameters:
+        value1, value2 = p1[model_parameter], p2[model_parameter]
+        if value1 != value2:
+            error = 'The model of the benchmark and the one used now are not the same.\n' 
+            error += '\t\tNow: {0} = {1}, benchmark: {0} = {2}.'.format(model_parameter, value1, value2)
+            raise AssertionError, error
