@@ -3,6 +3,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_tgz_files} DESTINATION ${CMAKE_CURRE
 
 set(PREFIX eliashberg-)
 
+add_python_test(preprocessing_gamma ${PREFIX})
 add_python_test(product_summation_vs_fft ${PREFIX})
 add_python_test(eigenvalue_solver ${PREFIX})
 add_python_test(previous_implementation ${PREFIX})
