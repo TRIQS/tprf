@@ -571,6 +571,8 @@ Returns
 out
      :math:`\Gamma^{(\mathrm{triplet})}_{a\bar{b}c\bar{d}}(\mathbf{k}, i\omega_n)`""")
 
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_spin_charge (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>,4> U_c, array_view<std::complex<double>,4> U_s, double charge_factor, double spin_factor)", doc = r"""""")
+
 module.add_function ("array<std::complex<double>,6> triqs_tprf::cluster_mesh_fourier_interpolation (array<double,2> k_vecs, triqs_tprf::chi_wr_cvt chi)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_tr_cvt g_tr)", doc = r"""Generalized susceptibility imaginary time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
