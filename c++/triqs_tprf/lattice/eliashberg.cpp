@@ -104,9 +104,9 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
     for (const auto [n, q] : delta_wk.mesh())
       for (auto [A, a, B, b] : Gamma_pp.target_indices())
         delta_wk_out[w, k](a, b) +=
-            Gamma_pp(w-n, k - q)(A, a, B, b) * F_wk[n, q](A, B);
+            -0.5 * Gamma_pp(w-n, k - q)(A, a, B, b) * F_wk[n, q](A, B);
 
-  delta_wk_out /= -(wmesh.domain().beta * kmesh.size());
+  delta_wk_out /= (wmesh.domain().beta * kmesh.size());
   
   return delta_wk_out;
 }
@@ -181,7 +181,7 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
   for (const auto r : std::get<1>(F_tr.mesh())) {
     auto F_t = F_tr[_, r];
     for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
+        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
   }
 
   return delta_r_out;
@@ -223,7 +223,7 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
     
     for (const auto t : tmesh) {
       for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_t[t](a, b) += -Gamma_pp_dyn_t[t](A, a, B, b) * F_t[t](A, B);
+        delta_t[t](a, b) += -0.5 * Gamma_pp_dyn_t[t](A, a, B, b) * F_t[t](A, B);
     }
     delta_tr_out[_, r] = delta_t;
   }
@@ -352,14 +352,14 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
 chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
         array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s) {
 
-  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -0.5, 1.5);
+  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, 3);
   return Gamma_pp_wk;
 }
 
 chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
         array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s) {
 
-  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -0.5, -0.5);
+  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, -1);
   return Gamma_pp_wk;
 }
 

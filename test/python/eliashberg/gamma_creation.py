@@ -27,7 +27,7 @@ def test_gamma_PP_singlet_mesh_type(chi_c, chi_s, U_c, U_s):
     assert type(gamma_singlet.mesh[1]) == MeshBrillouinZone 
 
 def test_gamma_PP_singlet_value(chi_c, chi_s, U_c, U_s):
-    gamma = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -0.5, 1.5)
+    gamma = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, 3)
     gamma_singlet = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
     np.testing.assert_equal(gamma.data, gamma_singlet.data)
 
@@ -38,7 +38,7 @@ def test_gamma_PP_triplet_mesh_type(chi_c, chi_s, U_c, U_s):
     assert type(gamma_triplet.mesh[1]) == MeshBrillouinZone 
 
 def test_gamma_PP_triplet_value(chi_c, chi_s, U_c, U_s):
-    gamma = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -0.5, -0.5)
+    gamma = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, -1)
     gamma_triplet = gamma_PP_triplet(chi_c, chi_s, U_c, U_s)
     np.testing.assert_equal(gamma.data, gamma_triplet.data)
 
