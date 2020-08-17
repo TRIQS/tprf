@@ -52,10 +52,6 @@ Linearized Eliashberg equation
 .. autofunction:: triqs_tprf.eliashberg.power_method_LR
 .. autofunction:: triqs_tprf.eliashberg.implicitly_restarted_arnoldi_method
 .. autofunction:: triqs_tprf.eliashberg.preprocess_gamma_for_fft
-.. autofunction:: triqs_tprf.eliashberg.eliashberg_product
-.. autofunction:: triqs_tprf.eliashberg.eliashberg_product_fft
-.. autofunction:: triqs_tprf.eliashberg.gamma_PP_singlet
-.. autofunction:: triqs_tprf.eliashberg.gamma_PP_triplet
 
 Hubbard atom analytic response functions
 ========================================
