@@ -291,7 +291,7 @@ def parameter_scan(p, **kwargs):
     """
     parameter_values = []
 
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         parameter_values.append(zip([key]*len(value), value))
     
     ps = []

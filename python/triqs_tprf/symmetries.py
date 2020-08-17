@@ -31,7 +31,7 @@ def enforce_symmetry(gf, variables, symmetries):
                                "orbital" : _symmetrize_orbital,}
 
     for variable in variables:
-        if variable not in variable_symmetrize_fct.keys():
+        if variable not in list(variable_symmetrize_fct.keys()):
             raise ValueError("No symmetrize function for this variable exists.") 
 
     for symmetry in symmetries:
@@ -68,7 +68,7 @@ def check_symmetry(gf, atol=1e-08):
                                "orbital" : _check_orbital_symmetry,}
     
     variable_symmetry = {}
-    for variable, check_symmetry_fct in variable_check_symmetry.items():
+    for variable, check_symmetry_fct in list(variable_check_symmetry.items()):
         variable_symmetry[variable] = check_symmetry_fct(gf, atol)
 
     return variable_symmetry
@@ -109,7 +109,7 @@ def _split_frequency(gf):
     if not gf.mesh[0].statistic == 'Fermion':
         raise ValueError("The Green's function must be a fermionic one")
 
-    nw_half = gf.data.shape[0]/2
+    nw_half = gf.data.shape[0]//2
 
     negative_half = gf.data[:nw_half]
     positive_half = gf.data[nw_half:]

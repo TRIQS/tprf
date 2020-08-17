@@ -7,13 +7,13 @@ and the one using Fourier transformations.
 # ----------------------------------------------------------------------
 
 import numpy as np
-from pytriqs.plot.mpl_interface import oplot, plt
+from triqs.plot.mpl_interface import oplot, plt
 import warnings 
 
 # ----------------------------------------------------------------------
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-from pytriqs.gf import Idx
+from triqs.gf import Idx
 from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.lattice import eliashberg_product, eliashberg_product_fft
 from triqs_tprf.eliashberg import semi_random_initial_delta, preprocess_gamma_for_fft

@@ -15,7 +15,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import MeshImFreq
+from triqs.gf import MeshImFreq
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 
@@ -51,7 +51,7 @@ def save_new_benchmarks(filename, p):
 def test_next_delta(g0_wk, gamma, expected_next_delta):
     Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma)
     next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
-    np.testing.assert_allclose(next_delta.data, expected_next_delta.data)
+    np.testing.assert_allclose(next_delta.data, expected_next_delta.data, atol=10e-12)
 
 def test_solve_eliashberg(g0_wk, gamma, expected_E, expected_eigen_mode):
     Es, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
@@ -93,5 +93,5 @@ if __name__ == "__main__":
     test_next_delta(g0_wk, gamma, p_benchmark.next_delta)
     test_solve_eliashberg(g0_wk, gamma, p_benchmark.E, p_benchmark.eigen_mode)
 
-    print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info))
-    print('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info))
+    print(('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info)))
+    print(('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info)))

@@ -4,7 +4,7 @@ import types
 import numpy as np
 
 import matplotlib as mpl
-from pytriqs.plot.mpl_interface import plt
+from triqs.plot.mpl_interface import plt
 
 from triqs_tprf.lattice_utils import k_space_path
 
@@ -20,9 +20,9 @@ def bsplot(obj, path, *opt_list, **opt_dict):
         
 def __bsplot_impl(top, obj, path, *opt_list, **opt_dict):
 
-    hs_labels, hs_k = zip(*path)
+    hs_labels, hs_k = list(zip(*path))
 
-    k_paths = zip(hs_k, hs_k[1:])
+    k_paths = list(zip(hs_k, hs_k[1:]))
     k_vecs, k_plot, K_plot = k_space_path(k_paths, bz=obj.mesh.domain)
     kx, ky, kz = k_vecs.T
 

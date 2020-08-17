@@ -29,10 +29,10 @@ from scipy.sparse.linalg import eigs
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf
-from lattice import eliashberg_product
-from lattice import eliashberg_product_fft, eliashberg_product_fft_constant
-from lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
+from triqs.gf import Gf
+from .lattice import eliashberg_product
+from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
+from .lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
 
 # ----------------------------------------------------------------------
 

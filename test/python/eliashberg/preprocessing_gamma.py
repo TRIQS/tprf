@@ -1,6 +1,6 @@
 import numpy as np
 
-from pytriqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone, MeshImTime, MeshCyclicLattice
+from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone, MeshImTime, MeshCyclicLattice
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients

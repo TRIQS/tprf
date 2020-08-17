@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Idx
+from triqs.gf import Idx
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients
@@ -54,7 +54,7 @@ def plot_delta(delta):
 
     vmax = np.max(np.abs(delta[Idx(0),:].data))
 
-    for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
+    for orb1, orb2 in itertools.product(list(range(p.norb)), repeat=2):
         shape = (p.nk, p.nk, p.norb, p.norb)
         data = delta[Idx(0), :].data.reshape(shape)
         plt.sca(axes[orb1,orb2])
@@ -63,7 +63,7 @@ def plot_delta(delta):
         plt.colorbar()
 
     plt.sca(axes[-1,-1])
-    for orb1, orb2 in itertools.product(range(p.norb), repeat=2):
+    for orb1, orb2 in itertools.product(list(range(p.norb)), repeat=2):
         plt.plot(delta.data[:, 1, orb1, orb2].real)
         plt.plot(delta.data[:, 1, orb1, orb2].imag)
 

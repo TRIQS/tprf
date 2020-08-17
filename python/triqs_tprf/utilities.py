@@ -29,7 +29,7 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 
-from triqs.archive import HDFArchive
+from h5 import HDFArchive
 
 from triqs.gf import Gf, MeshImFreq, MeshProduct, BlockGf
 from triqs.gf.tools import fit_legendre
@@ -84,7 +84,7 @@ def read_TarGZ_HDFArchive(filename):
 # ----------------------------------------------------------------------
 def BlockGf_data(G):
     """ Returns a ndarray copy of all data in a BlockGf """
-    shape = [G.n_blocks] + list(G[G.indices.next()].data.shape)
+    shape = [G.n_blocks] + list(G[next(G.indices)].data.shape)
     data = np.zeros(shape, dtype=np.complex)
     for bidx, (b, g) in enumerate(G):
         data[bidx] = g.data.copy()
@@ -209,4 +209,4 @@ def assert_parameter_collection_not_equal_model_parameters(p1, p2, model_paramet
         if value1 != value2:
             error = 'The model of the benchmark and the one used now are not the same.\n' 
             error += '\t\tNow: {0} = {1}, benchmark: {0} = {2}.'.format(model_parameter, value1, value2)
-            raise AssertionError, error
+            raise AssertionError(error)

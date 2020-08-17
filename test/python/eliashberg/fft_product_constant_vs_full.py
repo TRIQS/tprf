@@ -16,7 +16,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf, MeshImFreq, MeshProduct
+from triqs.gf import Gf, MeshImFreq, MeshProduct
 from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from triqs_tprf.eliashberg import semi_random_initial_delta, preprocess_gamma_for_fft
 from triqs_tprf.utilities import create_eliashberg_ingredients

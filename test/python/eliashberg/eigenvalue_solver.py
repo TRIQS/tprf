@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from triqs_tprf.ParameterCollection import ParameterCollection
-from pytriqs.gf import Gf, MeshImFreq, Idx
+from triqs.gf import Gf, MeshImFreq, Idx
 from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.eliashberg import solve_eliashberg, semi_random_initial_delta
 from triqs_tprf.eliashberg import allclose_by_scalar_multiplication

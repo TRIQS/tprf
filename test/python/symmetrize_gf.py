@@ -13,8 +13,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct
-from pytriqs.lattice import BrillouinZone, BravaisLattice
+from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct
+from triqs.lattice import BrillouinZone, BravaisLattice
 from triqs_tprf.ParameterCollection import *
 
 # ----------------------------------------------------------------------

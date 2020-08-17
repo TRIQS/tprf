@@ -2,7 +2,7 @@ import numpy as np
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients
-from pytriqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone
+from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone
 
 from triqs_tprf.lattice import gamma_PP_spin_charge, gamma_PP_singlet, gamma_PP_triplet
 
