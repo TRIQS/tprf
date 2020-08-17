@@ -23,6 +23,7 @@ from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
 from triqs_tprf.rpa_tensor import split_quartic_tensor_in_charge_and_spin
 from triqs_tprf.rpa_tensor import quartic_tensor_from_charge_and_spin
+from triqs_tprf.rpa_tensor import kanamori_quartic_tensor
 
 # ----------------------------------------------------------------------    
 def print_tensors(T1, T2):
@@ -60,7 +61,9 @@ if __name__ == '__main__':
     U_c_ref, U_s_ref = kanamori_charge_and_spin_quartic_interaction_tensors(
         norb, U, U - 2*J, J, J)
 
+    U_abcd_ref_2 = kanamori_quartic_tensor(norb, U, U - 2*J, J, J)
+
     np.testing.assert_array_almost_equal(U_abcd, U_abcd_ref)
     np.testing.assert_array_almost_equal(U_c, U_c_ref)
     np.testing.assert_array_almost_equal(U_s, U_s_ref)
-    
+    np.testing.assert_array_almost_equal(U_abcd, U_abcd_ref_2)

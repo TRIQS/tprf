@@ -13,7 +13,8 @@ Tutorials
    user_guide/Bethe-Salpeter Equation on the Hubbard atom.ipynb
    user_guide/Lattice BSE on Hubbard atom.ipynb
    user_guide/dmft_susceptibility/dmft_susceptibility
-   
+   user_guide/Linearized Eliashberg equation on the attractive Hubbard model.ipynb
+           
 Python reference manual
 -----------------------
 

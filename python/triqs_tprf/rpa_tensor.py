@@ -191,6 +191,44 @@ def quartic_tensor_from_charge_and_spin(U_c, U_s):
     return U_4
 
 # ----------------------------------------------------------------------    
+def kanamori_quartic_tensor(norb, U, Up, J, Jp):
+    r"""Return Kanamori interaction as a quartic tensor
+
+    .. math::
+
+        \hat{U}_{\text { Kanamori }} = U \sum_{i} \hat{n}_{i, \uparrow} \hat{n}_{i, \downarrow}+
+        \sum_{i>j, s, s^{\prime}}\left(U^{\prime}-J \delta_{\sigma, \sigma^{\prime}}\right)
+        \hat{n}_{i, \sigma} \hat{n}_{j, \sigma^{\prime}} - 
+        \\ J \sum_{i \neq j}\left(\hat{c}_{i, \downarrow}^{\dagger} \hat{c}_{j, \uparrow}^{\dagger}
+        \hat{c}_{j, \downarrow} \hat{c}_{i, \uparrow}+\hat{c}_{j, \uparrow}^{\dagger}
+        \hat{c}_{j, \downarrow}^{\dagger} \hat{c}_{i, \uparrow} \hat{c}_{i, \downarrow}+
+        \mathrm{h.c.}\right)
+
+    Parameters
+    ----------
+    norb : int,
+           Number of orbitals excluding spin.
+    U : complex,
+        Strength of intra-orbital interaction.
+    Up : complex,
+         Strength of inter-orbital interaction.
+    J : complex, 
+        Strength of Hound's coupling.
+    Jp : complex,
+         Strength pair hopping and spin-flip.
+
+    Returns
+    -------
+    U : np.ndarray,
+        shape = (2*norb, 2*norb, 2*norb, 2*norb)
+    """
+
+    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp)
+    U = quartic_tensor_from_charge_and_spin(U_c, U_s)
+
+    return U
+
+# ----------------------------------------------------------------------    
 def lose_spin_degree_of_freedom(gf, spin_fast=True):
     """Only keep the up spin elements of a Greens function
 
@@ -257,16 +295,24 @@ def general_susceptibility_from_charge_and_spin(chi_c, chi_s, spin_fast=True):
     return chi_general
 
 # ----------------------------------------------------------------------    
-def charge_and_spin_susceptibility_from_general(chi, spin_fast=True):
-    """Construct a chi spin and charge from a general susceptibility
+def charge_and_spin_susceptibility_from_general(chi, spin_fast=True, check_spin_conservation=True):
+    r"""Construct a chi spin and charge from a generalized susceptibility
 
-    Parameters:
+    Should only be used for a :math:`SU(2)` susceptibility.
 
-    chi: Greens function, the general susceptibility
-    spin_fast: bool, True if spin is the fast index, e.g.
-                        xz up, xz down, xy up, xy down, yz up, yz down,
-                    or False if spin is the slow index, e.g.
-                        xz up, xy up, yz up, xz down, xy down, yz down.
+    Parameters
+    ----------
+    chi : Gf,
+          Generalized susceptibility :math:`\chi_{a,b,c,d}` where :math:`a,b,c,d` are
+          combined indices of spin and orbital.
+    spin_fast : bool, optional
+                True if spin is the fast index, e.g.
+                xz up, xz down, xy up, xy down, yz up, yz down.
+                False if spin is the slow index, e.g.
+                xz up, xy up, yz up, xz down, xy down, yz down.
+    check_spin_conservation : bool, optional
+                              True if the susceptibility should be checked for spin
+                              conservation, False otherwise.           
     """
 
     norb = chi.target_shape[-1] // 2
@@ -283,20 +329,19 @@ def charge_and_spin_susceptibility_from_general(chi, spin_fast=True):
         up = slice(norb)
         down = slice(norb, None)
 
-    # -- Check spin-conservation
+    if check_spin_conservation:
+        np.testing.assert_allclose(chi[(up, up, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(up, up, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, up, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, up, up)].data, 0)
 
-    np.testing.assert_allclose(chi[(up, up, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(up, up, down, up)].data, 0)
-    np.testing.assert_allclose(chi[(up, down, up, up)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, up, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, down, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(down, down, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, down, down)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, down, down)].data, 0)
 
-    np.testing.assert_allclose(chi[(down, down, down, up)].data, 0)
-    np.testing.assert_allclose(chi[(down, down, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, down, down)].data, 0)
-    np.testing.assert_allclose(chi[(up, down, down, down)].data, 0)
-
-    np.testing.assert_allclose(chi[(up, down, up, down)].data, 0)
-    np.testing.assert_allclose(chi[(down, up, down, up)].data, 0)
+        np.testing.assert_allclose(chi[(up, down, up, down)].data, 0)
+        np.testing.assert_allclose(chi[(down, up, down, up)].data, 0)
 
     chi_uu = chi[(up, up, up, up)]
     chi_ud = chi[(up, up, down, down)]

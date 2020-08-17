@@ -14,7 +14,6 @@ module.add_include("triqs_tprf/lattice.hpp")
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
 #include <cpp2py/converters/complex.hpp>
-#include <cpp2py/converters/tuple.hpp>
 #include <triqs/cpp2py_converters/arrays.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
 
@@ -411,7 +410,7 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
-module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""Linearized Eliashberg product
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product
 
      Computes the product
 
@@ -439,7 +438,7 @@ Returns
 out
      Gives the result of the product :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG \Delta`""")
 
-module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""Linearized Eliashberg product via FFT
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product via FFT
 
      Computes the product
 
@@ -494,11 +493,21 @@ Returns
 out
      Gives the result of the product :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG \Delta`""")
 
-module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
 module.add_function ("std::tuple<chi_wk_vt, chi_k_vt> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
 module.add_function ("std::tuple<chi_tr_vt, chi_r_vt> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::get_dynamic_wk (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_k_t triqs_tprf::get_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::dynamic_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_r_t triqs_tprf::constant_to_r (triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""""")
+
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_singlet (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s)", doc = r"""Gamma particle-particle singlet
 
@@ -565,6 +574,7 @@ out
      :math:`\Gamma^{(\mathrm{triplet})}_{a\bar{b}c\bar{d}}(\mathbf{k}, i\omega_n)`""")
 
 module.add_function ("array<std::complex<double>, 6> triqs_tprf::cluster_mesh_fourier_interpolation (array<double, 2> k_vecs, triqs_tprf::chi_wr_cvt chi)", doc = r"""""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_spin_charge (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>,4> U_c, array_view<std::complex<double>,4> U_s, double charge_factor, double spin_factor)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_tr_cvt g_tr)", doc = r"""Generalized susceptibility imaginary time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
 
