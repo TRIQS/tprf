@@ -37,7 +37,7 @@ from lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
 # ----------------------------------------------------------------------
 
 def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
-                     tol=1e-10, product='FFT', solver='IRAM', symmetrize_fct=lambda x : x):
+                     tol=1e-10, product='FFT', solver='IRAM', symmetrize_fct=lambda x : x, k=6):
     r""" Solve the linearized Eliashberg equation
     
     Returns the biggest eigenvalues and corresponding eigenvectors of the linearized Eliashberg
@@ -90,6 +90,10 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
                      eigenvalue solver and can be used to enforce a specific
                      symmetry. If no symmetries are enforced, caution is need, because
                      unphysical symmetries can occur.
+
+    k : int, optional
+        The number of leading superconducting gaps that shall be calculated. Does
+        only have an effect, if 'IRAM' is used as a solver.
 
     Returns
     -------
@@ -148,7 +152,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
         es, evs = [es], [evs]
 
     elif solver == 'IRAM':
-        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, tol=tol)
+        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, k=k, tol=tol)
 
     else:
         raise NotImplementedError('There is no solver called %s.'%solver)
@@ -294,7 +298,7 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
 
     return delta
 
-def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
+def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10, k=6):
     """Find the eigenvalue with the largest real value via the Implicitly Restarted 
     Arnoldi Method
 
@@ -307,6 +311,8 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
            method with. Restriction: len(init.shape) == 1.
     tol : float, optional
           The tolerance at which the iterative scheme is considered to be converged.
+    k : int, optional
+        The number of eigenvalues and eigenvectors desired.
 
     Returns
     -------
@@ -323,7 +329,7 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10):
     """
     N = init.shape[0]
     linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
-    Es, U = eigs(linop, which='LR', tol=tol, v0=init)
+    Es, U = eigs(linop, k=k, which='LR', tol=tol, v0=init)
     Es = Es.real
     
     return list(Es), list(U.T)

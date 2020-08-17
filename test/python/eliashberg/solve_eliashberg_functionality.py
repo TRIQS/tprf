@@ -28,6 +28,12 @@ def test_wrong_input_for_solver(g0_wk, gamma):
         )
         assert str(e) == expected_message
 
+def test_k_input(g0_wk, gamma):
+    for k_input in [1, 3]:
+        Es, evs = solve_eliashberg(gamma, g0_wk, k=k_input)
+        assert len(Es) == k_input
+        assert len(evs) == k_input
+
 if __name__ == "__main__":
     p = ParameterCollection(
         dim=2,
@@ -49,3 +55,4 @@ if __name__ == "__main__":
 
     test_wrong_input_for_product(g0_wk, gamma)
     test_wrong_input_for_solver(g0_wk, gamma)
+    test_k_input(g0_wk, gamma)
