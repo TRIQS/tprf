@@ -5,6 +5,7 @@ set(PREFIX eliashberg-)
 
 add_python_test(preprocessing_gamma ${PREFIX})
 add_python_test(gamma_creation ${PREFIX})
+add_python_test(solve_eliashberg_functionality ${PREFIX})
 add_python_test(semi_random_initial_delta ${PREFIX})
 add_python_test(product_summation_vs_fft ${PREFIX})
 add_python_test(eigenvalue_solver ${PREFIX})
