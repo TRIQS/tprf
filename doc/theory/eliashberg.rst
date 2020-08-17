@@ -193,6 +193,8 @@ which we list in the table below.
 Because all other combinations are unphysical it is possible to restrict the gap to the
 allowed symmetries while solving the linearized Eliashberg equation. 
 
+.. _eliashberg_rpa:
+
 Random phase approximation for the irreducible particle-particle vertex
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -320,7 +322,7 @@ Note, that this simplification is only allowed, if the solutions of :math:`\Delt
 are restricted to the allowed symmetries, otherwise unphysical solution can occur.
 Also note, that the RPA particle-particle vertices in
 Eq. :eq:`singlet_gamma_2` and :eq:`triplet_gamma_2` only depend on the difference
-between the two fermionic Matsubara frequencies and momenta.
+between the two fermionic Matsubara frequencies, i.e. a bosonic Matsubara frequency and one momentum.
 We can therefore write the linearized Eliashberg equation
 :eq:`linearized_eliashberg_3` as
 
@@ -331,7 +333,7 @@ We can therefore write the linearized Eliashberg equation
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,,
     :label: linearized_eliashberg_5
 
-which is the form it is implemented as now.
+which is the **form it is implemented as now** in :meth:`triqs_tprf.eliashberg.solve_eliashberg`.
     
 This allows us to get rid of the summation by using the convolution theorem
 
