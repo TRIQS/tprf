@@ -37,12 +37,14 @@ from lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
 # ----------------------------------------------------------------------
 
 def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
-                     tol=1e-10, product='FFT', solver='PM', symmetrize_fct=lambda x : x):
+                     tol=1e-10, product='FFT', solver='IRAM', symmetrize_fct=lambda x : x):
     r""" Solve the linearized Eliashberg equation
     
     Returns the biggest eigenvalues and corresponding eigenvectors of the linearized Eliashberg
-    equation. The Eliashberg equation implementation is using fourier transformations for 
-    computational efficiency. The eigenvalues are found using an iterative algorithm from scipy.
+    equation, for a particle-particle vertex in the random phase approximation,
+    as described here :ref:`eliashberg_rpa`. The Eliashberg equation implementation is
+    using fourier transformations for computational efficiency. The eigenvalues are found
+    using an iterative algorithm from scipy.
     
     Parameters
     ----------
@@ -60,7 +62,7 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
     Gamma_pp_const_k : float or np.ndarray or Gf, optional
                        Part of the pairing vertex that is constant in Matsubara frequency space
                        :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
-                       be a MeshBrillouinZone.
+                       be a MeshBrillouinZone. If not given, the constant part will be fitted.
     tol : float, optional
           Relative accuracy for eigenvalues (stopping criterion).
     product : str, ['FFT', 'SUM'], optional
@@ -68,16 +70,17 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
                   'FFT' : triqs_tprf.lattice.eliashberg_product_fft,
                           which uses Fourier transformation for optimal computational efficiency.
-                          Restrictions : 
+
                   'SUM' : triqs_tprf.lattice.eliashberg_product, uses the explicit sum.
-                          Restrictions : wmesh of Gamma_pp_wk must be atleast twice the size
-                                         of the one of g_wk.
-    solver : str, ['PM', 'IRAM'], optional
+                          Restrictions : wmesh of Gamma_pp_wk must be atleast twice the size of the one of g_wk.
+
+    solver : str, ['IRAM', 'PM'], optional
              Which eigenvalue solver shall be used:
+
+                 'IRAM' : Use the Implicitly Restarted Arnoldi Method implemented in :func:`implicitly_restarted_arnoldi_method`.
 
                  'PM' : Use the Power Method implemented in :func:`power_method_LR`.
 
-                 'IRAM' : Use the Implicitly Restarted Arnoldi Method implemented in :func:`implicitly_restarted_arnoldi_method`.
     symmetrize_fct : function, optional
                      A function that takes one parameter: A Green's function 
                      :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the
@@ -85,7 +88,8 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
                      (MeshImFreq, MeshBrillouinZone).
                      This function is applied after every iteration of the
                      eigenvalue solver and can be used to enforce a specific
-                     symmetry.
+                     symmetry. If no symmetries are enforced, caution is need, because
+                     unphysical symmetries can occur.
 
     Returns
     -------
@@ -164,7 +168,7 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     Gamma_pp_const_k : float or np.ndarray or Gf
                        Part of the pairing vertex that is constant in Matsubara frequency space
                        :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
-                       be a MeshBrillouinZone.
+                       be a MeshBrillouinZone. If not given, the constant part will be fitted.
 
     Returns
     -------
