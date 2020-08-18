@@ -49,33 +49,17 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-/* The rest of this function contains a lot of boiler plate code due to issue
-   #725 in the TRIQS library.
-   It will be changed later
-*/
   auto k_arr = mpi_view(kmesh);  
-  auto _ = all_t{};
-
 #pragma omp parallel for
  for(unsigned int idx_k = 0; idx_k < kmesh.size(); idx_k++){
    auto k = k_arr(idx_k);
 
-   auto g_left_w = make_gf<imfreq>(wmesh, g_wk.target());
-   auto g_right_w = make_gf<imfreq>(wmesh, g_wk.target());
-   auto delta_w = make_gf<imfreq>(wmesh, delta_wk.target());
-   auto F_w = make_gf<imfreq>(wmesh, F_wk.target());
-
-   g_left_w = g_wk[_, k]; 
-   g_right_w = g_wk[_, -k]; 
-   delta_w = delta_wk[_, k];
-
   for (const auto w : wmesh) {
     for (auto [A, B] : F_wk.target_indices())
       for (auto [c, d] : delta_wk.target_indices())
-        F_w[w](A, B) +=
-        g_left_w[w](A, c) * g_right_w[-w](B, d) * delta_w[w](c, d);
+        F_wk[w, k](A, B) +=
+        g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
      }
-     F_wk[_, k] = F_w;
    }
 
   return F_wk;
@@ -177,27 +161,15 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
           " (" << tmesh_gamma.size() << ") must be the size of the mesh of Delta (" <<
           tmesh.size() << ").";
 
-/* This function contains a lot boiler plate code due to issue
-   #725 in the TRIQS library.
-   It will be changed later
-*/
-
   auto r_arr = mpi_view(rmesh);  
-  auto _ = all_t{};
 #pragma omp parallel for
   for(unsigned int idx_r = 0; idx_r < rmesh.size(); idx_r++){
     auto r = r_arr(idx_r);
 
-    auto delta_t = make_gf<imtime>(tmesh, delta_tr_out.target());
-
-    auto Gamma_pp_dyn_t = Gamma_pp_dyn_tr[_, r];
-    auto F_t = F_tr[_, r];
-    
     for (const auto t : tmesh) {
       for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_t[t](a, b) += -0.5 * Gamma_pp_dyn_t[t](A, a, B, b) * F_t[t](A, B);
+        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](A, a, B, b) * F_tr[t, r](A, B);
     }
-    delta_tr_out[_, r] = delta_t;
   }
 
   return delta_tr_out;
