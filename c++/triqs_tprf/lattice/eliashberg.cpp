@@ -48,18 +48,16 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-  auto k_arr = mpi_view(kmesh);  
+  auto meshes_mpi = mpi_view(delta_wk.mesh());
 #pragma omp parallel for
- for(unsigned int idx_k = 0; idx_k < kmesh.size(); idx_k++){
-   auto k = k_arr(idx_k);
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+    auto &[w, k] = meshes_mpi(idx);
 
-  for (const auto w : wmesh) {
-    for (auto [A, B] : F_wk.target_indices())
-      for (auto [c, d] : delta_wk.target_indices())
-        F_wk[w, k](A, B) +=
-        g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+      for (auto [A, B] : F_wk.target_indices())
+        for (auto [c, d] : delta_wk.target_indices())
+          F_wk[w, k](A, B) +=
+          g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
      }
-   }
 
   return F_wk;
 }
@@ -160,15 +158,13 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
           " (" << tmesh_gamma.size() << ") must be the size of the mesh of Delta (" <<
           tmesh.size() << ").";
 
-  auto r_arr = mpi_view(rmesh);  
+  auto meshes_mpi = mpi_view(F_tr.mesh());
 #pragma omp parallel for
-  for(unsigned int idx_r = 0; idx_r < rmesh.size(); idx_r++){
-    auto r = r_arr(idx_r);
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+    auto &[t, r] = meshes_mpi(idx);
 
-    for (const auto t : tmesh) {
       for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
         delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](A, a, B, b) * F_tr[t, r](A, B);
-    }
   }
 
   return delta_tr_out;
