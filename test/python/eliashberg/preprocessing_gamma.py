@@ -4,7 +4,7 @@ from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone, MeshImTime, Mes
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients
-from triqs_tprf.eliashberg import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
+from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 from triqs_tprf.eliashberg import preprocess_gamma_for_fft 
 
 from triqs_tprf.utilities import assert_parameter_collection_not_equal_model_parameters, write_TarGZ_HDFArchive, read_TarGZ_HDFArchive

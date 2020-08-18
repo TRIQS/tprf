@@ -32,8 +32,7 @@ from scipy.sparse.linalg import eigs
 from triqs.gf import Gf
 from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
-from .lattice import get_dynamic_wk, get_constant_k, dynamic_to_tr, constant_to_r
-
+from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 # ----------------------------------------------------------------------
 
 def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
@@ -201,59 +200,6 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
                                                                     Gamma_pp_const_k_fit)
 
-    return Gamma_pp_dyn_tr, Gamma_pp_const_r
-
-def split_into_dynamic_wk_and_constant_k(Gamma_pp_wk):
-    r""" Split Gamma by tail fitting constant part in frequency
-
-    Parameters
-    ----------
-    Gamma_pp_wk : Gf,
-               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
-               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
-
-    Returns
-    -------
-    Gamma_pp_dyn_wk : Gf,
-                      The dynamic part of Gamma, which converges to zero for
-                      :math:`\omega_n \rightarrow \infty`.
-                      Its mesh attribute is MeshProduct with the components
-                      (MeshImFreq, MeshBrillouinZone).
-    Gamma_pp_const_k : Gf,
-                       Part of the pairing vertex that is constant in Matsubara frequency space
-                       :math:`\Gamma(\mathbf{k})`. Returned as a Gf with mesh attribute
-                       MeshBrillouinZone.
-    """
-    Gamma_pp_dyn_wk = get_dynamic_wk(Gamma_pp_wk)
-    Gamma_pp_const_k = get_constant_k(Gamma_pp_wk)
-    return Gamma_pp_dyn_wk, Gamma_pp_const_k
-
-def dynamic_and_constant_to_tr(Gamma_pp_dyn_wk, Gamma_pp_const_k):
-    r""" Fourier transform Gamma parts to imaginary time and real-space  
-
-    Parameters
-    ----------
-    Gamma_pp_dyn_wk : Gf,
-                      The dynamic part of Gamma, which converges to zero for
-                      :math:`\omega_n \rightarrow \infty`.
-                      Its mesh attribute is MeshProduct with the components
-                      (MeshImFreq, MeshBrillouinZone).
-    Gamma_pp_const_k : Gf,
-                       Part of the pairing vertex that is constant in Matsubara frequency space
-                       :math:`\Gamma(\mathbf{k})`. Its mesh attribute is MeshBrillouinZone.
-
-    Returns
-    -------
-    Gamma_pp_dyn_tr : Gf,
-                      The dynamic part of Gamma, which converges to zero for
-                      :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space.
-                      Its mesh attribute is MeshProduct with the components
-                      (MeshImTime, MeshCyclicLattice).
-    Gamma_pp_const_r : Gf,
-                       The constant part of Gamma with mesh attribute MeshCyclicLattice.
-    """
-    Gamma_pp_dyn_tr = dynamic_to_tr(Gamma_pp_dyn_wk)
-    Gamma_pp_const_r = constant_to_r(Gamma_pp_const_k) 
     return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
 def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
