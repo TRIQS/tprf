@@ -23,7 +23,6 @@
 #include "eliashberg.hpp"
 #include <omp.h>
 #include "../mpi.hpp"
-#include <triqs/utility/timer.hpp>
 
 #include "gf.hpp"
 #include "fourier.hpp"
@@ -178,54 +177,22 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
 g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
                                 g_wk_vt g_wk, g_wk_vt delta_wk) {
 
-  triqs::utility::timer t_all, t_g_delta_g_product, t_fft_F, t_dynamic_product, t_fft_delta, t_constant_product, t_combine;
-  t_all.start();
-    
-  t_g_delta_g_product.start();
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
-  t_g_delta_g_product.stop();
-
-  t_fft_F.start();
   auto F_wr = fourier_wk_to_wr(F_wk);
   auto F_tr = fourier_wr_to_tr(F_wr);
-  t_fft_F.stop();
 
-  // Dynamic part
-  t_dynamic_product.start();
   auto delta_tr_out = eliashberg_dynamic_gamma_f_product(Gamma_pp_dyn_tr, F_tr);
-  t_dynamic_product.stop();
-
-  // Constant part
-  t_constant_product.start();
   auto delta_r_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
-  t_constant_product.stop();
   
   // FIXME
   // This raises warnings when used with random delta input, e.g. eigenvalue finder
-  t_fft_delta.start();
   auto delta_wr_out = fourier_tr_to_wr(delta_tr_out);
-  t_fft_delta.stop();
-
   // Combine dynamic and constant part
-  t_combine.start();
   auto _ = all_t{};
   for (const auto w : std::get<0>(delta_wr_out.mesh()))
       delta_wr_out[w, _] += delta_r_out;
-  t_combine.stop();
 
-  t_fft_delta.start();
-  t_fft_delta.stop();
   auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
-
-  t_all.stop();
-
-  std::cout << "all:\t" << double(t_all) << "\n" \
-              << "g_delta_g_product:\t" << double(t_g_delta_g_product) << "\n" \
-              << "fft_F:\t" << double(t_fft_F) << "\n" \
-              << "dynamic_product:\t" << double(t_dynamic_product) << "\n" \
-              << "fft_delta:\t" << double(t_fft_delta) << "\n" \
-              << "constant_product:\t" << double(t_constant_product) << "\n" \
-              << "combin:\t" << double(t_combine) << "\n" ;
 
   return delta_wk_out;
 }
