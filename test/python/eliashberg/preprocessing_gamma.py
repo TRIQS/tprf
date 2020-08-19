@@ -67,8 +67,8 @@ def test_preprocess_gamma_for_fft_benchmark(gamma, p):
     np.testing.assert_equal(gamma.data, p_benchmark.gamma.data)
 
     gamma_dyn_tr, gamma_const_r = preprocess_gamma_for_fft(gamma) 
-    np.testing.assert_equal(gamma_dyn_tr.data, p_benchmark.gamma_dyn_tr.data)
-    np.testing.assert_equal(gamma_const_r.data, p_benchmark.gamma_const_r.data)
+    np.testing.assert_almost_equal(gamma_dyn_tr.data, p_benchmark.gamma_dyn_tr.data)
+    np.testing.assert_almost_equal(gamma_const_r.data, p_benchmark.gamma_const_r.data)
 
 
 if __name__ == '__main__':
