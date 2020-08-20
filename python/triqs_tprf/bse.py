@@ -116,23 +116,26 @@ def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
 
 # ----------------------------------------------------------------------
 def get_chi0_wnk(g_wk, nw=1, nwf=None):
-
-    r""" Compute the generalized lattice bubble susceptibility 
-    :math:`\chi^{(0)}_{abcd}(\omega, \nu, \mathbf{k})` from the single-particle
-    Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+    r""" Compute the generalized bare lattice susceptibility 
+    :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_n, i\nu_n, \mathbf{k})` from the single-particle
+    Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
 
     Parameters
     ----------
 
-    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
-    nw : Number of bosonic freqiencies in :math:`\chi`.
-    nwf : Number of fermionic freqiencies in :math:`\chi`.    
+    g_wk : Gf,
+           Single-particle Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
+    nw : int,
+         Number of bosonic frequencies in :math:`\chi^0`.
+    nwf : int,
+          Number of fermionic frequencies in :math:`\chi^0`.    
 
     Returns
     -------
 
-    chi0_wnk : Generalized lattice bubble susceptibility
-               :math:`\chi^{(0)}_{abcd}(\omega, \nu, \mathbf{k})`
+    chi0_wnk : Gf,
+               Generalized bare lattice susceptibility
+               :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_n, i\nu_n, \mathbf{k})`.
     """
 
     fmesh = g_wk.mesh.components[0]
@@ -211,25 +214,27 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
 
 # ----------------------------------------------------------------------
 def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
-
-    r""" Compute the generalized lattice bubble susceptibility 
-    :math:`\chi^{(0)}_{abcd}(\nu, \mathbf{k})` from the single-particle
-    Green's function :math:`G_{ab}(\nu, \mathbf{k})` at a specififc
-    \omega.
+    r""" Compute the generalized bare lattice susceptibility 
+    :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, i\nu_n, \mathbf{k})` from the single-particle
+    Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})` for a specific :math:`i\omega_{n=\mathrm{nw\_index}}`.
 
     Parameters
     ----------
 
-    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
-    nw_index : Index of a specififc bosonic frequency at which :math:`\chi`
-               shall be evaluated.
-    nwf : Number of fermionic freqiencies in :math:`\chi`.    
+    g_wk : Gf,
+           Single-particle Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
+    nw_index : int,
+               The bosonic Matsubara frequency index :math:`i\omega_{n=\mathrm{nw\_index}}`
+               at which :math:`\chi^0` is calculated.
+    nwf : int,
+          Number of fermionic frequencies in :math:`\chi^0`.    
 
     Returns
     -------
 
-    chi0_nk : Generalized lattice bubble susceptibility at a specific \omega
-               :math:`\chi^{(0)}_{abcd}(\nu, \mathbf{k})`
+    chi0_nk : Gf,
+               Generalized bare lattice susceptibility
+               :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, i\nu_n, \mathbf{k})`.
     """
 
     fmesh = g_wk.mesh.components[0]
@@ -266,23 +271,28 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
         
 # ----------------------------------------------------------------------
 def solve_lattice_bse(g_wk, gamma_wnn):
-
     r""" Compute the generalized lattice susceptibility 
-    :math:`\chi_{abcd}(\omega, \mathbf{k})` using the Bethe-Salpeter 
+    :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega_n)` using the Bethe-Salpeter 
     equation (BSE).
 
     Parameters
     ----------
 
-    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
-    gamma_wnn : Local particle-hole vertex function 
-                :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
+    g_wk : Gf,
+           Single-particle Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
+    gamma_wnn : Gf,
+                Local particle-hole vertex function 
+                :math:`\Gamma_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n, i\nu_n')`.
 
     Returns
     -------
+    chi_kw : Gf,
+             Generalized lattice susceptibility 
+             :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
 
-    chi0_wk : Generalized lattice susceptibility
-              :math:`\chi_{abcd}(\omega, \mathbf{k})`
+    chi0_kw : Gf,
+              Generalized bare lattice susceptibility 
+              :math:`\chi^0_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
     """
     
     fmesh_g = g_wk.mesh.components[0]
@@ -360,28 +370,34 @@ def solve_lattice_bse(g_wk, gamma_wnn):
 
 # ----------------------------------------------------------------------
 def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
-
     r""" Compute the generalized lattice susceptibility 
-    :math:`\chi_{abcd}(\mathbf{k})` using the Bethe-Salpeter 
-    equation (BSE) at a specific \omega.
+    :math:`\chi_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, \mathbf{k})` using the Bethe-Salpeter 
+    equation (BSE) for a specific :math:`i\omega_{n=\mathrm{nw\_index}}`.
+
 
     Parameters
     ----------
 
-    g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
-    gamma_wnn : Local particle-hole vertex function 
-                :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
+    g_wk : Gf,
+           Single-particle Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
+    gamma_wnn : Gf,
+                Local particle-hole vertex function 
+                :math:`\Gamma_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n, i\nu_n')`.
     nw_index : int,
-               The \omega index at which the susceptibility shall be calculated.
+               The bosonic Matsubara frequency index :math:`i\omega_{n=\mathrm{nw\_index}}`
+               at which the BSE is solved.
 
     Returns
     -------
+    chi_k : Gf,
+            Generalized lattice susceptibility 
+            :math:`\chi_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, \mathbf{k})`.
 
-    chi_k : Generalized lattice susceptibility
-              :math:`\chi_{abcd}(\mathbf{k})`
-    chi0_k : Generalized bare lattice susceptibility
-              :math:`\chi^0_{abcd}(\mathbf{k})`
+    chi0_k : Gf,
+             Generalized bare lattice susceptibility 
+             :math:`\chi^0_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, \mathbf{k})`.
     """
+
     # Only use \Gamma at the specific \omega
     gamma_nn = gamma_wnn[Idx(nw_index), :, :]
     # Keep fake bosonic mesh for usability with other functions

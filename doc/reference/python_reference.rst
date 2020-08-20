@@ -34,7 +34,9 @@ Lattice Bethe-Salpeter Equation
 ===============================
 
 .. autofunction:: triqs_tprf.bse.solve_lattice_bse
+.. autofunction:: triqs_tprf.bse.solve_lattice_bse_at_specific_w
 .. autofunction:: triqs_tprf.bse.get_chi0_wnk
+.. autofunction:: triqs_tprf.bse.get_chi0_nk_at_specific_w
 		  
 GW approximation
 ================
