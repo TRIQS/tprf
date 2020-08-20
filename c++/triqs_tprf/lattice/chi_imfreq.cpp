@@ -195,7 +195,7 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
 
 
   for( auto const & n : nmesh )
-    chi0_nr[n, _] = mpi_all_reduce(chi0_nr[n, _]);
+    chi0_nr[n, _] = mpi::all_reduce(chi0_nr[n, _]);
 
   return chi0_nr;
 }

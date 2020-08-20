@@ -236,11 +236,11 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
     kmesh = g_wk.mesh.components[1]
 
     if nwf is None:
-        nwf = len(fmesh) / 2
+        nwf = len(fmesh) // 2
 
     mpi.barrier()
     mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,1,2)][0,0]))
-    n = np.sum(g_wk.data) / len(kmesh)
+    n = np.sum(g_wk.data) // len(kmesh)
     mpi.report('n ' + str(n))
     mpi.barrier()
 
@@ -297,12 +297,12 @@ def solve_lattice_bse(g_wk, gamma_wnn):
     nwf_g = len(fmesh_g) // 2
 
     if mpi.is_master_node():
-        print(tprf_banner(), "\n")
+        print((tprf_banner(), "\n"))
         print('Lattcie BSE with local vertex approximation.\n')
-        print('nk    =', nk)
-        print('nw    =', nw)
-        print('nwf   =', nwf)
-        print('nwf_g =', nwf_g)
+        print(('nk    =', nk))
+        print(('nw    =', nw))
+        print(('nwf   =', nwf))
+        print(('nwf_g =', nwf_g))
         print()    
 
     mpi.report('--> chi0_wk_tail_corr')
@@ -394,17 +394,17 @@ def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
     fmesh = gamma_wnn.mesh.components[1]
 
     nk = len(kmesh)
-    nwf = len(fmesh) / 2
-    nwf_g = len(fmesh_g) / 2
+    nwf = len(fmesh) // 2
+    nwf_g = len(fmesh_g) // 2
 
     if mpi.is_master_node():
-        print tprf_banner(), "\n"
-        print 'Lattcie BSE with local vertex approximation at specific \omega.\n'
-        print 'nk    =', nk
-        print 'nw_index    =', nw_index
-        print 'nwf   =', nwf
-        print 'nwf_g =', nwf_g
-        print    
+        print(tprf_banner(), "\n")
+        print('Lattcie BSE with local vertex approximation at specific \omega.\n')
+        print('nk    =', nk)
+        print('nw_index    =', nw_index)
+        print('nwf   =', nwf)
+        print('nwf_g =', nwf_g)
+        print()    
 
     mpi.report('--> chi0_wk_tail_corr')
     # Calculate chi0_wk up to the specific \omega
@@ -472,14 +472,14 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
     nwf_sigma = len(fmesh_huge) // 2
 
     if mpi.is_master_node():    
-        print(tprf_banner(), "\n")
+        print((tprf_banner(), "\n"))
 
         print('Lattcie BSE with local vertex approximation.\n')
-        print('nk  = ', nk)
-        print('nw  = ', nw)
-        print('nwf = ', nwf)
-        print('nwf_sigma = ', nwf_sigma)
-        print('nwf = ', tail_corr_nwf, ' (gf)')
+        print(('nk  = ', nk))
+        print(('nw  = ', nw))
+        print(('nwf = ', nwf))
+        print(('nwf_sigma = ', nwf_sigma))
+        print(('nwf = ', tail_corr_nwf, ' (gf)'))
         print()    
 
     # -- Lattice BSE calc with built in trace using g_wk
@@ -503,14 +503,14 @@ def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1)
     nwf_sigma = len(fmesh_huge) // 2
 
     if mpi.is_master_node():    
-        print(tprf_banner(), "\n")
+        print((tprf_banner(), "\n"))
 
         print('Lattcie BSE with local vertex approximation.\n')
-        print('nk  =', nk)
-        print('nw  =', nw)
-        print('nwf           =', nwf)
-        print('nwf_sigma     =', nwf_sigma)
-        print('nwf_chi0_tail =', tail_corr_nwf)
+        print(('nk  =', nk))
+        print(('nw  =', nw))
+        print(('nwf           =', nwf))
+        print(('nwf_sigma     =', nwf_sigma))
+        print(('nwf_chi0_tail =', tail_corr_nwf))
         print()    
 
     # -- Lattice BSE calc with built in trace using g_wk

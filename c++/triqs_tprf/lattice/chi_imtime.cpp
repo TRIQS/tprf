@@ -129,7 +129,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 
   }
 
-  chi0_wr = mpi_all_reduce(chi0_wr);
+  chi0_wr = mpi::all_reduce(chi0_wr);
   return chi0_wr;
 }  
 

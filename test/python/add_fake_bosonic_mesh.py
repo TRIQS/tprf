@@ -5,12 +5,11 @@
 # ----------------------------------------------------------------------
 
 import numpy as np
-import pytest
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct, Idx
-from pytriqs.lattice import BrillouinZone, BravaisLattice
+from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct, Idx
+from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice_utils import add_fake_bosonic_mesh
 
@@ -27,8 +26,10 @@ np.testing.assert_allclose(gf_nk.data, gf_wnk[Idx(0), :, :].data)
 
 gf_k = Gf(mesh=bzmesh, target_shape=(2,2))
 
-with pytest.raises(ValueError):
+try:
     gf_wk = add_fake_bosonic_mesh(gf_k)
+except ValueError:
+    pass
 
 beta = 10
 gf_wk = add_fake_bosonic_mesh(gf_k, beta=beta)

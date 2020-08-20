@@ -15,7 +15,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from pytriqs.gf import Gf, MeshImFreq, Idx, MeshProduct, MeshBrillouinZone
+from triqs.gf import Gf, MeshImFreq, Idx, MeshProduct, MeshBrillouinZone
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.tight_binding import TBLattice

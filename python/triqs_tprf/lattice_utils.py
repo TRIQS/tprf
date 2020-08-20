@@ -134,23 +134,23 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
 # ----------------------------------------------------------------------
 def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
-    print(tprf_banner(), "\n")
+    print((tprf_banner(), "\n"))
 
-    print('beta  =', beta)
-    print('mu    =', mu)
-    print('sigma =', (not (sigma == None)))
+    print(('beta  =', beta))
+    print(('mu    =', mu))
+    print(('sigma =', (not (sigma == None))))
 
     norb = tb_lattice.NOrbitalsInUnitCell
-    print('nk    =', nk)
-    print('nw    =', nw)
-    print('norb  =', norb)
+    print(('nk    =', nk))
+    print(('nw    =', nw))
+    print(('norb  =', norb))
     print()
 
     ntau = 4 * nw
     ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw + ntau) * norb**2
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
-    print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
+    print(('Approx. Memory Utilization: %2.2f GB\n' % ngb))
     
     periodization_matrix = np.diag(np.array(list(nk), dtype=np.int32))
     #print 'periodization_matrix =\n', periodization_matrix
@@ -225,13 +225,13 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
     ngb = nbytes / 1024.**3
 
     if mpi.is_master_node():
-        print(tprf_banner(), "\n")
-        print('beta  =', beta)
-        print('nk    =', nk)
-        print('nw    =', nw_g)
-        print('norb  =', norb)
+        print((tprf_banner(), "\n"))
+        print(('beta  =', beta))
+        print(('nk    =', nk))
+        print(('nw    =', nw_g))
+        print(('norb  =', norb))
         print()
-        print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
+        print(('Approx. Memory Utilization: %2.2f GB\n' % ngb))
 
     mpi.report('--> fourier_wk_to_wr')
     g_wr = fourier_wk_to_wr(g_wk)
