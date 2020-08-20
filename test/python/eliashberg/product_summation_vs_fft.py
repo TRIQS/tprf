@@ -51,7 +51,10 @@ def print_diff(diff):
 
     for i in range(i_max):
         for j in range(j_max):
-            s += np.format_float_scientific(diff[i,j], precision=2, pad_left=3)
+            try:
+                s += np.format_float_scientific(diff[i,j], precision=2, pad_left=3)
+            except AttributeError:
+                s += str(diff[i,j])
             s += "\t"
         s += "\n"
     s += dashes
