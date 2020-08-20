@@ -15,53 +15,44 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from triqs.gf import MeshImFreq, Idx, MeshProduct
-
+from triqs_tprf.utilities import create_g0_wk_for_test_model
 from triqs_tprf.ParameterCollection import ParameterCollection
-from triqs_tprf.tight_binding import TBLattice
-from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH, chi0_nr_from_gr_PH_at_specific_w
 
 # ----------------------------------------------------------------------
 
-p = ParameterCollection(
-        dim = 2,
-        norbs = 2,
-        t = 1.0,
-        mu = 0.0,
-        beta = 1,
-        nk = 16,
-        nw_g = 100,
-        nw_chi = 20,
-        nwf = 10,
-        nw_index = 3,
-        )
+def test_chi0_nr_at_specific_w_against_full(g0_wr, p):
+    chi0_wnr = chi0r_from_gr_PH(nw=p.nw_chi, nn=p.nwf, g_nr=g0_wr)
+    chi0_nr_at_specific_w = chi0_nr_from_gr_PH_at_specific_w(nw_index=p.nw_index, nn=p.nwf, g_nr=g0_wr)
 
-# -- Setup model
-full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
-all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
-non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
+    np.testing.assert_allclose(chi0_wnr[Idx(p.nw_index), :, :].data, chi0_nr_at_specific_w.data)
 
-t = -p.t * np.eye(p.norbs)
+def test_chi0_nr_at_specific_w_mesh_types(g0_wr, p):
+    chi0_nr_at_specific_w = chi0_nr_from_gr_PH_at_specific_w(nw_index=p.nw_index, nn=p.nwf, g_nr=g0_wr)
 
-H = TBLattice(
-            units = full_units[:p.dim],
-            hopping = {hop : t for hop in non_diagonal_hoppings},
-            orbital_positions = [(0,0,0)]*p.norbs,
+    assert isinstance(chi0_nr_at_specific_w.mesh, MeshProduct)
+    assert isinstance(chi0_nr_at_specific_w.mesh[0], MeshImFreq)
+
+if __name__ == "__main__":
+    p = ParameterCollection(
+            dim = 2,
+            norb = 2,
+            t1 = 1.0,
+            t2 = 0.5,
+            t12 = 0.1,
+            t21 = 0.1,
+            mu = 0.0,
+            beta = 1,
+            nk = 16,
+            nw = 100,
+            nw_chi = 20,
+            nwf = 10,
+            nw_index = 3,
             )
 
-e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
+    g0_wk = create_g0_wk_for_test_model(p)
+    g0_wr = fourier_wk_to_wr(g0_wk)
 
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw_g)
-
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-g0_wr = fourier_wk_to_wr(g0_wk)
-
-chi0_wnr = chi0r_from_gr_PH(nw=p.nw_chi, nn=p.nwf, g_nr=g0_wr)
-chi0_nr_at_specific_w = chi0_nr_from_gr_PH_at_specific_w(nw_index=p.nw_index, nn=p.nwf, g_nr=g0_wr)
-
-assert isinstance(chi0_nr_at_specific_w.mesh, MeshProduct)
-assert isinstance(chi0_nr_at_specific_w.mesh[0], MeshImFreq)
-np.testing.assert_allclose(chi0_wnr[Idx(p.nw_index), :, :].data, chi0_nr_at_specific_w.data)
-
-
+    test_chi0_nr_at_specific_w_against_full(g0_wr, p)
+    test_chi0_nr_at_specific_w_mesh_types(g0_wr, p)

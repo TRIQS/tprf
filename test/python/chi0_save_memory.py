@@ -14,47 +14,34 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq
-
+from triqs_tprf.utilities import create_g0_wk_for_test_model
 from triqs_tprf.ParameterCollection import ParameterCollection
-from triqs_tprf.tight_binding import TBLattice
-from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 # ----------------------------------------------------------------------
 
-p = ParameterCollection(
-        dim = 2,
-        norbs = 2,
-        t = 1.0,
-        mu = 0.0,
-        beta = 1,
-        nk = 16,
-        nw_g = 100,
-        nw_chi = 10,
-        )
+def test_chi0_wk_save_memory(g0_wk, p):
+    chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=False)
+    chi0_wk_save_memory = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=True)
 
-# -- Setup model
-full_units = [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
-all_nn_hoppings = list(itertools.product([-1, 0, 1], repeat=p.dim)) 
-non_diagonal_hoppings = [ele for ele in all_nn_hoppings if sum(np.abs(ele)) == 1] 
+    assert np.allclose(chi0_wk.data, chi0_wk_save_memory.data)
 
-t = -p.t * np.eye(p.norbs)
 
-H = TBLattice(
-            units = full_units[:p.dim],
-            hopping = {hop : t for hop in non_diagonal_hoppings},
-            orbital_positions = [(0,0,0)]*p.norbs,
-            )
+if __name__ == "__main__":
+    p = ParameterCollection(
+        dim=2,
+        norb=2,
+        t1 = 1.0,
+        t2 = 0.5,
+        t12 = 0.1,
+        t21 = 0.1,
+        mu=0.0,
+        beta=1,
+        nk=16,
+        nw=100,
+        nw_chi=10,
+    )
 
-e_k = H.on_mesh_brillouin_zone(n_k=[p.nk]*p.dim + [1]*(3-p.dim))
-
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw_g)
-
-g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
-
-# -- Calculate bare bubble 
-chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=False)
-chi0_wk_save_memory = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=True)
-
-assert np.allclose(chi0_wk.data, chi0_wk_save_memory.data)
+    g0_wk = create_g0_wk_for_test_model(p)
+    
+    test_chi0_wk_save_memory(g0_wk, p)
