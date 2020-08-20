@@ -64,11 +64,11 @@ def test_preprocess_gamma_for_fft_benchmark(gamma, p):
     model_parameters_to_test = ['dim', 'norb', 't', 'mu', 'beta', 'U']
     assert_parameter_collection_not_equal_model_parameters(p, p_benchmark, model_parameters_to_test)
 
-    np.testing.assert_equal(gamma.data, p_benchmark.gamma.data)
+    np.testing.assert_allclose(gamma.data, p_benchmark.gamma.data, atol=1e-10)
 
     gamma_dyn_tr, gamma_const_r = preprocess_gamma_for_fft(gamma) 
-    np.testing.assert_almost_equal(gamma_dyn_tr.data, p_benchmark.gamma_dyn_tr.data)
-    np.testing.assert_almost_equal(gamma_const_r.data, p_benchmark.gamma_const_r.data)
+    np.testing.assert_allclose(gamma_dyn_tr.data, p_benchmark.gamma_dyn_tr.data, atol=1e-10)
+    np.testing.assert_allclose(gamma_const_r.data, p_benchmark.gamma_const_r.data, atol=1e-10)
 
 
 if __name__ == '__main__':
