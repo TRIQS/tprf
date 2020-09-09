@@ -5,8 +5,39 @@ tprf version 3.0.0 is a compatibility
 release for TRIQS version 3.0.0 that
 * introduces compatibility with Python 3 (Python 2 no longer supported)
 * adds a cmake-based dependency management
-* fixes several application issues
+* fixes various smaller application issues
 
+We provide a more detailed description of the changes below.
+
+General
+-------
+* Protect various solver logos for non-utf encoding of sys.stdout
+* Rename pytriqs->triqs
+* Run port_to_triqs3 script
+* Merge app4triqs python3 changes
+* Fix bug in wannier90 hr reader
+
+cmake
+-----
+* Use find_package(OpenMP ...) and define openmp INTERFACE target
+* Link cpp2py module also against triqs_py library
+
+doc
+---
+* Fix sidebar version number
+* Add a section on Anaconda to the install page
+
+py3
+---
+* Use 2to3 to port python files and notebooks
+* Fix floor division in various places
+* Make sure to use spaces for indentation and no tabs
+
+python
+------
+* Make sure to import pytriqs.utility.mpi in lattice module init
+
+Contributors: Philipp Dumitrescu, Dylan Simon, Nils Wentzell, Manuel Zingl
 
 Version 2.2.0
 =============
