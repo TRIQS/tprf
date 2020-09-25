@@ -1,3 +1,4 @@
+""" Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 from unittest.mock import patch, MagicMock
 
 import numpy as np

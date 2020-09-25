@@ -2,7 +2,9 @@
 
 """ Symmetrize a randomly filled Green's function in frequency, momentum,
     and orbital and test if it was done proberly.
-"""
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
+
 # ----------------------------------------------------------------------
 
 import itertools

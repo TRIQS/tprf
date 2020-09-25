@@ -1,7 +1,9 @@
 # ----------------------------------------------------------------------
 
 """ Comparison of the general RPA formalism and the matrix RPA formalism
-for the spin- and charge-susceptibility. """
+for the spin- and charge-susceptibility. 
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

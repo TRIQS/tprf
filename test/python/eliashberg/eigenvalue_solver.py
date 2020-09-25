@@ -3,7 +3,7 @@
 """ Compare the output of the implemented eigenvalue solver:
 The Power Method and the Implicitly Restarted Arnoldi Method.
 
-"""
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

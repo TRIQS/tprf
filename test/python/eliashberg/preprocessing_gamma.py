@@ -1,3 +1,4 @@
+""" Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 import numpy as np
 
 from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone, MeshImTime, MeshCyclicLattice

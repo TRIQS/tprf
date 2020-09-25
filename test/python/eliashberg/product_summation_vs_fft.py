@@ -2,7 +2,8 @@
 
 """ Compare the summation implementation of the linearized Eliashberg product
 and the one using Fourier transformations.
-"""
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

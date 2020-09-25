@@ -1,7 +1,9 @@
 # ----------------------------------------------------------------------
 
 """ Test the symmetrizing feature of the solve_eliashberg function
-"""
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
+
 # ----------------------------------------------------------------------
 
 import itertools

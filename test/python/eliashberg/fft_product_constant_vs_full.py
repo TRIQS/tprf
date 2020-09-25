@@ -8,7 +8,8 @@ Here we test if both implementations give the same result for a Gamma that
 is constant in momentum space.
 This also tests the function 'split_into_dynamic_wk_and_constant_k', to
 see if the split is done correctly.
-"""
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

@@ -3,7 +3,9 @@
 
 """ Goes through the steps of solving the linearized Eliashberg equation for singlet pairing in
 RPA limit in model with two orbitals, saves the results and compares to previously established 
-benchmark data. """
+benchmark data. 
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 
