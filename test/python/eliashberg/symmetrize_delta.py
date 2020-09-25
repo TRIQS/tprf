@@ -26,9 +26,9 @@ from triqs_tprf.symmetries import enforce_symmetry, check_symmetry
 
 # ----------------------------------------------------------------------
 
-def test_symmetry_of_symmetry_enforced_deltas(g0_wk, gamma):
+def test_symmetry_constraint_of_solve_eliashberg(g0_wk, gamma):
     variables = ["frequency", "momentum", "orbital"]
-    all_symmetries = list(itertools.product(["even", "odd"], repeat=3))
+    all_symmetries = [('even', 'odd', 'even'), ('odd', 'even', 'even')]
 
     for symmetries in all_symmetries:
         symmetrize_fct = functools.partial(enforce_symmetry, 
@@ -92,4 +92,4 @@ if __name__ == "__main__":
     g0_wk = eliashberg_ingredients.g0_wk
     gamma = eliashberg_ingredients.gamma
 
-    test_symmetry_of_symmetry_enforced_deltas(g0_wk, gamma)
+    test_symmetry_constraint_of_solve_eliashberg(g0_wk, gamma)
