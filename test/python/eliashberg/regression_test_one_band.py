@@ -61,8 +61,8 @@ def test_solve_eliashberg(g0_wk, gamma, expected_E, expected_eigen_mode):
 
 if __name__ == "__main__":
     p = ParameterCollection(
-            benchmark_filename = "./eliashberg_benchmark.tar.gz",
-            filename = 'eliashberg_benchmark_new.tar.gz',
+            benchmark_filename = "./eliashberg_benchmark_one_band.tar.gz",
+            filename = 'eliashberg_benchmark_one_band_new.tar.gz',
             dim = 2,
             norb = 1,
             t = 1.0,
