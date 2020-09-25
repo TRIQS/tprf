@@ -1,7 +1,13 @@
+
 # ----------------------------------------------------------------------
 
 """ Goes through the steps of solving the linearized Eliashberg equation for singlet pairing in
-RPA limit, saves the results and compares to previously established benchmark data. """
+RPA limit in model with two orbitals, saves the results and compares to previously established 
+benchmark data. """
+
+# ----------------------------------------------------------------------
+
+import itertools
 
 # ----------------------------------------------------------------------
 
@@ -9,10 +15,16 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
+from triqs.gf import MeshImFreq
+
 from triqs_tprf.ParameterCollection import ParameterCollection
+
+from triqs_tprf.tight_binding import create_model_for_tests
+
+from triqs_tprf.lattice import eliashberg_product_fft
 from triqs_tprf.utilities import create_eliashberg_ingredients
-from triqs_tprf.lattice import eliashberg_product
-from triqs_tprf.eliashberg import solve_eliashberg, allclose_by_scalar_multiplication
+from triqs_tprf.eliashberg import preprocess_gamma_for_fft, solve_eliashberg
+from triqs_tprf.eliashberg import allclose_by_scalar_multiplication
 
 # ----------------------------------------------------------------------
 
@@ -24,12 +36,11 @@ import triqs_tprf.version as version
 def save_new_benchmarks(filename, p):
     eliashberg_ingredients = create_eliashberg_ingredients(p)
     g0_wk = eliashberg_ingredients.g0_wk
-    big_nw = 2*p.nw + 1
-    eliashberg_ingredients_big = create_eliashberg_ingredients(p.alter(nw=big_nw))
-    gamma_big = eliashberg_ingredients_big.gamma
+    gamma = eliashberg_ingredients.gamma
 
-    next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk) 
-    Es, eigen_modes = solve_eliashberg(gamma_big, g0_wk, product='SUM', solver='IRAM')
+    Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma)
+    next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
+    Es, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
 
     p.next_delta = next_delta
     p.E = Es[0]
@@ -37,16 +48,16 @@ def save_new_benchmarks(filename, p):
 
     write_TarGZ_HDFArchive(filename, p=p)
 
-def test_next_delta(g0_wk, gamma_big, expected_next_delta):
-    next_delta = eliashberg_product(gamma_big, g0_wk, g0_wk) 
-    np.testing.assert_allclose(next_delta.data, expected_next_delta.data)
+def test_next_delta(g0_wk, gamma, expected_next_delta):
+    Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(gamma)
+    next_delta = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g0_wk, g0_wk) 
+    np.testing.assert_allclose(next_delta.data, expected_next_delta.data, atol=10e-12)
 
-def test_solve_eliashberg(g0_wk, gamma_big, expected_E, expected_eigen_mode):
-    Es, eigen_modes = solve_eliashberg(gamma_big, g0_wk, product='SUM', solver='IRAM')
+def test_solve_eliashberg(g0_wk, gamma, expected_E, expected_eigen_mode):
+    Es, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
     np.testing.assert_allclose(Es[0], expected_E) 
     assert allclose_by_scalar_multiplication(eigen_modes[0], expected_eigen_mode),\
                 "Eigenvectors are not the same."
-
 
 if __name__ == "__main__":
     p = ParameterCollection(
@@ -74,13 +85,10 @@ if __name__ == "__main__":
 
     eliashberg_ingredients = create_eliashberg_ingredients(p)
     g0_wk = eliashberg_ingredients.g0_wk
-    # For the eliashberg SUM procedure a Gamma with a twice as big w-mesh then the GF is needed.
-    big_nw = 2*p.nw + 1
-    eliashberg_ingredients_big = create_eliashberg_ingredients(p.alter(nw=big_nw))
-    gamma_big = eliashberg_ingredients_big.gamma
+    gamma = eliashberg_ingredients.gamma
 
-    test_next_delta(g0_wk, gamma_big, p_benchmark.next_delta)
-    test_solve_eliashberg(g0_wk, gamma_big, p_benchmark.E, p_benchmark.eigen_mode)
+    test_next_delta(g0_wk, gamma, p_benchmark.next_delta)
+    test_solve_eliashberg(g0_wk, gamma, p_benchmark.E, p_benchmark.eigen_mode)
 
-    print('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info))
-    print('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info))
+    print(('\nThe benchmark data was obtained with %s.'%show_version_info(p_benchmark.version_info)))
+    print(('\nThis (new) version with %s yields the same results!'%show_version_info(p.version_info)))
