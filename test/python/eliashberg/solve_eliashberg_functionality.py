@@ -8,7 +8,9 @@ from triqs_tprf.utilities import create_eliashberg_ingredients
 from triqs_tprf.eliashberg import solve_eliashberg
 
 
-def test_no_initial_delta_input(g0_wk, gamma):
+@patch("triqs_tprf.eliashberg.implicitly_restarted_arnoldi_method")
+def test_no_initial_delta_input(patched_solver, g0_wk, gamma):
+    patched_solver.return_value = [0.0], [g0_wk.data.flatten()]
     with patch("triqs_tprf.eliashberg.semi_random_initial_delta") as patched:
         patched.return_value = g0_wk
 
@@ -17,7 +19,9 @@ def test_no_initial_delta_input(g0_wk, gamma):
     patched.assert_called()
 
 
-def test_initial_delta_input(g0_wk, gamma):
+@patch("triqs_tprf.eliashberg.implicitly_restarted_arnoldi_method")
+def test_initial_delta_input(patched_solver, g0_wk, gamma):
+    patched_solver.return_value = [0.0], [g0_wk.data.flatten()]
     with patch("triqs_tprf.eliashberg.semi_random_initial_delta") as patched:
         patched.return_value = g0_wk
 
@@ -122,7 +126,10 @@ def test_wrong_input_for_solver(g0_wk, gamma):
         assert str(e) == expected_message
 
 
-def test_call_symmetrize_function(g0_wk, gamma):
+@patch("triqs_tprf.eliashberg.eliashberg_product_fft")
+def test_call_symmetrize_function(patched_product, g0_wk, gamma):
+    patched_product.return_value = g0_wk
+
     symmetrize_fct = MagicMock()
     symmetrize_fct.return_value = g0_wk
 
@@ -140,7 +147,10 @@ def test_invalid_symmetrize_function(g0_wk, gamma):
         assert str(e) == "'int' object has no attribute 'data'"
 
 
-def test_k_input(g0_wk, gamma):
+@patch("triqs_tprf.eliashberg.eliashberg_product_fft")
+def test_k_input(patched_product, g0_wk, gamma):
+    patched_product.return_value = g0_wk
+
     for k_input in [1, 3]:
         Es, evs = solve_eliashberg(gamma, g0_wk, k=k_input)
         assert len(Es) == k_input
@@ -166,8 +176,8 @@ if __name__ == "__main__":
     g0_wk = eliashberg_ingredients.g0_wk
     gamma = eliashberg_ingredients.gamma
 
-    test_no_initial_delta_input(g0_wk, gamma)
-    test_initial_delta_input(g0_wk, gamma)
+    test_no_initial_delta_input(g0_wk=g0_wk, gamma=gamma)
+    test_initial_delta_input(g0_wk=g0_wk, gamma=gamma)
     test_tol_used_in_IRAM(g0_wk, gamma)
     test_tol_used_in_PM(g0_wk, gamma)
     test_call_eliashberg_product_fft(g0_wk, gamma)
@@ -179,6 +189,6 @@ if __name__ == "__main__":
 
     test_wrong_input_for_product(g0_wk, gamma)
     test_wrong_input_for_solver(g0_wk, gamma)
-    test_call_symmetrize_function(g0_wk, gamma)
+    test_call_symmetrize_function(g0_wk=g0_wk, gamma=gamma)
     test_invalid_symmetrize_function(g0_wk, gamma)
-    test_k_input(g0_wk, gamma)
+    test_k_input(g0_wk=g0_wk, gamma=gamma)
