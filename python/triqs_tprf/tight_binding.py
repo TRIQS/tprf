@@ -4,7 +4,8 @@
 #
 # Copyright (C) 2011 by M. Ferrero, O. Parcollet
 # Copyright (C) 2018 The Simons Foundation
-# Author: Hugo U. R. Strand
+# Copyright (C) 2019, S. Käser
+# Author: Hugo U. R. Strand, S. Käser
 #
 # TRIQS is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
