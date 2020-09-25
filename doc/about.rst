@@ -4,6 +4,7 @@ Authors
 =======
 
 TPRF has been written by Hugo U.R. Strand with TRIQS-library support from N. Wentzell and O. Parcollet.
+The Eliashberg section was contributed by Stefan Käser with support from H. U.R. Strand, N. Wentzell, O. Parcollet and P. Dumitrescu.
 
 License
 =======
