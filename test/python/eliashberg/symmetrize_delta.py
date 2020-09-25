@@ -12,7 +12,6 @@ import functools
 # ----------------------------------------------------------------------
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------
 
@@ -28,7 +27,7 @@ from triqs_tprf.symmetries import enforce_symmetry, check_symmetry
 
 # ----------------------------------------------------------------------
 
-def test_symmetry_constraint_of_solve_eliashberg(g0_wk, gamma):
+def test_symmetry_constraint_of_solve_eliashberg(g0_wk, gamma, do_plot=False):
     variables = ["frequency", "momentum", "orbital"]
     all_symmetries = [('even', 'odd', 'even'), ('odd', 'even', 'even')]
 
@@ -49,9 +48,12 @@ def test_symmetry_constraint_of_solve_eliashberg(g0_wk, gamma):
             if not expected_symmetries == produced_symmetries:
                 raise AssertionError("Incorrect symmetries were produced.")
 
-            #plot_delta(delta)
+            if do_plot:
+                plot_delta(delta)
 
 def plot_delta(delta):
+    import matplotlib.pyplot as plt
+
     fig, axes = plt.subplots(3, 3)
 
     vmax = np.max(np.abs(delta[Idx(0),:].data))

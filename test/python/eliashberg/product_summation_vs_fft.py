@@ -8,7 +8,6 @@ Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 # ----------------------------------------------------------------------
 
 import numpy as np
-from triqs.plot.mpl_interface import oplot, plt
 import warnings 
 
 # ----------------------------------------------------------------------
@@ -95,6 +94,8 @@ def test_eliashberg_product_for_different_initital_delta(g0_wk, gamma, gamma_big
         ' both yield DIFFERENT results, as expected when using a different inital delta.')
 
 def plot_output(g0_wk, gamma):
+    from triqs.plot.mpl_interface import oplot, plt
+
     initial_delta = semi_random_initial_delta(g0_wk)
 
     next_delta_summation = eliashberg_product(gamma_big, g0_wk, initial_delta)
