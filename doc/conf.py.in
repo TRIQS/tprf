@@ -35,8 +35,8 @@ templates_path = ['@CMAKE_CURRENT_SOURCE_DIR@/_templates']
 html_theme = 'triqs'
 html_theme_path = ['@CMAKE_CURRENT_SOURCE_DIR@/themes']
 html_show_sphinx = False
-html_context = {'header_title': '@PROJECT_NAME@',
-                'header_subtitle': 'An example application using cpp2py and <a class="triqs" style="font-size: 12px" href="https://triqs.github.io">TRIQS</a>',
+html_context = {'header_title': 'tprf',
+                'header_subtitle': 'Two-particle response function tools based on the <a class="triqs" style="font-size: 12px" href="https://triqs.github.io">TRIQS</a> library',
                 'header_links': [['Install', 'install'],
                                  ['Documentation', 'documentation'],
                                  ['Issues', 'issues'],
