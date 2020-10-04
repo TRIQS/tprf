@@ -3,12 +3,6 @@
 Linearized Eliashberg Equation
 ==============================
 
-.. note::
-    The following is restricted to :math:`SU(2)` symmetric systems.
-    All indices are purely orbital and superconducting gaps :math:`\Delta` and
-    particle-particle vertices :math:`\Gamma` are restricted to the singlet/triplet
-    channel, shown by the superscripts s/t respectively. 
-
 The linearized Eliashberg equation is a generalization of the linearized
 Bardeen-Cooper-Schrieffer (BCS) gap equation to frequency dependent gaps.
 It can be used to determine the critical (inverse) temperature
@@ -31,11 +25,17 @@ frequency and momentum :math:`\mathbf{k}`,
 :math:`\Gamma^{\mathrm{s/t}}` is the irreducible particle-particle vertex
 and :math:`G` is the one-particle Green's function.
 
-Note, that the bosonic Matsubara frequency and momentum in the particle-particle vertex
-is set to zero.
-This is because we are interested in Cooper-pairs which have a zero
-transfered momentum-frequency in a scattering process.
-    
+.. note::
+   The bosonic Matsubara frequency and momentum in the particle-particle vertex is set to zero.
+   This is because we are interested in Cooper-pairs which have a zero
+   transfered momentum-frequency in a scattering process.
+
+.. note::
+    The current implementation is restricted to :math:`SU(2)` symmetric systems.
+    All indices are purely orbital and superconducting gaps :math:`\Delta` and
+    particle-particle vertices :math:`\Gamma` are restricted to the singlet/triplet
+    channel, shown by the superscripts s/t respectively. 
+
 Deriving the linearized Eliashberg equation from the normal state
 -----------------------------------------------------------------
 
