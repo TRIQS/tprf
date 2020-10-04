@@ -10,17 +10,19 @@ Packaged Versions of TPRF
 Ubuntu Debian packages
 ----------------------
 
-We provide a Debian package for the Ubuntu LTS Versions 16.04 (xenial) and 18.04 (bionic), which can be installed by following the steps outlined :ref:`here <triqslibs:triqs_debian>`, and the subsequent command::
+We provide a Debian package for the Ubuntu LTS Versions 16.04 (xenial) and 18.04 (bionic), see :ref:`Triqs Debian package install instructions <triqslibs:ubuntu_debian>`. After installing Triqs the command::
 
-        sudo apt-get install -y triqs_tprf
+  sudo apt-get install -y triqs_tprf
 
+can be used to install the TPRF package.
+    
 .. _anaconda:
 Anaconda (experimental)
 -----------------------
 
 We provide Linux and OSX packages for the `Anaconda <https://www.anaconda.com/>`_ distribution. The packages are provided through the `conda-forge <https://conda-forge.org/>`_ repositories. After `installing conda <https://docs.conda.io/en/latest/miniconda.html>`_ you can install TPRF with::
 
-        conda install -c conda-forge triqs_tprf
+     conda install -c conda-forge triqs_tprf
 
 See also `github.com/conda-forge/triqs_tprf-feedstock <https://github.com/conda-forge/triqs_tprf-feedstock/>`_.
 
