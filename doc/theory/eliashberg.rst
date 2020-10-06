@@ -39,16 +39,9 @@ and :math:`G` is the one-particle Green's function.
 Deriving the linearized Eliashberg equation from the normal state
 -----------------------------------------------------------------
 
-Generally speaking a transition from the normal state to the superconducting
-one occurs when the particle-particle susceptibility diverges.
-
-.. math::
-    \mathbf{\chi}^{\mathrm{s/t}} = [\mathbf{1}-\mathbf{\Gamma}^{\mathrm{s/t}}
-    \mathbf{\chi}^{(0),{PP}}]^{-1}
-    \mathbf{\chi}^{(0),{PP}}
-
-This is the case when the largest eigenvalue of 
-:math:`\mathbf{\Gamma^{\mathrm{s/t}}} \mathbf{\chi}^{(0),{PP}}` becomes unity.
+Generally speaking a transition from the normal state to a singlet/triplet 
+superconducting one occurs when the largest eigenvalue of 
+:math:`\frac{1}{2}\mathbf{\Gamma^{\mathrm{s/t}}} \mathbf{\chi}^{(0),{PP}}` becomes unity.
 For a largest eigenvalues that is smaller than :math:`1` we are still in the
 normal state,
 but we can calculate the corresponding eigenvectors :math:`\Delta^{\mathrm{s/t}}`.
@@ -57,7 +50,7 @@ This corresponds to the following eigenvalue equation
 .. math::
     \lambda\Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)
     = 
-    \frac{1}{N_{\mathbf{k}}^2 \beta^2}\sum_{K', K''}
+    \frac{1}{2N_{\mathbf{k}}^2 \beta^2}\sum_{K', K''}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
     \chi^{(0),{PP}}_{\bar{e}d\bar{f}c}(Q=0, K', K'')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,,
@@ -67,9 +60,9 @@ which we can write like Eq. :eq:`linearized_eliashberg_1` with the definiton
 of :math:`\chi^{(0),{PP}}`
 
 .. math::
-    \chi^{(0),{PP}}_{\bar{a}b\bar{c}d}(Q, K, K') 
+    \chi^{(0),{PP}}_{\bar{a}b\bar{c}d}(Q=0, K, K') 
     =
-    -\frac{N_{\mathbf{k}} \beta}{2}
+    -N_{\mathbf{k}} \beta
     G_{d\bar{a}}(K)G_{b\bar{c}}(-K')\delta_{K, K'}\,,
     :label: chi_0_pp
 
@@ -83,12 +76,14 @@ as
     :label: linearized_eliashberg_3
 
 .. note::
-    There is an inconsistency with a factor of :math:`\frac{1}{2}` with
-    Eq. :eq:`chi_0_pp` and Eq. :eq:`bare_pp_sus_def`.
-    As there is no bare particle-particle bubble implementation yet,
-    and the Eliashberg implementation is self-consistent,
-    we don't have any problems. 
-    But for future implementations this needs to be addressed.
+    Our definiton of :math:`\chi^{(0),{PP}}` is different from [#bickers]_
+    and [#nourafkan]_. This stems from the fact, that due to the indistinguishability 
+    of the particles in the particle-particle channel doublecounting diagrams in the 
+    Bethe-Salpeter equation (BSE) must be avoided. 
+    We do this by defining the particle-particle BSE with a factor of
+    :math:`\frac{1}{2}`, see :ref:`vertex` Eq. :eq:`BSE_PP`.
+    In [#bickers]_ and [#nourafkan]_ the particle-particle BSE is defined without this
+    factor and they include it in their definiton of :math:`\chi^{(0),{PP}}`.
 
 This equation is valid for :math:`\lambda \leq 1`
 and yields eigenvectors, which correspond to superconducting gap functions
