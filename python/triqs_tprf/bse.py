@@ -41,6 +41,7 @@ from triqs_tprf.lattice import chi0r_from_gr_PH_nompi
 from triqs_tprf.lattice import chi0q_from_chi0r
 from triqs_tprf.lattice import chi0q_sum_nu 
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
+from triqs_tprf.lattice import phi_wnk_from_chi0q_and_gamma_PH
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk, add_fake_bosonic_mesh
 
 # ----------------------------------------------------------------------
@@ -395,58 +396,29 @@ def solve_lattice_ladder_vertex(g_wk, gamma_wnn):
         print 'nwf_g =', nwf_g
         print    
 
-    mpi.report('--> chi0_wk_tail_corr')
-    chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=nw) 
-
-    mpi.barrier()
-    mpi.report('B1 ' + str(chi0_wk_tail_corr[Idx(0), Idx(0,0,0)][0,0,0,0]))    
-    mpi.barrier()
-
     chi0_wnk = get_chi0_wnk(g_wk, nw=nw, nwf=nwf)
 
     mpi.barrier()
     mpi.report('C ' + str(chi0_wnk[Idx(0), Idx(0), Idx(0,0,0)][0,0,0,0]))    
     mpi.barrier()
     
-    mpi.report('--> trace chi0_wnk')
-    chi0_wk = chi0q_sum_nu(chi0_wnk)
-
-    mpi.barrier()
-    mpi.report('D ' + str(chi0_wk[Idx(0), Idx(0,0,0)][0,0,0,0]))    
-    mpi.barrier()
-
-    dchi_wk = chi0_wk_tail_corr - chi0_wk
-
-    chi0_kw = Gf(mesh=MeshProduct(kmesh, bmesh), target_shape=chi0_wk_tail_corr.target_shape)
-    chi0_kw.data[:] = chi0_wk_tail_corr.data.swapaxes(0, 1)
-
-    del chi0_wk
-    del chi0_wk_tail_corr
-
     assert( chi0_wnk.mesh.components[0] == bmesh )
     assert( chi0_wnk.mesh.components[1] == fmesh )
     assert( chi0_wnk.mesh.components[2] == kmesh )
 
     # -- Lattice BSE calc with built in trace
-    mpi.report('--> chi_kw from BSE')
+    mpi.report('--> phi_kwnn from BSE')
     #mpi.report('DEBUG BSE INACTIVE'*72)
-    chi_kw = chiq_sum_nu_from_chi0q_and_gamma_PH(chi0_wnk, gamma_wnn)
-    #chi_kw = chi0_kw.copy()
+    phi_kwnn = phi_wnk_from_chi0q_and_gamma_PH(chi0_wnk, gamma_wnn)
 
     mpi.barrier()
-    mpi.report('--> chi_kw from BSE (done)')
+    mpi.report('--> phi_kwnn from BSE (done)')
     
     del chi0_wnk
 
-    mpi.report('--> chi_kw tail corrected (using chi0_wnk)')
-    for k in kmesh:
-        chi_kw[k, :] += dchi_wk[:, k] # -- account for high freq of chi_0 (better than nothing)
-
-    del dchi_wk
-
     mpi.report('--> solve_lattice_bse, done.')
 
-    return chi_kw, chi0_kw
+    return phi_kwnn 
 
 # ----------------------------------------------------------------------
 def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
