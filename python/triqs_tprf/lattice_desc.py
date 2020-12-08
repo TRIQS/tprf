@@ -110,6 +110,8 @@ module.add_function ("triqs_tprf::chi_kwnn_t triqs_tprf::chiq_from_chi0q_and_gam
 
 module.add_function ("triqs_tprf::chi_kw_t triqs_tprf::chiq_sum_nu_from_chi0q_and_gamma_PH (triqs_tprf::chi_wnk_cvt chi0_wnk, triqs_tprf::chi_wnn_cvt gamma_ph_wnn)", doc = """Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\\chi^{(0)}_{\\bar{a}b\\bar{c}d}(\\omega, \\mathbf{k})`.\n\n  Computes\n\n  .. math::\n     \\chi_{\\bar{a}b\\bar{c}d}(\\omega, \\mathbf{k}) =\n     \\chi^{(0)} \\left[ 1 - \\Gamma^{(PH)} \\chi^{(0)} \\right]^{-1}\n\n  :param chi0_wnk: Generalized lattice bubble susceptibility :math:`\\chi^{(0)}_{\\bar{a}b\\bar{c}d}(\\omega, \\mathbf{k})`.\n  :param gamma_ph_wnn: Local particle-hole vertex function :math:`\\Gamma^{(PH)}_{\\bar{a}b\\bar{c}d}(\\omega, \\nu, \\nu\')`.\n  @return Generalized lattice susceptibility :math:`\\chi_{\\bar{a}b\\bar{c}d}(\\omega, \\mathbf{k})`.""")
 
+module.add_function ("triqs_tprf::chi_kwnn_t triqs_tprf::phi_wnk_from_chi0q_and_gamma_PH (triqs_tprf::chi_wnk_cvt chi0_wnk, triqs_tprf::chi_wnn_cvt gamma_ph_wnn)", doc = """""")
+
 module.add_function ("gf<cartesian_product<triqs::lattice::brillouin_zone,triqs::gfs::imfreq>,tensor_valued<4>> triqs_tprf::chiq_sum_nu_from_g_wk_and_gamma_PH (triqs_tprf::gk_iw_t g_wk, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = """""")
 
 module.add_function ("gf<cartesian_product<triqs::lattice::brillouin_zone,triqs::gfs::imfreq>,tensor_valued<4>> triqs_tprf::chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH (double mu, triqs_tprf::ek_vt e_k, triqs_tprf::g_iw_vt sigma_w, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = """""")
