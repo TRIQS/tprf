@@ -827,6 +827,119 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
   return chi_kw;
 }
 
+chi_kwnn_t phi_wnk_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn) {
+
+  auto _ = all_t{};
+
+  triqs::mpi::communicator c;
+  
+  auto target_shape = chi0_wnk.target_shape();
+  auto bmesh = std::get<0>(chi0_wnk.mesh());
+  auto fmesh = std::get<1>(chi0_wnk.mesh());
+  auto kmesh = std::get<2>(chi0_wnk.mesh());
+
+  double beta = fmesh.domain().beta;
+
+  chi_kwnn_t phi_kwnn({kmesh, bmesh, fmesh, fmesh}, target_shape);
+
+  auto arr = mpi_view(gf_mesh{kmesh, bmesh});
+
+  std::cout << "BSE rank " << c.rank() << " of " << c.size() << " has "
+	    << arr.size() << " jobs." << std::endl;
+
+  triqs::utility::timer t;
+  t.start();
+  
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    //auto &[k, w] = arr(idx);
+    auto k = std::get<0>(arr(idx));
+    auto w = std::get<1>(arr(idx));
+
+    //triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
+
+    // ----------------------------------------------------
+    //t_copy_1.start();
+
+    chi_w_t chi0_n(fmesh, target_shape);
+
+#pragma omp critical
+    chi0_n = chi0_wnk[w, _, k];
+
+    //t_copy_1.stop();
+    //std::cout << "BSE: copy_1 " << double(t_copy_1) << " s" << std::endl;
+    // ----------------------------------------------------
+    //t_chi0_nn.start();
+
+    chi_nn_t chi0_nn({fmesh, fmesh}, target_shape);
+    chi0_nn *= 0.;
+    
+    for (auto const &n : fmesh) chi0_nn[n, n] = chi0_n[n];
+
+    //t_chi0_nn.stop();
+    //std::cout << "BSE: chi0_nn " << double(t_chi0_nn) << " s" << std::endl;
+    // ----------------------------------------------------
+    //t_bse.start();
+
+    auto I = identity<Channel_t::PH>(chi0_nn);
+
+    chi_nn_t gamma_nn({fmesh, fmesh}, target_shape);
+
+#pragma omp critical
+    gamma_nn = gamma_ph_wnn[w, _, _];
+    
+    // this step could be optimized, using the diagonality of chi0 and I
+    chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
+
+    // also the last product here
+    chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+
+    chi_nn_t phi = product<Channel_t::PH>(product<Channel_t::PH>(gamma_nn, chi), gamma_nn);
+
+    //t_bse.stop();
+    //std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
+    // ----------------------------------------------------
+    //t_chi_tr.start();
+
+    //t_chi_tr.stop();
+    //std::cout << "BSE: chi tr " << double(t_chi_tr) << " s" << std::endl;
+    // ----------------------------------------------------
+    //t_copy_2.start();
+
+#pragma omp critical
+    phi_kwnn[k, w, _, _] = beta * beta * phi;
+
+    //t_copy_2.stop();
+    //std::cout << "BSE: copy_2 " << double(t_copy_2) << " s" << std::endl;
+    // ----------------------------------------------------
+
+    if(c.rank() == 0 && omp_get_thread_num() == 0) {
+
+      int Nomp = omp_get_num_threads();
+      int N = int(floor(arr.size() / double(Nomp)));
+      
+      //double t_left = double(t) * ( N / (idx + 1) - 1. );
+      int done_percent = int(floor(100 * double(idx + 1) / N));
+      
+      std::cout << "BSE " << triqs::utility::timestamp() << " "
+		<< std::setfill(' ') << std::setw(3) << done_percent << "% "
+		<< "ETA " << triqs::utility::estimate_time_left(N, idx, t)
+		<< " job no "
+		<< std::setfill(' ') << std::setw(5) << int(idx)
+		<< " of approx " << N << " jobs/thread/rank." << std::endl;
+    }
+        
+  }
+
+  phi_kwnn = mpi_all_reduce(phi_kwnn);
+
+  t.stop();
+  if(c.rank() == 0 )
+    std::cout << "BSE TIME: " << double(t) << " s" << std::endl;
+
+  return phi_kwnn;
+}
+
 // ----------------------------------------------------
 
 gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>>
