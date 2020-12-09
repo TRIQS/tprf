@@ -142,4 +142,7 @@ namespace triqs_tprf {
   */
 
   chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s);
+
+  chi_wk_t phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U);
 }
+

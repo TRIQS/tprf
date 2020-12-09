@@ -337,4 +337,39 @@ chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
   return Gamma_pp_wk;
 }
 
+chi_wk_t phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U) {
+
+  using scalar_t = chi_wk_t::scalar_t;
+
+  size_t nb = chi.target_shape()[0];
+
+  auto phi_wk = make_gf(chi);
+  phi_wk *= 0;
+
+  // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
+  auto U_matrix = make_matrix_view(group_indices_view(U, {0, 1}, {3, 2}));
+
+  auto meshes_mpi = mpi_view(phi_wk.mesh());
+
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+      auto &[w, k] = meshes_mpi(idx);
+
+      array<scalar_t, 4> phi_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
+      array<scalar_t, 4> chi_arr{chi[w, k], memory_layout_t<4>{0, 1, 2, 3}};
+
+      // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
+      auto phi_matrix = make_matrix_view(group_indices_view(phi_arr, {0, 1}, {3, 2}));
+      // PH grouping of the susceptibilites, from c+cc+c, permuting the last two indices.
+      auto chi_matrix = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2}));
+
+      phi_matrix = U_matrix * chi_matrix * U_matrix;
+
+      phi_wk[w, k] = phi_arr;
+  }
+  phi_wk = mpi_all_reduce(phi_wk);
+
+  return phi_wk;
+}
+
 } // namespace triqs_tprf
