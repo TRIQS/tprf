@@ -889,10 +889,10 @@ chi_kwnn_t phi_wnk_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gam
     gamma_nn = gamma_ph_wnn[w, _, _];
     
     // this step could be optimized, using the diagonality of chi0 and I
-    chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
+    chi_nn_t denom = I - product<Channel_t::PH>(gamma_nn, chi0_nn);
 
     // also the last product here
-    chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+    chi_nn_t chi = product<Channel_t::PH>(chi0_nn, inverse<Channel_t::PH>(denom));
 
     chi_nn_t phi = product<Channel_t::PH>(product<Channel_t::PH>(gamma_nn, chi), gamma_nn);
 
