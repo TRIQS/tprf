@@ -72,8 +72,8 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   for (const auto w : wmesh) {
     for (auto [A, B] : F_wk.target_indices())
       for (auto [c, d] : delta_wk.target_indices())
-        F_w[w](A, B) +=
-        g_left_w[w](A, c) * g_right_w[-w](B, d) * delta_w[w](c, d);
+        F_w[w](B, A) +=
+        g_left_w[w](A, d) * g_right_w[-w](B, c) * delta_w[w](c, d);
      }
      F_wk[_, k] = F_w;
    }
@@ -155,7 +155,7 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
   for (const auto r : std::get<1>(F_tr.mesh())) {
     auto F_t = F_tr[_, r];
     for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
+        delta_r_out[r](a, b) += -Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(B, A);
   }
 
   return delta_r_out;
@@ -197,7 +197,7 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
     
     for (const auto t : tmesh) {
       for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_t[t](a, b) += -Gamma_pp_dyn_t[t](A, a, B, b) * F_t[t](A, B);
+        delta_t[t](a, b) += -Gamma_pp_dyn_t[t](B, a, A, b) * F_t[t](B, A);
     }
     delta_tr_out[_, r] = delta_t;
   }
@@ -314,7 +314,7 @@ chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
 
       Gamma_pp_matrix = charge_factor * U_c_matrix * chi_c_matrix * U_c_matrix \
                       + spin_factor * U_s_matrix * chi_s_matrix * U_s_matrix \
-                      + 0.5 * (U_s_matrix + U_c_matrix);
+                      + 0.5 * (0.5 * U_s_matrix - 0.5 * U_c_matrix);
 
       Gamma_pp_wk[w, k] = Gamma_pp_arr;
   }
