@@ -281,17 +281,6 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
-
-g_wk_t eliashberg_product_fermionic(chi_wnnr_vt Gamma_pp_wnnr, g_wk_vt g_wk, g_wk_vt delta_wk) {
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
-  auto F_wr = fourier_wk_to_wr(F_wk);
-
-  auto delta_wr_out = eliashberg_fermionic_gamma_f_product(Gamma_pp_wnnr, F_wr);
-  auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
-
-  return delta_wk_out;
-}
-
 chi_wnnr_t preprocess_gamma_for_fermionic(chi_wnnk_vt Gamma_pp_wnnk) {
   auto Gamma_pp_wnnr = fourier_wnnk_to_wnnr_general_target(Gamma_pp_wnnk);
   return Gamma_pp_wnnr;
@@ -334,6 +323,15 @@ g_wr_t eliashberg_fermionic_gamma_f_product(chi_wnnr_vt Gamma_pp_wnnr, g_wr_vt F
   return delta_wr_out;
 }
 
+g_wk_t eliashberg_product_fermionic(chi_wnnr_vt Gamma_pp_wnnr, g_wk_vt g_wk, g_wk_vt delta_wk) {
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  auto F_wr = fourier_wk_to_wr(F_wk);
+
+  auto delta_wr_out = eliashberg_fermionic_gamma_f_product(Gamma_pp_wnnr, F_wr);
+  auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
+
+  return delta_wk_out;
+}
 
 chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
         array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s, \

@@ -64,7 +64,7 @@ module.add_function ("std::tuple<chi_tr_vt,chi_r_vt> triqs_tprf::dynamic_and_con
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = """""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fermionic (triqs_tprf::chi_wnnk_vt Gamma_pp_wnnk, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = """""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fermionic (triqs_tprf::chi_wnnr_vt Gamma_pp_wnnr, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = """""")
 
 module.add_function ("triqs_tprf::g_wr_t triqs_tprf::eliashberg_fermionic_gamma_f_product (triqs_tprf::chi_wnnr_vt Gamma_pp_wnnr, triqs_tprf::g_wr_vt F_wr)", doc = """""")
 
