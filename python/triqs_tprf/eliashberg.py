@@ -32,6 +32,7 @@ from scipy.sparse.linalg import eigs
 from pytriqs.gf import Gf
 from lattice import eliashberg_product
 from lattice import eliashberg_product_fft, eliashberg_product_fft_constant
+from lattice import eliashberg_product_fermionic, preprocess_gamma_for_fermionic
 from lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 
 # ----------------------------------------------------------------------
@@ -211,6 +212,12 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
 
     elif product == 'SUM':
         eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
+
+    elif product == "fermionic":
+        print(Gamma_pp_wk.data.shape)
+        Gamma_pp_wnnr = preprocess_gamma_for_fermionic(Gamma_pp_wk)
+        eli_prod = functools.partial(eliashberg_product_fermionic, Gamma_pp_wnnr, g_wk)
+
 
     else:
         raise NotImplementedError('There is no implementation of the eliashberg product'

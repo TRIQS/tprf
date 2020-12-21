@@ -169,4 +169,49 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   return g_wk;
 }
 
+template <typename Gf_type>
+auto fourier_wnnk_to_wnnr_general_target(Gf_type g_wnnk) {
+  
+  auto _ = all_t{};
+
+  auto wmesh = std::get<0>(g_wnnk.mesh());
+  auto numesh = std::get<1>(g_wnnk.mesh());
+  auto nupmesh = std::get<2>(g_wnnk.mesh());
+  auto kmesh = std::get<3>(g_wnnk.mesh());
+
+  auto rmesh = make_adjoint_mesh(kmesh);
+  auto g_wnnr = make_gf<cartesian_product<imfreq, imfreq, imfreq, cyclic_lattice>>({wmesh, numesh, nupmesh, rmesh}, g_wnnk.target());
+
+  auto w0 = *wmesh.begin();
+  auto nu0 = *numesh.begin();
+  auto nup0 = *nupmesh.begin();
+  auto p = _fourier_plan<0>(gf_const_view(g_wnnk[w0, nu0, nup0, _]), gf_view(g_wnnr[w0, nu0, nup0, _]));
+
+  auto w_arr = mpi_view(wmesh);
+  auto nu_arr = mpi_view(numesh);
+  auto nup_arr = mpi_view(nupmesh);
+
+#pragma omp parallel for 
+  for (unsigned int widx = 0; widx < w_arr.size(); widx++) {
+    auto &w = w_arr(widx);
+    for (unsigned int nuidx = 0; nuidx < nu_arr.size(); nuidx++) {
+      auto &nu = nu_arr(nuidx);
+      for (unsigned int nupidx = 0; nupidx < nup_arr.size(); nupidx++) {
+        auto &nup = nup_arr(nupidx);
+
+        auto g_k = make_gf<brillouin_zone>(kmesh, g_wnnk.target());
+        auto g_r = make_gf<cyclic_lattice>(rmesh, g_wnnr.target());
+      
+        g_k = g_wnnk[w,nu, nup, _];
+
+        _fourier_with_plan<0>(gf_const_view(g_k), gf_view(g_r), p);
+
+        g_wnnr[w, nu, nup, _] = g_r;
+      }
+    }
+  }
+  g_wnnr = mpi_all_reduce(g_wnnr);
+  return g_wnnr;
+}
+
 } // namespace triqs_tprf

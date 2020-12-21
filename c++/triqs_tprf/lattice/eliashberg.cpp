@@ -281,6 +281,60 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
+
+g_wk_t eliashberg_product_fermionic(chi_wnnr_vt Gamma_pp_wnnr, g_wk_vt g_wk, g_wk_vt delta_wk) {
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  auto F_wr = fourier_wk_to_wr(F_wk);
+
+  auto delta_wr_out = eliashberg_fermionic_gamma_f_product(Gamma_pp_wnnr, F_wr);
+  auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
+
+  return delta_wk_out;
+}
+
+chi_wnnr_t preprocess_gamma_for_fermionic(chi_wnnk_vt Gamma_pp_wnnk) {
+  auto Gamma_pp_wnnr = fourier_wnnk_to_wnnr_general_target(Gamma_pp_wnnk);
+  return Gamma_pp_wnnr;
+}
+
+g_wr_t eliashberg_fermionic_gamma_f_product(chi_wnnr_vt Gamma_pp_wnnr, g_wr_vt F_wr) {
+
+  auto wmesh = std::get<0>(F_wr.mesh());
+  auto rmesh = std::get<1>(F_wr.mesh());
+
+  auto delta_wr_out = make_gf(F_wr);
+  delta_wr_out *= 0.;
+
+/* This function contains a lot boiler plate code due to issue
+   #725 in the TRIQS library.
+   It will be changed later
+*/
+
+  auto r_arr = mpi_view(rmesh);  
+  auto _ = all_t{};
+#pragma omp parallel for
+  for(unsigned int idx_r = 0; idx_r < rmesh.size(); idx_r++){
+    auto r = r_arr(idx_r);
+
+    auto delta_w = make_gf<imfreq>(wmesh, delta_wr_out.target());
+
+    auto Gamma_pp_wnn = Gamma_pp_wnnr[_, _, _, r];
+    auto F_w = F_wr[_, r];
+    
+    for (const auto nu : wmesh) {
+      for (const auto nup : wmesh) {
+        for (auto [A, a, B, b] : Gamma_pp_wnnr.target_indices())
+          delta_w[nu](a, b) += -Gamma_pp_wnn[nu-nup, -nu, nup](B, a, A, b) * F_w[nup](B, A);
+      }
+    }
+    delta_wr_out[_, r] = delta_w;
+  }
+  delta_wr_out /= wmesh.domain().beta;
+
+  return delta_wr_out;
+}
+
+
 chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
         array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s, \
         double charge_factor, double spin_factor) {
