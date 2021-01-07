@@ -96,12 +96,17 @@ typedef chi_kwnn_t::view_type chi_kwnn_vt;
   // bosonic freq w for "\omega"
   // fermionic freq "n" for "\nu"
   // imagnary time "t" for "\tau"
+  // real freq f
   // real space "r"
   // momentum space "k"
 
 typedef gf<brillouin_zone, matrix_valued> e_k_t;
 typedef e_k_t::const_view_type e_k_cvt;
 typedef e_k_t::view_type e_k_vt;
+
+typedef gf<brillouin_zone, matrix_valued> h_k_t;
+typedef h_k_t::const_view_type h_k_cvt;
+typedef h_k_t::view_type h_k_vt;
 
 typedef gf<imfreq, matrix_valued> g_w_t;
 typedef g_w_t::const_view_type g_w_cvt;
@@ -142,6 +147,10 @@ typedef chi_wr_t::view_type chi_wr_vt;
 typedef gf<cartesian_product<imfreq, brillouin_zone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;
+
+typedef gf<cartesian_product<refreq, brillouin_zone>, tensor_valued<4>> chi_fk_t;
+typedef chi_fk_t::const_view_type chi_fk_cvt;
+typedef chi_fk_t::view_type chi_fk_vt;
 
 typedef gf<cartesian_product<brillouin_zone, imfreq>, tensor_valued<4>> chi_kw_t;
 typedef chi_kw_t::const_view_type chi_kw_cvt;
