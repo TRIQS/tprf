@@ -20,12 +20,16 @@
  *
  ******************************************************************************/
 
+#include "common.hpp"
+
 #include "eliashberg.hpp"
 #include <omp.h>
 #include "../mpi.hpp"
 
 #include "gf.hpp"
 #include "fourier.hpp"
+
+#include "../mpi.hpp"
 
 namespace triqs_tprf {
 
@@ -81,13 +85,21 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
 
-  for (auto const &[w, k] : delta_wk.mesh())
-    for (auto const &[n, q] : delta_wk.mesh())
-      for (auto [c, a, d, b] : Gamma_pp.target_indices())
-        delta_wk_out[w, k](a, b) +=
-            -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
-
+  auto arr = mpi_view(kmesh);  
+  #pragma omp parallel for
+  for (int kidx = 0; kidx < arr.size(); kidx++) {
+    auto k = arr(kidx);
+    for (auto const &w : wmesh) {
+      for (auto const &[n, q] : delta_wk.mesh())
+        for (auto [c, a, d, b] : Gamma_pp.target_indices())
+          delta_wk_out[w, k](a, b) +=
+              -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
+    }
+  }
+  
   delta_wk_out /= (wmesh.domain().beta * kmesh.size());
+
+  delta_wk_out = mpi::all_reduce(delta_wk_out);
   
   return delta_wk_out;
 }
