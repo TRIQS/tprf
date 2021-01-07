@@ -6,7 +6,7 @@ from cpp2py.wrap_generator import *
 module = module_(full_name = "lattice", doc = r"Lattice functionality", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['triqs.gf', 'triqs.lattice', 'triqs.utility.mpi'])
+module.add_imports(*['triqs.gf', 'triqs.lattice'])
 
 # Add here all includes
 module.add_include("triqs_tprf/lattice.hpp")
@@ -258,6 +258,13 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00_wk (triqs_
       plane the standard expression for the Lindhard response is obtained when the
       poles are non-degenerate. The degenerate case produces an additional frequency independent
       contribution (the last term on the last row).""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00_fk (triqs_tprf::h_k_cvt h_k, gf_mesh<triqs::gfs::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies.
+
+   ...
+
+   .. note::
+      ...""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
 
