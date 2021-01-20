@@ -15,7 +15,7 @@ It is given by
 .. math::
     \Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)=  -\frac{1}{2 N_{\mathbf{k}}\beta_\mathrm{c}}\sum_{K'}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
-    G_{c\bar{e}}(K')G_{d\bar{f}}(-K')
+    G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
     :label: linearized_eliashberg_1
 
@@ -28,20 +28,60 @@ and :math:`G` is the one-particle Green's function.
 .. note::
    The bosonic Matsubara frequency and momentum in the particle-particle vertex is set to zero.
    This is because we are interested in Cooper-pairs which have a zero
-   transfered momentum-frequency in a scattering process.
+   transfered momentum-frequency in a scattering process [#nourafkan]_.
 
 .. note::
     The current implementation is restricted to :math:`SU(2)` symmetric systems.
     All indices are purely orbital and superconducting gaps :math:`\Delta` and
     particle-particle vertices :math:`\Gamma` are restricted to the singlet/triplet
     channel, shown by the superscripts s/t respectively. 
+    But note, that the equations still hold for the spin-dependent case and
+    one would soley need to implement the spin-dependent particle-particle vertex
+    to use them.
 
 Deriving the linearized Eliashberg equation from the normal state
 -----------------------------------------------------------------
 
-Generally speaking a transition from the normal state to a singlet/triplet 
-superconducting one occurs when the largest eigenvalue of 
-:math:`\frac{1}{2}\mathbf{\Gamma^{\mathrm{s/t}}} \mathbf{\chi}^{(0),{PP}}` becomes unity.
+The singlet and triplet susceptibilties are given by
+
+.. math::
+    \chi^{\mathrm{s}}
+    =
+    -
+    \chi^{(0), \mathrm{PP}}
+    +
+    \frac{1}{2}
+    \chi^{(0), \mathrm{PP}}
+    \mathbf{\Gamma}^{\mathrm{s}}
+    \left[
+    -
+    \chi^{\mathrm{s}}
+    +
+    \chi^{(0), \mathrm{PP}}
+    \right]
+    \,,
+
+and
+
+.. math::
+    \chi^{\mathrm{t}}
+    =
+    \chi^{(0), \mathrm{PP}}
+    +
+    \frac{1}{2}
+    \chi^{(0), \mathrm{PP}}
+    \mathbf{\Gamma}^{\mathrm{t}}
+    \left[
+    \chi^{\mathrm{t}}
+    +
+    \chi^{(0), \mathrm{PP}}
+    \right]
+    \,.
+
+A transition from the normal state to a singlet/triplet superconducting one occurs
+when the susceptibilties diverge.
+This is the case, when the largest eigenvalue of 
+:math:`\mp \frac{1}{2}\mathbf{\Gamma^{\mathrm{s/t}}} \mathbf{\chi}^{(0),{PP}}` becomes unity.
 For a largest eigenvalues that is smaller than :math:`1` we are still in the
 normal state,
 but we can calculate the corresponding eigenvectors :math:`\Delta^{\mathrm{s/t}}`.
@@ -52,11 +92,15 @@ This corresponds to the following eigenvalue equation
     = 
     \frac{1}{2N_{\mathbf{k}}^2 \beta^2}\sum_{K', K''}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
-    \chi^{(0),{PP}}_{\bar{e}d\bar{f}c}(Q=0, K', K'')
-    \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,,
+    \chi^{(0),{PP}}_{\bar{f}d\bar{e}c}(Q=0, K', K'')
+    \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
     :label: linearized_eliashberg_2
+    \,,
+ 
+where we incorporate the minus sign of the singlet channel in our definition of the 
+singlet irreducible vertex to only keep track of one version of the Eliashberg equation.
 
-which we can write like Eq. :eq:`linearized_eliashberg_1` with the definiton
+We can write this like Eq. :eq:`linearized_eliashberg_1` by using the definiton
 of :math:`\chi^{(0),{PP}}`
 
 .. math::
@@ -66,12 +110,12 @@ of :math:`\chi^{(0),{PP}}`
     G_{d\bar{a}}(K)G_{b\bar{c}}(-K')\delta_{K, K'}\,,
     :label: chi_0_pp
 
-as
+which yields
 
 .. math::
     \lambda\Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)=  -\frac{1}{2 N_{\mathbf{k}}\beta}\sum_{K'}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
-    G_{c\bar{e}}(K')G_{d\bar{f}}(-K')
+    G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
     :label: linearized_eliashberg_3
 
@@ -195,75 +239,74 @@ Random phase approximation for the irreducible particle-particle vertex
 
 The irreducible particle-particle vertex is given by the parquet equation,
 which can be expressed in terms of the fully irreducible vertex :math:`\Lambda`
-and the channel reducible vertex-ladder functions :math:`\Phi`.
+and the channel reducible vertex ladder functions :math:`\Phi`.
 It is given in the singlet channel by
 
 .. math::
-    \Gamma^{\mathrm{s}}_{a\bar{b}c\bar{d}}(Q=0, K, K')
-	\equiv &
+    \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(Q, K, K') =&
+	-
+	\Lambda^{\text{s}}_{a\overline{b}c\overline{d}}(Q, K, K')
+	+
+	\left[
 	\frac{3}{2}
-	\left[
-	\Phi^{\mathrm{m}}_{a\bar{b}c\bar{d}}(K-K')
-	+
-	\Phi^{\mathrm{m}}_{c\bar{b}a\bar{d}}(K+K')
-	\right]
-	\\&-
+	\Phi^{\text{m}}_{a\overline{b}c\overline{d}}
+	-
 	\frac{1}{2}
+	\Phi^{\text{d}}_{a\overline{b}c\overline{d}}
+	\right](Q-K-K', K, K')
+    \\
+	&+
 	\left[
-	\Phi^{\mathrm{d}}_{a\bar{b}c\bar{d}}(K-K')
-	+
-	\Phi^{\mathrm{d}}_{c\bar{b}a\bar{d}}(K+K')
-	\right]
-	+
-	\Lambda^{\mathrm{s}}_{a\bar{b}c\bar{d}}\,,
-    :label: singlet_gamma
+	\frac{3}{2}
+	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}
+	-
+	\frac{1}{2}
+	\Phi^{\text{d}}_{c\overline{b}a\overline{d}}
+	\right](K-K', Q-K, K')
+    :label: singlet_gamma_no_approx
 
 and in the triplet channel by
 
 .. math::
-    \Gamma^{\mathrm{t}}_{a\bar{b}c\bar{d}}(Q=0, K, K')
-	\equiv &
-	-\frac{1}{2}
-	\left[
-	\Phi^{\mathrm{m}}_{a\bar{b}c\bar{d}}(K-K')
-	-
-	\Phi^{\mathrm{m}}_{c\bar{b}a\bar{d}}(K+K')
-	\right]
-	\\&-
-	\frac{1}{2}
-	\left[
-	\Phi^{\mathrm{d}}_{a\bar{b}c\bar{d}}(K-K')
-	-
-	\Phi^{\mathrm{d}}_{c\bar{b}a\bar{d}}(K+K')
-	\right]
-	+
-	\Lambda^{\mathrm{t}}_{a\bar{b}c\bar{d}}\,,
-    :label: triplet_gamma
+    \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(Q, K, K') =&
+    \Lambda^{\text{t}}_{a\overline{b}c\overline{d}}(Q, K, K')
+    +
+    \left[
+    \frac{1}{2}
+    \Phi^{\text{m}}_{a\overline{b}c\overline{d}}
+    +
+    \frac{1}{2}
+    \Phi^{\text{d}}_{a\overline{b}c\overline{d}}
+    \right](Q-K-K', K, K')
+    \\
+    &+
+    \left[
+    -
+    \frac{1}{2}
+    \Phi^{\text{m}}_{c\overline{b}a\overline{d}}
+    -
+    \frac{1}{2}
+    \Phi^{\text{d}}_{c\overline{b}a\overline{d}}
+    \right](K-K', Q-K, K')
+    \,,
+    :label: triplet_gamma_no_approx
 
-
-where the vertex-ladder functions are given by
+with the spin diagonalized reducible vertex ladder functions given by
 
 .. math::
-    \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
+    \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q, K, K')
     =
-    \Lambda^{\text{d/m}} \chi^{\text{d/m}}(Q) \Lambda^{\text{d/m}}\,.
-
+    \frac{1}{(N_\mathbf{k}\beta)^2}
+    \sum_{K'', K'''}
+    \Gamma^{\text{d/m}}(Q, K, K'') \chi^{\text{d/m}}(Q, K'', K''') \Gamma^{\text{d/m}}(Q, K''', K')
+    \,.
 
 Note, that the superscripts :math:`\mathrm{d/m}` indicate the density/magnetic channel.
 
 Now, in the random phase approximation (RPA) the susceptibilities :math:`\chi^{\text{d/m}}`
 are approximated by the RPA bubble susceptibility,
-and the vertices are approximated by
-
-.. math::
-    \Lambda^{\text{d/m}} \approx U^{\mathrm{d/m}}\,,
-
-and
-
-.. math::
-    \Lambda^{\text{s/t}} \approx \frac{1}{2}(U^{\mathrm{d}} + U^{\mathrm{m}})\,.
-
-Here :math:`U^{\mathrm{d/m}}` is the bare local Kanamori interaction given by 
+and all vertices are substituted by the local and static bare Kanamori interaction :math:`U^{\mathrm{d/m}}`,
+given by
 
 .. math::
     U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}} =
@@ -276,45 +319,145 @@ Here :math:`U^{\mathrm{d/m}}` is the bare local Kanamori interaction given by
     \end{cases}\,,
 
 with the Hubbard interaction :math:`U` and the Hund's :math:`J`.
+The reducible ladder vertices then beceome only dependent on one bosonic Frequence and
+momentum pair :math:`Q`
 
-Note, that in both singlet :eq:`singlet_gamma` and
-triplet :eq:`triplet_gamma` a density and magnetic
-:math:`\Phi` term appears twice.
-Once without an index flip and a dependence on :math:`K-K'`,
-:math:`\Phi_{a\overline{b}c\overline{d}}(K-K')`,
-and another time with an index flip and a dependence on :math:`K+K'`, 
-:math:`\Phi_{c\overline{b}a\overline{d}}(K+K')`.
-Inside the linearized Eliashberg equation :eq:`linearized_eliashberg_3`
-the :math:`\Phi_{c\overline{b}a\overline{d}}(K+K')` term
-picks up a sign which depends on the frequency, momentum and orbital
-symmetry of the gap :math:`\Delta^{\mathrm{s/t}}`.
-For all allowed singlet combinations it is positive and for all allowed triplet ones
-negative. Therefore Eq. :eq:`singlet_gamma` and Eq. :eq:`triplet_gamma` become
+.. math::
+    \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
+    &\approx
+    \frac{1}{(N_\mathbf{k}\beta)^2}
+    \sum_{K'', K'''}
+    \overline{U}^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') \overline{U}^{\text{d/m}}
+    \\
+    &\approx
+    \overline{U}^{\mathrm{d/m}}
+    \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}
+    \,,
+
+and the fully irreducible vertices become
+
+.. math::
+    \Lambda^{\mathrm{s}}
+    \approx
+    -
+    \frac{1}{2}U^{\mathrm{d}}
+    -
+    \frac{3}{2}U^{\mathrm{m}}
+    \,,
+
+.. math::
+    \Lambda^{\mathrm{t}}
+    \approx
+    -
+    \frac{1}{2}U^{\mathrm{d}}
+    +
+    \frac{1}{2}U^{\mathrm{m}}
+    \,.
+
+In this approximation the irreducible singlet/triplet vertex for :math:`Q=0` takes the form
+
+.. math::
+    \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(Q=0, K, K') =&
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+	+
+	\frac{3}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
+	+
+	\left[
+	\frac{3}{2}
+	\Phi^{\text{m}}_{a\overline{b}c\overline{d}}
+	-
+	\frac{1}{2}
+	\Phi^{\text{d}}_{a\overline{b}c\overline{d}}
+	\right](-K-K')
+    \\
+	&+
+	\left[
+	\frac{3}{2}
+	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}
+	-
+	\frac{1}{2}
+	\Phi^{\text{d}}_{c\overline{b}a\overline{d}}
+	\right](K-K')
+	\,,
+    :label: singlet_gamma
+
+and
+
+.. math::
+    \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(Q=0, K, K') =&
+	-
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+	+
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
+	+
+	\left[
+	\frac{1}{2}
+	\Phi^{\text{m}}_{a\overline{b}c\overline{d}}
+	+
+	\frac{1}{2}
+	\Phi^{\text{d}}_{a\overline{b}c\overline{d}}
+	\right](-K-K')
+    \\
+	&+
+	\left[
+	-
+	\frac{1}{2}
+	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}
+	-
+	\frac{1}{2}
+	\Phi^{\text{d}}_{c\overline{b}a\overline{d}}
+	\right](K-K')
+    \,.
+    :label: triplet_gamma
+
+Note, that in both the singlet :eq:`singlet_gamma` and the triplet vertex 
+:eq:`triplet_gamma` the density and magnetic ladder vertices 
+:math:`\Phi^{\text{d/m}}` appear twice. Once with an index flip and with a :math:`K-K'`
+dependence, :math:`\Phi_{c\overline{b}a\overline{d}}(K-K')`, and once without an index flip 
+and a :math:`-K-K'` dependence, :math:`\Phi_{a\overline{b}c\overline{d}}(-K-K')`.
+In the linearized Eliashberg equation :eq:`linearized_eliashberg_3` those two terms can be
+transformed into each other by abiding the frequency, momentum and orbital
+symmetry of the gap. 
+For example :math:`\Phi_{a\overline{b}c\overline{d}}(-K-K')` transforms into 
+:math:`\pm\Phi_{c\overline{b}a\overline{d}}(K'-K)=\pm\Phi^*_{c\overline{b}a\overline{d}}(K-K')`
+for a singlet/triplet gap.
+We can therefore write Eq. :eq:`singlet_gamma` and :eq:`triplet_gamma` as
 
 .. math::
     \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
-    3 
-    \Phi^{\text{m}}_{a\overline{b}c\overline{d}}(K-K')
-    -
-    \Phi^{\text{d}}_{a\overline{b}c\overline{d}}(K-K')
-    +
-    \Lambda^{\text{s}}_{a\overline{b}c\overline{d}}
-    \,,
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+	+
+	\frac{3}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
+	+
+	\Re
+	\left[
+	3 
+	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
+	-
+	\Phi^{\text{d}}_{c\overline{b}a\overline{d}}(K-K')
+	\right]
+	\,,
     :label: singlet_gamma_2
 
 .. math::
     \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
+	-
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+	+
+	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}} 
+	+
+	\Re
+	\left[
     -
-    \Phi^{\text{m}}_{a\overline{b}c\overline{d}}(K-K')
-    -
-    \Phi^{\text{d}}_{a\overline{b}c\overline{d}}(K-K')
-    +
-    \Lambda^{\text{t}}_{a\overline{b}c\overline{d}} 
-    \,.
+	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
+	-
+	\Phi^{\text{d}}_{c\overline{b}a\overline{d}}(K-K')
+	\right]
+	\,.
     :label: triplet_gamma_2
 
-Note, that this simplification is only allowed, if the solutions of :math:`\Delta^{\mathrm{s/t}}`
-are restricted to the allowed symmetries, otherwise unphysical solution can occur.
+Note, that this simplification is only allowed if the solutions of :math:`\Delta^{\mathrm{s/t}}`
+are restricted to the allowed symmetries, otherwise unphysical solutions can occur.
 Also note, that the RPA particle-particle vertices in
 Eq. :eq:`singlet_gamma_2` and :eq:`triplet_gamma_2` only depend on the difference
 between the two fermionic Matsubara frequencies, i.e. a bosonic Matsubara frequency and one momentum.
@@ -324,7 +467,7 @@ We can therefore write the linearized Eliashberg equation
 .. math::
     \lambda\Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)=  -\frac{1}{2 N_{\mathbf{k}}\beta}\sum_{K'}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(K-K')
-    G_{c\bar{e}}(K')G_{d\bar{f}}(-K')
+    G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,,
     :label: linearized_eliashberg_5
 
@@ -337,12 +480,25 @@ This allows us to get rid of the summation by using the convolution theorem
     \mathcal{F}\left[\Delta_{\bar{a}\bar{b}}^{\mathrm{s/t}}(K)\right]=  -\frac{1}{2}
     \mathcal{F}\left[\Gamma_{c\bar{a}d\bar{b}}^{\mathrm{s/t}}(K-K')\right]
     \mathcal{F}\left[
-    G_{c\bar{e}}(K')G_{d\bar{f}}(-K')
+    G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta_{\bar{e}\bar{f}}^{\mathrm{s/t}}(K')
     \right]\,,
     :label: linearized_eliashberg_5
 
-making the calculation computationaly more efficient.
+making the calculation computationaly more efficient for large numbers of frequencies
+and momenta.
+But note, that for small numbers of frequencies and/or momenta using the sum
+instead of the convolution theorem can be more effecient.
+
+.. note::
+    It is possible to expand the current implementation of the Eliashberg equation to
+    also allow for irreducible vertices to be explicitly dependent on two fermionic
+    frequency and momenta pairs.
+    For an idea on how to tackle such a task see the following draft
+    `here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/c%2B%2B/triqs_tprf/lattice/eliashberg.cpp#L289>`_
+    and 
+    `here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/python/triqs_tprf/eliashberg.py#L216>`_.
+
 
 .. rubric:: References
 
