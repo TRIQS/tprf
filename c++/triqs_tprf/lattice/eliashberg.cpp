@@ -53,10 +53,10 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
     auto &[w, k] = meshes_mpi(idx);
 
-      for (auto [A, B] : F_wk.target_indices())
-        for (auto [c, d] : delta_wk.target_indices())
-          F_wk[w, k](A, B) +=
-          g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+      for (auto [d, c] : F_wk.target_indices())
+        for (auto [e, f] : delta_wk.target_indices())
+          F_wk[w, k](d, c) +=
+          g_wk[w, k](c, f) * g_wk[-w, -k](d, e) * delta_wk[w, k](e, f);
      }
 
   return F_wk;
@@ -83,9 +83,9 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
     
   for (const auto [w, k] : delta_wk.mesh())
     for (const auto [n, q] : delta_wk.mesh())
-      for (auto [A, a, B, b] : Gamma_pp.target_indices())
+      for (auto [c, a, d, b] : Gamma_pp.target_indices())
         delta_wk_out[w, k](a, b) +=
-            -0.5 * Gamma_pp(w-n, k - q)(A, a, B, b) * F_wk[n, q](A, B);
+            -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
 
   delta_wk_out /= (wmesh.domain().beta * kmesh.size());
   
@@ -133,8 +133,8 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
 
   for (const auto r : std::get<1>(F_tr.mesh())) {
     auto F_t = F_tr[_, r];
-    for (auto [A, a, B, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](A, a, B, b) * F_t(0)(A, B);
+    for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices())
+        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(d, c);
   }
 
   return delta_r_out;
@@ -163,8 +163,8 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
     auto &[t, r] = meshes_mpi(idx);
 
-      for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](A, a, B, b) * F_tr[t, r](A, B);
+      for (auto [c, a, d, b] : Gamma_pp_dyn_tr.target_indices())
+        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](d, c);
   }
 
   return delta_tr_out;
