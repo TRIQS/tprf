@@ -20,10 +20,10 @@ def test_split_into_dynamic_wk_and_constant_k_mesh_types(gamma):
 
     assert type(gamma_const.mesh) == MeshBrillouinZone
 
-def test_split_into_dynamic_wk_and_constant_k_mesh_values(gamma, U_c, U_s):
+def test_split_into_dynamic_wk_and_constant_k_mesh_values(gamma, U_d, U_m):
     gamma_dyn, gamma_const = split_into_dynamic_wk_and_constant_k(gamma)
 
-    analytical_constant_expression = 0.5*(U_s + U_c)
+    analytical_constant_expression = 0.5*U_d + 1.5*U_m
     np.testing.assert_allclose(gamma_const.data[0], analytical_constant_expression)
 
     gamma_without_constant_part = gamma.data - analytical_constant_expression 
@@ -91,13 +91,13 @@ if __name__ == '__main__':
             )
     eliashberg_ingredients = create_eliashberg_ingredients(p)
     gamma = eliashberg_ingredients.gamma
-    U_c = eliashberg_ingredients.U_c
-    U_s = eliashberg_ingredients.U_s
+    U_d = eliashberg_ingredients.U_d
+    U_m = eliashberg_ingredients.U_m
 
     test_split_into_dynamic_wk_and_constant_k_mesh_types(gamma)
-    test_split_into_dynamic_wk_and_constant_k_mesh_values(gamma, U_c, U_s)
+    test_split_into_dynamic_wk_and_constant_k_mesh_values(gamma, U_d, U_m)
     test_dynamic_and_constant_to_tr_mesh_types(gamma)
     test_preprocess_gamma_for_fft_types(gamma)
 
-    #save_new_preprocess_gamma_for_fft_benchmark("preprocess_gamma_for_fft_benchmark.tar.gz", p)
+    #save_new_preprocess_gamma_for_fft_benchmark(p.filename, p)
     test_preprocess_gamma_for_fft_benchmark(gamma, p)

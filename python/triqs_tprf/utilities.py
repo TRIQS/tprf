@@ -34,11 +34,12 @@ from triqs.gf import Gf, MeshImFreq, MeshProduct, BlockGf
 from triqs.gf.tools import fit_legendre
 from triqs.gf.gf_fnt import enforce_discontinuity
 
-from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH, gamma_PP_singlet
+from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH, construct_phi_wk
 from triqs_tprf.tight_binding import create_model_for_tests
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.rpa_tensor import kanamori_charge_and_spin_quartic_interaction_tensors
+from triqs_tprf.eliashberg import construct_gamma_singlet_rpa
 
 # ----------------------------------------------------------------------
 def show_version_info(info):
@@ -182,22 +183,25 @@ def create_eliashberg_ingredients(p):
 
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
 
-    U_c, U_s = kanamori_charge_and_spin_quartic_interaction_tensors(
+    U_d, U_m = kanamori_charge_and_spin_quartic_interaction_tensors(
         p.norb, p.U, p.Up, p.J, p.Jp
     )
 
-    chi_s = solve_rpa_PH(chi0_wk, U_s)
-    chi_c = solve_rpa_PH(chi0_wk, -U_c)  # Minus for correct charge rpa equation
+    chi_d = solve_rpa_PH(chi0_wk, U_d)
+    chi_m = solve_rpa_PH(chi0_wk, -U_m)  # Minus for correct charge rpa equation
 
-    gamma = gamma_PP_singlet(chi_c, chi_s, U_c, U_s)
+    phi_d_wk = construct_phi_wk(chi_d, U_d)
+    phi_m_wk = construct_phi_wk(chi_m, U_m)
+
+    gamma = construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk)
 
     eliashberg_ingredients = ParameterCollection(
                                 g0_wk = g0_wk,
                                 gamma = gamma,
-                                U_s = U_s,
-                                U_c = U_c,
-                                chi_s = chi_s,
-                                chi_c = chi_c,
+                                U_m = U_m,
+                                U_d = U_d,
+                                chi_m = chi_m,
+                                chi_d = chi_d,
                                 )
     return eliashberg_ingredients
 
