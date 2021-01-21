@@ -33,10 +33,22 @@ from triqs.gf import Gf
 from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
+from .lattice import construct_phi_wk
+
 # ----------------------------------------------------------------------
 
-def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=None,
-                     tol=1e-10, product='FFT', solver='IRAM', symmetrize_fct=lambda x : x, k=6):
+
+def solve_eliashberg(
+    Gamma_pp_wk,
+    g_wk,
+    initial_delta=None,
+    Gamma_pp_const_k=None,
+    tol=1e-10,
+    product="FFT",
+    solver="IRAM",
+    symmetrize_fct=lambda x: x,
+    k=6,
+):
     r""" Solve the linearized Eliashberg equation
     
     Returns the biggest eigenvalues and corresponding eigenvectors of the linearized Eliashberg
@@ -117,23 +129,32 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
         delta_x = delta_wk.data.copy().flatten()
         return delta_x
 
-    if product == 'FFT':
+    if product == "FFT":
 
-        Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k)
+        Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(
+            Gamma_pp_wk, Gamma_pp_const_k
+        )
 
-        if np.allclose(Gamma_pp_dyn_tr.data, 0): # -- If dynamic part is zero reduced calculation
-            eli_prod = functools.partial(eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk)
+        if np.allclose(
+            Gamma_pp_dyn_tr.data, 0
+        ):  # -- If dynamic part is zero reduced calculation
+            eli_prod = functools.partial(
+                eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk
+            )
 
         else:
-            eli_prod = functools.partial(eliashberg_product_fft, 
-                                         Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk)
+            eli_prod = functools.partial(
+                eliashberg_product_fft, Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk
+            )
 
-    elif product == 'SUM':
+    elif product == "SUM":
         eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
 
     else:
-        raise NotImplementedError('There is no implementation of the eliashberg product'
-                                    ' called %s.'%product)
+        raise NotImplementedError(
+            "There is no implementation of the eliashberg product"
+            " called %s." % product
+        )
 
     def matvec(delta_x):
         delta_wk = from_x_to_wk(delta_x)
@@ -146,19 +167,22 @@ def solve_eliashberg(Gamma_pp_wk, g_wk, initial_delta=None, Gamma_pp_const_k=Non
         initial_delta = semi_random_initial_delta(g_wk)
     initial_delta = from_wk_to_x(initial_delta)
 
-    if solver == 'PM':
+    if solver == "PM":
         es, evs = power_method_LR(matvec, initial_delta, tol=tol)
         es, evs = [es], [evs]
 
-    elif solver == 'IRAM':
-        es, evs = implicitly_restarted_arnoldi_method(matvec, initial_delta, k=k, tol=tol)
+    elif solver == "IRAM":
+        es, evs = implicitly_restarted_arnoldi_method(
+            matvec, initial_delta, k=k, tol=tol
+        )
 
     else:
-        raise NotImplementedError('There is no solver called %s.'%solver)
+        raise NotImplementedError("There is no solver called %s." % solver)
 
     eigen_modes = [from_x_to_wk(ele) for ele in evs]
 
     return es, eigen_modes
+
 
 def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     r""" Prepare Gamma to be used with the FFT implementation
@@ -186,21 +210,25 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
 
     # -- Determine the dynamic and constant part via a tail fit
     # -- (This is done even if the constant term is given to get the specific Gf types)
-    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(Gamma_pp_wk)
+    Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(
+        Gamma_pp_wk
+    )
 
     # -- Use a constant term if explicitly given
     const_type = type(Gamma_pp_const_k)
     if (const_type == float) or (const_type == np.ndarray):
         Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
         Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k
-    elif (const_type == Gf):
+    elif const_type == Gf:
         Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
         Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
     # -- FFT dynamic and constant term to (tau, real) or (real)
-    Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
-                                                                    Gamma_pp_const_k_fit)
+    Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(
+        Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit
+    )
 
     return Gamma_pp_dyn_tr, Gamma_pp_const_r
+
 
 def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
     r"""Create a delta based on the GF with random elements
@@ -233,16 +261,17 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
 
     delta = g_wk.copy()
     shape = delta.data.shape
-    delta.data[:] = delta.data.real # Pure real delta is sufficient w/o magnetic field
+    delta.data[:] = delta.data.real  # Pure real delta is sufficient w/o magnetic field
     random_data = np.random.random(shape[1:])
     freq_data = np.mean(np.abs(delta.data), axis=tuple(range(len(shape))[1:]))
-    not_randomized = int(nr_factor*shape[0] / 2.)
-    start, stop = not_randomized, shape[0]-not_randomized
-    freq_data[start:stop] *= np.random.random(stop-start)
+    not_randomized = int(nr_factor * shape[0] / 2.0)
+    start, stop = not_randomized, shape[0] - not_randomized
+    freq_data[start:stop] *= np.random.random(stop - start)
 
     delta.data[:] = np.tensordot(freq_data, random_data, axes=0)
 
     return delta
+
 
 def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10, k=6):
     """Find the eigenvalue with the largest real value via the Implicitly Restarted 
@@ -275,10 +304,11 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10, k=6):
     """
     N = init.shape[0]
     linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
-    Es, U = eigs(linop, k=k, which='LR', tol=tol, v0=init)
+    Es, U = eigs(linop, k=k, which="LR", tol=tol, v0=init)
     Es = Es.real
-    
+
     return list(Es), list(U.T)
+
 
 def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
     """Find the eigenvalue with the largest real value via the power method
@@ -304,17 +334,17 @@ def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
     """
 
     def iteration(v_k, offset=0.0):
-        v_k1 = matvec(v_k) - offset*v_k
+        v_k1 = matvec(v_k) - offset * v_k
         v_k1_norm = np.linalg.norm(v_k1)
         v_k1 = v_k1 / v_k1_norm
-        return v_k1_norm+offset, v_k1
+        return v_k1_norm + offset, v_k1
 
     def power_method(init, offset=0.0, tol=tol, max_it=max_it):
         norm, v_k = iteration(init, offset)
         it = 1
         while True:
             norm, new_v_k = iteration(v_k, offset)
-            
+
             # -- Convergence criterion
             add = np.max(np.abs(v_k + new_v_k))
             diff = np.max(np.abs(v_k - new_v_k))
@@ -325,7 +355,7 @@ def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
             v_k = new_v_k
             it += 1
             if it > max_it:
-                raise AssertionError('Did not converge.')
+                raise AssertionError("Did not converge.")
         return norm, v_k
 
     # Find eigenvalue with maximum magnitude
@@ -334,13 +364,14 @@ def power_method_LR(matvec, init, tol=1e-10, max_it=1e5):
     # Check sign of found eigenvalue
     _, v_k_test = iteration(v_k)
 
-    add = np.sum(np.abs(v_k + v_k_test)) # small if sign of E is negative
-    diff = np.sum(np.abs(v_k - v_k_test)) # small if sign of E is positive
+    add = np.sum(np.abs(v_k + v_k_test))  # small if sign of E is negative
+    diff = np.sum(np.abs(v_k - v_k_test))  # small if sign of E is positive
 
     # -- Return eigenvalue with largest real part
-    if diff > add: # The eigenvalue with the largest magnitude is negative
+    if diff > add:  # The eigenvalue with the largest magnitude is negative
         norm, v_k = power_method(init, offset=-norm, tol=tol)
     return norm, v_k
+
 
 def allclose_by_scalar_multiplication(delta_1, delta_2, atol=1e-10):
     """Test if two eigenvectors are equal if multiplied by a scalar
@@ -366,17 +397,124 @@ def allclose_by_scalar_multiplication(delta_1, delta_2, atol=1e-10):
     """
     delta_1_arr = delta_1.data.flatten()
     delta_2_arr = delta_2.data.flatten()
-    
+
     # Remove numerical zeroes
     delta_1_arr = delta_1_arr[np.abs(delta_1_arr) > 1e-7]
     delta_2_arr = delta_2_arr[np.abs(delta_2_arr) > 1e-7]
 
     try:
         division_of_deltas = np.divide(delta_1_arr, delta_2_arr)
-    except ValueError: # Arrays do not contain the same # of zeroes and are therefore not equal
-        return False 
+    except ValueError:  # Arrays do not contain the same # of zeroes and are therefore not equal
+        return False
 
     # Check if elements share common scalar factor
-    have_common_scalar_factor = np.allclose(division_of_deltas, division_of_deltas[0], atol=atol)
+    have_common_scalar_factor = np.allclose(
+        division_of_deltas, division_of_deltas[0], atol=atol
+    )
 
     return have_common_scalar_factor
+
+
+def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
+    r"""Construct the irreducible singlet vertex in the RPA limit
+
+    The irreducible singlet vertex in the random phase approximation limit for a
+    symmetrized calculations of the Eliashberg equation is given by
+
+    .. math::
+        \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
+        \frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+        +
+        \frac{3}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
+        +
+        \Re
+        \left[
+        3 
+        \Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
+        -
+        \Phi^{\text{d}}_{c\overline{b}a\overline{d}}(K-K')
+        \right]
+        \,.
+
+    Parameters
+    ----------
+    U_d : np.ndarray,
+          The local static interaction in the density channel.
+    U_m : np.ndarray,
+          The local static interaction in the magnetic channel.
+    phi_d_wk : Gf,
+               The reducible ladder vertex in the density channel
+               `:math:\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    phi_m_wk : Gf,
+               The reducible ladder vertex in the magnetic channel
+               `:math:\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+
+    Returns
+    -------
+    gamma_singlet : Gf,
+                    The irreducible singlet vertex in the RPA limit for a symmetrized
+                    calculation of the Eliashberg equation
+                    :math:`\Gamma^{\mathrm{s}}(i\omega_n,\mathbf{q}).
+    """
+    gamma_singlet = 0.0 * phi_d_wk.copy()
+
+    gamma_singlet.data[:] = 3 * phi_m_wk.data.real + phi_d_wk.data.real
+    gamma_singlet.data[:] = gamma_singlet.data.transpose([0, 1, 4, 3, 2, 5])
+
+    gamma_singlet.data[:] += 0.5 * U_d + 1.5 * U_m
+    return gamma_singlet
+
+
+def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
+    r"""Construct the irreducible triplet vertex in the RPA limit
+
+    The irreducible triplet vertex in the random phase approximation limit for a
+    symmetrized calculations of the Eliashberg equation is given by
+
+    .. math::
+        \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
+        -
+        \frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
+        +
+        \frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}} 
+        +
+        \Re
+        \left[
+        -
+        \Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
+        -
+        \Phi^{\text{d}}_{c\overline{b}a\overline{d}}(K-K')
+        \right]
+        \,.
+
+    Parameters
+    ----------
+    U_d : np.ndarray,
+          The local static interaction in the density channel.
+    U_m : np.ndarray,
+          The local static interaction in the magnetic channel.
+    phi_d_wk : Gf,
+               The reducible ladder vertex in the density channel
+               `:math:\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+    phi_m_wk : Gf,
+               The reducible ladder vertex in the magnetic channel
+               `:math:\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+
+    Returns
+    -------
+    gamma_triplet : Gf,
+                    The irreducible triplet vertex in the RPA limit for a symmetrized
+                    calculation of the Eliashberg equation
+                    :math:`\Gamma^{\mathrm{t}}(i\omega_n,\mathbf{q}).
+    """
+    gamma_triplet = 0.0 * phi_d_wk.copy()
+
+    gamma_triplet.data[:] = -phi_m_wk.data.real - phi_d_wk.data.real
+    gamma_triplet.data[:] = gamma_triplet.data.transpose([0, 1, 4, 3, 2, 5])
+
+    gamma_triplet.data[:] += -0.5 * U_d + 0.5 * U_m
+    return gamma_triplet
