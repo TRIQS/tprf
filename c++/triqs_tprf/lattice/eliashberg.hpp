@@ -243,16 +243,18 @@ namespace triqs_tprf {
         \\
         &\approx
         \overline{U}^{\mathrm{d/m}}
-        \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}
-        \,,
+        \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}\,,
 
-     where all products are particle-hole products.
-     The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
-     It can then be used in [REF] to construct the irreducible singlet/triplet vertex.
 
-     @param chi density/magnetuc susceptibility  :math:`\chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
-     @param U density/magnetic local and static vertex  :math:`U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}}`
-     @return The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`
+    where all products are particle-hole products.
+    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
+    It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
+    or :meth:`triqs_tprf.eliashberg.construct_gamma_triplet_rpa` to construct the
+    irreducible singlet/triplet vertex.
+
+    @param chi density/magnetic susceptibility  :math:`\chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
+    @param U density/magnetic local and static vertex  :math:`U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}}`
+    @return The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`
 
   */
   chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U);
