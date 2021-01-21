@@ -568,9 +568,32 @@ module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_cons
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
-module.add_function ("std::tuple<chi_wk_t, chi_k_t> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""""")
+module.add_function ("std::tuple<chi_wk_t, chi_k_t> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_vt Gamma_pp)", doc = r"""Split Gamma in dynamic and constant part by tail fitting
 
-module.add_function ("std::tuple<chi_tr_t, chi_r_t> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""""")
+Parameters
+----------
+Gamma_pp
+     : particle-particle pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`.
+
+Returns
+-------
+out
+     Tuple of Gamma_pp_dyn_wk, the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, and Gamma_pp_const_k, the part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.""")
+
+module.add_function ("std::tuple<chi_tr_t, chi_r_t> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""Fourier transform Gamma parts to imaginary time and real-space
+
+Parameters
+----------
+Gamma_pp_dyn_wk
+     : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.
+
+Gamma_pp_const_k
+     : The part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
+
+Returns
+-------
+out
+     Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.""")
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 
@@ -657,6 +680,8 @@ out
      The triplet channel particle-particle vertex :math:`\Gamma^{\mathrm{triplet}}(i\omega_n,\mathbf{q})`""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_spin_charge (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s, double charge_factor, double spin_factor)", doc = r"""""")
+
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_tprf::chi_wk_vt chi, array_view<std::complex<double>, 4> U)", doc = r"""""")
 
 module.add_function ("array<std::complex<double>, 6> triqs_tprf::cluster_mesh_fourier_interpolation (array<double, 2> k_vecs, triqs_tprf::chi_wr_cvt chi)", doc = r"""""")
 
