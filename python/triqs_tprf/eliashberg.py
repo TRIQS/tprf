@@ -436,6 +436,8 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
         \right]
         \,.
 
+    For more details see :ref:`eliashberg`.
+
     Parameters
     ----------
     U_d : np.ndarray,
@@ -444,11 +446,11 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
           The local static interaction in the magnetic channel.
     phi_d_wk : Gf,
                The reducible ladder vertex in the density channel
-               `:math:\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               :math:`\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
                must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
     phi_m_wk : Gf,
                The reducible ladder vertex in the magnetic channel
-               `:math:\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               :math:`\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
                must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
 
     Returns
@@ -456,7 +458,7 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     gamma_singlet : Gf,
                     The irreducible singlet vertex in the RPA limit for a symmetrized
                     calculation of the Eliashberg equation
-                    :math:`\Gamma^{\mathrm{s}}(i\omega_n,\mathbf{q}).
+                    :math:`\Gamma^{\mathrm{s}}(i\omega_n,\mathbf{q})`.
     """
     gamma_singlet = 0.0 * phi_d_wk.copy()
 
@@ -489,6 +491,8 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
         \right]
         \,.
 
+    For more details see :ref:`eliashberg`.
+
     Parameters
     ----------
     U_d : np.ndarray,
@@ -497,11 +501,11 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
           The local static interaction in the magnetic channel.
     phi_d_wk : Gf,
                The reducible ladder vertex in the density channel
-               `:math:\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               :math:`\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
                must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
     phi_m_wk : Gf,
                The reducible ladder vertex in the magnetic channel
-               `:math:\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
+               :math:`\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
                must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
 
     Returns
@@ -509,7 +513,7 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     gamma_triplet : Gf,
                     The irreducible triplet vertex in the RPA limit for a symmetrized
                     calculation of the Eliashberg equation
-                    :math:`\Gamma^{\mathrm{t}}(i\omega_n,\mathbf{q}).
+                    :math:`\Gamma^{\mathrm{t}}(i\omega_n,\mathbf{q})`.
     """
     gamma_triplet = 0.0 * phi_d_wk.copy()
 
