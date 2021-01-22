@@ -597,91 +597,40 @@ out
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_singlet (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s)", doc = r"""The particle-particle vertex in the singlet channel
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_tprf::chi_wk_vt chi, array_view<std::complex<double>, 4> U)", doc = r"""Computes reducible ladder vertex for the approximation of a local and static vertex.
 
-     Computes the singlet channel particle-particle vertex in the
-     random phase approximation given by
+    In this approximation the reducible ladder vertex in density/magnetic channel are given by
 
-     .. math::
-         \Gamma^{\mathrm{singlet}}(i\omega_n,\mathbf{q}) =
-         3 \mathbf{U}^{\mathrm{s}}
-         \mathbf{\chi}^{\mathrm{s}}(i\omega_n,\mathbf{q})
-         \mathbf{U}^{\mathrm{s}}
-         -\mathbf{U}^{\mathrm{c}}
-         \mathbf{\chi}^{\mathrm{c}}(i\omega_n,\mathbf{q})
-         \mathbf{U}^{\mathrm{c}}
-         + \frac{1}{2}\big(\mathbf{U}^{\mathrm{s}}+
-         \mathbf{U}^{\mathrm{c}}\big)\,,
+    .. math::
+        \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
+        &\approx
+        \frac{1}{(N_\mathbf{k}\beta)^2}
+        \sum_{K'', K'''}
+        \overline{U}^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') \overline{U}^{\text{d/m}}
+        \\
+        &\approx
+        \overline{U}^{\mathrm{d/m}}
+        \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}\,,
 
-     where all products are particle-hole products.
-     Note, that this is a special case, where the particle-particle vertex only
-     depends on one bosonic frequency and momentum. It can therefore only be used
-     in the linearized Eliashberg equation, if symmetries are enforced,
-     as desribed in the theory here: :ref:`eliashberg_rpa`.
+
+    where all products are particle-hole products.
+    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
+    It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
+    or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
+    irreducible singlet/triplet vertex.
 
 Parameters
 ----------
-chi_c
-     charge susceptibility  :math:`\chi^{\mathrm{c}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
+chi
+     density/magnetic susceptibility  :math:`\chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
 
-chi_s
-     spin susceptibility  :math:`\chi^{\mathrm{s}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
-
-U_c
-     charge interaction  :math:`U^{\mathrm{c}}_{a\bar{b}c\bar{d}}`
-
-U_s
-     spin interaction  :math:`U^{\mathrm{s}}_{a\bar{b}c\bar{d}}`
+U
+     density/magnetic local and static vertex  :math:`U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}}`
 
 Returns
 -------
 out
-     The singlet channel particle-particle vertex :math:`\Gamma^{\mathrm{singlet}}(i\omega_n,\mathbf{q})`""")
-
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_triplet (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s)", doc = r"""The particle-particle vertex in the triplet channel
-
-     Computes the triplet channel particle-particle vertex in the
-     random phase approximation given by
-
-     .. math::
-         \Gamma^{\mathrm{triplet}}(i\omega_n,\mathbf{q}) =
-         -\mathbf{U}^{\mathrm{s}}
-         \mathbf{\chi}^{\mathrm{s}}(i\omega_n,\mathbf{q})
-         \mathbf{U}^{\mathrm{s}}
-         -\mathbf{U}^{\mathrm{c}}
-         \mathbf{\chi}^{\mathrm{c}}(i\omega_n,\mathbf{q})
-         \mathbf{U}^{\mathrm{c}}
-         + \frac{1}{2}\big(\mathbf{U}^{\mathrm{s}}+
-         \mathbf{U}^{\mathrm{c}}\big)\,,
-
-     where all products are particle-hole products.
-     Note, that this is a special case, where the particle-particle vertex only
-     depends on one bosonic frequency and momentum. It can therefore only be used
-     in the linearized Eliashberg equation, if symmetries are enforced,
-     as desribed in the theory here: :ref:`eliashberg_rpa`.
-
-Parameters
-----------
-chi_c
-     charge susceptibility  :math:`\chi^{\mathrm{c}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
-
-chi_s
-     spin susceptibility  :math:`\chi^{\mathrm{s}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
-
-U_c
-     charge interaction  :math:`U^{\mathrm{c}}_{a\bar{b}c\bar{d}}`
-
-U_s
-     spin interaction  :math:`U^{\mathrm{s}}_{a\bar{b}c\bar{d}}`
-
-Returns
--------
-out
-     The triplet channel particle-particle vertex :math:`\Gamma^{\mathrm{triplet}}(i\omega_n,\mathbf{q})`""")
-
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::gamma_PP_spin_charge (triqs_tprf::chi_wk_vt chi_c, triqs_tprf::chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s, double charge_factor, double spin_factor)", doc = r"""""")
-
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_tprf::chi_wk_vt chi, array_view<std::complex<double>, 4> U)", doc = r"""""")
+     The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`""")
 
 module.add_function ("array<std::complex<double>, 6> triqs_tprf::cluster_mesh_fourier_interpolation (array<double, 2> k_vecs, triqs_tprf::chi_wr_cvt chi)", doc = r"""""")
 

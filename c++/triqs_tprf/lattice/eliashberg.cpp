@@ -214,62 +214,6 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
-chi_wk_t gamma_PP_spin_charge(chi_wk_vt chi_c, chi_wk_vt chi_s, \
-        array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s, \
-        double charge_factor, double spin_factor) {
-
-  using scalar_t = chi_wk_t::scalar_t;
-
-  size_t nb = chi_c.target_shape()[0];
-
-  auto Gamma_pp_wk = make_gf(chi_c);
-  Gamma_pp_wk *= 0;
-
-  // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
-  auto U_c_matrix = make_matrix_view(group_indices_view(U_c, {0, 1}, {3, 2}));
-  auto U_s_matrix = make_matrix_view(group_indices_view(U_s, {0, 1}, {3, 2}));
-
-  auto meshes_mpi = mpi_view(Gamma_pp_wk.mesh());
-
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-      auto &[w, k] = meshes_mpi(idx);
-
-      array<scalar_t, 4> Gamma_pp_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
-      array<scalar_t, 4> chi_c_arr{chi_c[w, k], memory_layout_t<4>{0, 1, 2, 3}};
-      array<scalar_t, 4> chi_s_arr{chi_s[w, k], memory_layout_t<4>{0, 1, 2, 3}};
-
-      // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
-      auto Gamma_pp_matrix = make_matrix_view(group_indices_view(Gamma_pp_arr, {0, 1}, {3, 2}));
-      // PH grouping of the susceptibilites, from c+cc+c, permuting the last two indices.
-      auto chi_c_matrix = make_matrix_view(group_indices_view(chi_c_arr, {0, 1}, {3, 2}));
-      auto chi_s_matrix = make_matrix_view(group_indices_view(chi_s_arr, {0, 1}, {3, 2}));
-
-      Gamma_pp_matrix = charge_factor * U_c_matrix * chi_c_matrix * U_c_matrix \
-                      + spin_factor * U_s_matrix * chi_s_matrix * U_s_matrix \
-                      + 0.5 * (U_s_matrix + U_c_matrix);
-
-      Gamma_pp_wk[w, k] = Gamma_pp_arr;
-  }
-  Gamma_pp_wk = mpi::all_reduce(Gamma_pp_wk);
-
-  return Gamma_pp_wk;
-}
-  
-chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
-        array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s) {
-
-  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, 3);
-  return Gamma_pp_wk;
-}
-
-chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
-        array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s) {
-
-  auto Gamma_pp_wk = gamma_PP_spin_charge(chi_c, chi_s, U_c, U_s, -1, -1);
-  return Gamma_pp_wk;
-}
-
 chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U) {
 
   using scalar_t = chi_wk_t::scalar_t;
