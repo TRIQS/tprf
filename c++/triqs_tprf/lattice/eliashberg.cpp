@@ -80,9 +80,9 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
 
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
-    
-  for (const auto [w, k] : delta_wk.mesh())
-    for (const auto [n, q] : delta_wk.mesh())
+
+  for (auto const &[w, k] : delta_wk.mesh())
+    for (auto const &[n, q] : delta_wk.mesh())
       for (auto [c, a, d, b] : Gamma_pp.target_indices())
         delta_wk_out[w, k](a, b) +=
             -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
@@ -103,12 +103,12 @@ std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gam
 
   auto Gamma_pp_const_k = make_gf(kmesh, Gamma_pp.target());
 
-  for (const auto k : kmesh) {
+  for (auto const &k : kmesh) {
     auto Gamma_w = Gamma_pp[_, k];
     auto tail = std::get<0>(fit_tail(Gamma_w));
     for (auto [a, b, c, d] : Gamma_pp.target_indices())
       Gamma_pp_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
-    for( const auto w : wmesh ) Gamma_pp_dyn_wk[w, k] = Gamma_pp[w, k] - Gamma_pp_const_k[k];
+    for (auto const &w : wmesh) Gamma_pp_dyn_wk[w, k] = Gamma_pp[w, k] - Gamma_pp_const_k[k];
   }
 
     return {Gamma_pp_dyn_wk, Gamma_pp_const_k};
@@ -131,7 +131,7 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
   auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), F_tr.target());
   delta_r_out *= 0.;
 
-  for (const auto r : std::get<1>(F_tr.mesh())) {
+  for (auto const &r : std::get<1>(F_tr.mesh())) {
     auto F_t = F_tr[_, r];
     for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices())
         delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(d, c);
@@ -185,8 +185,7 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   auto delta_wr_out = fourier_tr_to_wr(delta_tr_out);
   // Combine dynamic and constant part
   auto _ = all_t{};
-  for (const auto w : std::get<0>(delta_wr_out.mesh()))
-      delta_wr_out[w, _] += delta_r_out;
+  for (auto const &w : std::get<0>(delta_wr_out.mesh())) delta_wr_out[w, _] += delta_r_out;
 
   auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
 
@@ -208,8 +207,7 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   delta_wk_out *= 0.;
 
   auto _ = all_t{};
-  for (const auto w : std::get<0>(delta_wk_out.mesh()))
-      delta_wk_out[w, _] += delta_k_out;
+  for (auto const &w : std::get<0>(delta_wk_out.mesh())) delta_wk_out[w, _] += delta_k_out;
 
   return delta_wk_out;
 }
