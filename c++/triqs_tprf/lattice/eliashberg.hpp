@@ -175,11 +175,11 @@ namespace triqs_tprf {
         &\approx
         \frac{1}{(N_\mathbf{k}\beta)^2}
         \sum_{K'', K'''}
-        \overline{U}^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') \overline{U}^{\text{d/m}}
+        U^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') U^{\text{d/m}}
         \\
         &\approx
-        \overline{U}^{\mathrm{d/m}}
-        \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}\,,
+        U^{\mathrm{d/m}}
+        \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
 
 
     where all products are particle-hole products.
