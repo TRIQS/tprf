@@ -49,8 +49,8 @@ namespace triqs_tprf::fourier {
   template <typename V1, typename V2> fourier_plan __impl_plan(int fftw_backward_forward, gf_mesh<V1> const &out_mesh, gf_vec_cvt<V2> g_in) {
 
     //check periodization_matrix is diagonal
-    for (int i = 0; i < g_in.mesh().periodization_matrix.shape()[0]; i++)
-      for (int j = 0; j < g_in.mesh().periodization_matrix.shape()[1]; j++)
+    for (unsigned int i = 0; i < g_in.mesh().periodization_matrix.shape()[0]; i++)
+      for (unsigned int j = 0; j < g_in.mesh().periodization_matrix.shape()[1]; j++)
         if (i != j and g_in.mesh().periodization_matrix(i, j) != 0)
 	  TRIQS_RUNTIME_ERROR << "Periodization matrix must be diagonal for FFTW to work";
 

@@ -50,7 +50,7 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
     //for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
 
 #pragma omp parallel for 
-    for (int qidx = 0; qidx < kmesh.size(); qidx++) {
+    for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
       auto q_iter = kmesh.begin();
       q_iter += qidx;
       auto q = *q_iter;

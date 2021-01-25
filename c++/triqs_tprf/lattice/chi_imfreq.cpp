@@ -35,6 +35,7 @@ namespace triqs_tprf {
 namespace {
 using fourier::_fourier_plan;
 using fourier::_fourier_with_plan;
+placeholder<1> inu;
 } // namespace
 
 // ----------------------------------------------------
@@ -88,7 +89,7 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
 
   t_calc.start();
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &r = arr(idx);
 
     auto chi0_wn =
@@ -167,7 +168,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
   t_calc.start();
 
 #pragma omp parallel for 
-  for (int idx = 0; idx < rmesh.size(); idx++) {
+  for (unsigned int idx = 0; idx < rmesh.size(); idx++) {
     auto iter = rmesh.begin(); iter += idx; auto r = *iter;
 
     auto chi0_wn =
@@ -216,7 +217,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
                                                  g_wk_cvt g_wk) {
 
   int nb = g_wk.target().shape()[0];
-  auto [fmesh_large, kmesh] = g_wk.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
 
   double beta = fmesh.domain().beta;
 
@@ -287,7 +288,7 @@ chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
 
 chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
 
-  auto [fmesh_large, kmesh] = g_wk.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
 
   int nb = g_wk.target().shape()[0];
   double beta = std::get<0>(g_wk.mesh()).domain().beta;
@@ -349,7 +350,7 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(gf_mesh{bmesh, fmesh});
 
 #pragma omp parallel for shared(kmesh, rmesh)
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, n] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto n = std::get<1>(arr(idx));
@@ -422,7 +423,7 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
   t_calc.start();
   
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, n] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto n = std::get<1>(arr(idx));
@@ -473,7 +474,7 @@ chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(gf_mesh{wmesh, kmesh});
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
     for( auto &n : nmesh) chi_wk[w, k] += chi_wnk[w, n, k];
     chi_wk[w, k] /= beta * beta;
@@ -507,7 +508,7 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(wq_mesh); // FIXME Use library implementation
 
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[w, q] = arr(idx);
     auto w = std::get<0>(arr(idx));
     auto q = std::get<1>(arr(idx));
@@ -614,7 +615,7 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
   // for (auto const &k : mbz) {
 
 #pragma omp parallel for
-  for (int idx = 0; idx < mbz.size(); idx++) {
+  for (unsigned int idx = 0; idx < mbz.size(); idx++) {
     auto iter = mbz.begin();
     iter += idx;
     auto k = *iter;
@@ -670,7 +671,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
   t.start();
   
 #pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
     //auto &[k, w] = arr(idx);
     auto k = std::get<0>(arr(idx));
     auto w = std::get<1>(arr(idx));
@@ -776,8 +777,9 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
   auto _ = all_t{};
 
   auto target = gamma_ph_wnn.target();
-  auto [fmesh_large, kmesh] = g_wk.mesh();
-  auto [bmesh, fmesh, fmesh2] = gamma_ph_wnn.mesh();
+  auto kmesh = std::get<1>(g_wk.mesh());
+  auto bmesh = std::get<0>(gamma_ph_wnn.mesh());
+  auto fmesh = std::get<1>(gamma_ph_wnn.mesh());
 
   double beta = fmesh.domain().beta;
 
@@ -904,7 +906,8 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
   auto kmesh = e_k.mesh();
   auto fmesh_large = sigma_w.mesh();
 
-  auto [bmesh, fmesh, fmesh2] = gamma_ph_wnn.mesh();
+  auto bmesh = std::get<0>(gamma_ph_wnn.mesh());
+  auto fmesh = std::get<1>(gamma_ph_wnn.mesh());
 
   double beta = fmesh.domain().beta;
 

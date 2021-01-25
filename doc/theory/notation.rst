@@ -278,6 +278,7 @@ Crossed-Particle-particle channel (:math:`PPx`)
    \chi^{(0), pp}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')
    =
    - \beta \delta_{\nu, \nu'} G_{d\bar{a}}(\nu) G_{b\bar{c}}(\omega - \nu)
+   :label: bare_pp_sus_def
 
 .. math::
    \chi^{pp}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')

@@ -3,7 +3,7 @@
  * TRIQS: a Toolbox for Research in Interacting Quantum Systems
  *
  * Copyright (C) 2019, The Simons Foundation and S. Käser
- * Authors: H. U.R. Strand, S. Käser
+ * Authors: S. Käser, H. U.R. Strand
  *
  * TRIQS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -25,119 +25,173 @@
 
 namespace triqs_tprf {
 
- /** Linearized Eliashberg product
+ /** Linearized Eliashberg product via summation
 
-     Computes the product
+     Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
      .. math::
-         \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{k},i\nu) =  -\frac{1}{N_k \beta}\sum_{\mathbf{k}'} \sum_{i\nu'}
-	 \Gamma_{A\bar{a}B\bar{b}}(\mathbf{k}-\mathbf{k}', i\nu - i\nu')
-	 \\ \times
-	 G_{A\bar{c}}(\mathbf{k}', i\nu')
-	 \Delta_{\bar{c}\bar{d}}(\mathbf{k}', i\nu')
-	 G_{B\bar{d}}(-\mathbf{k}', -i\nu')
+         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
+         =
+         -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+         \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+         \\
+         \times
+         G_{c\bar{e}}(i\nu',\mathbf{k}')
+         G_{d\bar{f}}(-i\nu',-\mathbf{k}')
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
 
-     @param chi_pp particle-particle vertex :math:`\Gamma^{(pp)}_{a\bar{b}c\bar{d}}(\mathbf{k}, i\nu_n)`
-     @param g_kw single particle Green's function :math:`G_{a\bar{b}}(\mathbf{k}, i\nu_n)`
-     @param delta_kw pairing self-energy :math:`\Delta_{\bar{a}\bar{b}}(\mathbf{k}, i\nu_n)`
-     @return Gives the result of the product :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG \Delta`
+     by summation.
+
+     @param Gamma_pp particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
+     @param g_wk single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+     @param delta_wk superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+     @return Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
 
   */
 
-  gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk, gk_iw_vt delta_wk);
+  g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk, g_wk_vt delta_wk);
 
  /** Linearized Eliashberg product via FFT
 
-     Computes the product
+     Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
      .. math::
-         \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{k},i\nu) =  -\frac{1}{N_k \beta}\sum_{\mathbf{k}'} \sum_{i\nu'}
-	 \Gamma_{A\bar{a}B\bar{b}}(\mathbf{k}-\mathbf{k}', i\nu - i\nu')
-	 \\ \times
-	 G_{A\bar{c}}(\mathbf{k}', i\nu')
-	 \Delta_{\bar{c}\bar{d}}(\mathbf{k}', i\nu')
-	 G_{B\bar{d}}(-\mathbf{k}', -i\nu')\,,
+        \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
+        =
+        -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+        \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+        \\
+        \times
+        G_{c\bar{e}}(i\nu',\mathbf{k}')
+        G_{d\bar{f}}(-i\nu',-\mathbf{k}')
+        \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
 
      by taking advantage of the convolution theorem.
 
      We therefore first calculate
 
      .. math::
-        \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{r}, \tau) = 
-	 -\Gamma_{A\bar{a}B\bar{b}}(\mathbf{r}, \tau) F_{AB}(\mathbf{r}, \tau) \,,
+         F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         G_{a\bar{c}}(i\nu,\mathbf{k})
+         G_{b\bar{d}}(-i\nu,-\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
 
-     where 
-
-     .. math::
-        F_{AB}(\mathbf{r}, \tau)  = 
-        \mathcal{F}\big(G_{A\bar{c}}(\mathbf{k}', i\nu')
-	 \Delta_{\bar{c}\bar{d}}(\mathbf{k}', i\nu')
-	 G_{B\bar{d}}(-\mathbf{k}', -i\nu')\big)\,.
-
-     Then we Fourier transform 
+     which we then Fourier transform to imaginary time and real-space
 
      .. math::
-          \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{k},i\nu) = 
-          \mathcal{F}\big(\Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{r}, \tau)\big)\,,
+        F^{\mathrm{s/t}}_{ab}(\tau,\mathbf{r})
+        =
+        \mathcal{F}^2
+        \big(
+        F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+        \big)\,.
 
-    to get the same result, but with far less computational effort.
+     We then calculate first the dynamic gap
+     
+     .. math::
+         \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(\tau,\mathbf{r})
+         =
+         -\frac{1}{2}
+         \Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r})
+         F^{\mathrm{s/t}}_{cd}(\tau, \mathbf{r})\,,
 
-     @param chi_rt dynamic part of the particle-particle vertex :math:`\Gamma^{(pp)}_{a\bar{b}c\bar{d}}(\mathbf{r}, \tau)`
-     @param chi_r constant part of the particle-particle vertex :math:`\Gamma^{(pp)}_{a\bar{b}c\bar{d}}(\mathbf{r})`
-     @param g_kw single particle Green's function :math:`G_{a\bar{b}}(\mathbf{k}, i\nu_n)`
-     @param delta_kw pairing self-energy :math:`\Delta_{\bar{a}\bar{b}}(\mathbf{k}, i\nu_n)`
-     @return Gives the result of the product :math:`\Delta^{(out)} \sim \Gamma^{(pp)}GG \Delta`
+     and then the static gap
 
-  */
+     .. math::
+         \Delta^{\mathrm{s/t}, \mathrm{static}}_{\bar{a}\bar{b}}(\mathbf{r})
+         =
+         -\frac{1}{2}
+         \Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})
+         F^{\mathrm{s/t}}_{cd}(\tau=0, \mathbf{r})\,.
 
-  gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, gk_iw_vt g_wk, gk_iw_vt delta_wk);
-  gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk);
-  std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp);
-  std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k);
+     We then Fourier transform the dynamic gap to imaginary frequencies
 
- /** Gamma particle-particle singlet
+     .. math::
+         \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
+        =
+        \mathcal{F}
+        \big(
+        \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(\tau,\mathbf{r})
+        \big)\,,
 
-     Computes the particle-particle vertex for singlet pairing in the RPA limit
+     and then add both component together
+     
+     .. math::
+        \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
+        =
+        \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
+        +
+        \Delta^{\mathrm{s/t}, \mathrm{static}}_{\bar{a}\bar{b}}(\mathbf{r})\,,
+
+    and then finally Fourier transform to :math:`\mathbf{k}`-space
 
     .. math::
-        \Gamma^{(\mathrm{singlet})}(a\bar{b}c\bar{d}) =
-        \frac{3}{2} U^{(\mathrm{s})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{s})}(\bar{B}A\bar{C}D) 
-        U^{(\mathrm{s})}(D\bar{C}c\bar{d}) \\
-        -\frac{1}{2} U^{(\mathrm{c})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{c})}(\bar{B}A\bar{C}D) 
-        U^{(\mathrm{c})}(D\bar{C}c\bar{d}) \\
-       + \frac{1}{2}\big(U^{(\mathrm{s})}(a\bar{b}c\bar{d})+
-        U^{(\mathrm{c})}(a\bar{b}c\bar{d})\big)
+        \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})
+        =
+        \mathcal{F}
+        \big(
+        \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
+        \big)\,.
 
-     @param chi_c charge susceptibility  :math:`\chi^{(\mathrm{c})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param chi_s spin susceptibility  :math:`\chi^{(\mathrm{s})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param U_c charge interaction  :math:`U^{(\mathrm{c})}_{a\bar{b}c\bar{d}}`
-     @param U_s spin interaction  :math:`U^{(\mathrm{s})}_{a\bar{b}c\bar{d}}`
-     @return :math:`\Gamma^{(\mathrm{singlet})}_{a\bar{b}c\bar{d}}(\mathbf{k}, i\omega_n)`
+
+     @param Gamma_pp_dyn_tr dynamic part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r})`
+     @param Gamma_pp_const_r static part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})`
+     @param g_wk one-particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+     @param delta_wk superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+     @return Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
 
   */
 
-  chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s);
+  g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk);
+  g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk);
+  g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk);
 
- /** Gamma particle-particle triplet
 
-     Computes the particle-particle vertex for triplet pairing in the RPA limit
+  /** Split Gamma in dynamic and constant part by tail fitting
+
+  @param Gamma_pp : particle-particle pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. 
+  @return Tuple of Gamma_pp_dyn_wk, the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, and Gamma_pp_const_k, the part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
+  */
+  std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp);
+
+
+  /** Fourier transform Gamma parts to imaginary time and real-space  
+  
+  @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.
+  @param Gamma_pp_const_k : The part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
+  @return Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.
+  */
+  std::tuple<chi_tr_t, chi_r_t> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k);
+  e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr);
+
+
+  /** Computes reducible ladder vertex for the approximation of a local and static vertex.
+
+    In this approximation the reducible ladder vertex in density/magnetic channel are given by
 
     .. math::
-        \Gamma^{(\mathrm{triplet})}(a\bar{b}c\bar{d}) =
-        -\frac{1}{2} U^{(\mathrm{s})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{s})}(\bar{B}A\bar{C}D) 
-        U^{(\mathrm{s})}(D\bar{C}c\bar{d}) \\
-        -\frac{1}{2} U^{(\mathrm{c})}(a\bar{b}A\bar{B}) \chi^{(\mathrm{c})}(\bar{B}A\bar{C}D) 
-        U^{(\mathrm{c})}(D\bar{C}c\bar{d}) \\
-       + \frac{1}{2}\big(U^{(\mathrm{s})}(a\bar{b}c\bar{d})+
-        U^{(\mathrm{c})}(a\bar{b}c\bar{d})\big)
+        \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
+        &\approx
+        \frac{1}{(N_\mathbf{k}\beta)^2}
+        \sum_{K'', K'''}
+        U^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') U^{\text{d/m}}
+        \\
+        &\approx
+        U^{\mathrm{d/m}}
+        \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
 
-     @param chi_c charge susceptibility  :math:`\chi^{(\mathrm{c})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param chi_s spin susceptibility  :math:`\chi^{(\mathrm{s})}_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
-     @param U_c charge interaction  :math:`U^{(\mathrm{c})}_{a\bar{b}c\bar{d}}`
-     @param U_s spin interaction  :math:`U^{(\mathrm{s})}_{a\bar{b}c\bar{d}}`
-     @return :math:`\Gamma^{(\mathrm{triplet})}_{a\bar{b}c\bar{d}}(\mathbf{k}, i\omega_n)`
+
+    where all products are particle-hole products.
+    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
+    It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
+    or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
+    irreducible singlet/triplet vertex.
+
+    @param chi density/magnetic susceptibility  :math:`\chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
+    @param U density/magnetic local and static vertex  :math:`U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}}`
+    @return The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`
 
   */
-
-  chi_wk_t gamma_PP_triplet(chi_wk_vt chi_c, chi_wk_vt chi_s, array_view<std::complex<double>, 4> U_c, array_view<std::complex<double>, 4> U_s);
+  chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U);
 }

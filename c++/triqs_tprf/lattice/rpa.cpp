@@ -21,7 +21,8 @@
  ******************************************************************************/
 
 #include "rpa.hpp"
-#include "common.hpp"
+#include <omp.h>
+#include "../mpi.hpp"
 
 namespace triqs_tprf {
 
@@ -31,18 +32,20 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
   using scalar_t = chi_wk_t::scalar_t;
 
   size_t nb = chi0_wk.target_shape()[0];
-  auto wmesh = std::get<0>(chi0_wk.mesh());
-  auto kmesh = std::get<1>(chi0_wk.mesh());
 
-  chi_wk_t chi_wk{{wmesh, kmesh}, chi0_wk.target_shape()};
+  auto chi_wk = make_gf(chi0_wk);
+  chi_wk *=0;
 
   // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
   auto U = make_matrix_view(group_indices_view(U_arr, {0, 1}, {3, 2}));
 
   auto I = make_unit_matrix<scalar_t>(U.shape()[0]);
 
-  for (auto const &w : wmesh) {
-    for (auto const &k : kmesh) {
+  auto meshes_mpi = mpi_view(chi0_wk.mesh());
+
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+      auto &[w, k] = meshes_mpi(idx);
 
       array<scalar_t, 4> chi_arr{nb, nb, nb, nb,
                                  memory_layout_t<4>{0, 1, 2, 3}};
@@ -58,7 +61,7 @@ chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk,
 
       chi_wk[w, k] = chi_arr; // assign back using the array_view 
     }
-  }
+  chi_wk = mpi::all_reduce(chi_wk);
 
   return chi_wk;
 }

@@ -39,8 +39,9 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH
 from triqs_tprf.lattice import chi0r_from_gr_PH_nompi
 from triqs_tprf.lattice import chi0q_from_chi0r
-from triqs_tprf.lattice import chi0q_sum_nu, chi0q_sum_nu_tail_corr_PH
+from triqs_tprf.lattice import chi0q_sum_nu 
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
+from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 # ----------------------------------------------------------------------
 def solve_local_bse(chi0_wnn, chi_wnn):
@@ -208,7 +209,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     return chi0_wnk    
         
 # ----------------------------------------------------------------------
-def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
+def solve_lattice_bse(g_wk, gamma_wnn):
 
     r""" Compute the generalized lattice susceptibility 
     :math:`\chi_{abcd}(\omega, \mathbf{k})` using the Bethe-Salpeter 
@@ -220,8 +221,6 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
     g_wk : Single-particle Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
     gamma_wnn : Local particle-hole vertex function 
                 :math:`\Gamma_{abcd}(\omega, \nu, \nu')`
-    tail_corr_nwf : Number of fermionic freqiencies to use in the 
-                    tail correction of the sum over fermionic frequencies.
 
     Returns
     -------
@@ -248,31 +247,16 @@ def solve_lattice_bse(g_wk, gamma_wnn, tail_corr_nwf=None):
         print('nw    =', nw)
         print('nwf   =', nwf)
         print('nwf_g =', nwf_g)
-        print('tail_corr_nwf =', tail_corr_nwf)
         print()    
 
-    if tail_corr_nwf is None:
-        tail_corr_nwf = nwf
-
-    mpi.report('--> chi0_wnk_tail_corr')
-    chi0_wnk_tail_corr = get_chi0_wnk(g_wk, nw=nw, nwf=tail_corr_nwf)
-
-    mpi.report('--> trace chi0_wnk_tail_corr (WARNING! NO TAIL FIT. FIXME!)')
-    chi0_wk_tail_corr = chi0q_sum_nu_tail_corr_PH(chi0_wnk_tail_corr)
-    #chi0_wk_tail_corr = chi0q_sum_nu(chi0_wnk_tail_corr)
+    mpi.report('--> chi0_wk_tail_corr')
+    chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=nw) 
 
     mpi.barrier()
     mpi.report('B1 ' + str(chi0_wk_tail_corr[Idx(0), Idx(0,0,0)][0,0,0,0]))    
     mpi.barrier()
 
-    mpi.report('--> chi0_wnk_tail_corr to chi0_wnk')
-    if tail_corr_nwf != nwf:
-        mpi.report('--> fixed_fermionic_window_python_wnk')
-        chi0_wnk = fixed_fermionic_window_python_wnk(chi0_wnk_tail_corr, nwf=nwf)
-    else:
-        chi0_wnk = chi0_wnk_tail_corr.copy()
-
-    del chi0_wnk_tail_corr
+    chi0_wnk = get_chi0_wnk(g_wk, nw=nw, nwf=nwf)
 
     mpi.barrier()
     mpi.report('C ' + str(chi0_wnk[Idx(0), Idx(0), Idx(0,0,0)][0,0,0,0]))    

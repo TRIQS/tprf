@@ -1,0 +1,15 @@
+FILE(GLOB all_tgz_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.tar.gz)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${all_tgz_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+set(PREFIX eliashberg-)
+
+add_python_test(preprocessing_gamma ${PREFIX})
+add_python_test(gamma_creation ${PREFIX})
+add_python_test(solve_eliashberg_functionality ${PREFIX})
+add_python_test(semi_random_initial_delta ${PREFIX})
+add_python_test(product_summation_vs_fft ${PREFIX})
+add_python_test(eigenvalue_solver ${PREFIX})
+add_python_test(regression_test_one_band ${PREFIX})
+add_python_test(regression_test_two_band ${PREFIX})
+add_python_test(fft_product_constant_vs_full ${PREFIX})
+add_python_test(symmetrize_delta ${PREFIX})
