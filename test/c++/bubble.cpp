@@ -62,8 +62,8 @@ TEST(Gf, Bubble) {
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 
  // hdf5
- rw_h5(chi0q);
- rw_h5(chi0r);
+ //rw_h5(chi0q);
+ //rw_h5(chi0r);
 }
 
 // ------------------------------------------------------------
@@ -97,8 +97,8 @@ TEST(Gf, BubbleScalar) {
  }
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 
- rw_h5(chi0q);
- rw_h5(chi0r);
+ //rw_h5(chi0q);
+ //rw_h5(chi0r);
 }
 
 // ------------------------------------------------------------
@@ -134,8 +134,8 @@ TEST(Gf, BubbleTensor) {
  }
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 
- rw_h5(chi0q);
- rw_h5(chi0r);
+ //rw_h5(chi0q);
+ //rw_h5(chi0r);
 }
 
 // ------------------------------------------------------------
