@@ -18,6 +18,7 @@ Random Phase Approximation
 ==========================
 
 .. autofunction:: triqs_tprf.lattice.solve_rpa_PH
+.. autofunction:: triqs_tprf.rpa_tensor.kanamori_quartic_tensor
 
 Impurity susceptibility and Bethe-Salpeter Equation
 ===================================================
@@ -46,7 +47,13 @@ GW approximation
 Linearized Eliashberg equation 
 ==============================
 
-.. autofunction:: triqs_tprf.eliashberg.solve_eliashberg_fft
+.. autofunction:: triqs_tprf.eliashberg.solve_eliashberg
+.. autofunction:: triqs_tprf.eliashberg.preprocess_gamma_for_fft
+.. autofunction:: triqs_tprf.eliashberg.semi_random_initial_delta
+.. autofunction:: triqs_tprf.eliashberg.power_method_LR
+.. autofunction:: triqs_tprf.eliashberg.implicitly_restarted_arnoldi_method
+.. autofunction:: triqs_tprf.eliashberg.construct_gamma_singlet_rpa
+.. autofunction:: triqs_tprf.eliashberg.construct_gamma_triplet_rpa
 
 Hubbard atom analytic response functions
 ========================================
@@ -82,6 +89,8 @@ Tight binding lattice model
 .. autoclass:: triqs_tprf.tight_binding.TBLattice
    :members:
 
+.. autofunction:: triqs_tprf.tight_binding.create_square_lattice
+
 .. autoclass:: triqs_tprf.super_lattice.TBSuperLattice
    :members:
       
@@ -107,4 +116,4 @@ Parameter collections
    :members:
 .. autoclass:: triqs_tprf.ParameterCollection.ParameterCollections
    :members:
-
+.. autofunction:: triqs_tprf.ParameterCollection.parameter_scan

@@ -105,8 +105,9 @@ Linearized Eliashberg equation
 
   /cpp2rst_generated/triqs_tprf/eliashberg_product
   /cpp2rst_generated/triqs_tprf/eliashberg_product_fft
-  /cpp2rst_generated/triqs_tprf/gamma_PP_singlet
-  /cpp2rst_generated/triqs_tprf/gamma_PP_triplet
+  /cpp2rst_generated/triqs_tprf/split_into_dynamic_wk_and_constant_k
+  /cpp2rst_generated/triqs_tprf/dynamic_and_constant_to_tr
+  /cpp2rst_generated/triqs_tprf/construct_phi_wk
 
 Hubbard atom analytic response functions
 ========================================
