@@ -15,7 +15,7 @@ from triqs_tprf.lattice_utils import add_fake_bosonic_mesh
 
 
 def test_add_fake_bosonic_mesh_with_gf_nk(bzmesh):
-    nmesh = MeshImFreq(beta=1, S='Fermion', n_max=1)
+    nmesh = MeshImFreq(beta=1, S="Fermion", n_max=1)
 
     gf_nk = Gf(mesh=MeshProduct(nmesh, bzmesh), target_shape=(2, 2))
     gf_wnk = add_fake_bosonic_mesh(gf_nk)
@@ -31,6 +31,7 @@ def test_add_fake_bosonic_mesh_with_gf_k_without_beta(bzmesh):
     except ValueError:
         pass
 
+
 def test_add_fake_bosonic_mesh_with_gf_k_with_beta(bzmesh):
     gf_k = Gf(mesh=bzmesh, target_shape=(2, 2))
     beta = 10
@@ -40,12 +41,10 @@ def test_add_fake_bosonic_mesh_with_gf_k_with_beta(bzmesh):
     assert gf_wk.mesh[0].beta == beta
 
 
-
 if __name__ == "__main__":
-    bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
+    bz = BrillouinZone(BravaisLattice([[1, 0], [0, 1]]))
     periodization_matrix = np.diag(np.array([10, 10, 1], dtype=np.int32))
     bzmesh = MeshBrillouinZone(bz, periodization_matrix)
-
 
     test_add_fake_bosonic_mesh_with_gf_nk(bzmesh)
     test_add_fake_bosonic_mesh_with_gf_k_without_beta(bzmesh)

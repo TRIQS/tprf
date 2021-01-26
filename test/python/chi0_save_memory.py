@@ -20,6 +20,7 @@ from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 # ----------------------------------------------------------------------
 
+
 def test_chi0_wk_save_memory(g0_wk, p):
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=False)
     chi0_wk_save_memory = imtime_bubble_chi0_wk(g0_wk, nw=p.nw_chi, save_memory=True)
@@ -31,17 +32,17 @@ if __name__ == "__main__":
     p = ParameterCollection(
         dim=2,
         norb=2,
-        t1 = 1.0,
-        t2 = 0.5,
-        t12 = 0.1,
-        t21 = 0.1,
+        t1=1.0,
+        t2=0.5,
+        t12=0.1,
+        t21=0.1,
         mu=0.0,
         beta=1,
-        nk=16,
-        nw=100,
+        nk=2,
+        nw=20,
         nw_chi=10,
     )
 
     g0_wk = create_g0_wk_for_test_model(p)
-    
+
     test_chi0_wk_save_memory(g0_wk, p)
