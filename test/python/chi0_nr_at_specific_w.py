@@ -1,8 +1,9 @@
 # ----------------------------------------------------------------------
 
 """ Test if accessing chi0_wnr only a a specififc w point gives the same
-result as the function used for a whole bosonic Matsubara mesh. """
+result as the function used for a whole bosonic Matsubara mesh. 
 
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

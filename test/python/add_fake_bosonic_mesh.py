@@ -1,6 +1,8 @@
 # ----------------------------------------------------------------------
 
-""" Test the functionality of the 'add_fake_bosonic_mesh' function """
+""" Test the functionality of the 'add_fake_bosonic_mesh' function 
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 

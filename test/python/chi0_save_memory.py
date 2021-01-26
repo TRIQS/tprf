@@ -1,7 +1,9 @@
 # ----------------------------------------------------------------------
 
 """ Test if memory saving version of the bare bubble chi0 is implemented
-correctly. """
+correctly. 
+
+Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 
 # ----------------------------------------------------------------------
 
