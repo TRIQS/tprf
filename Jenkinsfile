@@ -30,7 +30,7 @@ def dockerPlatforms = ["ubuntu-clang", "ubuntu-gcc", "centos-gcc"]
 for (int i = 0; i < dockerPlatforms.size(); i++) {
   def platform = dockerPlatforms[i]
   platforms[platform] = { -> node('docker') {
-    stage(platform) { timeout(time: 1, unit: 'HOURS') {
+    stage(platform) { timeout(time: 1, unit: 'HOURS') { ansiColor('xterm') {
       checkout scm
       /* construct a Dockerfile for this base */
       sh """
@@ -47,7 +47,7 @@ for (int i = 0; i < dockerPlatforms.size(); i++) {
       if (!keepInstall) {
         sh "docker rmi --no-prune ${img.imageName()}"
       }
-    } }
+    } } }
   } }
 }
 
@@ -60,7 +60,7 @@ for (int i = 0; i < osxPlatforms.size(); i++) {
   def platformEnv = osxPlatforms[i]
   def platform = platformEnv[0]
   platforms["osx-$platform"] = { -> node('osx && triqs') {
-    stage("osx-$platform") { timeout(time: 1, unit: 'HOURS') {
+    stage("osx-$platform") { timeout(time: 1, unit: 'HOURS') { ansiColor('xterm') {
       def srcDir = pwd()
       def tmpDir = pwd(tmp:true)
       def buildDir = "$tmpDir/build"
@@ -82,13 +82,13 @@ for (int i = 0; i < osxPlatforms.size(); i++) {
 	  "CPLUS_INCLUDE_PATH=$venv/include:$hdf5/include:${env.BREW}/include",
 	  "LIBRARY_PATH=$venv/lib:$hdf5/lib:${env.BREW}/lib",
           "LD_LIBRARY_PATH=$hdf5/lib",
-          "PYTHONPATH=$installDir/lib/python3.8/site-packages",
+          "PYTHONPATH=$installDir/lib/python3.9/site-packages",
 	  "CMAKE_PREFIX_PATH=$venv/lib/cmake/triqs"]) {
         deleteDir()
         /* note: this is installing into the parent (triqs) venv (install dir), which is thus shared among apps and so not be completely safe */
         sh "pip3 install -U -r $srcDir/requirements.txt"
         sh "cmake $srcDir -DCMAKE_INSTALL_PREFIX=$installDir -DTRIQS_ROOT=$triqsDir -DBuild_Deps=Always"
-        sh "make -j2"
+        sh "make -j2 || make -j1 VERBOSE=1"
         catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') { try {
           sh "make test CTEST_OUTPUT_ON_FAILURE=1"
         } catch (exc) {
@@ -97,7 +97,7 @@ for (int i = 0; i < osxPlatforms.size(); i++) {
         } }
         sh "make install"
       } }
-    } }
+    } } }
   } }
 }
 
