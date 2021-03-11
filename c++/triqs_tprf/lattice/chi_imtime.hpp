@@ -36,6 +36,7 @@ namespace triqs_tprf {
   @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.
  */
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr);
+chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
 
 /** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
 

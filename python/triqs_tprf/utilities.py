@@ -206,6 +206,16 @@ def create_eliashberg_ingredients(p):
     return eliashberg_ingredients
 
 # ----------------------------------------------------------------------
+def create_g0_wk_for_test_model(p):
+    H = create_model_for_tests(**p)
+    e_k = H.on_mesh_brillouin_zone(n_k=[p.nk] * p.dim + [1] * (3 - p.dim))
+
+    wmesh = MeshImFreq(beta=p.beta, S="Fermion", n_max=p.nw)
+    g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
+
+    return g0_wk
+
+# ----------------------------------------------------------------------
 def assert_parameter_collection_not_equal_model_parameters(p1, p2, model_parameters):
     for model_parameter in model_parameters:
         value1, value2 = p1[model_parameter], p2[model_parameter]

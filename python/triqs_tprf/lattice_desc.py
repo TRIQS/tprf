@@ -606,11 +606,11 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_t
         &\approx
         \frac{1}{(N_\mathbf{k}\beta)^2}
         \sum_{K'', K'''}
-        \overline{U}^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') \overline{U}^{\text{d/m}}
+        U^{\text{d/m}}\chi^{\text{d/m}}(Q, K'', K''') U^{\text{d/m}}
         \\
         &\approx
-        \overline{U}^{\mathrm{d/m}}
-        \chi^{\text{d/m}}(Q) \overline{U}^{\mathrm{d/m}}\,,
+        U^{\mathrm{d/m}}
+        \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
 
 
     where all products are particle-hole products.
@@ -651,6 +651,8 @@ Returns
 -------
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.""")
+
+module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_wr_from_grt_PH (triqs_tprf::g_tr_cvt g_tr, int nw)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_tr_cvt g_tr)", doc = r"""Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
 
@@ -805,6 +807,8 @@ Returns
 -------
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.""")
+
+module.add_function ("triqs_tprf::chi_nr_t triqs_tprf::chi0_nr_from_gr_PH_at_specific_w (int nw_index, int nn, triqs_tprf::g_wr_cvt g_nr)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_wnr_t triqs_tprf::chi0r_from_gr_PH_nompi (int nw, int nn, triqs_tprf::g_wr_cvt g_nr)", doc = r"""Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` without MPI parallellization.
 
