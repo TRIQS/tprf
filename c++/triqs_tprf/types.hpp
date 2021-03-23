@@ -116,6 +116,10 @@ typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
 
+typedef gf<cartesian_product<refreq, brillouin_zone>, matrix_valued> g_fk_t;
+typedef g_fk_t::const_view_type g_fk_cvt;
+typedef g_fk_t::view_type g_fk_vt;
+
 typedef gf<cartesian_product<imfreq, brillouin_zone>, matrix_valued> g_wk_t;
 typedef g_wk_t::const_view_type g_wk_cvt;
 typedef g_wk_t::view_type g_wk_vt;
