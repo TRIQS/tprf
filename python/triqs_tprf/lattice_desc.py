@@ -418,22 +418,21 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::gw_sigma_fk_g0w0_spectral (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt Wr_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
+
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product via summation
 
-     Computes the linearized Eliashberg product in the singlet/triplet channel given by
+     Computes the product
 
      .. math::
-         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
-         =
-         -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
-         \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-         \\
-         \times
-         G_{c\bar{e}}(i\nu',\mathbf{k}')
-         G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
-
-     by summation.
+         \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{k},i\nu) =  -\frac{1}{N_k \beta}\sum_{\mathbf{k}'} \sum_{i\nu'}
+         \Gamma_{A\bar{a}B\bar{b}}(\mathbf{k}-\mathbf{k}', i\nu - i\nu')
+         \\ \times
+         G_{A\bar{c}}(\mathbf{k}', i\nu')
+         \Delta_{\bar{c}\bar{d}}(\mathbf{k}', i\nu')
+         G_{B\bar{d}}(-\mathbf{k}', -i\nu')
 
 Parameters
 ----------

@@ -20,7 +20,10 @@
  *
  ******************************************************************************/
 
+#include <triqs/arrays/linalg/eigenelements.hpp>
+
 #include "gw.hpp"
+#include "common.hpp"
 #include "../mpi.hpp"
 
 namespace triqs_tprf {
@@ -147,6 +150,80 @@ g_wk_t gw_sigma_wk_serial_fft(chi_wk_cvt Wr_wk, g_wk_cvt g_wk) {
   auto sigma_tr = gw_sigma_tr(Wr_tr, g_tr);
   auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_tr);
   return sigma_wk;
+}
+
+// ----------------------------------------------------
+// helper functions
+
+double fermi2(double e) { return 1. / (exp(e) + 1.); }
+double bose2(double e)  { return 1. / (exp(e) - 1.); }
+
+// ----------------------------------------------------
+// gw_sigma_fk_g0w0_spectral
+
+g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, 
+                                 gf_mesh<refreq> fmesh, chi_fk_cvt Wr_fk, 
+                                 chi_k_cvt v_k, double delta) {
+
+  auto kmesh = e_k.mesh();
+  int nb = e_k.target().shape()[0];
+  
+  std::complex<double> idelta(0.0, delta);
+  
+  g_fk_t sigma_fk({fmesh, kmesh}, e_k.target_shape());
+  
+  for (auto const & [ f, k ] : sigma_fk.mesh())
+    sigma_fk[f, k] = 0.;
+ 
+  g_fk_t WSpec_fk({fmesh, kmesh}, e_k.target_shape());
+ 
+  for (auto const & [ f, k ] : WSpec_fk.mesh()) {
+    for (int i : range(nb)) {
+      for (int j : range(nb)) {
+        WSpec_fk[f, k](i, j) = -1.0/3.141592653589793 * (Wr_fk[f, k](i, j, i, j) - v_k[k](i, j, i, j)).imag();
+      }
+    }
+  }
+  
+  #pragma omp parallel for shared(sigma_fk)
+  for (int kidx = 0; kidx < kmesh.size(); kidx++) {
+  
+    auto k_iter = kmesh.begin();
+    k_iter += kidx;
+    auto k = *k_iter;
+
+    for (auto const &q : kmesh) {
+    
+      matrix<std::complex<double>> e_kq_mat(e_k(k + q) - mu);
+      auto eig_kq = linalg::eigenelements(e_kq_mat);
+      auto ekq = eig_kq.first;
+      auto Ukq = eig_kq.second;
+
+      for (int l : range(nb)) {
+
+        for (auto const &f : fmesh) {
+            
+              for (auto const &fp : fmesh) {
+              
+                auto num   = bose2(fp * beta) + fermi2(ekq(l) * beta);
+                auto den   = f + idelta + fp - ekq(l);
+
+                sigma_fk[f,k](a,b)
+                  << sigma_fk[f,k](a,b) + Ukq(l, a) * dagger(Ukq)(b, l) * \
+                      ( WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size() );
+
+              }
+                
+              sigma_fk[f,k](a,b)
+                << sigma_fk[f,k](a,b) - Ukq(l, a) * dagger(Ukq)(b, l) * \
+                                        v_k[q](a, b, a, b) * fermi2(ekq(l) * beta) / kmesh.size();
+            
+         }
+      }
+    }
+  } 
+
+  return sigma_fk;
 }
 
 } // namespace triqs_tprf
