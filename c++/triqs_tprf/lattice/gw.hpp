@@ -128,4 +128,9 @@ g_wk_t gw_sigma_wk_serial_fft(chi_wk_cvt Wr_wk, g_wk_cvt g_wk);
 
 g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr);
 
+g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, gf_mesh<refreq> mesh, chi_fk_cvt Wr_fk, chi_k_cvt v_k, double delta);
+
+/** ADD DESCRIPTION
+ */
+
 } // namespace triqs_tprf

@@ -420,6 +420,8 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::gw_sigma_fk_g0w0_spectral (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt Wr_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
+
 module.add_function ("triqs_tprf::gk_iw_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::gk_iw_vt g_wk, triqs_tprf::gk_iw_vt delta_wk)", doc = r"""Linearized Eliashberg product
 
      Computes the product
