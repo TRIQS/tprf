@@ -145,6 +145,31 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
 #endif
 
+// ----------------------------------------------------
+// g in real frequencies
+
+g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk,
+                          double delta) {
+
+  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  auto g_fk = make_gf(sigma_fk);
+  std::complex<double> idelta(0.0, delta);
+    
+  auto arr = mpi_view(g_fk.mesh());
+  #pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+    g_fk[f, k] = inverse((f + idelta + mu)*I - e_k(k) - sigma_fk[f, k]);
+  }
+
+  g_fk = mpi::all_reduce(g_fk);
+  
+  return g_fk;
+}
+
+// ----------------------------------------------------
+
+
 g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
   auto wmesh = sigma_w.mesh();

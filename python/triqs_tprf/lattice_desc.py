@@ -51,7 +51,7 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double delta)", doc = r"""Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g_wk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w)", doc = r"""Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
  Computes
 
@@ -80,7 +80,7 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g_wk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w)", doc = r"""ADD DESCRIPTION""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double delta)", doc = r"""ADD lattice_dyson_g0_fk DESCRIPTION""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g_wk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_wk_cvt sigma_wk)", doc = r"""Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
@@ -110,6 +110,8 @@ Returns
 -------
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g_fk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_fk_cvt sigma_fk, double delta)", doc = r"""ADD lattice_dyson_g_fk DESCRIPTION""")
 
 module.add_function ("triqs_tprf::g_w_t triqs_tprf::lattice_dyson_g_w (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w)", doc = r"""Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
 
