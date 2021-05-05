@@ -36,7 +36,7 @@ from triqs.lattice.lattice_tools import dos_patch as dos_patch_c
 from triqs.lattice.lattice_tools import energies_on_bz_grid, energies_on_bz_path, hopping_stack, energy_matrix_on_bz_path
 
 from triqs.dos import DOS
-from triqs.gf import Gf, MeshBrillouinZone, MeshCyclicLattice
+from triqs.gf import Gf, MeshBrZone, MeshCycLat
 
 class TBLattice(object):
 
@@ -97,10 +97,10 @@ class TBLattice(object):
         return periodization_matrix
     
     def get_kmesh(self, n_k):
-        return MeshBrillouinZone(self.bz, self.periodization_matrix(n_k))
+        return MeshBrZone(self.bz, self.periodization_matrix(n_k))
 
     def get_rmesh(self, n_k):
-        return MeshCyclicLattice(self.bl, self.periodization_matrix(n_k))
+        return MeshCycLat(self.bl, self.periodization_matrix(n_k))
     
     def on_mesh_brillouin_zone(self, n_k):
 

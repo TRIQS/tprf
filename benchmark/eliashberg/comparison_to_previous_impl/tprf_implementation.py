@@ -15,7 +15,7 @@ import triqs.utility.mpi as mpi
 
 from triqs.lattice.lattice_tools import BravaisLattice as BravaisLattice
 from triqs.lattice.lattice_tools import BrillouinZone as BrillouinZone
-from triqs.gf import Gf, MeshBrillouinZone, MeshImFreq
+from triqs.gf import Gf, MeshBrZone, MeshImFreq
 
 # ----------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ bl = BravaisLattice(units, orbital_positions)
 bz = BrillouinZone(bl)
 periodization_matrix = nk * np.eye(3, dtype=np.int32)
 periodization_matrix[2,2] = 1 
-kmesh = MeshBrillouinZone(bz, periodization_matrix)
+kmesh = MeshBrZone(bz, periodization_matrix)
 
 e_k = Gf(mesh=kmesh, target_shape=[norbs, norbs])
 

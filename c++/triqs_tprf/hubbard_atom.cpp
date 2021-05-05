@@ -21,8 +21,7 @@
 
 #include "hubbard_atom.hpp"
 
-#include <triqs/clef.hpp>
-using namespace triqs::clef;
+using namespace nda::clef;
 
 namespace {
 placeholder<0> iw;
@@ -39,7 +38,7 @@ namespace hubbard_atom {
   
   typedef std::complex<double> val_t; 
   typedef gf<imfreq, tensor_valued<4>> temp_1d_t;
-  typedef gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>> temp_2d_t;
+  typedef gf<prod<imfreq, imfreq>, tensor_valued<4>> temp_2d_t;
 
   g_iw_t single_particle_greens_function(int nw, double beta, double U) {
     g_iw_t g_iw{{beta, Fermion, nw}, {1, 1}};

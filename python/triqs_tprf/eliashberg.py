@@ -61,19 +61,19 @@ def solve_eliashberg(
     ----------
     Gamma_pp_wk : Gf,
                Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
-               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     g_wk : Gf, 
            Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
-           be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+           be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     initial_delta : Gf, optional
                    An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
                    an iterative solver, given as a Gf with MeshProduct with the components
-                   (MeshImFreq, MeshBrillouinZone).
+                   (MeshImFreq, MeshBrZone).
                    If not given :func:`semi_random_initial_delta` will be called.
     Gamma_pp_const_k : float or np.ndarray or Gf, optional
                        Part of the pairing vertex that is constant in Matsubara frequency space
                        :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
-                       be a MeshBrillouinZone. If not given, the constant part will be fitted.
+                       be a MeshBrZone. If not given, the constant part will be fitted.
     tol : float, optional
           Relative accuracy for eigenvalues (stopping criterion).
     product : str, ['FFT', 'SUM'], optional
@@ -96,7 +96,7 @@ def solve_eliashberg(
                      A function that takes one parameter: A Green's function 
                      :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the
                      Gf must be a MeshProduct with the components 
-                     (MeshImFreq, MeshBrillouinZone).
+                     (MeshImFreq, MeshBrZone).
                      This function is applied after every iteration of the
                      eigenvalue solver and can be used to enforce a specific
                      symmetry. If no symmetries are enforced, caution is need, because
@@ -113,7 +113,7 @@ def solve_eliashberg(
     eigen_modes : list of Gf,
                   Corresponding eigenvectors (anomalous self-energies) 
                   :math:`\Delta(i\nu_n, \mathbf{k})` as Gf with MeshProduct with the components
-                  (MeshImFreq, MeshBrillouinZone).
+                  (MeshImFreq, MeshBrZone).
 
     See Also
     --------
@@ -191,11 +191,11 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
     ----------
     Gamma_pp_wk : Gf,
                Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
-               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     Gamma_pp_const_k : float or np.ndarray or Gf
                        Part of the pairing vertex that is constant in Matsubara frequency space
                        :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
-                       be a MeshBrillouinZone. If not given, the constant part will be fitted.
+                       be a MeshBrZone. If not given, the constant part will be fitted.
 
     Returns
     -------
@@ -203,9 +203,9 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
                       The dynamic part of Gamma, which converges to zero for
                       :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space.
                       Its mesh attribute is MeshProduct with the components
-                      (MeshImTime, MeshCyclicLattice).
+                      (MeshImTime, MeshCycLat).
     Gamma_pp_const_r : Gf,
-                       The constant part of Gamma with mesh attribute MeshCyclicLattice.
+                       The constant part of Gamma with mesh attribute MeshCycLat.
     """
 
     # -- Determine the dynamic and constant part via a tail fit
@@ -241,7 +241,7 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
     ----------
     g_wk : Gf, 
            Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
-           be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+           be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     nr_factor : float, optional
                 Percentage of :math:`\omega` points which shall not be randomized. This is needed
                 to assure a working tail fit for the Fourier transformations. The default is 0.5,
@@ -254,7 +254,7 @@ def semi_random_initial_delta(g_wk, nr_factor=0.5, seed=None):
     delta : Gf,
             An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
             an iterative solver, given as a Gf with MeshProduct with the components
-            (MeshImFreq, MeshBrillouinZone).
+            (MeshImFreq, MeshBrZone).
     """
 
     np.random.seed(seed)
@@ -447,11 +447,11 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     phi_d_wk : Gf,
                The reducible ladder vertex in the density channel
                :math:`\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
-               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     phi_m_wk : Gf,
                The reducible ladder vertex in the magnetic channel
                :math:`\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
-               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
 
     Returns
     -------
@@ -502,11 +502,11 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     phi_d_wk : Gf,
                The reducible ladder vertex in the density channel
                :math:`\Phi^{\mathrm{d}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
-               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
     phi_m_wk : Gf,
                The reducible ladder vertex in the magnetic channel
                :math:`\Phi^{\mathrm{m}}(i\omega_n, \mathbf{q})`. The mesh attribute of the Gf
-               must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone).
+               must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
 
     Returns
     -------

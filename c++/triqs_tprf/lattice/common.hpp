@@ -22,8 +22,7 @@
 
 #include <omp.h>
 
-#include <triqs/clef.hpp>
-using namespace triqs::clef;
+using namespace nda::clef;
 
 namespace {
 

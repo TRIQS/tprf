@@ -34,7 +34,7 @@ from triqs.gf import Gf
 from triqs.gf import Idx
 from triqs.gf import MeshImFreq
 from triqs.gf import MeshProduct
-from triqs.gf import MeshBrillouinZone
+from triqs.gf import MeshBrZone
 
 from triqs.lattice import BrillouinZone
 
@@ -112,7 +112,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
     #print 'periodization_matrix =\n', periodization_matrix
 
     bz = BrillouinZone(tb_lattice.bl)
-    bzmesh = MeshBrillouinZone(bz, periodization_matrix)
+    bzmesh = MeshBrZone(bz, periodization_matrix)
 
     print('--> ek')
     e_k = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
@@ -224,7 +224,7 @@ def chi_contraction(chi, op1, op2):
     ----------
     chi : Gf,
           Susceptibility :math:`\chi(i\omega_n, \mathbf{k})`. The mesh attribute of
-          the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrillouinZone)
+          the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrZone)
           and its target_rank 4.
     op1, op2 : np.ndarray,
                Operators in matrix representation.

@@ -22,11 +22,13 @@
  ******************************************************************************/
 #pragma once
 
-#include <triqs/arrays.hpp>
-//using namespace triqs::arrays;
+#include <nda/nda.hpp>
+//using namespace nda;
 
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 //using namespace triqs::gfs;
+using namespace triqs::mesh;
 
 //#include "./../gf/flatten.hpp"
 //#include <triqs/gfs/gf/flatten.hpp>
@@ -34,8 +36,9 @@
 
 namespace triqs_tprf::fourier {
 
-  using namespace triqs::arrays;
+  using namespace nda;
   using namespace triqs::gfs;
+  using namespace triqs::mesh;
   
 class fourier_plan_base {
 public:
@@ -51,7 +54,7 @@ using fourier_plan = std::unique_ptr<fourier_plan_base>;
  *-----------------------------------------------------------------------------------------------------*/
 /*
 // general form. NB : options MUST have defaults (for traits later)
-// gf_mesh<Y> make_adjoint_mesh( gf_mesh<X> const &, options ...);
+// Y make_adjoint_mesh( X const &, options ...);
 
 // FIXME : DOC
 inline gf_mesh<imfreq> make_adjoint_mesh(gf_mesh<imtime> const &m,
@@ -83,21 +86,21 @@ inline gf_mesh<retime> make_adjoint_mesh(gf_mesh<refreq> const &m) {
 }
 
 // FIXME : DOC
-inline gf_mesh<brillouin_zone>
-make_adjoint_mesh(gf_mesh<cyclic_lattice> const &m) {
+inline gf_mesh<brzone>
+make_adjoint_mesh(gf_mesh<cyclat> const &m) {
   return {m.domain(), m.periodization_matrix};
 }
 
 // FIXME : DOC
-inline gf_mesh<cyclic_lattice>
-make_adjoint_mesh(gf_mesh<brillouin_zone> const &m) {
+inline gf_mesh<cyclat>
+make_adjoint_mesh(gf_mesh<brzone> const &m) {
   return {m.domain(), m.periodization_matrix};
 }
 
 // trait for error messages later
 template <typename V>
 using _mesh_fourier_image =
-    typename decltype(make_adjoint_mesh(gf_mesh<V>()))::var_t;
+    typename decltype(make_adjoint_mesh(V()))::var_t;
 */
 /*------------------------------------------------------------------------------------------------------
           Implementation
@@ -138,21 +141,21 @@ gf_vec_t<retime> _fourier_impl(gf_mesh<retime> const &t_mesh,
 
 // lattice
   /*
-gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh,
+gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh,
                                        gf_vec_cvt<brillouin_zone> gk);
-gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh,
-                                       gf_vec_cvt<cyclic_lattice> gr);
+gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
+                                       gf_vec_cvt<cyclat> gr);
   */
-gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh,
+gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh,
                                        gf_vec_cvt<brillouin_zone> gk,
                                        fourier_plan &p);
-gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh,
-                                       gf_vec_cvt<cyclic_lattice> gr,
+gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
+                                       gf_vec_cvt<cyclat> gr,
                                        fourier_plan &p);
-fourier_plan _fourier_plan(gf_mesh<cyclic_lattice> const &r_mesh,
+fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh,
                            gf_vec_cvt<brillouin_zone> gk);
-fourier_plan _fourier_plan(gf_mesh<brillouin_zone> const &k_mesh,
-                           gf_vec_cvt<cyclic_lattice> gr);
+fourier_plan _fourier_plan(gf_mesh<brzone> const &k_mesh,
+                           gf_vec_cvt<cyclat> gr);
 
 // general
 void _fourier_destroy_plan(void *p);
@@ -262,13 +265,13 @@ auto make_gf_from_fourier(gf_const_view<V1, T> gin, gf_mesh<V2> const &mesh,
     auto gout = gf<V2, T>{mesh, gin.target_shape()};
     _fourier<N>(gin, gout(), opt_args...);
     return gout;
-  } else { // === cartesian_product mesh
+  } else { // === prod mesh
     static_assert(
         std::is_same_v<V2, _mesh_fourier_image<
                                std::tuple_element_t<N, typename V1::type>>>,
         "There is no Fourier transform between these two meshes");
     auto mesh_tpl = triqs::tuple::replace<N>(gin.mesh().components(), mesh);
-    auto out_mesh = gf_mesh{mesh_tpl};
+    auto out_mesh = prod{mesh_tpl};
     using var_t = typename std::decay_t<decltype(out_mesh)>::var_t;
     auto gout = gf<var_t, T>{out_mesh, gin.target_shape()};
     _fourier<N>(gin, gout(), opt_args...);
@@ -290,7 +293,7 @@ auto make_gf_from_fourier(gf_const_view<brillouin_zone, T> gin) {
 }
 
 template <int N = 0, typename T>
-auto make_gf_from_fourier(gf_const_view<cyclic_lattice, T> gin) {
+auto make_gf_from_fourier(gf_const_view<cyclat, T> gin) {
   return make_gf_from_fourier(gin, make_adjoint_mesh(gin.mesh()));
 }
 
@@ -455,7 +458,7 @@ void triqs_gf_view_assign_delegation(
   if constexpr (get_n_variables<V1>::value == 1) // === single mesh
     static_assert(std::is_same_v<V2, _mesh_fourier_image<V1>>,
                   "There is no Fourier transform between these two meshes");
-  else { // === cartesian_product mesh
+  else { // === prod mesh
     using mesh_res_t = decltype(
         triqs::tuple::replace<N>(rhs.g.mesh().components(),
                                  make_adjoint_mesh(std::get<N>(rhs.g.mesh()))));
@@ -474,7 +477,7 @@ void triqs_gf_view_assign_delegation(
 /*
 // declares the function to accept the clef lazy expressions
 
-namespace triqs::clef {
+namespace nda::clef {
 TRIQS_CLEF_MAKE_FNT_LAZY(fourier);
-} // namespace triqs::clef
+} // namespace nda::clef
 */

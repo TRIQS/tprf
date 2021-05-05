@@ -14,7 +14,7 @@ from triqs.gf import Gf, Idx
 from triqs.operators import c, c_dag
 from h5 import HDFArchive
 
-from triqs.gf import MeshBrillouinZone, MeshProduct, MeshImFreq
+from triqs.gf import MeshBrZone, MeshProduct, MeshImFreq
 from triqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
 
 # ----------------------------------------------------------------------
@@ -114,7 +114,7 @@ def make_calc():
     
     bz = BrillouinZone(BravaisLattice(units=np.eye(3), orbital_positions=[(0,0,0)]))
     periodization_matrix = np.diag(np.array(list([1]*3), dtype=np.int32))
-    kmesh = MeshBrillouinZone(bz, periodization_matrix)    
+    kmesh = MeshBrZone(bz, periodization_matrix)    
     wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nwf_gf)
 
     lat_rpa.g_wk = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=p.G_iw.target_shape)

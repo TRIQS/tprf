@@ -4,7 +4,7 @@ import numpy as np
 import triqs.utility.mpi as mpi
 
 from triqs.gf import Gf, MeshImFreq, MeshProduct
-from triqs.gf import MeshBrillouinZone, MeshCyclicLattice
+from triqs.gf import MeshBrZone, MeshCycLat
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
@@ -15,8 +15,8 @@ bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
 
 periodization_matrix = np.diag(np.array([10, 10, 1], dtype=np.int32))
 
-bzmesh = MeshBrillouinZone(bz, periodization_matrix)
-lmesh = MeshCyclicLattice(bz.lattice, periodization_matrix)
+bzmesh = MeshBrZone(bz, periodization_matrix)
+lmesh = MeshCycLat(bz.lattice, periodization_matrix)
 
 e_k = Gf(mesh=bzmesh, target_shape=[1, 1])
 

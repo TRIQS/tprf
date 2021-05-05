@@ -19,12 +19,13 @@
  *
  ******************************************************************************/
 
-#include <triqs/clef.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 #include <triqs/test_tools/gfs.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 using namespace triqs::lattice;
 
 TEST(tprf, gf_inverse) {
@@ -35,10 +36,10 @@ TEST(tprf, gf_inverse) {
  double t = 1.0;
  auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
  
- auto G_iw = gf<cartesian_product<imfreq, brillouin_zone>>{{{beta, Fermion, n_iw}, {bz, nk}}, {1, 1}};
+ auto G_iw = gf<prod<imfreq, brillouin_zone>>{{{beta, Fermion, n_iw}, {bz, nk}}, {1, 1}};
 
- triqs::clef::placeholder<0> om_;
- triqs::clef::placeholder<1> k_;
+ nda::clef::placeholder<0> om_;
+ nda::clef::placeholder<1> k_;
  
  G_iw(om_, k_) << om_ - 2*t * (cos(k_(0)) + cos(k_(1)));
 

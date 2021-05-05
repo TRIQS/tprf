@@ -15,7 +15,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct
+from triqs.gf import Gf, MeshImFreq, MeshBrZone, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 from triqs_tprf.ParameterCollection import *
 
@@ -35,7 +35,7 @@ wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
 cell = np.eye(3)
 bl = BravaisLattice(cell)
 bz = BrillouinZone(bl)
-kmesh = MeshBrillouinZone(bz, p.nk * np.eye(3, dtype=np.int32))
+kmesh = MeshBrZone(bz, p.nk * np.eye(3, dtype=np.int32))
 
 gf = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=2*(p.norb,))
 gf.data[:] = np.random.rand(*gf.data.shape)

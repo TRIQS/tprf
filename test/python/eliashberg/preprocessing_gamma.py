@@ -1,7 +1,7 @@
 """ Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 import numpy as np
 
-from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone, MeshImTime, MeshCyclicLattice
+from triqs.gf import MeshProduct, MeshImFreq, MeshBrZone, MeshImTime, MeshCycLat
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients
@@ -16,9 +16,9 @@ def test_split_into_dynamic_wk_and_constant_k_mesh_types(gamma):
 
     assert type(gamma_dyn.mesh) == MeshProduct
     assert type(gamma_dyn.mesh[0]) == MeshImFreq
-    assert type(gamma_dyn.mesh[1]) == MeshBrillouinZone
+    assert type(gamma_dyn.mesh[1]) == MeshBrZone
 
-    assert type(gamma_const.mesh) == MeshBrillouinZone
+    assert type(gamma_const.mesh) == MeshBrZone
 
 def test_split_into_dynamic_wk_and_constant_k_mesh_values(gamma, U_d, U_m):
     gamma_dyn, gamma_const = split_into_dynamic_wk_and_constant_k(gamma)
@@ -35,18 +35,18 @@ def test_dynamic_and_constant_to_tr_mesh_types(gamma):
 
     assert type(gamma_dyn_tr.mesh) == MeshProduct
     assert type(gamma_dyn_tr.mesh[0]) == MeshImTime
-    assert type(gamma_dyn_tr.mesh[1]) == MeshCyclicLattice
+    assert type(gamma_dyn_tr.mesh[1]) == MeshCycLat
 
-    assert type(gamma_const_r.mesh) == MeshCyclicLattice
+    assert type(gamma_const_r.mesh) == MeshCycLat
 
 def test_preprocess_gamma_for_fft_types(gamma):
     gamma_dyn_tr, gamma_const_r = preprocess_gamma_for_fft(gamma) 
 
     assert type(gamma_dyn_tr.mesh) == MeshProduct
     assert type(gamma_dyn_tr.mesh[0]) == MeshImTime
-    assert type(gamma_dyn_tr.mesh[1]) == MeshCyclicLattice
+    assert type(gamma_dyn_tr.mesh[1]) == MeshCycLat
 
-    assert type(gamma_const_r.mesh) == MeshCyclicLattice
+    assert type(gamma_const_r.mesh) == MeshCycLat
 
 def save_new_preprocess_gamma_for_fft_benchmark(filename, p):
     eliashberg_ingredients = create_eliashberg_ingredients(p)

@@ -21,8 +21,7 @@
 
 #include "chi_from_gg2.hpp"
 
-#include <triqs/clef.hpp>
-using namespace triqs::clef;
+using namespace nda::clef;
 
 namespace {
 placeholder<0> a;

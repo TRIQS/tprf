@@ -48,7 +48,7 @@ auto mpi_view(const array<T, 1> &arr) {
 }
   
 template<class T>
-auto mpi_view(const gf_mesh<T> &mesh, mpi::communicator const & c) {
+auto mpi_view(const T &mesh, mpi::communicator const & c) {
 
   auto slice = itertools::chunk_range(0, mesh.size(), c.size(), c.rank());
   int size = slice.second - slice.first;
@@ -59,7 +59,7 @@ auto mpi_view(const gf_mesh<T> &mesh, mpi::communicator const & c) {
   c.barrier();
   */
   
-  array<typename gf_mesh<T>::mesh_point_t, 1> arr(size);
+  array<typename T::mesh_point_t, 1> arr(size);
 
   auto iter = mesh.begin();
   iter += slice.first;
@@ -80,7 +80,7 @@ auto mpi_view(const gf_mesh<T> &mesh, mpi::communicator const & c) {
 }
 
 template<class T>
-auto mpi_view(const gf_mesh<T> &mesh) {
+auto mpi_view(const T &mesh) {
   mpi::communicator c;
   return mpi_view(mesh, c);
 }

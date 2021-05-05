@@ -113,7 +113,7 @@ array<dcomplex, 2> fit_derivatives(gf_const_view<imtime, tensor_valued<1>> gt) {
   matrix_t g_vec_left = V_inv * d_vec_left;
   matrix_t g_vec_right = V_inv * d_vec_right;
   double sign = (gt.mesh().domain().statistic == Fermion) ? -1 : 1;
-  array<dcomplex, 2> m23(2, second_dim(g_vec_left));
+  array<dcomplex, 2> m23(2, g_vec_left.shape()[1]);
   m23(0, _) = g_vec_left(0, _) - sign * g_vec_right(0, _);
   m23(1, _) =
       -(g_vec_left(1, _) + sign * g_vec_right(1, _)) * 2 / gt.mesh().delta();
@@ -135,7 +135,7 @@ fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt
         << gt.mesh().size() << " gw.mesh().last_index()"
         << iw_mesh.last_index();
 
-  int n_others = second_dim(gt.data());
+  int n_others = gt.data(.shape()[1]);
 
   array<dcomplex, 2> _gout(L,
                            n_others); // FIXME Why do we need this dimension to
@@ -163,7 +163,7 @@ gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh,
         << gt.mesh().size() << " gw.mesh().last_index()"
         << iw_mesh.last_index();
 
-  int n_others = second_dim(gt.data());
+  int n_others = gt.data(.shape()[1]);
 
   array<dcomplex, 2> _gout(L,
                            n_others); // FIXME Why do we need this dimension to
@@ -248,7 +248,7 @@ fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> g
         << tau_mesh.size() << " gw.mesh().last_index()"
         << gw.mesh().last_index();
 
-  int n_others = second_dim(gw.data());
+  int n_others = gw.data(.shape()[1]);
 
   array<dcomplex, 2> _gin(L,
                           n_others); // FIXME Why do we need this dimension to
@@ -277,7 +277,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
       std::cerr << "WARNING: High frequency moments have an error greater than "
                    "1e-6.\n Error = "
                 << error;
-    TRIQS_ASSERT2((first_dim(tail) > 4),
+    TRIQS_ASSERT2((tail.shape()[0] > 4),
                   "ERROR: Inverse Fourier implementation requires at least a "
                   "proper 3rd high-frequency moment\n");
     double _abs_tail0 = max_element(abs(tail(0, range())));
@@ -302,7 +302,7 @@ gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh,
         << tau_mesh.size() << " gw.mesh().last_index()"
         << gw.mesh().last_index();
 
-  int n_others = second_dim(gw.data());
+  int n_others = gw.data(.shape()[1]);
 
   array<dcomplex, 2> _gin(L,
                           n_others); // FIXME Why do we need this dimension to

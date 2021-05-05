@@ -19,8 +19,8 @@
  *
  ******************************************************************************/
 
-#include <triqs/arrays/linalg/det_and_inverse.hpp>
-using triqs::arrays::inverse;
+#include <nda/linalg.hpp>
+using nda::inverse;
 
 #include "gf.hpp"
 

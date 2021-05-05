@@ -51,13 +51,13 @@ def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=F
 
 def convert_from_ndarray_to_triqs(U_Q, Q, cell, kpts):
 
-    from triqs.gf import Gf, MeshBrillouinZone
+    from triqs.gf import Gf, MeshBrZone
     from triqs.lattice.lattice_tools import BrillouinZone
     from triqs.lattice.lattice_tools import BravaisLattice
 
     bl = BravaisLattice(cell, [(0,0,0)])
     bz = BrillouinZone(bl)
-    bzmesh = MeshBrillouinZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
+    bzmesh = MeshBrZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
 
     u_q = Gf(mesh=bzmesh, target_shape=U_Q.shape[1:])
 

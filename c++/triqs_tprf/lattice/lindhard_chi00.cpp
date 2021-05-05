@@ -19,7 +19,7 @@
  *
  ******************************************************************************/
 
-#include <triqs/arrays/linalg/eigenelements.hpp>
+#include <nda/linalg.hpp>
 
 #include "common.hpp"
 #include "lindhard_chi00.hpp"

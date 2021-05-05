@@ -19,13 +19,15 @@
  *
  ******************************************************************************/
 
-#include <triqs/arrays.hpp>
+#include <nda/nda.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 #include <triqs/test_tools/gfs.hpp>
 #include <triqs/mc_tools/random_generator.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 
 #include <triqs_tprf/linalg.hpp>
 

@@ -20,11 +20,13 @@
  ******************************************************************************/
 #pragma once
 
-#include <triqs/arrays.hpp>
+#include <nda/nda.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 
 #include "types.hpp"
 
@@ -37,7 +39,7 @@ public:
   Channel_t channel = C;
 
   inline memory_layout_t<6> memory_layout() const;
-  inline triqs::arrays::matrix_view<g2_iw_t::scalar_t> matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const;
+  inline nda::matrix_view<g2_iw_t::scalar_t> matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const;
 };
 
 // ----------------------------------------------------
@@ -64,7 +66,7 @@ channel_grouping<Channel_t::PH>::memory_layout() const {
 }
 
 template <>
-inline triqs::arrays::matrix_view<g2_iw_t::scalar_t> channel_grouping<Channel_t::PH>::matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const {
+inline nda::matrix_view<g2_iw_t::scalar_t> channel_grouping<Channel_t::PH>::matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const {
   return make_matrix_view(group_indices_view(arr, {0, 2, 3}, {1, 5, 4}));
 }
 
@@ -82,7 +84,7 @@ channel_grouping<Channel_t::PH_bar>::memory_layout() const {
 }
 
 template <>
-inline triqs::arrays::matrix_view<g2_iw_t::scalar_t> channel_grouping<Channel_t::PH_bar>::matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const {
+inline nda::matrix_view<g2_iw_t::scalar_t> channel_grouping<Channel_t::PH_bar>::matrix_view(array_view<g2_iw_t::scalar_t, 6> arr) const {
   return make_matrix_view(group_indices_view(arr, {0, 2, 5}, {1, 4, 3}));
 }
 

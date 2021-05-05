@@ -103,7 +103,7 @@ namespace triqs_tprf {
   auto I_w = make_gf(I, chg.memory_layout());
   auto I_mat = chg.matrix_view(I_w.data());
 
-  I_mat = 1.0; // This sets a triqs::arrays::matrix to the identity matrix...
+  I_mat = 1.0; // This sets a nda::matrix to the identity matrix...
   I = I_w;
 
   return I;

@@ -4,7 +4,7 @@
 import itertools
 import numpy as np
 
-from triqs.gf import Gf, MeshImFreq, MeshProduct, MeshBrillouinZone
+from triqs.gf import Gf, MeshImFreq, MeshProduct, MeshBrZone
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs.applications.tprf.lattice import g0k_from_ek
@@ -24,7 +24,7 @@ nnu = 100
 # -- BZ-sampling
 
 bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
-bzmesh = MeshBrillouinZone(bz, n_k=n_k)
+bzmesh = MeshBrZone(bz, n_k=n_k)
 q_list = [q for q in bzmesh]
 
 # -- Dispersion

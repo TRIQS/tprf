@@ -18,14 +18,15 @@ def fixed_fermionic_window(g2, nwf):
 
      code = """
 
-#include <triqs/clef.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 #include <triqs/utility/timer.hpp>
 
 using namespace triqs;   
 using namespace triqs::gfs;
+using namespace triqs::mesh;
 
-typedef gf<cartesian_product<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
+typedef gf<prod<imfreq, imfreq, imfreq>, tensor_valued<4>> g2_iw_t;
 
 g2_iw_t fixed_fermionic_window(g2_iw_t g2_in, int nwf) {
 

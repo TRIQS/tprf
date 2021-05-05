@@ -31,7 +31,7 @@ namespace triqs_tprf::fourier {
 
 typedef std::complex<double> dcomplex;
   
-using namespace triqs::arrays;
+using namespace nda;
 
 void _fourier_base_destroy_plan(void *p);
 

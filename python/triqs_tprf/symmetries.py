@@ -31,7 +31,7 @@ def enforce_symmetry(gf, variables, symmetries):
     ----------
     gf : Gf,
          One-particle fermionic Green's function with a MeshProduct containing
-         a MeshImFreq on first and a MeshBrillouinZone in second position.
+         a MeshImFreq on first and a MeshBrZone in second position.
     variables : str or iterator of str,
                 Tells what variable(s) shall be symmetrized, e.g. "momentum"
                 or ["frequency", "momentum"]
@@ -77,7 +77,7 @@ def check_symmetry(gf, atol=1e-08):
     ----------
     gf : Gf,
          One-particle fermionic Green's function with a MeshProduct containing
-         a MeshImFreq on first and a MeshBrillouinZone in second position.
+         a MeshImFreq on first and a MeshBrZone in second position.
     atol : float,
            Absolute tolerance used as parameter `atol` in `np.allclose`.
 
@@ -221,7 +221,7 @@ def _split_momentum(gf):
     ----------
     gf : Gf,
          Green's function with a MeshProduct containing and a 
-         MeshBrillouinZone in second position.
+         MeshBrZone in second position.
 
     Yields
     ------
@@ -254,7 +254,7 @@ def _check_momentum_symmetry(gf, atol=1e-08):
     ----------
     gf : Gf,
          Green's function with a MeshProduct containing and a 
-         MeshBrillouinZone in second position.
+         MeshBrZone in second position.
     atol : float,
            Absolute tolerance used as parameter `atol` in `np.allclose`.
 
@@ -294,7 +294,7 @@ def _symmetrize_momentum(gf, symmetry='even'):
     ----------
     gf : Gf,
          Green's function with a MeshProduct containing and a 
-         MeshBrillouinZone in second position.
+         MeshBrZone in second position.
     symmetry : str, ['even', 'odd'], optional
                What momentum symmetry shall be enforced:
                    

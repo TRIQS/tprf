@@ -55,7 +55,7 @@ namespace triqs_tprf::fourier {
 	  TRIQS_RUNTIME_ERROR << "Periodization matrix must be diagonal for FFTW to work";
 
     auto g_out    = gf_vec_t<V1>{out_mesh, g_in.target_shape()[0]};
-    int n_others = second_dim(g_in.data());
+    int n_others = g_in.data(.shape()[1]);
 
     auto dims = g_in.mesh().get_dimensions();
     auto p =_fourier_base_plan(g_in.data(), g_out.data(), dims.size(), dims.ptr(), n_others, fftw_backward_forward);
@@ -69,24 +69,24 @@ namespace triqs_tprf::fourier {
     return p;
   }
 
-  fourier_plan _fourier_plan(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
+  fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
     return __impl_plan(FFTW_FORWARD, r_mesh, gk);
   }  
 
-  fourier_plan _fourier_plan(gf_mesh<brillouin_zone> const &k_mesh, gf_vec_cvt<cyclic_lattice> gr) {
+  fourier_plan _fourier_plan(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr) {
     return __impl_plan(FFTW_BACKWARD, k_mesh, gr);
   }
 
   
   // ------------------------ DIRECT TRANSFORM --------------------------------------------
 
-  gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk, fourier_plan & p) {
+  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk, fourier_plan & p) {
 
     //std::cout << "--> triqs_tprf::fourier_lattice gk-gr\n";
     //std::cout << "gk.data() =" << gk.data() << "\n";
     //std::cout << "gk.mesh() =\n" << gk.mesh() << "\n";
     
-    auto gr = gf_vec_t<cyclic_lattice>{r_mesh, gk.target_shape()[0]};
+    auto gr = gf_vec_t<cyclat>{r_mesh, gk.target_shape()[0]};
     _fourier_base(gk.data(), gr.data(), p);
 
     //std::cout << "gr.data() (pre)  =" << gr.data() << "\n";
@@ -99,7 +99,7 @@ namespace triqs_tprf::fourier {
   }
 
   /*
-  gf_vec_t<cyclic_lattice> _fourier_impl(gf_mesh<cyclic_lattice> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
+  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
     auto p = _fourier_plan(r_mesh, gk);
     auto gr = _fourier_impl(r_mesh, gk, p);
     return std::move(gr);
@@ -108,14 +108,14 @@ namespace triqs_tprf::fourier {
   
   // ------------------------ INVERSE TRANSFORM --------------------------------------------
 
-  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh, gf_vec_cvt<cyclic_lattice> gr, fourier_plan & p) {
+  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan & p) {
     auto gk = gf_vec_t<brillouin_zone>{k_mesh, gr.target_shape()[0]};
     _fourier_base(gr.data(), gk.data(), p);
     return gk;
   }
 
   /*
-  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brillouin_zone> const &k_mesh, gf_vec_cvt<cyclic_lattice> gr) {
+  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr) {
     auto p = _fourier_plan(k_mesh, gr);
     auto gk = _fourier_impl(k_mesh, gr, p);
     return std::move(gk);
