@@ -45,7 +45,7 @@ typedef gf<brzone, matrix_valued> ek_t;
 typedef ek_t::const_view_type ek_cvt;
 typedef ek_t::view_type ek_vt;
   
-typedef gf<prod<imfreq, brillouin_zone>, matrix_valued> gk_iw_t;
+typedef gf<prod<imfreq, brzone>, matrix_valued> gk_iw_t;
 typedef gk_iw_t::const_view_type gk_iw_cvt;
 typedef gk_iw_t::view_type gk_iw_vt;
 
@@ -63,7 +63,7 @@ typedef chi0_t::view_type chi0_vt;
 
   // old style
 
-typedef gf<prod<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi0q_t;
+typedef gf<prod<imfreq, imfreq, brzone>, tensor_valued<4>> chi0q_t;
 typedef chi0q_t::const_view_type chi0q_cvt;
 typedef chi0q_t::view_type chi0q_vt;
   
@@ -77,7 +77,7 @@ typedef gf<prod<imfreq, imfreq, cyclat>, tensor_valued<4>> chi_wnr_t;
 typedef chi_wnr_t::const_view_type chi_wnr_cvt;
 typedef chi_wnr_t::view_type chi_wnr_vt;
 
-typedef gf<prod<imfreq, imfreq, brillouin_zone>, tensor_valued<4>> chi_wnk_t;
+typedef gf<prod<imfreq, imfreq, brzone>, tensor_valued<4>> chi_wnk_t;
 typedef chi_wnk_t::const_view_type chi_wnk_cvt;
 typedef chi_wnk_t::view_type chi_wnk_vt;
 
@@ -117,7 +117,7 @@ typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
 
-typedef gf<prod<imfreq, brillouin_zone>, matrix_valued> g_wk_t;
+typedef gf<prod<imfreq, brzone>, matrix_valued> g_wk_t;
 typedef g_wk_t::const_view_type g_wk_cvt;
 typedef g_wk_t::view_type g_wk_vt;
 
@@ -129,7 +129,7 @@ typedef gf<prod<imtime, cyclat>, matrix_valued> g_tr_t;
 typedef g_tr_t::const_view_type g_tr_cvt;
 typedef g_tr_t::view_type g_tr_vt;
 
-typedef gf<prod<imtime, brillouin_zone>, matrix_valued> g_tk_t;
+typedef gf<prod<imtime, brzone>, matrix_valued> g_tk_t;
 typedef g_tk_t::const_view_type g_tk_cvt;
 typedef g_tk_t::view_type g_tk_vt;
   
@@ -145,7 +145,7 @@ typedef gf<prod<imfreq, cyclat>, tensor_valued<4>> chi_wr_t;
 typedef chi_wr_t::const_view_type chi_wr_cvt;
 typedef chi_wr_t::view_type chi_wr_vt;
 
-typedef gf<prod<imfreq, brillouin_zone>, tensor_valued<4>> chi_wk_t;
+typedef gf<prod<imfreq, brzone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;
 

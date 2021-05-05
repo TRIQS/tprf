@@ -142,18 +142,18 @@ gf_vec_t<retime> _fourier_impl(gf_mesh<retime> const &t_mesh,
 // lattice
   /*
 gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh,
-                                       gf_vec_cvt<brillouin_zone> gk);
-gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
+                                       gf_vec_cvt<brzone> gk);
+gf_vec_t<brzone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
                                        gf_vec_cvt<cyclat> gr);
   */
 gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh,
-                                       gf_vec_cvt<brillouin_zone> gk,
+                                       gf_vec_cvt<brzone> gk,
                                        fourier_plan &p);
-gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
+gf_vec_t<brzone> _fourier_impl(gf_mesh<brzone> const &k_mesh,
                                        gf_vec_cvt<cyclat> gr,
                                        fourier_plan &p);
 fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh,
-                           gf_vec_cvt<brillouin_zone> gk);
+                           gf_vec_cvt<brzone> gk);
 fourier_plan _fourier_plan(gf_mesh<brzone> const &k_mesh,
                            gf_vec_cvt<cyclat> gr);
 
@@ -288,7 +288,7 @@ auto make_gf_from_fourier(gf_const_view<V1, T> gin, gf_mesh<V2> const &mesh,
 
   /*
 template <int N = 0, typename T>
-auto make_gf_from_fourier(gf_const_view<brillouin_zone, T> gin) {
+auto make_gf_from_fourier(gf_const_view<brzone, T> gin) {
   return make_gf_from_fourier(gin, make_adjoint_mesh(gin.mesh()));
 }
 

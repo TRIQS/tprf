@@ -36,7 +36,7 @@ TEST(tprf, gf_inverse) {
  double t = 1.0;
  auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
  
- auto G_iw = gf<prod<imfreq, brillouin_zone>>{{{beta, Fermion, n_iw}, {bz, nk}}, {1, 1}};
+ auto G_iw = gf<prod<imfreq, brzone>>{{{beta, Fermion, n_iw}, {bz, nk}}, {1, 1}};
 
  nda::clef::placeholder<0> om_;
  nda::clef::placeholder<1> k_;

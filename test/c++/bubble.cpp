@@ -28,12 +28,12 @@ auto eps_k_ = -2 * (cos(k_(0)) + cos(k_(1)));
 // ------------------------------------------------------------
 
 TEST(Gf, Bubble) {
- auto chi0q = gf<prod<imfreq, imfreq, brillouin_zone>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}, {1, 1}};
+ auto chi0q = gf<prod<imfreq, imfreq, brzone>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}, {1, 1}};
  auto chi0r = gf<prod<imfreq, imfreq, cyclat>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {n_k, n_k}}, {1, 1}};
 
  auto chi0q_from_r = chi0q;
 
- auto Gk = gf<prod<imfreq, brillouin_zone>, matrix_valued>{{{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
+ auto Gk = gf<prod<imfreq, brzone>, matrix_valued>{{{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
  auto Gr = gf<prod<imfreq, cyclat>, matrix_valued>{{{beta, Fermion, nw}, {n_k, n_k}}, {1, 1}};
 
  Gk(inu_, k_) << 1 / (inu_ + mu - eps_k_);
@@ -67,13 +67,13 @@ TEST(Gf, Bubble) {
 TEST(Gf, BubbleScalar) {
 
  auto chi0q =
-     gf<prod<imfreq, imfreq, brillouin_zone>, scalar_valued>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}};
+     gf<prod<imfreq, imfreq, brzone>, scalar_valued>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}};
  auto chi0r =
      gf<prod<imfreq, imfreq, cyclat>, scalar_valued>{{{beta, Fermion, nw}, {beta, Boson, nw}, {n_k, n_k}}};
 
  auto chi0q_from_r = chi0q;
 
- auto Gk = gf<prod<imfreq, brillouin_zone>, scalar_valued>{{{beta, Fermion, nw}, {bz, n_k}}};
+ auto Gk = gf<prod<imfreq, brzone>, scalar_valued>{{{beta, Fermion, nw}, {bz, n_k}}};
  auto Gr = gf<prod<imfreq, cyclat>, scalar_valued>{{{beta, Fermion, nw}, {n_k, n_k}}};
 
  Gk(inu_, k_) << 1 / (inu_ + mu - eps_k_);
@@ -99,13 +99,13 @@ TEST(Gf, BubbleScalar) {
 TEST(Gf, BubbleTensor) {
 
  auto chi0q =
-   gf<prod<imfreq, imfreq, brillouin_zone>, tensor_valued<4>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}, {1, 1, 1, 1}};
+   gf<prod<imfreq, imfreq, brzone>, tensor_valued<4>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {bz, n_k}}, {1, 1, 1, 1}};
  auto chi0r =
    gf<prod<imfreq, imfreq, cyclat>, tensor_valued<4>>{{{beta, Fermion, nw}, {beta, Boson, nw}, {n_k, n_k}}, {1, 1, 1, 1}};
 
  auto chi0q_from_r = chi0q;
 
- auto Gk = gf<prod<imfreq, brillouin_zone>, matrix_valued>{{{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
+ auto Gk = gf<prod<imfreq, brzone>, matrix_valued>{{{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
  auto Gr = gf<prod<imfreq, cyclat>, matrix_valued>{{{beta, Fermion, nw}, {n_k, n_k}}, {1, 1}};
 
  Gk(inu_, k_)(a, b) << kronecker(a, b) * 1 / (inu_ + mu - eps_k_);

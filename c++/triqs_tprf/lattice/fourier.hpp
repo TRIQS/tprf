@@ -145,7 +145,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   auto rmesh = std::get<1>(g_wr.mesh());
 
   auto kmesh = make_adjoint_mesh(rmesh);
-  auto g_wk = make_gf<prod<imfreq, brillouin_zone>>({wmesh, kmesh}, g_wr.target());
+  auto g_wk = make_gf<prod<imfreq, brzone>>({wmesh, kmesh}, g_wr.target());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));

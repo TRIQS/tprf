@@ -69,7 +69,7 @@ namespace triqs_tprf::fourier {
     return p;
   }
 
-  fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
+  fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brzone> gk) {
     return __impl_plan(FFTW_FORWARD, r_mesh, gk);
   }  
 
@@ -80,7 +80,7 @@ namespace triqs_tprf::fourier {
   
   // ------------------------ DIRECT TRANSFORM --------------------------------------------
 
-  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk, fourier_plan & p) {
+  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brzone> gk, fourier_plan & p) {
 
     //std::cout << "--> triqs_tprf::fourier_lattice gk-gr\n";
     //std::cout << "gk.data() =" << gk.data() << "\n";
@@ -99,7 +99,7 @@ namespace triqs_tprf::fourier {
   }
 
   /*
-  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brillouin_zone> gk) {
+  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brzone> gk) {
     auto p = _fourier_plan(r_mesh, gk);
     auto gr = _fourier_impl(r_mesh, gk, p);
     return std::move(gr);
@@ -108,14 +108,14 @@ namespace triqs_tprf::fourier {
   
   // ------------------------ INVERSE TRANSFORM --------------------------------------------
 
-  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan & p) {
-    auto gk = gf_vec_t<brillouin_zone>{k_mesh, gr.target_shape()[0]};
+  gf_vec_t<brzone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan & p) {
+    auto gk = gf_vec_t<brzone>{k_mesh, gr.target_shape()[0]};
     _fourier_base(gr.data(), gk.data(), p);
     return gk;
   }
 
   /*
-  gf_vec_t<brillouin_zone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr) {
+  gf_vec_t<brzone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr) {
     auto p = _fourier_plan(k_mesh, gr);
     auto gk = _fourier_impl(k_mesh, gr, p);
     return std::move(gk);
