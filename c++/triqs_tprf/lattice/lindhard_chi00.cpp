@@ -57,14 +57,10 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
 
       // -- If this is moved out to the k-loop the threading breaks?!?
       matrix<std::complex<double>> e_k_mat(e_k[k] - mu);
-      auto eig_k = linalg::eigenelements(e_k_mat);
-      auto ek = eig_k.first;
-      auto Uk = eig_k.second;
+      auto [ek, Uk] = linalg::eigenelements(e_k_mat);
 
       matrix<std::complex<double>> e_kq_mat(e_k(k + q) - mu);
-      auto eig_kq = linalg::eigenelements(e_kq_mat);
-      auto ekq = eig_kq.first;
-      auto Ukq = eig_kq.second;
+      auto [ekq, Ukq] = linalg::eigenelements(e_kq_mat);
 
       for (int i : range(nb)) {
         for (int j : range(nb)) {

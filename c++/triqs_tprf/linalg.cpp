@@ -27,31 +27,32 @@ namespace triqs_tprf {
 
  template <Channel_t CH> g2_nn_t inverse(g2_nn_cvt g) {
 
-  channel_grouping<CH> chg;
-  auto g_inv = make_gf(g.mesh(), g.target(), g.memory_layout());
+   auto g_inv = make_gf(g);
 
-  auto g_w = make_gf(g, chg.memory_layout());
-  auto g_w_inv = make_gf(g_w.mesh(), g_w.target(), g_w.memory_layout());
+   using dat_t = array<g2_nn_cvt::scalar_t, g2_nn_cvt::data_rank, channel_memory_layout<CH>>;
 
-  auto mat = chg.matrix_view(g_w.data());
-  auto mat_inv = chg.matrix_view(g_w_inv.data());
+   auto g_w_dat     = dat_t{g.data()};
+   auto g_w_inv_dat = dat_t{g.data()};
 
-  mat_inv = inverse(mat);
+   auto mat     = channel_matrix_view<CH>(g_w_dat);
+   auto mat_inv = channel_matrix_view<CH>(g_w_inv_dat);
 
-  g_inv = g_w_inv;
+   mat_inv = inverse(mat);
 
-  return g_inv;
+   g_inv.data() = g_w_inv_dat;
+
+   return g_inv;
  }
   
  /// Inverse: [G]^{-1}, Two-particle response-function inversion
  template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g) {
 
    //channel_grouping<CH> chg;
-  auto g_inv = make_gf(g.mesh(), g.target(), g.memory_layout());
+   auto g_inv = make_gf(g);
 
-  for (auto const &w : std::get<0>(g.mesh())) {
-   auto _ = all_t{};
-   g_inv[w, _, _] = inverse<CH>(g[w, _, _]);
+   for (auto const &w : std::get<0>(g.mesh())) {
+     auto _         = all_t{};
+     g_inv[w, _, _] = inverse<CH>(g[w, _, _]);
   }
   return g_inv;
  }
@@ -60,21 +61,21 @@ namespace triqs_tprf {
   
  template <Channel_t CH> g2_nn_t product(g2_nn_cvt A, g2_nn_cvt B) {
 
-   channel_grouping<CH> chg;
-   
-   auto C = make_gf(A.mesh(), A.target(), A.memory_layout());
+   auto C = make_gf(A);
 
-   auto A_w = make_gf(A, chg.memory_layout());
-   auto B_w = make_gf(B, chg.memory_layout());
-   auto C_w = make_gf(A_w.mesh(), A_w.target(), A_w.memory_layout());
+   using dat_t = array<g2_nn_cvt::scalar_t, g2_nn_cvt::data_rank, channel_memory_layout<CH>>;
 
-   auto A_mat = chg.matrix_view(A_w.data());
-   auto B_mat = chg.matrix_view(B_w.data());
-   auto C_mat = chg.matrix_view(C_w.data());
+   auto A_w_dat = dat_t{A.data()};
+   auto B_w_dat = dat_t{B.data()};
+   auto C_w_dat = dat_t{A_w_dat};
+
+   auto A_mat = channel_matrix_view<CH>(A_w_dat);
+   auto B_mat = channel_matrix_view<CH>(B_w_dat);
+   auto C_mat = channel_matrix_view<CH>(C_w_dat);
 
    C_mat = A_mat * B_mat;
 
-   C = C_w;
+   C.data() = C_w_dat;
 
    return C;
  }
@@ -82,14 +83,11 @@ namespace triqs_tprf {
  /// product: C = A * B, two-particle response-function product
  template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B) {
 
-  //channel_grouping<CH> chg;
-  // check that A and B are compatible!
+   auto C = make_gf(A);
 
-  auto C = make_gf(A.mesh(), A.target(), A.memory_layout());
-
-  for (auto const &w : std::get<0>(A.mesh())) {
-   auto _ = all_t{};
-   C[w, _, _] = product<CH>(A[w, _, _], B[w, _, _]);
+   for (auto const &w : std::get<0>(A.mesh())) {
+     auto _     = all_t{};
+     C[w, _, _] = product<CH>(A[w, _, _], B[w, _, _]);
   }
   return C;
  }
@@ -98,25 +96,27 @@ namespace triqs_tprf {
 
  template <Channel_t CH> g2_nn_t identity(g2_nn_cvt g) {
 
-  channel_grouping<CH> chg;
-  auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
-  auto I_w = make_gf(I, chg.memory_layout());
-  auto I_mat = chg.matrix_view(I_w.data());
+   using dat_t = array<g2_nn_cvt::scalar_t, g2_nn_cvt::data_rank, channel_memory_layout<CH>>;
 
-  I_mat = 1.0; // This sets a nda::matrix to the identity matrix...
-  I = I_w;
+   auto I = make_gf(g);
 
-  return I;
+   auto I_w_dat = dat_t{I.data()};
+   auto I_mat   = channel_matrix_view<CH>(I_w_dat);
+
+   I_mat    = 1.0; // This sets a nda::matrix to the identity matrix...
+   I.data() = I_w_dat;
+
+   return I;
  }
 
  /// Identity: 1, identity two-particle response-function
  template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g) {
 
-  auto I = make_gf(g.mesh(), g.target(), g.memory_layout());
+   auto I = make_gf(g);
 
-  for (auto const &w : std::get<0>(g.mesh())) {
-   auto _ = all_t{};
-   I[w, _, _] = identity<CH>(I[w, _, _]);
+   for (auto const &w : std::get<0>(g.mesh())) {
+     auto _     = all_t{};
+     I[w, _, _] = identity<CH>(I[w, _, _]);
   }
   return I;
  }

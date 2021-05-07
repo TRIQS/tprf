@@ -318,7 +318,7 @@ auto [bmesh, fmesh, kmesh] = chi0_wnk.mesh();
 auto rmesh = make_adjoint_mesh(kmesh);
 
 auto chi0_wnr =
-    make_gf<chi0r_t::mesh_t::var_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
+    make_gf<chi0r_t::mesh_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
 
 auto _ = all_t{};
 for (auto const &[w, n] : mpi_view(prod{bmesh, fmesh}))
@@ -385,7 +385,7 @@ auto [bmesh, fmesh, rmesh] = chi0_wnr.mesh();
 auto kmesh = make_adjoint_mesh(rmesh);
 
 auto chi0_wnk =
-    make_gf<chi0q_t::mesh_t::var_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
+    make_gf<chi0q_t::mesh_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
 
 auto _ = all_t{};
 for (auto const &[w, n] : mpi_view(prod{bmesh, fmesh}))
@@ -573,7 +573,7 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
   auto mf = std::get<1>(chi0q.mesh());
   auto mbz = std::get<2>(chi0q.mesh());
 
-  auto chiq = make_gf<chiq_t::mesh_t::var_t>({mbz, mb, mf, mf}, chi0q.target());
+  auto chiq = make_gf<chiq_t::mesh_t>({mbz, mb, mf, mf}, chi0q.target());
 
   for (auto const &k : mbz) {
 
@@ -583,7 +583,7 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     // -- only in the target space we would save one global inverse!
 
     auto chi0q_k =
-        make_gf<g2_iw_t::mesh_t::var_t>({mb, mf, mf}, chi0q.target());
+        make_gf<g2_iw_t::mesh_t>({mb, mf, mf}, chi0q.target());
 
     for (auto const &w : mb) {
       for (auto const &n : mf) {
@@ -620,7 +620,7 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
     iter += idx;
     auto k = *iter;
 
-    auto chi0 = make_gf<g2_nn_t::mesh_t::var_t>({mf, mf}, chi0_wnk.target());
+    auto chi0 = make_gf<g2_nn_t::mesh_t>({mf, mf}, chi0_wnk.target());
     auto I = identity<Channel_t::PH>(chi0);
 
     for (auto const &w : mb) {
@@ -787,7 +787,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
       {kmesh, bmesh}, target);
 
   auto chi0_n = make_gf<imfreq>(fmesh, target);
-  auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+  auto chi0_nn = make_gf<g2_nn_t::mesh_t>({fmesh, fmesh}, target);
   auto I = identity<Channel_t::PH>(chi0_nn);
 
   int nb = gamma_ph_wnn.target_shape()[0];
@@ -915,7 +915,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
       {kmesh, bmesh}, target);
 
   auto chi0_n = make_gf<imfreq>(fmesh, target);
-  auto chi0_nn = make_gf<g2_nn_t::mesh_t::var_t>({fmesh, fmesh}, target);
+  auto chi0_nn = make_gf<g2_nn_t::mesh_t>({fmesh, fmesh}, target);
   auto I = identity<Channel_t::PH>(chi0_nn);
 
   int nb = gamma_ph_wnn.target_shape()[0];

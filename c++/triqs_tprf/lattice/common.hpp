@@ -22,6 +22,8 @@
 
 #include <omp.h>
 
+#include <nda/clef.hpp>
+
 using namespace nda::clef;
 
 namespace {
