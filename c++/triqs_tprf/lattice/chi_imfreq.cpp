@@ -631,7 +631,7 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
       }
 
       // this step could be optimized, using the diagonality of chi0 and I
-      chi_nn_t denom = I - product<Channel_t::PH>(chi0, gamma_ph_wnn[w, _, _]);
+      auto denom = chi_nn_t{I - product<Channel_t::PH>(chi0, gamma_ph_wnn[w, _, _])};
 
       // also the last product here
       chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0);
@@ -709,10 +709,10 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
     gamma_nn = gamma_ph_wnn[w, _, _];
     
     // this step could be optimized, using the diagonality of chi0 and I
-    chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_nn);
+    auto denom = chi_nn_t{I - product<Channel_t::PH>(chi0_nn, gamma_nn)};
 
     // also the last product here
-    chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+    auto chi = chi_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
 
     //t_bse.stop();
     //std::cout << "BSE: bse inv " << double(t_bse) << " s" << std::endl;
@@ -863,15 +863,14 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
     t_bse_2.start();
     std::cout << "BSE: I - chi0 * gamma ";
 
-    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph_wnn[w, _, _]);
+    auto denom = g2_nn_t{I - product<Channel_t::PH>(chi0_nn, gamma_ph_wnn[w, _, _])};
 
     std::cout << double(t_bse_2) << " s\n";
 
     t_bse_3.start();
     std::cout << "BSE: chi = [I - chi0 * gamma]^{-1} chi0 ";
 
-    g2_nn_t chi_nn =
-        product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+    auto chi_nn = g2_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
 
     std::cout << double(t_bse_3) << " s\n";
 
@@ -995,7 +994,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
     t_bse_2.start();
     std::cout << "BSE: I - chi0 * gamma ";
 
-    g2_nn_t denom = I - product<Channel_t::PH>(chi0_nn, gamma_ph_wnn[w, _, _]);
+    auto denom = g2_nn_t{I - product<Channel_t::PH>(chi0_nn, gamma_ph_wnn[w, _, _])};
 
     std::cout << double(t_bse_2) << " s\n";
 
