@@ -67,21 +67,27 @@ namespace triqs_tprf::fourier {
   template <int N, typename V1, typename V2, typename T, typename... OptArgs>
   void _fourier_with_plan(gf_const_view<V1, T> gin, gf_view<V2, T> gout, fourier_plan &p, OptArgs const &...opt_args) {
 
-    // gf_mesh<V2> out_mesh = std::get<N>(gout.mesh());
-    auto const &out_mesh = std::get<N>(gout.mesh()); // FIXME singlevar??
+    // pb std::get<0> would not work on a non composite mesh. We use a little lambda to deduce ref and type
+    auto const &out_mesh = [&gout]() -> auto const & { // NB must return a reference
+      using m_t = std::decay_t<decltype(gout.mesh())>;
+      if constexpr (triqs::mesh::is_product_v<m_t>)
+        return std::get<N>(gout.mesh());
+      else
+        return gout.mesh();
+    }
+    ();
 
-    auto gout_flatten = _fourier_impl(out_mesh, flatten_gf_2d<N>(gin), p, flatten_2d(opt_args, N)...);
+    auto gout_flatten = _fourier_impl(out_mesh, flatten_gf_2d<N>(gin), flatten_2d<0>(make_array_const_view(opt_args))...);
     auto _            = ellipsis();
     if constexpr (gin.data_rank == 1)
       gout.data() = gout_flatten.data()(_, 0); // gout is scalar, gout_flatten vectorial
     else {
       // inverse operation as flatten_2d, exactly
-      auto g_rot = rotate_index_view(gout.data(), N);
+      auto g_rot = nda::rotate_index_view<N>(gout.data());
       for (auto const &mp : out_mesh) {
-        auto g_rot_sl = g_rot(mp.linear_index(),
-                              _); // if the array is long, it is faster to precompute the view ...
+        auto g_rot_sl = g_rot(mp.linear_index(), _); // if the array is long, it is faster to precompute the view ...
         auto gout_col = gout_flatten.data()(mp.linear_index(), _);
-        assign_foreach(g_rot_sl, [&gout_col, c = 0ll](auto &&...) mutable { return gout_col(c++); });
+        nda::for_each(g_rot_sl.shape(), [&g_rot_sl, &gout_col, c = long(0)](auto &&...i) mutable { return g_rot_sl(i...) = gout_col(c++); });
       }
     }
   }
@@ -90,8 +96,17 @@ namespace triqs_tprf::fourier {
   // implementation
   template <int N, typename V1, typename V2, typename T, typename... OptArgs>
   fourier_plan _fourier_plan(gf_const_view<V1, T> gin, gf_view<V2, T> gout, OptArgs const &...opt_args) {
-    auto const &out_mesh = std::get<N>(gout.mesh());
-    auto p               = _fourier_plan(out_mesh, flatten_gf_2d<N>(gin), flatten_2d(opt_args, N)...);
-    return std::move(p);
+
+    // pb std::get<0> would not work on a non composite mesh. We use a little lambda to deduce ref and type
+    auto const &out_mesh = [&gout]() -> auto const & { // NB must return a reference
+      using m_t = std::decay_t<decltype(gout.mesh())>;
+      if constexpr (triqs::mesh::is_product_v<m_t>)
+        return std::get<N>(gout.mesh());
+      else
+        return gout.mesh();
+    }
+    ();
+
+    return _fourier_plan(out_mesh, flatten_gf_2d<N>(gin), flatten_2d(opt_args, N)...);
   }
 } // namespace triqs_tprf::fourier
