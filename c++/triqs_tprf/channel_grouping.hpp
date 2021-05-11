@@ -52,7 +52,7 @@ namespace triqs_tprf {
   // in the particle-hole channel (Channel_t::PH) the indices are grouped as
   // {nu_1, a, b}, {nu_2, d, c} <=> {0, 2, 3}, {1, 5, 4}
 
-  template <> constexpr std::array<int, 6> channel_stride_order<Channel_t::PH> = {0, 2, 3, 1, 5, 4};
+  template <> inline constexpr std::array<int, 6> channel_stride_order<Channel_t::PH> = {0, 2, 3, 1, 5, 4};
 
   // ----------------------------------------------------
   // Channel_t::PH_bar
@@ -61,7 +61,7 @@ namespace triqs_tprf {
   // as
   // {nu_1, a, d}, {nu_2, c, b} <=> {0, 2, 5}, {1, 4, 3}
 
-  template <> constexpr std::array<int, 6> channel_stride_order<Channel_t::PH_bar> = {0, 2, 5, 1, 4, 3};
+  template <> inline constexpr std::array<int, 6> channel_stride_order<Channel_t::PH_bar> = {0, 2, 5, 1, 4, 3};
 
   // ----------------------------------------------------
   // Channel_t::PP
@@ -69,7 +69,7 @@ namespace triqs_tprf {
   // in the particle-particle channel (Channel_t::PP) the indices are grouped as
   // {nu_1, a, c}, {nu_2, b, d} <=> {0, 2, 4}, {1, 3, 5}
 
-  template <> constexpr std::array<int, 6> channel_stride_order<Channel_t::PP> = {0, 2, 4, 1, 3, 5};
+  template <> inline constexpr std::array<int, 6> channel_stride_order<Channel_t::PP> = {0, 2, 4, 1, 3, 5};
 
   // ----------------------------------------------------
   // channel_matrix_view
@@ -80,7 +80,7 @@ namespace triqs_tprf {
   template <Channel_t C> using channel_memory_layout = contiguous_layout_with_stride_order<encode(channel_stride_order<C>)>;
 
   template <Channel_t C>
-  nda::matrix_view<g2_iw_t::scalar_t> channel_matrix_view(array_contiguous_view<g2_iw_t::scalar_t, 6, channel_memory_layout<C>> arr) {
+  inline nda::matrix_view<g2_iw_t::scalar_t> channel_matrix_view(array_contiguous_view<g2_iw_t::scalar_t, 6, channel_memory_layout<C>> arr) {
     constexpr std::array<int, 6> str_ord = channel_stride_order<C>;
     return group_indices_view(arr, idx_group<str_ord[0], str_ord[1], str_ord[2]>, idx_group<str_ord[3], str_ord[4], str_ord[5]>);
   }
