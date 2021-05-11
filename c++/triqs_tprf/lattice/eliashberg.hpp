@@ -193,5 +193,5 @@ namespace triqs_tprf {
     @return The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`
 
   */
-  chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U);
+  chi_wk_t construct_phi_wk(chi_wk_vt chi, array_contiguous_view<std::complex<double>, 4> U);
 }

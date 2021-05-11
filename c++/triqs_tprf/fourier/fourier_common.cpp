@@ -23,11 +23,11 @@
 
 namespace triqs_tprf::fourier {
 
-  fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in, array_view<dcomplex, 2> out, int rank, int *dims, int fftw_count,
+  fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in, array_const_view<dcomplex, 2> out, int rank, int *dims, int fftw_count,
                                   int fftw_backward_forward) {
 
     auto in_fft  = reinterpret_cast<fftw_complex *>(const_cast<dcomplex *>(in.data()));
-    auto out_fft = reinterpret_cast<fftw_complex *>(out.data());
+    auto out_fft = reinterpret_cast<fftw_complex *>(const_cast<dcomplex *>(out.data()));
 
     auto p = fftw_plan_many_dft(rank,                        // rank
                                 dims,                        // the dimension
@@ -45,9 +45,9 @@ namespace triqs_tprf::fourier {
     return {(void *)p, [](void *p) { fftw_destroy_plan((fftw_plan)p); }};
   }
 
-  void _fourier_base(array_view<dcomplex, 2> in, array_view<dcomplex, 2> out, fourier_plan &plan) {
+  void _fourier_base(array_const_view<dcomplex, 2> in, array_view<dcomplex, 2> out, fourier_plan &plan) {
 
-    auto in_fft  = reinterpret_cast<fftw_complex *>(in.data());
+    auto in_fft  = reinterpret_cast<fftw_complex *>(const_cast<dcomplex *>(in.data()));
     auto out_fft = reinterpret_cast<fftw_complex *>(out.data());
 
     fftw_execute_dft((fftw_plan)plan.get(), in_fft, out_fft);
