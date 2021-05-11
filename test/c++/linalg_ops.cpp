@@ -46,7 +46,7 @@ void random_fill(g2_iw_t &G, int rng_seed = 23432) {
 void print(g2_iw_t const &G) {
   typedef size_t st;
   auto data = G.data();
-  foreach (data, [&data](st n1, st n2, st n3, st i, st j, st k, st l) {
+  nda::for_each(data.shape(), [&data](st n1, st n2, st n3, st i, st j, st k, st l) {
     std::cout << "data(" << n1 << ", " << n2 << ", " << n3 << "; " << i << ", "
               << j << ", " << k << ", " << l
               << ") = " << data(n1, n2, n3, i, j, k, l) << "\n";
