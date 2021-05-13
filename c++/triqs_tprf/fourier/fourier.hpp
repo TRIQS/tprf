@@ -77,7 +77,7 @@ namespace triqs_tprf::fourier {
     }
     ();
 
-    auto gout_flatten = _fourier_impl(out_mesh, flatten_gf_2d<N>(gin), flatten_2d<0>(make_array_const_view(opt_args))...);
+    auto gout_flatten = _fourier_impl(out_mesh, flatten_gf_2d<N>(gin), p, flatten_2d<0>(make_array_const_view(opt_args))...);
     auto _            = ellipsis();
     if constexpr (gin.data_rank == 1)
       gout.data() = gout_flatten.data()(_, 0); // gout is scalar, gout_flatten vectorial
