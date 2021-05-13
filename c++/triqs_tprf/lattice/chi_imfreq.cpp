@@ -260,6 +260,8 @@ chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
 
   auto fmesh_large = sigma_w.mesh();
 
+  assert(fmesh.size() < fmesh_large.size());
+
   double beta = fmesh.domain().beta;
   auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
 
@@ -295,8 +297,6 @@ chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
 
   gf_mesh<imfreq> bmesh{beta, Boson, nw};
   gf_mesh<imfreq> fmesh{beta, Fermion, nn};
-
-  assert(fmesh.size() < fmesh_large.size());
 
   chi0q_t chi0_wnk({bmesh, fmesh, kmesh}, {nb, nb, nb, nb});
 
