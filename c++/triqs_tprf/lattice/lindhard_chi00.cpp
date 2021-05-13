@@ -70,10 +70,9 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
 
           for (auto const &w : wmesh) {
 
-            std::complex<double> total_factor = dn / (w + de);
+            std::complex<double> total_factor;
 
             double tol = 1e-10;
-
             if (abs(std::complex<double>(w)) < tol &&
                 abs(de) < tol) { // w=0, de=0, 2nd order pole
 
@@ -82,6 +81,8 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
 
               double cosh_be = cosh(0.5 * beta * ek(i));
               total_factor = beta / (4. * cosh_be * cosh_be);
+            } else {
+              total_factor = dn / (w + de);
             }
 
             chi_wk[w, q](a, b, c, d)
