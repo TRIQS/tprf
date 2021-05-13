@@ -64,7 +64,7 @@ namespace triqs_tprf::fourier {
   gf_vec_t<brzone> _fourier_impl(triqs::mesh::brzone const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan &p) {
     auto gk = gf_vec_t<brzone>{k_mesh, {gr.target_shape()[0]}};
     _fourier_base(gr.data(), gk.data(), p);
-    return std::move(gk);
+    return gk;
   }
 
 } // namespace triqs_tprf::fourier
