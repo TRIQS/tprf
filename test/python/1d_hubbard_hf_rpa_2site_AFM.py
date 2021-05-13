@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     # -- Local double occ and spin operators
 
-    gf_struct = [[0, [0, 1, 2, 3]]]
+    gf_struct = [[0, 4]]
 
     docc = n(0, 0) * n(0, 2) + n(0, 1) * n(0, 3)
 

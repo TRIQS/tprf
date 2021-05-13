@@ -314,7 +314,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- RPA tensor
     
-    gf_struct = [[0, [0, 1]]]
+    gf_struct = [[0, 2]]
     
     from triqs.operators import n, c, c_dag, Operator, dagger
     H_int = U * n(0, 0) * n(0, 1)

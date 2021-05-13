@@ -31,6 +31,7 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import itertools
 import numpy as np
 
+from triqs.gf.block_gf import fix_gf_struct_type
 from triqs.operators import c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------    
@@ -39,11 +40,13 @@ def fundamental_operators_from_gf_struct(gf_struct):
     """ Return a list of annihilation operators with the quantum numbers 
     defined in the gf_struct """
     
+    gf_struct = fix_gf_struct_type(gf_struct)
+
     fundamental_operators = []
-    for block_name, indices in gf_struct:
-        for index in indices:
+    for block_name, block_size in gf_struct:
+        for idx in range(block_size):
             fundamental_operators.append(
-                c(block_name, index) )
+                c(block_name, idx) )
 
     return fundamental_operators
 

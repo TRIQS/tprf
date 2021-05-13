@@ -43,6 +43,7 @@ from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------
 
+from triqs.gf.block_gf import fix_gf_struct_type
 import triqs.utility.mpi as mpi
 
 # ----------------------------------------------------------------------
@@ -68,7 +69,7 @@ class HartreeFockSolver(object):
     H_int : TRIQS Operator instance
         Local interaction Hamiltonian
 
-    gf_struct : list of lists of block index and list of internal orbital indices
+    gf_struct : list of pairs of block index and its size
         gf_struct fixing orbital order between e_k and H_int
 
     mu0 : float
@@ -85,6 +86,8 @@ class HartreeFockSolver(object):
 
         if mpi.is_master_node():
             print(self.logo())
+
+        gf_struct = fix_gf_struct_type(gf_struct)
         
         self.mu = mu0
         self.beta = beta

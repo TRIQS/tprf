@@ -28,6 +28,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 from triqs.gf import Gf
+from triqs.gf.block_gf import fix_gf_struct_type
 from triqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------
@@ -44,9 +45,11 @@ from triqs_tprf.OperatorUtils import quartic_pauli_symmetrize
 # ----------------------------------------------------------------------
 def fundamental_operators_from_gf_struct(gf_struct):
 
+    gf_struct = fix_gf_struct_type(gf_struct)
+
     fundamental_operators = []
-    for block, idxs in gf_struct:
-        for idx in idxs:
+    for block, block_size in gf_struct:
+        for idx in range(block_size):
             fundamental_operators.append( c(block, idx) )
 
     return fundamental_operators

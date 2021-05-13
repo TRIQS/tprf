@@ -74,7 +74,7 @@ spin_names = ['up', 'do']
 orb_names = list(range(norb))
 
 # TRIQS uses spin as slow index
-gf_struct = [ [spin_name, orb_names] for spin_name in spin_names ]
+gf_struct = [ [spin_name, norb] for spin_name in spin_names ]
 Umat, Upmat = U_matrix_kanamori(n_orb=norb, U_int=U, J_hund=J)
 H_int = h_int_kanamori(spin_names, orb_names, U=Umat, Uprime=Upmat, J_hund=J, off_diag=True)
 

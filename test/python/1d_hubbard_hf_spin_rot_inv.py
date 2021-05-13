@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # -- Local double occupancy operator
     
-    gf_struct = [[0, [0, 1]]]
+    gf_struct = [[0, 2]]
 
     docc = n(0, 0) * n(0, 1)
 

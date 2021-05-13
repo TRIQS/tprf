@@ -125,7 +125,7 @@ print('H_int =\n', H_int)
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
-gf_struct = [['up_0', [0]], ['do_0',[0]], ['up_1', [0]], ['do_1', [0]]]
+gf_struct = [['up_0', 1], ['do_0', 1], ['up_1', 1], ['do_1', 1]]
 
 fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
 U_abcd = get_rpa_tensor(H_int, fundamental_operators)
