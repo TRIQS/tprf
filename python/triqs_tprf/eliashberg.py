@@ -427,7 +427,7 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
         +
         \frac{3}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
         +
-        \Re
+        \text{Complex Conjugate}
         \left[
         3 
         \Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
@@ -462,7 +462,7 @@ def construct_gamma_singlet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     """
     gamma_singlet = 0.0 * phi_d_wk.copy()
 
-    gamma_singlet.data[:] = 3 * phi_m_wk.data.real + phi_d_wk.data.real
+    gamma_singlet.data[:] = 3 * np.conjugate(phi_m_wk.data) + np.conjugate(phi_d_wk.data)
     gamma_singlet.data[:] = gamma_singlet.data.transpose([0, 1, 4, 3, 2, 5])
 
     gamma_singlet.data[:] += 0.5 * U_d + 1.5 * U_m
@@ -482,7 +482,7 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
         +
         \frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}} 
         +
-        \Re
+        \text{Complex Conjuate}
         \left[
         -
         \Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
@@ -517,7 +517,7 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
     """
     gamma_triplet = 0.0 * phi_d_wk.copy()
 
-    gamma_triplet.data[:] = -phi_m_wk.data.real - phi_d_wk.data.real
+    gamma_triplet.data[:] = -np.conjugate(phi_m_wk.data) - np.conjugate(phi_d_wk.data)
     gamma_triplet.data[:] = gamma_triplet.data.transpose([0, 1, 4, 3, 2, 5])
 
     gamma_triplet.data[:] += -0.5 * U_d + 0.5 * U_m
