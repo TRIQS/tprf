@@ -38,7 +38,7 @@ if __name__ == '__main__':
     U = 1.0
     J = 0.3
     
-    orb_names = ['xy', 'xz', 'yz']
+    orb_names = [0, 1, 2]
     spin_names = ['up', 'do']
     norb = len(orb_names)
 
