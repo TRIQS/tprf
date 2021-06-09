@@ -747,7 +747,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
       int N = int(floor(arr.size() / double(Nomp)));
       
       //double t_left = double(t) * ( N / (idx + 1) - 1. );
-      int done_percent = int(floor(100 * double(idx + 1) / N));
+      int done_percent = (N == 0) ? 100 : int(floor(100 * double(idx + 1) / N));
       
       std::cout << "BSE " << triqs::utility::timestamp() << " "
 		<< std::setfill(' ') << std::setw(3) << done_percent << "% "
