@@ -86,8 +86,8 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
             }
 
             chi_wk[w, q](a, b, c, d)
-                << chi_wk[w, q](a, b, c, d) + Uk(i, a) * dagger(Uk)(d, i) *
-                                               Ukq(j, c) * dagger(Ukq)(b, j) *
+                << chi_wk[w, q](a, b, c, d) + Uk(a, i) * dagger(Uk)(i, d) *
+                                               Ukq(c, j) * dagger(Ukq)(j, b) *
                                                total_factor;
           } // w
         }   // j
