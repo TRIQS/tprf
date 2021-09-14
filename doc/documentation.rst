@@ -1,7 +1,7 @@
 .. _documentation:
 
 Documentation
-=============
+*************
 
 Tutorials
 ---------
@@ -15,7 +15,7 @@ Tutorials
    user_guide/dmft_susceptibility/dmft_susceptibility
    user_guide/Linearized Eliashberg equation on the attractive Hubbard model.ipynb
    user_guide/Solving the linearized Eliashberg equation in the random phase approximation limit
-           
+
 Python reference manual
 -----------------------
 

@@ -7,6 +7,12 @@ The Two-Particle Response Function tool box (TPRF)
 
    This is the homepage of tprf v3.0.0
    For changes see, Cf :ref:`changelog page <changelog>`
+      
+      .. image:: _static/logo_github.png
+         :width: 75%
+         :align: center
+         :target: https://github.com/triqs/app4triqs
+
 
 TPRF is a :ref:`TRIQS-based <triqslibs:welcome>` two-particle response function tool box that implements basic operations for higher order response functions such as inversion, products, the random phase approximation, the bethe salpeter equation (in the local vertex approximation), etc..
 
@@ -16,3 +22,10 @@ Learn how to use it in the :ref:`documentation`.
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
+
+   install
+   documentation
+   issues
+   ChangeLog.md
+   about
