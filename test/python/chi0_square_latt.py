@@ -56,7 +56,7 @@ chi0q = chi0q_from_chi0r(chi0r, bz)
 chi0w0 = chi0q_sum_nu(chi0q)
 
 if False: # python implementation
-    chi0w0 = np.zeros((len(q_list)), dtype=np.complex)
+    chi0w0 = np.zeros((len(q_list)), dtype=complex)
     for i1, i2 in itertools.product(list(range(n_k)), repeat=2):
         qidx = [i1, i2, 0]
         qidx_lin = bzmesh.index_to_linear(qidx)

@@ -103,7 +103,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
             r_dict[r] += 1
 
         if r not in hopp_dict:
-            hopp_dict[r] = np.zeros((num_wann, num_wann), dtype=np.complex)
+            hopp_dict[r] = np.zeros((num_wann, num_wann), dtype=complex)
 
         n, m = nm[idx]
         hopp_dict[r][n, m] = t[idx]

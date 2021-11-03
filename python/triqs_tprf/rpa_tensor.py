@@ -89,7 +89,7 @@ def kanamori_charge_and_spin_quartic_interaction_tensors(norb, U, Up, J, Jp):
     """ Following Eliashberg notes. """
 
     shape = [norb]*4
-    U_c, U_s = np.zeros(shape, dtype=np.complex), np.zeros(shape, dtype=np.complex)
+    U_c, U_s = np.zeros(shape, dtype=complex), np.zeros(shape, dtype=complex)
     
     for a, abar, b, bbar in itertools.product(list(range(norb)), repeat=4):
 

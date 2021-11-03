@@ -31,10 +31,10 @@ def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=F
     if verbose: print('norb, nq =', norb, nq)
 
     Q = np.zeros((nq, 3), dtype=np.float)
-    U_Q = np.zeros((nq, norb, norb, norb, norb), dtype=np.complex)
+    U_Q = np.zeros((nq, norb, norb, norb, norb), dtype=complex)
     
     for qidx in range(nq):
-        u = np.zeros([norb]*4, dtype=np.complex)
+        u = np.zeros([norb]*4, dtype=complex)
         s, e = qidx * norb**4, (qidx + 1) * norb**4
         np.testing.assert_array_almost_equal(q[s:e] - q[s], np.zeros_like(q[s:e]))
         ijkl, v = idxs[s:e], vals[s:e]
