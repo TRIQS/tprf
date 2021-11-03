@@ -118,7 +118,7 @@ def quadratic_matrix_from_operator(op, fundamental_operators):
     op_idx_set = set(op_idx_map)
 
     nop = len(fundamental_operators)
-    h_quad = np.zeros((nop, nop), dtype=np.complex)
+    h_quad = np.zeros((nop, nop), dtype=complex)
     
     for term in op:
         op_list, prefactor = term
@@ -198,7 +198,7 @@ def quartic_tensor_from_operator(op, fundamental_operators,
     op_idx_set = set(op_idx_map)
 
     nop = len(fundamental_operators)
-    h_quart = np.zeros((nop, nop, nop, nop), dtype=np.complex)
+    h_quart = np.zeros((nop, nop, nop, nop), dtype=complex)
     
     for term in op:
         op_list, prefactor = term

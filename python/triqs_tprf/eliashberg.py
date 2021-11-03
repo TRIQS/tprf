@@ -303,7 +303,7 @@ def implicitly_restarted_arnoldi_method(matvec, init, tol=1e-10, k=6):
     `scipy.sparse.linalg.LinearOperator <https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.LinearOperator.html>`_
     """
     N = init.shape[0]
-    linop = LinearOperator(matvec=matvec, dtype=np.complex, shape=(N, N))
+    linop = LinearOperator(matvec=matvec, dtype=complex, shape=(N, N))
     Es, U = eigs(linop, k=k, which="LR", tol=tol, v0=init)
     Es = Es.real
 
