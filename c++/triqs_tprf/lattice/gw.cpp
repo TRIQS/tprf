@@ -35,7 +35,7 @@ chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
   size_t nb = PI_wk.target_shape()[0];
 
   using scalar_t = chi_wk_t::scalar_t;
-  auto I = make_unit_matrix<scalar_t>(nb * nb);
+  auto I = nda::eye<scalar_t>(nb * nb);
 
   // MPI and openMP parallell loop
   auto arr = mpi_view(W_wk.mesh());
@@ -70,7 +70,7 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
   size_t nb = W_wk.target_shape()[0];
 
   using scalar_t = chi_wk_t::scalar_t;
-  auto I = make_unit_matrix<scalar_t>(nb * nb);
+  auto I = nda::eye<scalar_t>(nb * nb);
 
   // MPI and openMP parallell loop
   auto arr = mpi_view(W_wk.mesh());

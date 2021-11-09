@@ -263,7 +263,7 @@ chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
   assert(fmesh.size() < fmesh_large.size());
 
   double beta = fmesh.domain().beta;
-  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
 
   gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
 

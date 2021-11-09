@@ -38,7 +38,7 @@ namespace triqs_tprf {
     // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
     auto U = make_matrix_view(group_indices_view(U_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    auto I = make_unit_matrix<scalar_t>(U.shape()[0]);
+    auto I = nda::eye<scalar_t>(U.shape()[0]);
 
     auto meshes_mpi = mpi_view(chi0_wk.mesh());
 
