@@ -108,7 +108,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
     ngb = nbytes / 1024.**3
     print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
     
-    periodization_matrix = np.diag(np.array(list(nk), dtype=np.int32))
+    periodization_matrix = np.diag(np.array(list(nk), dtype=int))
     #print 'periodization_matrix =\n', periodization_matrix
 
     bz = BrillouinZone(tb_lattice.bl)
@@ -273,7 +273,7 @@ def ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz):
     ek = Gf(mesh=bzmesh, target_shape=[n_orb]*2)
 
     k_vec = np.array([k.value for k in bzmesh])
-    k_vec_rel = get_relative_k_from_absolute(k_vec, bz.units())
+    k_vec_rel = get_relative_k_from_absolute(k_vec, bz.units)
     
     ek.data[:] = tb_lattice.hopping(k_vec_rel.T).transpose(2, 0, 1)
 
@@ -329,7 +329,7 @@ def cluster_mesh_fourier_interpolation(k, chiwr):
 # ----------------------------------------------------------------------
 def get_abs_k_chi_interpolator(values, bzmesh, bz, extend_bz=[0]):
 
-    k_mat = bz.units()
+    k_mat = bz.units
     k_vec = np.array([k.value for k in bzmesh])
     
     # -- Extend with points beyond the first bz
@@ -353,10 +353,10 @@ def get_abs_k_chi_interpolator(values, bzmesh, bz, extend_bz=[0]):
 def get_rel_k_chi_interpolator(values, bzmesh, bz, nk,
                                extend_boundary=True, interpolator='regular'):
 
-    k_mat = bz.units()
+    k_mat = bz.units
     k_vec = np.array([k.value for k in bzmesh])
 
-    k_vec_rel = get_relative_k_from_absolute(k_vec, bz.units())
+    k_vec_rel = get_relative_k_from_absolute(k_vec, bz.units)
     k_idx = get_kidx_from_k_vec_relative(k_vec_rel, nk)
 
     kx, ky, kz = get_k_components_from_k_vec(k_vec_rel, nk)
@@ -436,7 +436,7 @@ def k_space_path(paths, num=100, bz=None):
     if bz is None:
         cell = np.eye(3)
     else:
-        cell = bz.units()
+        cell = bz.units
     
     k_vecs = []
 

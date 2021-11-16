@@ -45,7 +45,8 @@ H = TBLattice(
     orbital_positions = [(0,0,0)]*n_orb_spin,
     )
 
-e_k = H.on_mesh_brillouin_zone(n_k = (16, 16, 1))
+kmesh = H.get_kmesh(n_k = (16, 16, 1))
+e_k = H.fourier(kmesh)
 print(e_k)
 
 # ----------------------------------------------------------------------

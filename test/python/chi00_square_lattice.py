@@ -80,8 +80,8 @@ def test_square_lattice_chi00():
         orbital_names = ['up_0', 'do_0'],
         )
 
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
-    kmesh = e_k.mesh
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
 

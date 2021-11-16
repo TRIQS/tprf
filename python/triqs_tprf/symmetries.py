@@ -229,7 +229,7 @@ def _split_momentum(gf):
     negative_half : np.array
     """
     nk = gf.data.shape[1]
-    momentum_mesh = gf.mesh[1].linear_dims
+    momentum_mesh = gf.mesh[1].dims
     # Drop dimensions which are not meshed over, i.e. value of 1
     momentum_mesh = [mesh for mesh in momentum_mesh if mesh != 1]
 

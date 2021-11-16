@@ -67,7 +67,8 @@ t_r = TBLattice(
     orbital_names = ['up_0', 'do_0', 'up_1', 'do_1'],
     )
 
-e_k = t_r.on_mesh_brillouin_zone(n_k=(256, 1, 1))
+kmesh = t_r.get_kmesh(n_k=(256, 1, 1))
+e_k = t_r.fourier(kmesh)
 
 # ----------------------------------------------------------------------
 # -- Bare susceptibility from Green's function bubble

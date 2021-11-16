@@ -13,7 +13,7 @@ from triqs_tprf.lattice import fourier_wr_to_wk
 
 bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
 
-periodization_matrix = np.diag(np.array([10, 10, 1], dtype=np.int32))
+periodization_matrix = np.diag(np.array([10, 10, 1], dtype=int))
 
 bzmesh = MeshBrZone(bz, periodization_matrix)
 lmesh = MeshCycLat(bz.lattice, periodization_matrix)

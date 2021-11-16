@@ -67,9 +67,9 @@ if __name__ == '__main__':
     print('Units =\n', Units)
     
     t_r = TBSuperLattice(t_r_prim, P)
-    t_r.bz = BrillouinZone(t_r.bl)
-    
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
     print(e_k.target_shape)
     
     print('eps(k=0) =\n', e_k[Idx(0, 0, 0)])

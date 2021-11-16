@@ -28,7 +28,7 @@ namespace triqs_tprf::fourier {
   template <typename M1, typename M2> fourier_plan __impl_plan(int fftw_backward_forward, gf_mesh<M1> const &out_mesh, gf_vec_cvt<M2> g_in) {
 
     //check periodization_matrix is diagonal
-    auto &period_mat = g_in.mesh().periodization_matrix;
+    auto const &period_mat = g_in.mesh().periodization_matrix();
     for (auto [i, j] : itertools::product_range(period_mat.shape()[0], period_mat.shape()[1]))
       if (i != j and period_mat(i, j) != 0) {
         std::cerr
@@ -39,7 +39,7 @@ namespace triqs_tprf::fourier {
     auto g_out    = gf_vec_t<M1>{out_mesh, std::array{g_in.target_shape()[0]}};
     long n_others = g_in.data().shape()[1];
 
-    auto dims     = g_in.mesh().get_dimensions();
+    auto dims     = g_in.mesh().dims();
     auto dims_int = stdutil::make_std_array<int>(dims);
 
     return _fourier_base_plan(g_in.data(), g_out.data(), dims.size(), dims_int.data(), n_others, fftw_backward_forward);
