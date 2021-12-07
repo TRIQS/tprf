@@ -122,7 +122,7 @@ def solve_eliashberg_fft(Gamma_pp_wk, g_wk, Gamma_pp_const_k=None, tol=1e-10):
     # -- FFT dynamic and constant term to (tau, real) or (real)
     Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(Gamma_pp_dyn_wk_fit, 
                                                                     Gamma_pp_const_k_fit)
-    
+
     def from_x_to_wk(delta_x):
         delta_wk = g_wk.copy()
         delta_wk.data[:] = delta_x.reshape(delta_wk.data.shape)

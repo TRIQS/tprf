@@ -127,6 +127,7 @@ g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
     }
   }
 
+  sigma_tr = mpi::all_reduce(sigma_tr);
   return sigma_tr;
 }
 

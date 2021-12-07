@@ -48,7 +48,11 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
 
   auto wmesh = std::get<0>(chi_wk.mesh());
 
-  for (auto const &k : kmesh) {
+  auto arr = mpi_view(kmesh);
+
+  //for (auto const &k : kmesh) {
+  for (int kidx = 0; kidx < arr.size(); kidx++) {
+    auto k = arr(kidx);
 
     //std::cout << "kidx, k = " << k.linear_index() << ", " << k << "\n";
 	
@@ -102,6 +106,8 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
       }     // i
     }       // q
   }         // k
+
+  chi_wk = mpi::all_reduce(chi_wk);
 
   chi_wk /= kmesh.size();
 

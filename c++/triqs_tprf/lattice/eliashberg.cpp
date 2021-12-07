@@ -32,6 +32,8 @@ namespace triqs_tprf {
   
 gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk) {
 
+  // std::cout << "Hallo World. \n";
+
   auto [wmesh, kmesh] = delta_wk.mesh();
   auto gf_wmesh = std::get<0>(g_wk.mesh());
 
@@ -43,11 +45,31 @@ gk_iw_t eliashberg_g_delta_g_product(gk_iw_vt g_wk, gk_iw_vt delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-  for (const auto [w, k] : delta_wk.mesh())
-    for (auto [A, B] : F_wk.target_indices())
-      for (auto [c, d] : delta_wk.target_indices())
-        F_wk[w, k](A, B) +=
-            g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+  //for (const auto [w, k] : delta_wk.mesh())
+  //  for (auto [A, B] : F_wk.target_indices())
+  //    for (auto [c, d] : delta_wk.target_indices())
+  //      F_wk[w, k](A, B) +=
+  //          g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+
+
+  auto arr = mpi_view(kmesh);
+
+  #pragma omp parallel for
+  for (int kidx = 0; kidx < arr.size(); kidx++) {
+    auto k = arr(kidx);
+   
+    for (auto const &w : wmesh) {
+
+        for (auto [A, B] : F_wk.target_indices())
+          for (auto [c, d] : delta_wk.target_indices())
+            F_wk[w, k](A, B) +=
+                g_wk[w, k](A, c) * g_wk[-w, -k](B, d) * delta_wk[w, k](c, d);
+
+    }
+
+  }
+
+  F_wk = mpi::all_reduce(F_wk);
 
   return F_wk;
 }
@@ -92,15 +114,15 @@ gk_iw_t eliashberg_product(chi_wk_vt Gamma_pp, gk_iw_vt g_wk,
   return delta_wk_out;
 }
 
-std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp) {
+std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp) {
 
   auto _ = all_t{};
   auto [wmesh, kmesh] = Gamma_pp.mesh();
     
   // Fit infinite frequency value
-  auto Gamma_pp_dyn_wk = make_gf(Gamma_pp);
+  auto Gamma_pp_dyn_wk = make_gf(Gamma_pp.mesh(), Gamma_pp.target());
 
-  chi_k_vt Gamma_pp_const_k = make_gf(kmesh, Gamma_pp.target());
+  auto Gamma_pp_const_k = make_gf(kmesh, Gamma_pp.target());
 
   for (const auto k : kmesh) {
     auto Gamma_w = Gamma_pp[_, k];
@@ -111,9 +133,10 @@ std::tuple<chi_wk_vt, chi_k_vt> split_into_dynamic_wk_and_constant_k(chi_wk_vt G
   }
 
     return {Gamma_pp_dyn_wk, Gamma_pp_const_k};
+
 }
 
-std::tuple<chi_tr_vt, chi_r_vt> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, 
+std::tuple<chi_tr_t, chi_r_t> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, 
                                                             chi_k_vt Gamma_pp_const_k) {
 
     auto Gamma_pp_dyn_tr = make_gf_from_fourier<0, 1>(Gamma_pp_dyn_wk);
@@ -137,31 +160,77 @@ gk_iw_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_cons
   auto delta_tr_out = make_gf(F_tr.mesh(), delta_wk.target());
   delta_tr_out *= 0.;
 
-  for (const auto [t, r] : delta_tr_out.mesh()) {
-    for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-      delta_tr_out[t, r](a, b) += -Gamma_pp_dyn_tr(t, r)(A, a, B, b) * F_tr(t, r)(A, B);
+  //for (const auto [t, r] : delta_tr_out.mesh()) {
+  //  for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
+  //    delta_tr_out[t, r](a, b) += -Gamma_pp_dyn_tr(t, r)(A, a, B, b) * F_tr(t, r)(A, B);
+  //}
+
+  auto [tmesh, rmesh] = delta_tr_out.mesh();
+  auto arr = mpi_view(rmesh);  
+  #pragma omp parallel for
+  for (int ridx = 0; ridx < arr.size(); ridx++) {
+    auto r = arr(ridx);
+    for (auto const &t : tmesh) {
+      for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
+        delta_tr_out[t, r](a, b) += -Gamma_pp_dyn_tr(t, r)(A, a, B, b) * F_tr(t, r)(A, B);
+    }
   }
   
+  delta_tr_out = mpi::all_reduce(delta_tr_out);
+
+
+  // here we create the WARNING: Direct Fourier cannot deduce the 
+  // high-frequency moments of G(tau) due to noise or a coarse tau-grid.
+  // Please specify the high-frequency moments for higher accuracy.
+  // ... see FIXME from above
   auto delta_wk_out = make_gf_from_fourier<0, 1>(delta_tr_out);
 
   // Constant part
   auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), delta_wk.target());
   delta_r_out *= 0.;
 
-  for (const auto [w, r] :  F_wr.mesh()) {
-    for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_r_out[r](a, b) += -Gamma_pp_const_r(r)(A, a, B, b) * F_wr(w, r)(A, B);
+  //for (const auto [w, r] :  F_wr.mesh()) {
+  //  for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
+  //      delta_r_out[r](a, b) += -Gamma_pp_const_r(r)(A, a, B, b) * F_wr(w, r)(A, B);
+  //}
+
+  auto [wmesh, rmesh2] = F_wr.mesh();
+  auto arr2 = mpi_view(rmesh2);  
+  #pragma omp parallel for
+  for (int ridx = 0; ridx < arr2.size(); ridx++) {
+    auto r = arr2(ridx);
+    for (auto const &w : wmesh) {
+      for (auto [A, a, B, b] : Gamma_pp_dyn_tr.target_indices())
+          delta_r_out[r](a, b) += -Gamma_pp_const_r(r)(A, a, B, b) * F_wr(w, r)(A, B);
+    }
   }
+
+  delta_r_out = mpi::all_reduce(delta_r_out);
+
 
   auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
   auto beta = std::get<0>(delta_wk.mesh()).domain().beta;
   delta_k_out *= 1. / beta; 
 
   // Combine dynamic and constant part
-  for (const auto [w , k]: delta_wk_out.mesh())
-      delta_wk_out[w, k] += delta_k_out[k];
+  //for (const auto [w , k]: delta_wk_out.mesh())
+  //    delta_wk_out[w, k] += delta_k_out[k];
 
-  return delta_wk_out;
+  auto delta_wk_tot = make_gf(delta_wk.mesh(), delta_wk.target());
+  delta_wk_tot *= 0.;
+  auto [wmesh2, kmesh] = delta_wk_tot.mesh();
+  auto arr3 = mpi_view(kmesh);
+  #pragma omp parallel for
+  for (int kidx = 0; kidx < arr3.size(); kidx++) {
+    auto k = arr3(kidx);
+    for (auto const &w : wmesh2) {
+        delta_wk_tot[w, k] = delta_wk_out[w, k] + delta_k_out[k];
+    }
+  }
+
+  delta_wk_tot = mpi::all_reduce(delta_wk_tot);
+
+  return delta_wk_tot;
 }
   
 chi_wk_t gamma_PP_singlet(chi_wk_vt chi_c, chi_wk_vt chi_s, \
