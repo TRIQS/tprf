@@ -46,7 +46,7 @@ if __name__ == '__main__':
     T = - t * np.eye(2)
         
     t_r_prim = TBLattice(
-        units = [(1, 0, 0)],
+        units = [(1,)],
         hopping = {
             # nearest neighbour hopping -t
             (0,): h_loc,
