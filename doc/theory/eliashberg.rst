@@ -4,6 +4,12 @@ Linearized Eliashberg Equation
 ==============================
 
 .. note::
+    This is an older version of the eliashberg equation, which contains inconsistencies
+    and an error in the momentum frequency dependencies of the singlet/triplet vertices,
+    which could lead to wrong results. All of this was fixed in the 3.1.x implementation. 
+
+
+.. note::
     The following is restricted to :math:`SU(2)` symmetric systems.
     All indices are purely orbital and superconducting gaps :math:`\Delta` and
     particle-particle vertices :math:`\Gamma` are restricted to the singlet/triplet
