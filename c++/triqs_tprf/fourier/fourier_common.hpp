@@ -22,29 +22,15 @@
  ******************************************************************************/
 #pragma once
 
-#include "./fourier.hpp"
-
-// include only in cpp implementation
-#include <fftw3.h>
+#include "../types.hpp"
 
 namespace triqs_tprf::fourier {
 
-typedef std::complex<double> dcomplex;
-  
-using namespace triqs::arrays;
+  using fourier_plan = std::unique_ptr<void, void (*)(void *)>;
 
-void _fourier_base_destroy_plan(void *p);
+  fourier_plan _fourier_base_plan(nda::array_const_view<dcomplex, 2> in, nda::array_const_view<dcomplex, 2> out, int rank, int *dims, int fftw_count,
+                                  int fftw_backward_forward);
 
-// call to fftw
-void _fourier_base(array_const_view<dcomplex, 2> in,
-                   array_view<dcomplex, 2> out, int rank, int *dims,
-                   int fftw_count, int fftw_backward_forward);
-
-void _fourier_base(array_const_view<dcomplex, 2> in,
-                   array_view<dcomplex, 2> out, fourier_plan &p);
-fourier_plan _fourier_base_plan(array_const_view<dcomplex, 2> in,
-                                array_const_view<dcomplex, 2> out, int rank,
-                                int *dims, int fftw_count,
-                                int fftw_backward_forward);
+  void _fourier_base(nda::array_const_view<dcomplex, 2> in, nda::array_view<dcomplex, 2> out, fourier_plan &p);
 
 } // namespace triqs_tprf::fourier

@@ -2,7 +2,6 @@
 
 .. _install:
 
-
 Packaged Versions of TPRF
 =========================
 
@@ -35,6 +34,8 @@ A Docker image including the latest version of TPRF is available `here <https://
 
 Compiling TPRF from source
 ==========================
+
+.. note:: To guarantee reproducibility in scientific calculations we strongly recommend the use of a stable `release <https://github.com/TRIQS/triqs/releases>`_ of both TRIQS and its applications.
 
 Prerequisites
 -------------

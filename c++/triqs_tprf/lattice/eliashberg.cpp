@@ -212,7 +212,7 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
-chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U) {
+chi_wk_t construct_phi_wk(chi_wk_vt chi, array_contiguous_view<std::complex<double>, 4> U) {
 
   using scalar_t = chi_wk_t::scalar_t;
 
@@ -222,7 +222,7 @@ chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U) 
   phi_wk *= 0;
 
   // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
-  auto U_matrix = make_matrix_view(group_indices_view(U, {0, 1}, {3, 2}));
+  auto U_matrix = make_matrix_view(group_indices_view(U, idx_group<0, 1>, idx_group<3, 2>));
 
   auto meshes_mpi = mpi_view(phi_wk.mesh());
 
@@ -230,13 +230,13 @@ chi_wk_t construct_phi_wk(chi_wk_vt chi, array_view<std::complex<double>, 4> U) 
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
       auto &[w, k] = meshes_mpi(idx);
 
-      array<scalar_t, 4> phi_arr{nb, nb, nb, nb, memory_layout_t<4>{0, 1, 2, 3}};
-      array<scalar_t, 4> chi_arr{chi[w, k], memory_layout_t<4>{0, 1, 2, 3}};
+      array<scalar_t, 4> phi_arr{nb, nb, nb, nb};
+      array<scalar_t, 4> chi_arr{chi[w, k]};
 
       // PH grouping of the vertex, from cc+cc+, permuting the last two indices.
-      auto phi_matrix = make_matrix_view(group_indices_view(phi_arr, {0, 1}, {3, 2}));
+      auto phi_matrix = make_matrix_view(group_indices_view(phi_arr, idx_group<0, 1>, idx_group<3, 2>));
       // PH grouping of the susceptibilites, from c+cc+c, permuting the last two indices.
-      auto chi_matrix = make_matrix_view(group_indices_view(chi_arr, {0, 1}, {3, 2}));
+      auto chi_matrix = make_matrix_view(group_indices_view(chi_arr, idx_group<0, 1>, idx_group<3, 2>));
 
       phi_matrix = U_matrix * chi_matrix * U_matrix;
 

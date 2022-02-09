@@ -67,7 +67,8 @@ t_r = TBLattice(
     orbital_names = ['up_0', 'do_0', 'up_1', 'do_1'],
     )
 
-e_k = t_r.on_mesh_brillouin_zone(n_k=(256, 1, 1))
+kmesh = t_r.get_kmesh(n_k=(256, 1, 1))
+e_k = t_r.fourier(kmesh)
 
 # ----------------------------------------------------------------------
 # -- Bare susceptibility from Green's function bubble
@@ -125,7 +126,7 @@ print('H_int =\n', H_int)
 from triqs_tprf.rpa_tensor import get_rpa_tensor
 from triqs_tprf.rpa_tensor import fundamental_operators_from_gf_struct
 
-gf_struct = [['up_0', [0]], ['do_0',[0]], ['up_1', [0]], ['do_1', [0]]]
+gf_struct = [['up_0', 1], ['do_0', 1], ['up_1', 1], ['do_1', 1]]
 
 fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
 U_abcd = get_rpa_tensor(H_int, fundamental_operators)

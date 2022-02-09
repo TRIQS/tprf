@@ -43,7 +43,8 @@ if __name__ == '__main__':
         )
 
     print('--> dispersion e_k')
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     print('--> lattice g0_wk')
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
@@ -54,8 +55,8 @@ if __name__ == '__main__':
 
     # -- Analytic reference (Lindhard formula in momentum space)
     print('--> lindhard_chi00_wk')
-    n_k = (32, 32, 1)
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+    kmesh = t_r.get_kmesh(n_k=(32,32,1))
+    e_k = t_r.fourier(kmesh)
     chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=1, beta=beta, mu=mu)
 
     filename = 'data_e_k_and_chi00_wk.h5'

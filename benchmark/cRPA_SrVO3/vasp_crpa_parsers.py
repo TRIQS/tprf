@@ -31,10 +31,10 @@ def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=F
     if verbose: print('norb, nq =', norb, nq)
 
     Q = np.zeros((nq, 3), dtype=np.float)
-    U_Q = np.zeros((nq, norb, norb, norb, norb), dtype=np.complex)
+    U_Q = np.zeros((nq, norb, norb, norb, norb), dtype=complex)
     
     for qidx in range(nq):
-        u = np.zeros([norb]*4, dtype=np.complex)
+        u = np.zeros([norb]*4, dtype=complex)
         s, e = qidx * norb**4, (qidx + 1) * norb**4
         np.testing.assert_array_almost_equal(q[s:e] - q[s], np.zeros_like(q[s:e]))
         ijkl, v = idxs[s:e], vals[s:e]
@@ -51,13 +51,13 @@ def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=F
 
 def convert_from_ndarray_to_triqs(U_Q, Q, cell, kpts):
 
-    from triqs.gf import Gf, MeshBrillouinZone
+    from triqs.gf import Gf, MeshBrZone
     from triqs.lattice.lattice_tools import BrillouinZone
     from triqs.lattice.lattice_tools import BravaisLattice
 
     bl = BravaisLattice(cell, [(0,0,0)])
     bz = BrillouinZone(bl)
-    bzmesh = MeshBrillouinZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
+    bzmesh = MeshBrZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
 
     u_q = Gf(mesh=bzmesh, target_shape=U_Q.shape[1:])
 

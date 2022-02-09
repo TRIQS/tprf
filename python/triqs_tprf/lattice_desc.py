@@ -1,30 +1,12 @@
-# Copyright (c) 2017-2018 Commissariat à l'énergie atomique et aux énergies alternatives (CEA)
-# Copyright (c) 2017-2018 Centre national de la recherche scientifique (CNRS)
-# Copyright (c) 2018-2020 Simons Foundation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http:#www.apache.org/licenses/LICENSE-2.0.txt
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Authors: Olivier Parcollet, Nils Wentzell
-
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C triqs --moduledoc="Lattice functionality" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C triqs -C nda_py --includes="../../c++" --moduledoc="Lattice functionality" --cxxflags="-std=c++20"
 from cpp2py.wrap_generator import *
 
 # The module
 module = module_(full_name = "lattice", doc = r"Lattice functionality", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['triqs.gf', 'triqs.lattice'])
+module.add_imports(*['triqs.gf', 'triqs.gf.meshes'])
 
 # Add here all includes
 module.add_include("triqs_tprf/lattice.hpp")
@@ -33,7 +15,7 @@ module.add_include("triqs_tprf/lattice.hpp")
 module.add_preamble("""
 #include <cpp2py/converters/complex.hpp>
 #include <cpp2py/converters/tuple.hpp>
-#include <triqs/cpp2py_converters/arrays.hpp>
+#include <nda_py/cpp2py_converters.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
 
 using namespace triqs_tprf;
@@ -41,7 +23,7 @@ using namespace triqs_tprf;
 
 module.add_enum("Channel_t", ['Channel_t::PP', 'Channel_t::PH', 'Channel_t::PH_bar'], "triqs_tprf", doc = r"""Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g0_wk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::imfreq> mesh)", doc = r"""Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g0_wk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::imfreq> mesh)", doc = r"""Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
   Computes
 
@@ -277,7 +259,7 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00_wk (triqs_
       poles are non-degenerate. The degenerate case produces an additional frequency independent
       contribution (the last term on the last row).""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_wk_vt chi0, array_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_wk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
 
      Computes the equation
 
@@ -597,7 +579,7 @@ out
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_tprf::chi_wk_vt chi, array_view<std::complex<double>, 4> U)", doc = r"""Computes reducible ladder vertex for the approximation of a local and static vertex.
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::construct_phi_wk (triqs_tprf::chi_wk_vt chi, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Computes reducible ladder vertex for the approximation of a local and static vertex.
 
     In this approximation the reducible ladder vertex in density/magnetic channel are given by
 
@@ -996,13 +978,13 @@ Returns
 out
      Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.""")
 
-module.add_function ("gf<cartesian_product<triqs::lattice::brillouin_zone, triqs::gfs::imfreq>, tensor_valued<4> > triqs_tprf::chiq_sum_nu_from_g_wk_and_gamma_PH (triqs_tprf::gk_iw_t g_wk, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = r"""""")
+module.add_function ("gf<prod<triqs::mesh::brzone, triqs::mesh::imfreq>, tensor_valued<4>> triqs_tprf::chiq_sum_nu_from_g_wk_and_gamma_PH (triqs_tprf::gk_iw_t g_wk, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = r"""""")
 
-module.add_function ("gf<cartesian_product<triqs::lattice::brillouin_zone, triqs::gfs::imfreq>, tensor_valued<4> > triqs_tprf::chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH (double mu, triqs_tprf::ek_vt e_k, triqs_tprf::g_iw_vt sigma_w, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = r"""""")
+module.add_function ("gf<prod<triqs::mesh::brzone, triqs::mesh::imfreq>, tensor_valued<4>> triqs_tprf::chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH (double mu, triqs_tprf::ek_vt e_k, triqs_tprf::g_iw_vt sigma_w, triqs_tprf::g2_iw_vt gamma_ph_wnn, int tail_corr_nwf = -1)", doc = r"""""")
 
-module.add_function ("gf<cartesian_product<triqs::lattice::brillouin_zone, triqs::gfs::imfreq>, tensor_valued<4> > triqs_tprf::chiq_sum_nu (triqs_tprf::chiq_t chiq)", doc = r"""""")
+module.add_function ("gf<prod<triqs::mesh::brzone, triqs::mesh::imfreq>, tensor_valued<4>> triqs_tprf::chiq_sum_nu (triqs_tprf::chiq_t chiq)", doc = r"""""")
 
-module.add_function ("gf<triqs::gfs::imfreq, tensor_valued<4> > triqs_tprf::chiq_sum_nu_q (triqs_tprf::chiq_t chiq)", doc = r"""""")
+module.add_function ("gf<triqs::mesh::imfreq, tensor_valued<4>> triqs_tprf::chiq_sum_nu_q (triqs_tprf::chiq_t chiq)", doc = r"""""")
 
 
 

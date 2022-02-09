@@ -19,13 +19,15 @@
  *
  ******************************************************************************/
 
-#include <triqs/arrays.hpp>
+#include <nda/nda.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 #include <triqs/test_tools/gfs.hpp>
 #include <triqs/mc_tools/random_generator.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 
 #include <triqs_tprf/linalg.hpp>
 
@@ -44,7 +46,7 @@ void random_fill(g2_iw_t &G, int rng_seed = 23432) {
 void print(g2_iw_t const &G) {
   typedef size_t st;
   auto data = G.data();
-  foreach (data, [&data](st n1, st n2, st n3, st i, st j, st k, st l) {
+  nda::for_each(data.shape(), [&data](st n1, st n2, st n3, st i, st j, st k, st l) {
     std::cout << "data(" << n1 << ", " << n2 << ", " << n3 << "; " << i << ", "
               << j << ", " << k << ", " << l
               << ") = " << data(n1, n2, n3, i, j, k, l) << "\n";

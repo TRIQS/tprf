@@ -19,12 +19,13 @@
  *
  ******************************************************************************/
 
-#include <triqs/clef.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 #include <triqs/test_tools/gfs.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 using namespace triqs::lattice;
 
 #include <triqs_tprf/types.hpp>
@@ -40,7 +41,7 @@ TEST(lattice, g0_wk_to_from_g0_wr) {
  double t = 1.0;
  auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
  
- triqs::clef::placeholder<1> k_;
+ nda::clef::placeholder<1> k_;
 
  auto e_k = ek_t{{bz, nk}, {1, 1}};
  e_k(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));
@@ -63,8 +64,8 @@ TEST(lattice, g_wk_to_from_g_wr) {
  double t = 1.0;
  auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
  
- triqs::clef::placeholder<0> om_;
- triqs::clef::placeholder<1> k_;
+ nda::clef::placeholder<0> om_;
+ nda::clef::placeholder<1> k_;
 
  auto e_k = ek_t{{bz, nk}, {1, 1}};
  e_k(k_) << - 2*t * (cos(k_(0)) + cos(k_(1)));

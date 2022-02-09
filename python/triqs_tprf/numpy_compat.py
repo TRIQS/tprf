@@ -44,7 +44,7 @@ def np_eigh(A):
         N, M, K = A.shape
         assert(M == K)
         E = np.empty((N, M))
-        U = np.empty((N, M, M), dtype=np.complex) 
+        U = np.empty((N, M, M), dtype=complex) 
         for i in range(N):
             E[i], U[i] = np.linalg.eigh(A[i])
             

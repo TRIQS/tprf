@@ -1,5 +1,9 @@
-Version 3.0.0
-=============
+(changelog)=
+
+# Changelog
+
+## Version 3.0.0
+
 
 tprf version 3.0.0 is a compatibility
 release for TRIQS version 3.0.0 that
@@ -39,8 +43,7 @@ python
 
 Contributors: Philipp Dumitrescu, Dylan Simon, Nils Wentzell, Manuel Zingl
 
-Version 2.2.0
-=============
+## Version 2.2.0
 
 TPRF version 2.2.0 is a compatibility release
 for TRIQS version 2.2.0. It provides improvements to
@@ -72,8 +75,7 @@ hf
 * Explicitly check compatibility of H_int and gf_struct
 
 
-Version 2.1.1
--------------
+## Version 2.1.1
 
 * We now provide a debian packaged version of tprf which is also part of the [triqs docker image](https://hub.docker.com/r/flatironinstitute/triqs)
 * Updated documentation with debian package install instructions

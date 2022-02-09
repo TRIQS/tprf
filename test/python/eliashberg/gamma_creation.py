@@ -3,7 +3,7 @@ import numpy as np
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients
-from triqs.gf import MeshProduct, MeshImFreq, MeshBrillouinZone
+from triqs.gf import MeshProduct, MeshImFreq, MeshBrZone
 
 # from triqs_tprf.lattice import gamma_PP_spin_charge, gamma_PP_singlet, gamma_PP_triplet
 from triqs_tprf.lattice import construct_phi_wk
@@ -17,7 +17,7 @@ def test_phi_wk_mesh_type(chi_d, U_d):
     phi_d_wk = construct_phi_wk(chi_d, U_d)
     assert type(phi_d_wk.mesh) == MeshProduct
     assert type(phi_d_wk.mesh[0]) == MeshImFreq
-    assert type(phi_d_wk.mesh[1]) == MeshBrillouinZone
+    assert type(phi_d_wk.mesh[1]) == MeshBrZone
 
 
 def test_phi_wk_one_zero(chi_d, U_d):
@@ -36,7 +36,7 @@ def test_gamma_singlet_mesh_type(chi_d, chi_m, U_d, U_m):
 
     assert type(gamma_singlet.mesh) == MeshProduct
     assert type(gamma_singlet.mesh[0]) == MeshImFreq
-    assert type(gamma_singlet.mesh[1]) == MeshBrillouinZone
+    assert type(gamma_singlet.mesh[1]) == MeshBrZone
 
 def test_gamma_singlet_constant_only(chi_d, chi_m, U_d, U_m):
     phi_d_wk = construct_phi_wk(chi_d, U_d)
@@ -55,7 +55,7 @@ def test_gamma_triplet_mesh_type(chi_d, chi_m, U_d, U_m):
 
     assert type(gamma_triplet.mesh) == MeshProduct
     assert type(gamma_triplet.mesh[0]) == MeshImFreq
-    assert type(gamma_triplet.mesh[1]) == MeshBrillouinZone
+    assert type(gamma_triplet.mesh[1]) == MeshBrZone
 
 def test_gamma_triplet_constant_only(chi_d, chi_m, U_d, U_m):
     phi_d_wk = construct_phi_wk(chi_d, U_d)

@@ -46,11 +46,12 @@ if __name__ == '__main__':
         orbital_names = ['up', 'do'],
         )    
 
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     # -- Local double occupancy operator
     
-    gf_struct = [[0, [0, 1]]]
+    gf_struct = [[0, 2]]
 
     docc = n(0, 0) * n(0, 1)
 

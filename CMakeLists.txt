@@ -19,23 +19,23 @@
 #
 # ##############################################################################
 
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
-cmake_policy(VERSION 3.3.2)
-if(POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW)
-endif()
+cmake_minimum_required(VERSION 3.12.4 FATAL_ERROR)
+cmake_policy(VERSION 3.12.4)
 if(POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
+endif()
+if(POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
 endif()
 
 # ############
 # Define Project
-project(triqs_tprf VERSION 3.0.0 LANGUAGES C CXX)
+project(triqs_tprf VERSION 3.1.0 LANGUAGES C CXX)
 get_directory_property(IS_SUBPROJECT PARENT_DIRECTORY)
 
 # ############
 # Load TRIQS and CPP2PY
-find_package(TRIQS 3.0 REQUIRED)
+find_package(TRIQS 3.1 REQUIRED)
 
 # Get the git hash & print status
 triqs_get_git_hash_of_source_dir(PROJECT_GIT_HASH)
@@ -58,12 +58,11 @@ if(NOT IS_SUBPROJECT)
 endif()
 set(${PROJECT_NAME}_BINARY_DIR ${PROJECT_BINARY_DIR} CACHE STRING "Binary directory of the ${PROJECT_NAME} Project")
 
-
-# ############
-# Options
-
 # Make additional Find Modules available
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/share/cmake/Modules)
+
+# ############
+# CMake Options
 
 # Default to Release build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -81,6 +80,9 @@ endif()
 
 # Documentation
 option(Build_Documentation "Build documentation" OFF)
+if(Build_Documentation AND NOT PythonSupport)
+  message(FATAL_ERROR "Build_Documentation=ON requires PythonSupport to be enabled")
+endif()
 
 # Testing
 option(Build_Tests "Build tests" ON)
@@ -88,11 +90,19 @@ if(Build_Tests)
   enable_testing()
 endif()
 
+# Build static libraries by default
+option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
+
+# ############
+# Global Compilation Settings
+
 # Export the list of compile-commands into compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Global compiler options
-option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
+# Disable compiler extensions
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Provide additional debugging information for Debug builds
 add_compile_options($<$<CONFIG:Debug>:-ggdb3>)
 
 # Create an Interface target for compiler warnings
@@ -110,10 +120,12 @@ target_compile_options(${PROJECT_NAME}_warnings
     $<$<CXX_COMPILER_ID:Clang>:-Wno-unknown-warning-option>
     $<$<CXX_COMPILER_ID:Clang>:-Wshadow>
     $<$<CXX_COMPILER_ID:Clang>:-Wno-gcc-compat>
+    $<$<CXX_COMPILER_ID:Clang>:-Wno-c++20-extensions>
     $<$<CXX_COMPILER_ID:AppleClang>:-Wno-deprecated-comma-subscript>
     $<$<CXX_COMPILER_ID:AppleClang>:-Wno-unknown-warning-option>
     $<$<CXX_COMPILER_ID:AppleClang>:-Wshadow>
     $<$<CXX_COMPILER_ID:AppleClang>:-Wno-gcc-compat>
+    $<$<CXX_COMPILER_ID:AppleClang>:-Wno-c++20-extensions>
 )
 
 # #############
@@ -156,7 +168,7 @@ if(BUILD_DEBIAN_PACKAGE AND NOT IS_SUBPROJECT)
   set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
   set(CPACK_PACKAGE_CONTACT "https://github.com/TRIQS/tprf")
   execute_process(COMMAND dpkg --print-architecture OUTPUT_VARIABLE CMAKE_DEBIAN_PACKAGE_ARCHITECTURE OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "triqs (>= 3.0)")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "triqs (>= 3.1)")
   set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
   include(CPack)

@@ -67,7 +67,8 @@ if __name__ == '__main__':
         )
 
     print('--> e_k')
-    e_k = t_r.on_mesh_brillouin_zone(n_k)    
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     print('--> g0_wk')
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=n_w)

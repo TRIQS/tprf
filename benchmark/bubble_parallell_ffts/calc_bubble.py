@@ -36,7 +36,8 @@ H = TBLattice(
             hopping = {hop : t for hop in non_diagonal_hoppings},
             orbital_positions = [(0,0,0)]*norbs,
             )
-e_k = H.on_mesh_brillouin_zone(n_k=[nk]*dim + [1]*(3-dim))
+kmesh = H.get_kmesh(n_k=[nk]*dim + [1]*(3-dim))
+e_k = H.fourier(kmesh)
 
 wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
 

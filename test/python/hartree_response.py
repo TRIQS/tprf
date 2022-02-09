@@ -7,7 +7,7 @@ import numpy as np
 
 from h5 import HDFArchive
 from triqs.operators import n, c, c_dag, Operator, dagger
-from triqs.statistics.histograms import Histogram
+from triqs.stat.histograms import Histogram
 
 from triqs.operators.util.op_struct import set_operator_structure
 from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     print('T = \n', T)
     print('Sz =\n', Sz)
     
-    n_k = tuple([n_k, 1, 1])
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+    kmesh = t_r.get_kmesh(n_k=(n_k, 1, 1))
+    e_k = t_r.fourier(kmesh)
     
     # ------------------------------------------------------------------
     # -- Hartree solver

@@ -21,8 +21,7 @@
 
 #include "chi_from_gg2.hpp"
 
-#include <triqs/clef.hpp>
-using namespace triqs::clef;
+using namespace nda::clef;
 
 namespace {
 placeholder<0> a;
@@ -42,7 +41,7 @@ namespace triqs_tprf {
 
 template <> g2_iw_t chi0_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
   double beta = g.mesh().domain().beta;
-  auto chi0 = make_gf(g2.mesh(), g2.target(), g2.memory_layout());
+  auto chi0   = make_gf(g2.mesh(), g2.target());
 
   chi0(Omega, n, np)(a, b, c, d)
       << -beta * kronecker(n, np) * g(n)(d, a) * g(Omega + n)(b, c);
@@ -52,7 +51,7 @@ template <> g2_iw_t chi0_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
 
 template <> g2_iw_t chi_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
   double beta = g.mesh().domain().beta;
-  auto chi = make_gf(g2.mesh(), g2.target(), g2.memory_layout());
+  auto chi    = make_gf(g2.mesh(), g2.target());
 
   chi(Omega, n, np)(a, b, c, d)
       << g2(Omega, n, np)(a, b, c, d) -
@@ -66,7 +65,7 @@ template <> g2_iw_t chi_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
 
 template <> g2_iw_t chi0_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
   double beta = g.mesh().domain().beta;
-  auto chi0 = make_gf(g2.mesh(), g2.target(), g2.memory_layout());
+  auto chi0   = make_gf(g2.mesh(), g2.target());
 
   chi0(Omega, n, np)(a, b, c, d)
       << -beta * kronecker(n, np) * g(n)(d, a) * g(Omega - n)(b, c);
@@ -76,7 +75,7 @@ template <> g2_iw_t chi0_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
 
 template <> g2_iw_t chi_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
   double beta = g.mesh().domain().beta;
-  auto chi = make_gf(g2.mesh(), g2.target(), g2.memory_layout());
+  auto chi    = make_gf(g2.mesh(), g2.target());
 
   chi(Omega, n, np)(a, b, c, d)
       << g2(Omega, n, np)(a, b, c, d) -

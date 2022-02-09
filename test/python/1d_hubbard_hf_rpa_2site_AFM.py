@@ -46,7 +46,7 @@ if __name__ == '__main__':
     T = - t * np.eye(2)
         
     t_r_prim = TBLattice(
-        units = [(1, 0, 0)],
+        units = [(1,)],
         hopping = {
             # nearest neighbour hopping -t
             (0,): h_loc,
@@ -67,16 +67,16 @@ if __name__ == '__main__':
     print('Units =\n', Units)
     
     t_r = TBSuperLattice(t_r_prim, P)
-    t_r.bz = BrillouinZone(t_r.bl)
-    
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
+
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
     print(e_k.target_shape)
     
     print('eps(k=0) =\n', e_k[Idx(0, 0, 0)])
 
     # -- Local double occ and spin operators
 
-    gf_struct = [[0, [0, 1, 2, 3]]]
+    gf_struct = [[0, 4]]
 
     docc = n(0, 0) * n(0, 2) + n(0, 1) * n(0, 3)
 

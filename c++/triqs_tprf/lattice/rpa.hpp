@@ -40,6 +40,6 @@ namespace triqs_tprf {
      @return RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`
   */
 
-  chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_view<std::complex<double>, 4> U);
+  chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_contiguous_view<std::complex<double>, 4> U);
   
 } // namespace triqs_tprf

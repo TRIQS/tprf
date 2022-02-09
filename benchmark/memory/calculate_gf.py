@@ -20,7 +20,8 @@ t_r = TBLattice(
     orbital_names = [str(ele) for ele in range(norb)],
     )
 
-e_k = t_r.on_mesh_brillouin_zone((nk, 1, 1))
+kmesh = t_r.get_kmesh((nk, 1, 1))
+e_k = t_r.fourier(kmesh)
 wmesh = MeshImFreq(beta=1.0, S='Fermion', n_max=nw)
 
 g0_wk = lattice_dyson_g0_wk(mu=0.0, e_k=e_k, mesh=wmesh)

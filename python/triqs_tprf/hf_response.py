@@ -95,7 +95,7 @@ class BaseResponse(object):
     # ----------------------------------------------------------------------
     def _compute_chi0_ab(self):
 
-        chi0_ab = np.zeros(self.shape_ab, dtype=np.complex)
+        chi0_ab = np.zeros(self.shape_ab, dtype=complex)
 
         for a in range(self.norb):
             F_a = np.zeros(self.shape_ab)
@@ -109,11 +109,11 @@ class BaseResponse(object):
     # ----------------------------------------------------------------------
     def _compute_R_abcd(self, field_prefactor=1.):
 
-        R_abcd = np.zeros(self.shape_abcd, dtype=np.complex)
+        R_abcd = np.zeros(self.shape_abcd, dtype=complex)
 
         for a, b in itertools.product(list(range(self.norb)), repeat=2):
 
-            F_ab = np.zeros(self.shape_ab, dtype=np.complex)
+            F_ab = np.zeros(self.shape_ab, dtype=complex)
             F_ab[a, b] += field_prefactor
             F_ab[b, a] += np.conj(field_prefactor)
 
@@ -125,11 +125,11 @@ class BaseResponse(object):
     # ----------------------------------------------------------------------
     def _compute_R_kabcd(self, field_prefactor=1.):
 
-        R_kabcd = np.zeros(self.shape_kabcd, dtype=np.complex)
+        R_kabcd = np.zeros(self.shape_kabcd, dtype=complex)
 
         for a, b in itertools.product(list(range(self.norb)), repeat=2):
 
-            F_ab = np.zeros(self.shape_ab, dtype=np.complex)
+            F_ab = np.zeros(self.shape_ab, dtype=complex)
             F_ab[a, b] += field_prefactor
             F_ab[b, a] += np.conj(field_prefactor)
 
@@ -316,7 +316,7 @@ class HartreeResponse(BaseResponse):
 
     def extract_dens_dens(self, chi_abcd):
         norb = chi_abcd.shape[0]
-        chi_ab = np.zeros((norb, norb), dtype=np.complex)
+        chi_ab = np.zeros((norb, norb), dtype=complex)
         for i1, i2 in itertools.product(list(range(norb)), repeat=2):
             chi_ab[i1, i2] = chi_abcd[i1, i1, i2, i2]
 

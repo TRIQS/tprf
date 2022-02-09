@@ -34,7 +34,7 @@ def read_uijkl(path_to_uijkl):
     '''
     data = np.loadtxt(path_to_uijkl)
     dim = int(data[:, 0].max())
-    uijkl = np.zeros((dim,dim,dim,dim), dtype=np.complex)
+    uijkl = np.zeros((dim,dim,dim,dim), dtype=complex)
  
     for line in range(data.shape[0]):
         idxs = tuple(np.array(data[line, :4], dtype=np.int) - 1)

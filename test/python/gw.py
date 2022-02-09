@@ -35,7 +35,8 @@ t_r = TBLattice(
     orbital_positions = [(0,0,0)]*norb,
     )
 
-e_k = t_r.on_mesh_brillouin_zone(n_k=(8, 1, 1))
+kmesh = t_r.get_kmesh(n_k=(8, 1, 1))
+e_k = t_r.fourier(kmesh)
 
 print(e_k.data)
 

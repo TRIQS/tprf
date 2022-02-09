@@ -14,7 +14,7 @@ It is given by
 
 .. math::
     \Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)=  -\frac{1}{2 N_{\mathbf{k}}\beta_\mathrm{c}}\sum_{K'}
-    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
+    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K', K)
     G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
     :label: linearized_eliashberg_1
@@ -91,11 +91,9 @@ This corresponds to the following eigenvalue equation
     \lambda\Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)
     = 
     \frac{1}{2N_{\mathbf{k}}^2 \beta^2}\sum_{K', K''}
-    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
-    \chi^{(0),{PP}}_{\bar{f}d\bar{e}c}(Q=0, K', K'')
-    \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
-    :label: linearized_eliashberg_2
-    \,,
+    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K', K)
+    \chi^{(0),{PP}}_{\bar{f}d\bar{e}c}(Q=0, K'', K')
+    \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K'')\,,
  
 where we incorporate the minus sign of the singlet channel in our definition of the 
 singlet irreducible vertex to only keep track of one version of the Eliashberg equation.
@@ -114,7 +112,7 @@ which yields
 
 .. math::
     \lambda\Delta^{\mathrm{s/t}}_{\bar{a}\bar{b}}(K)=  -\frac{1}{2 N_{\mathbf{k}}\beta}\sum_{K'}
-    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K, K')
+    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K', K)
     G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K')\,.
     :label: linearized_eliashberg_3
@@ -150,7 +148,7 @@ For a one-band case and a non-interacting Green's function with dispersion relat
 
 .. math::
     \Delta^{\mathrm{s/t}}(\mathbf{k}) =  -\frac{1}{2 N_{\mathbf{k}}}\sum_{\mathbf{k'}}
-    \Gamma^{\mathrm{s/t}}(\mathbf{q}=\mathbf{0}, \mathbf{k}, \mathbf{k'})
+    \Gamma^{\mathrm{s/t}}(\mathbf{q}=\mathbf{0}, \mathbf{k}', \mathbf{k})
     \frac{\tan(\epsilon(\mathbf{k'})\beta/2)}{2\epsilon(\mathbf{k'})}
     \Delta^{\mathrm{s/t}}(\mathbf{k'})\,,
     :label: linearized_eliashberg_4
@@ -410,26 +408,32 @@ and
     \,.
     :label: triplet_gamma
 
-Note, that in both the singlet :eq:`singlet_gamma` and the triplet vertex 
-:eq:`triplet_gamma` the density and magnetic ladder vertices 
-:math:`\Phi^{\text{d/m}}` appear twice. Once with an index flip and with a :math:`K-K'`
-dependence, :math:`\Phi_{c\overline{b}a\overline{d}}(K-K')`, and once without an index flip 
-and a :math:`-K-K'` dependence, :math:`\Phi_{a\overline{b}c\overline{d}}(-K-K')`.
-In the linearized Eliashberg equation :eq:`linearized_eliashberg_3` those two terms can be
-transformed into each other by abiding the frequency, momentum and orbital
+Note, that inserting both the singlet :eq:`singlet_gamma` and the triplet vertex 
+:eq:`triplet_gamma` in the linearized Eliashberg equation :eq:`linearized_eliashberg_1`
+flips the momentum/frequency dependence. We therefore get inside the Eq. :eq:`linearized_eliashberg_1` 
+density and magnetic vertices :math:`\Phi^{\text{d/m}}` with an index flip and with a :math:`K'-K`
+dependence, :math:`\Phi_{c\overline{b}a\overline{d}}(K'-K)`, and without an index flip 
+and a :math:`-K'-K` dependence, :math:`\Phi_{a\overline{b}c\overline{d}}(-K'-K)`.
+These two terms can be transformed into each other by abiding the frequency, momentum and orbital
 symmetry of the gap. 
-For example :math:`\Phi_{a\overline{b}c\overline{d}}(-K-K')` transforms into 
-:math:`\pm\Phi_{c\overline{b}a\overline{d}}(K'-K)=\pm\Phi^*_{c\overline{b}a\overline{d}}(K-K')`
-for a singlet/triplet gap.
-We can therefore write Eq. :eq:`singlet_gamma` and :eq:`triplet_gamma` as
+For example :math:`\Phi_{a\overline{b}c\overline{d}}(-K'-K)` transforms into 
+:math:`\pm\Phi_{c\overline{b}a\overline{d}}(K'-K)` for a singlet/triplet gap.
+By using the property
 
 .. math::
-    \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
+   \Phi^{\text{d/m}}(K'-K)
+   =
+   \text{Complex Conjugate}(\Phi^{\text{d/m}}(K-K'))
+
+for a translation symmetric system we can write Eq. :eq:`singlet_gamma` and :eq:`triplet_gamma` as
+
+.. math::
+    \Gamma^{\text{s}}_{a\overline{b}c\overline{d}}(K-K') \equiv
 	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
 	+
 	\frac{3}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}}
 	+
-	\Re
+	\text{Complex Conjugate}
 	\left[
 	3 
 	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')
@@ -440,13 +444,13 @@ We can therefore write Eq. :eq:`singlet_gamma` and :eq:`triplet_gamma` as
     :label: singlet_gamma_2
 
 .. math::
-    \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(Q=0, K, K') \equiv
+    \Gamma^{\text{t}}_{a\overline{b}c\overline{d}}(K - K') \equiv
 	-
 	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{d}}
 	+
 	\frac{1}{2}U_{a\overline{b}c\overline{d}}^{\mathrm{m}} 
 	+
-	\Re
+	\text{Complex Conjugate}
 	\left[
     -
 	\Phi^{\text{m}}_{c\overline{b}a\overline{d}}(K-K')

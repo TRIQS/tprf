@@ -9,7 +9,7 @@ from scipy.interpolate import griddata
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from triqs.gf import MeshBrillouinZone, Idx
+from triqs.gf import MeshBrZone, Idx
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------
@@ -46,7 +46,7 @@ def plot_chi(chi, label=None):
     k_vecs = np.vstack((Kx.flatten(), Ky.flatten(), 0*Kx.flatten())).T
 
     chi_interp = np.zeros(
-        [k_vecs.shape[0]] + list(chi_SzSz.target_shape), dtype=np.complex)
+        [k_vecs.shape[0]] + list(chi_SzSz.target_shape), dtype=complex)
 
     for kidx, (kx, ky, kz) in enumerate(k_vecs):
         chi_interp[kidx] = chi_SzSz((kx, ky, kz))
@@ -83,7 +83,7 @@ def plot_chi_1D(chi, label=None):
     k_vecs *= 2.*np.pi
 
     chi_interp = np.zeros(
-        [k_vecs.shape[0]] + list(chi_SzSz.target_shape), dtype=np.complex)
+        [k_vecs.shape[0]] + list(chi_SzSz.target_shape), dtype=complex)
 
     for kidx, (kx, ky, kz) in enumerate(k_vecs):
         chi_interp[kidx] = chi_SzSz((kx, ky, kz))

@@ -261,8 +261,8 @@ if __name__ == '__main__':
     t_r = get_tb_model(t, U, n, m, mu=0.)
 
     print('--> dispersion e_k')
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
-    kmesh = e_k.mesh
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     #print e_k.data
     
@@ -314,7 +314,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- RPA tensor
     
-    gf_struct = [[0, [0, 1]]]
+    gf_struct = [[0, 2]]
     
     from triqs.operators import n, c, c_dag, Operator, dagger
     H_int = U * n(0, 0) * n(0, 1)

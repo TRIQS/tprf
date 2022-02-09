@@ -43,6 +43,7 @@ from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------
 
+from triqs.gf.block_gf import fix_gf_struct_type
 import triqs.utility.mpi as mpi
 
 # ----------------------------------------------------------------------
@@ -68,7 +69,7 @@ class HartreeFockSolver(object):
     H_int : TRIQS Operator instance
         Local interaction Hamiltonian
 
-    gf_struct : list of lists of block index and list of internal orbital indices
+    gf_struct : list of pairs of block index and its size
         gf_struct fixing orbital order between e_k and H_int
 
     mu0 : float
@@ -85,6 +86,8 @@ class HartreeFockSolver(object):
 
         if mpi.is_master_node():
             print(self.logo())
+
+        gf_struct = fix_gf_struct_type(gf_struct)
         
         self.mu = mu0
         self.beta = beta
@@ -254,7 +257,7 @@ class HartreeFockSolver(object):
         if M0 is None:
             M0 = np.zeros(self.target_shape)
 
-        M0 = np.array(M0, dtype=np.complex)
+        M0 = np.array(M0, dtype=complex)
 
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
@@ -398,7 +401,7 @@ class HartreeFockSolver(object):
         if M0 is None:
             M0 = np.zeros(self.target_shape)
 
-        M0 = np.array(M0, dtype=np.complex)
+        M0 = np.array(M0, dtype=complex)
             
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
@@ -483,7 +486,7 @@ class HartreeFockSolver(object):
 
         assert( len(vec.shape) == 1 )
 
-        mat = np.zeros(self.shape_ab, dtype=np.complex)
+        mat = np.zeros(self.shape_ab, dtype=complex)
 
         diag, up_tri = vec[:self.norb], vec[self.norb:]
         re, im = np.split(up_tri, 2)

@@ -20,22 +20,24 @@
  ******************************************************************************/
 #pragma once
 
-#include <triqs/arrays.hpp>
+#include <nda/nda.hpp>
 #include <triqs/gfs.hpp>
+#include <triqs/mesh.hpp>
 
 using namespace triqs::gfs;
-using namespace triqs::arrays;
+using namespace triqs::mesh;
+using namespace nda;
 
 #include "channel_grouping.hpp"
 #include "types.hpp"
 
 namespace triqs_tprf {
 
-using g2_n_t = gf<cartesian_product<imfreq>, tensor_valued<4>>;
+using g2_n_t = gf<prod<imfreq>, tensor_valued<4>>;
 using g2_n_vt = g2_n_t::view_type;
 using g2_n_cvt = g2_n_t::const_view_type;
 
-using g2_nn_t = gf<cartesian_product<imfreq, imfreq>, tensor_valued<4>>;
+using g2_nn_t = gf<prod<imfreq, imfreq>, tensor_valued<4>>;
 using g2_nn_vt = g2_nn_t::view_type;
 using g2_nn_cvt = g2_nn_t::const_view_type;
 

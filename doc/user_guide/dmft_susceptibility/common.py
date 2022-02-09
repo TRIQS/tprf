@@ -53,7 +53,8 @@ def setup_dmft_calculation(p):
         orbital_names = ['up', 'do'],
         hopping = {(0, +1) : T, (0, -1) : T, (+1, 0) : T, (-1, 0) : T})
     
-    p.e_k = H.on_mesh_brillouin_zone(n_k = (p.n_k, p.n_k, 1))
+    kmesh = H.get_kmesh(n_k = (p.n_k, p.n_k, 1))
+    p.e_k = H.fourier(kmesh)
 
     # -- Initial zero guess for the self-energy    
     p.sigma_w = Gf(mesh=MeshImFreq(p.init.beta, 'Fermion', p.init.n_iw), target_shape=[2, 2])

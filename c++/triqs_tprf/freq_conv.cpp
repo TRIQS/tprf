@@ -21,8 +21,7 @@
 
 #include "freq_conv.hpp"
 
-#include <triqs/clef.hpp>
-using namespace triqs::clef;
+using namespace nda::clef;
 
 namespace {
 placeholder<0> a;

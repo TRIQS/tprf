@@ -8,7 +8,7 @@ from triqs.gf import Gf
 from triqs.gf import inverse
 from triqs.gf import iOmega_n
 from triqs.gf import MeshImFreq
-from triqs.gf import MeshBrillouinZone
+from triqs.gf import MeshBrZone
 
 from triqs.lattice import BrillouinZone, BravaisLattice
 
@@ -47,7 +47,7 @@ def solve_lattice_bse(parm, momsus=False):
     bl = BravaisLattice([(1,0,0), (0,1,0)])
 
     bz = BrillouinZone(bl)    
-    bzmesh = MeshBrillouinZone(bz, n_k=1) # only one k-point
+    bzmesh = MeshBrZone(bz, n_k=1) # only one k-point
     
     e_k = Gf(mesh=bzmesh, target_shape=[1, 1])
     e_k *= 0.

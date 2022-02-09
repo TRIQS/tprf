@@ -35,7 +35,7 @@ include(external_dependency.cmake)
 #                     In particular the dependency will not be installed.
 
 if(NOT DEFINED Build_Deps)
-  set(Build_Deps "IfNotFound" CACHE STRING "Do we build dependencies from source? [Never/Always/IfNotFound]")
+  set(Build_Deps "Always" CACHE STRING "Do we build dependencies from source? [Never/Always/IfNotFound]")
 else()
   set(Build_Deps_Opts "Never" "Always" "IfNotFound")
   if(NOT ${Build_Deps} IN_LIST Build_Deps_Opts)
@@ -61,7 +61,7 @@ endif()
 # -- GTest --
 external_dependency(GTest
   GIT_REPO https://github.com/google/googletest
-  GIT_TAG release-1.10.0
+  GIT_TAG main
   BUILD_ALWAYS
   EXCLUDE_FROM_ALL
 )

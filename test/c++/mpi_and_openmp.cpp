@@ -3,7 +3,7 @@
 
 #include <triqs/test_tools/gfs.hpp>
 
-using namespace triqs::clef;
+using namespace nda::clef;
 using namespace triqs::lattice;
 
 #include <triqs_tprf/mpi.hpp>
@@ -21,7 +21,7 @@ TEST(mpi, mpi_view) {
   int nw = 3;
 
   auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
-  auto g_wk = gf<cartesian_product<imfreq, brillouin_zone>>{
+  auto g_wk = gf<prod<imfreq, brzone>>{
       {{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
 
   auto [wmesh, kmesh] = g_wk.mesh();
@@ -67,7 +67,7 @@ TEST(mpi, mpi_view_openmp) {
   int nw = 3;
 
   auto bz = brillouin_zone{bravais_lattice{{{1, 0}, {0, 1}}}};
-  auto g_wk = gf<cartesian_product<imfreq, brillouin_zone>>{
+  auto g_wk = gf<prod<imfreq, brzone>>{
       {{beta, Fermion, nw}, {bz, n_k}}, {1, 1}};
 
   auto [wmesh, kmesh] = g_wk.mesh();

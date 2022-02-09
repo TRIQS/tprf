@@ -260,8 +260,8 @@ if __name__ == '__main__':
     t_r = get_tb_model(t, U, n, m, mu=0.)
 
     print('--> dispersion e_k')
-    e_k = t_r.on_mesh_brillouin_zone(n_k)
-    kmesh = e_k.mesh
+    kmesh = t_r.get_kmesh(n_k)
+    e_k = t_r.fourier(kmesh)
 
     #print e_k.data
     

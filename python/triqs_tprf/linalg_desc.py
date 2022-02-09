@@ -1,12 +1,12 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/linalg.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m linalg -o linalg -C triqs --moduledoc="Product, Inverse and Identity for two-particle response functions" --cxxflags="-std=c++17"
+# c++2py ../../c++/triqs_tprf/linalg.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m linalg -o linalg -C triqs --includes="../../c++" --moduledoc="Product, Inverse and Identity for two-particle response functions" --cxxflags="-std=c++20"
 from cpp2py.wrap_generator import *
 
 # The module
 module = module_(full_name = "linalg", doc = r"Product, Inverse and Identity for two-particle response functions", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['triqs.gf'])
+module.add_imports(*['triqs.gf', 'triqs.gf.meshes'])
 
 # Add here all includes
 module.add_include("triqs_tprf/linalg.hpp")
