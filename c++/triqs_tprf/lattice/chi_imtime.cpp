@@ -79,12 +79,59 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
-    
-  }
 
   chi0_tr = mpi::all_reduce(chi0_tr);
+  }
   return chi0_tr;
 }
+
+// -- memory optimized version for smaller nw 
+chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
+
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
+
+  int nb = g_tr.target().shape()[0];
+  int ntau = tmesh.size();
+  double beta = tmesh.domain().beta;
+
+  chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = g_tr.target();
+  auto chi_target = chi0_wr.target();
+  
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
+
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = g_tr[_, r];
+      g_mr_t = g_tr[_, -r];
+    }
+    
+    for (auto const &t : tmesh)
+      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+#pragma omp critical
+    {
+    auto chi0_w = make_gf_from_fourier(chi0_t, nw);
+    chi0_wr[_, r] = chi0_w;
+    }
+
+  }
+
+  chi0_wr = mpi::all_reduce(chi0_wr);
+  return chi0_wr;
+}  
 
 // -- optimized version for w=0
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {

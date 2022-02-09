@@ -5,7 +5,8 @@
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
 # Copyright (C) 2018 by The Simons Foundation
-# Author: H. U.R. Strand
+# Copyright (C) 2020, S. Käser
+# Authors: H. U.R. Strand, S. Käser 
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -49,10 +50,54 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
 from triqs_tprf.lattice import chi0_tr_from_grt_PH
+from triqs_tprf.lattice import chi0_wr_from_grt_PH
 from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
+
+# ----------------------------------------------------------------------
+def add_fake_bosonic_mesh(gf, beta=None):
+    """ Put a one value bosonic mesh as the first mesh argument of a 
+    Green's function object.
+
+    Parameters
+    ----------
+    gf : Gf,
+         Green's function on some arbitrary mesh. If 'beta' is not given
+         one mesh needs to be a 'MeshImFreq' to obtain a beta'
+    beta : float, optional
+           The inverse temperature used for the fake bosonic mesh.
+
+    Returns
+    -------
+    gf_w : Gf,
+           Green's function with an additional one value bosonic mesh
+           on its first position.
+    """
+    mesh = gf.mesh
+    if isinstance(mesh, MeshProduct):
+        meshes = mesh.components
+    else:
+        meshes = (mesh,)
+
+    # If beta is not given access it from a 'MeshImFreq' of the 'Gf'
+    if not beta:
+        betas = [mesh.beta for mesh in meshes if hasattr(mesh, "beta")]
+        if len(betas) == 0:
+            raise ValueError(
+            "No 'beta' was given and the Green's function does not contain"
+            " a 'MeshImFreq'")
+        beta = betas[0]
+
+    wmesh = MeshImFreq(beta, 'Boson', 1)
+    mesh = (wmesh,) + meshes
+    mesh = MeshProduct(*mesh)
+
+    gf_w = Gf(mesh=mesh, target_shape=gf.target_shape)
+    gf_w.data[0,...] = gf.data
+
+    return gf_w
 
 # ----------------------------------------------------------------------
 def put_gf_on_mesh(g_in, wmesh):
@@ -90,23 +135,23 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
 # ----------------------------------------------------------------------
 def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
-    print(tprf_banner(), "\n")
+    print((tprf_banner(), "\n"))
 
-    print('beta  =', beta)
-    print('mu    =', mu)
-    print('sigma =', (not (sigma == None)))
+    print(('beta  =', beta))
+    print(('mu    =', mu))
+    print(('sigma =', (not (sigma == None))))
 
     norb = tb_lattice.NOrbitalsInUnitCell
-    print('nk    =', nk)
-    print('nw    =', nw)
-    print('norb  =', norb)
+    print(('nk    =', nk))
+    print(('nw    =', nw))
+    print(('norb  =', norb))
     print()
 
     ntau = 4 * nw
     ntot = np.prod(nk) * norb**4 + np.prod(nk) * (nw + ntau) * norb**2
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
-    print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
+    print(('Approx. Memory Utilization: %2.2f GB\n' % ngb))
     
     periodization_matrix = np.diag(np.array(list(nk), dtype=int))
     #print 'periodization_matrix =\n', periodization_matrix
@@ -140,7 +185,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
         return g_tr, sigma_w
 
 # ----------------------------------------------------------------------
-def imtime_bubble_chi0_wk(g_wk, nw=1):
+def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
     ncores = multiprocessing.cpu_count()
 
     wmesh, kmesh =  g_wk.mesh.components
@@ -202,13 +247,17 @@ def imtime_bubble_chi0_wk(g_wk, nw=1):
         chi0_wr = chi0_w0r_from_grt_PH(g_tr)
         del g_tr
     else:
-        mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
-        chi0_tr = chi0_tr_from_grt_PH(g_tr)
-        del g_tr
-        
-        mpi.report('--> chi_wr_from_chi_tr')
-        chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
-        del chi0_tr
+        if not save_memory:
+            mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
+            chi0_tr = chi0_tr_from_grt_PH(g_tr)
+            del g_tr
+            
+            mpi.report('--> chi_wr_from_chi_tr')
+            chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
+            del chi0_tr
+        elif save_memory:
+            chi0_wr = chi0_wr_from_grt_PH(g_tr, nw=nw)
+
         
     mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
