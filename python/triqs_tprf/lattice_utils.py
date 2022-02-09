@@ -226,13 +226,13 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
     ngb = nbytes / 1024.**3
 
     if mpi.is_master_node():
-        print((tprf_banner(), "\n"))
-        print(('beta  =', beta))
-        print(('nk    =', nk))
-        print(('nw    =', nw_g))
-        print(('norb  =', norb))
+        print(tprf_banner(), "\n")
+        print('beta  =', beta)
+        print('nk    =', nk)
+        print('nw    =', nw_g)
+        print('norb  =', norb)
         print()
-        print(('Approx. Memory Utilization: %2.2f GB\n' % ngb))
+        print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
 
     mpi.report('--> fourier_wk_to_wr')
     g_wr = fourier_wk_to_wr(g_wk)
