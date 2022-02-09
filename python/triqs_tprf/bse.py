@@ -308,13 +308,13 @@ def solve_lattice_bse(g_wk, gamma_wnn):
     nwf_g = len(fmesh_g) // 2
 
     if mpi.is_master_node():
-        print((tprf_banner(), "\n"))
+        print(tprf_banner(), "\n")
         print('Lattcie BSE with local vertex approximation.\n')
-        print(('nk    =', nk))
-        print(('nw    =', nw))
-        print(('nwf   =', nwf))
-        print(('nwf_g =', nwf_g))
-        print()    
+        print('nk    =', nk)
+        print('nw    =', nw)
+        print('nwf   =', nwf)
+        print('nwf_g =', nwf_g)
+        print()
 
     mpi.report('--> chi0_wk_tail_corr')
     chi0_wk_tail_corr = imtime_bubble_chi0_wk(g_wk, nw=nw) 
