@@ -80,8 +80,10 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
 
-  chi0_tr = mpi::all_reduce(chi0_tr);
   }
+
+  chi0_tr = mpi::all_reduce(chi0_tr);
+
   return chi0_tr;
 }
 
