@@ -55,7 +55,7 @@ public:
 // Channel_t::PH
 
 // in the particle-hole channel (Channel_t::PH) the indices are grouped as
-// {nu_1, a, b}, {nu_2, c, d} <=> {0, 2, 3}, {1, 4, 5}
+// {nu_1, a, b}, {nu_2, d, c} <=> {0, 2, 3}, {1, 5, 4}
 
 template <>
 inline memory_layout_t<6>

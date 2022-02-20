@@ -1,9 +1,11 @@
 
 # *TPRF*: the Two-Particle Response Function tool box for TRIQS
 
-Copyright (C) 2017, H. U.R. Strand
+Copyright (C) 2017-2020, H. U.R. Strand
 
 Copyright (C) 2018-2019, The Simons Foundation
+
+Copyright (C) 2019-2020, S. Käser
 
 TPRF is a TRIQS application containing various tools for working with
 two particle response functions.

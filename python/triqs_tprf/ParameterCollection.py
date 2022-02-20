@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 
 ################################################################################
 #
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
 # Copyright (C) 2017 by Hugo U.R. Strand
+# Copyright (C) 2019 by S.Käser 
+# Author: H. U.R. Strand, S. Käser
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -21,6 +24,7 @@
 ################################################################################
 
 import inspect
+import itertools
 import numpy as np
 
 # ----------------------------------------------------------------------
@@ -77,6 +81,23 @@ class ParameterCollection(object):
 
     def dict(self):
         return self.__dict__
+
+    def alter(self, **kwargs):
+        """Change or add attributes
+
+        Returns
+        -------
+        p : ``ParameterCollection``
+        """
+        p = self.copy()
+        p.__dict__.update(kwargs)
+        return p 
+
+    def copy(self):
+        """Shallow copy
+        """
+        p = ParameterCollection(**self.dict())
+        return p
 
     def __getitem__(self, key):
         return self.__dict__[key]
@@ -135,6 +156,8 @@ class ParameterCollection(object):
                 
                 out += ''.join([key, ' = ', str_value]) + '\n'
         return out
+
+    __repr__ = __str__
 
     def get_my_name(self):
         ans = []
@@ -195,7 +218,7 @@ class ParameterCollections(object):
         self.objects = list(np.array(self.objects)[sidx])
 
     def getattr_from_objects(self, attr):
-        return np.array([getattr(o, attr) for o in self.objects ])
+        return np.array([getattr(o, attr, None) for o in self.objects ])
     
     def __getattr__(self, attr):
         return self.getattr_from_objects(attr)
@@ -208,8 +231,75 @@ class ParameterCollections(object):
         ret = cls(d['objects'])
         return ret    
 
+    def __iter__(self):
+        return self.objects.__iter__()
+
+    def __next__(self):
+        return self.objects.__next__()
+
+    def __getitem__(self, idx):
+        return self.objects[idx]
+
+    def __str__(self):
+        out = ''
+        for p in self:
+            out += p.__str__()
+            out += '\n'
+        return out
+
+    __repr__ = __str__
+
 # ----------------------------------------------------------------------
 # -- Register ParameterCollection in Triqs formats
 
 from h5.formats import register_class 
 register_class(ParameterCollections)
+
+# ----------------------------------------------------------------------
+
+def parameter_scan(p, **kwargs):
+    """Return ParameterCollections with copies of ParameterCollection for different parameters
+
+    Uses a given ParameterCollection as a template to create copies of it with one or more
+    parameters changing. Stores all of these copies in a ParameterCollections for easy access.
+
+    Parameters
+    ----------
+    p : ParameterCollection,
+        The ParameterCollection that shall be used as a template for all the others
+    **kwargs : Sequence,
+               The keyword gives the parameter name and the Sequence the values that shall
+               be scanned through.
+
+    Returns
+    -------
+    ParameterCollections
+
+    Examples
+    --------
+    >>> p = ParameterCollection(beta=10., U=1.0, t=1.0)
+    >>> ps = parameter_scan(p, U=[1.0, 1.5, 2.0])
+    >>> print ps[0]
+    U = 1.0
+    beta = 10.0
+    t = 1.0
+    >>> print ps[1]
+    U = 1.5
+    beta = 10.0
+    t = 1.0
+    >>> print ps[2]
+    U = 2.0
+    beta = 10.0
+    t = 1.0
+    """
+    parameter_values = []
+
+    for key, value in kwargs.items():
+        parameter_values.append(zip([key]*len(value), value))
+    
+    ps = []
+    
+    for parameter_value in itertools.product(*parameter_values):
+        ps.append(p.alter(**dict(parameter_value)))
+
+    return ParameterCollections(ps)
