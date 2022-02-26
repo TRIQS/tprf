@@ -94,19 +94,6 @@ GW approximation
 
   /cpp2rst_generated/triqs_tprf/screened_interaction_W
   /cpp2rst_generated/triqs_tprf/gw_self_energy
-  
-Linearized Eliashberg equation 
-==============================
-
-**lattice/eliashberg.hpp**
-
-.. toctree::
-  :maxdepth: 1
-
-  /cpp2rst_generated/triqs_tprf/eliashberg_product
-  /cpp2rst_generated/triqs_tprf/eliashberg_product_fft
-  /cpp2rst_generated/triqs_tprf/gamma_PP_singlet
-  /cpp2rst_generated/triqs_tprf/gamma_PP_triplet
 
 Hubbard atom analytic response functions
 ========================================
