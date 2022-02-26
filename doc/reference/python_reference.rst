@@ -43,11 +43,6 @@ GW approximation
 .. autofunction:: triqs_tprf.gw.bubble_PI_wk
 .. autofunction:: triqs_tprf.gw.gw_sigma_wk
 
-Linearized Eliashberg equation 
-==============================
-
-.. autofunction:: triqs_tprf.eliashberg.solve_eliashberg_fft
-
 Hubbard atom analytic response functions
 ========================================
 

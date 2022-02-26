@@ -26,7 +26,6 @@
 #include "./lattice/lindhard_chi00.hpp"
 #include "./lattice/rpa.hpp"
 #include "./lattice/gw.hpp"
-#include "./lattice/eliashberg.hpp"
 #include "./lattice/fourier_interpolation.hpp"
 
 #include "./lattice/chi_imtime.hpp"
