@@ -44,7 +44,6 @@ Theory and notation
    theory/linear_response
    theory/rpa
    theory/matrix_rpa
-   theory/eliashberg
 
 FAQs
 ----
