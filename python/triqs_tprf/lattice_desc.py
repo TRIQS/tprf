@@ -994,6 +994,6 @@ module.add_function ("gf<prod<triqs::mesh::brzone, triqs::mesh::imfreq>, tensor_
 
 module.add_function ("gf<triqs::mesh::imfreq, tensor_valued<4>> triqs_tprf::chiq_sum_nu_q (triqs_tprf::chiq_t chiq)", doc = r"""""")
 
-
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::attatch_tri_vert(triqs_tprf::chi_nn_cvt L_wn, triqs_tprf::chi_kwnn_cvt chi_kwnn)", doc = r"""""")
 
 module.generate_code()
