@@ -1060,4 +1060,21 @@ gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq) {
   return chi_w;
 }
 
+chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
+
+  auto mesh_k = std::get<0>(chi_kwnn.mesh());
+  auto mesh_b = std::get<1>(chi_kwnn.mesh());
+  auto mesh_f = std::get<2>(chi_kwnn.mesh());
+
+  auto chi_wk = make_gf<prod<imfreq, brzone>>({mesh_b, mesh_k}, chi_kwnn.target());
+  
+  for (auto const &[k, w, n1, n2] : chi_kwnn.mesh())
+    for (auto [a, b, c, d] : chi_kwnn.target_indices())
+      for (auto [e, f, g, h] : chi_kwnn.target_indices())
+	chi_wk[w, k](a, b, g, h) +=
+	  L_wn[w, n1](a, b, c, d) * chi_kwnn[k, w, n1, n2](c, d, e, f) * L_wn[w, n2](e, f, g, h);
+
+  return chi_wk;
+}
+  
 } // namespace triqs_tprf
