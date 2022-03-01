@@ -205,7 +205,7 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
 
   auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
 
-  return delta_wk_tot;
+  return delta_wk_out;
 }
 
 // optimized version if there is only a constant term

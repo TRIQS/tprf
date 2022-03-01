@@ -78,7 +78,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, 
                            double delta) {
 
-  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_fk_t g0_fk({mesh, e_k.mesh()}, e_k.target_shape());
   std::complex<double> idelta(0.0, delta);
     
@@ -151,7 +151,7 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk,
                           double delta) {
 
-  auto I = make_unit_matrix<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   auto g_fk = make_gf(sigma_fk);
   std::complex<double> idelta(0.0, delta);
     

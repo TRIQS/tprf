@@ -20,7 +20,8 @@
  *
  ******************************************************************************/
 
-#include <triqs/arrays/linalg/eigenelements.hpp>
+#include <nda/nda.hpp>
+#include <nda/linalg/eigenelements.hpp>
 
 #include "gw.hpp"
 #include "common.hpp"
@@ -195,7 +196,7 @@ g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k,
 
     for (auto const &q : kmesh) {
     
-      matrix<std::complex<double>> e_kq_mat(e_k(k + q) - mu);
+      array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);
       auto eig_kq = linalg::eigenelements(e_kq_mat);
       auto ekq = eig_kq.first;
       auto Ukq = eig_kq.second;
