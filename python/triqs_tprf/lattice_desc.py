@@ -259,6 +259,11 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00_wk (triqs_
       poles are non-degenerate. The degenerate case produces an additional frequency independent
       contribution (the last term on the last row).""")
 
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00_fk (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies.
+   ...
+   .. note::
+      ...""")
+
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_wk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
 
      Computes the equation

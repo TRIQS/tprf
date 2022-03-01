@@ -102,6 +102,7 @@ typedef chi_kwnn_t::view_type chi_kwnn_vt;
   // bosonic freq w for "\omega"
   // fermionic freq "n" for "\nu"
   // imagnary time "t" for "\tau"
+  // real freq f
   // real space "r"
   // momentum space "k"
 
@@ -152,6 +153,10 @@ typedef chi_wr_t::view_type chi_wr_vt;
 typedef gf<prod<imfreq, brzone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;
+
+typedef gf<prod<refreq, brzone>, tensor_valued<4>> chi_fk_t;
+typedef chi_fk_t::const_view_type chi_fk_cvt;
+typedef chi_fk_t::view_type chi_fk_vt;
 
 typedef gf<prod<brzone, imfreq>, tensor_valued<4>> chi_kw_t;
 typedef chi_kw_t::const_view_type chi_kw_cvt;

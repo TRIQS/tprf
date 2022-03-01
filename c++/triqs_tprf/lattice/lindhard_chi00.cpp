@@ -23,13 +23,18 @@
 
 #include "common.hpp"
 #include "lindhard_chi00.hpp"
+#include "../mpi.hpp"
 
 namespace triqs_tprf {
 
 // ----------------------------------------------------
-// chi00 bubble in analytic form
+// helper functions
 
 double fermi(double e) { return 1. / (exp(e) + 1.); }
+double fermiGauss(double e) { return 0.5 * erfc(e); }
+
+// ----------------------------------------------------
+// chi00 bubble in analytic form
 
 chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
                           double beta, double mu) {
@@ -98,6 +103,77 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
   chi_wk /= kmesh.size();
 
   return chi_wk;
+} 
+
+// ----------------------------------------------------
+// chi00 bubble in analytic form in real frequencies
+
+chi_fk_t lindhard_chi00_fk(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta, 
+                           double mu, double delta) {
+
+  auto kmesh = e_k.mesh();
+  int nb = e_k.target().shape()[0];
+
+  chi_fk_t chi_fk{{mesh, kmesh}, {nb, nb, nb, nb}};
+  
+  auto fmesh = std::get<0>(chi_fk.mesh());
+  
+  for (auto const & [ f, k ] : chi_fk.mesh())
+    chi_fk[f, k] = 0.;
+    
+  std::complex<double> idelta(0.0, delta);
+    
+  auto arr = mpi_view(kmesh);
+
+  #pragma omp parallel for
+  for (int qidx = 0; qidx < kmesh.size(); qidx++) {
+  
+      auto q_iter = kmesh.begin();
+      q_iter += qidx;
+      auto q = *q_iter;
+  
+      for (int kidx = 0; kidx < arr.size(); kidx++) {
+      
+          auto k = arr(kidx);
+          
+          matrix<std::complex<double>> e_k_mat(e_k(k));
+          auto eig_k = linalg::eigenelements(e_k_mat);
+          auto ek = eig_k.first;
+          auto Uk = eig_k.second;
+          
+          matrix<std::complex<double>> e_kq_mat(e_k(k + q));
+          auto eig_kq = linalg::eigenelements(e_kq_mat);
+          auto ekq = eig_kq.first;
+          auto Ukq = eig_kq.second;
+          
+          for (int i : range(nb)) {
+            for (int j : range(nb)) {
+          
+              double dn = fermiGauss((ek(i) - mu) * beta) - fermiGauss((ekq(j) - mu) * beta);
+              double de = ekq(j) - ek(i);
+              
+              for (auto const &f : fmesh) {
+      
+                chi_fk[f, q](a, b, c, d) 
+                    << chi_fk[f, q](a, b, c, d) + Uk( i, a) * dagger(Uk )(d, i) 
+                                                * Ukq(j, c) * dagger(Ukq)(b, j)
+                                                * dn / (f + idelta + de);
+                  
+              } // f
+              
+          } // i
+        } // j
+          
+      } // k (mpi)
+  
+  } // q (omp)
+  
+  chi_fk = mpi::all_reduce(chi_fk);
+  
+  chi_fk /= kmesh.size();
+    
+  return chi_fk;
+
 } 
 
 } // namespace triqs_tprf
