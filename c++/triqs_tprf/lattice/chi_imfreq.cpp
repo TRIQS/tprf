@@ -1066,7 +1066,7 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
   auto mesh_b = std::get<1>(chi_kwnn.mesh());
   auto mesh_f = std::get<2>(chi_kwnn.mesh());
 
-  auto chi_wk = make_gf<prod<imfreq, brzone>>({mesh_b, mesh_k}, chi_kwnn.target());
+  auto chi_wk = make_gf<cartesian_product<imfreq, brillouin_zone>>({mesh_b, mesh_k}, chi_kwnn.target());
   
   for (auto const &[k, w, n1, n2] : chi_kwnn.mesh())
     for (auto [a, b, c, d] : chi_kwnn.target_indices())
