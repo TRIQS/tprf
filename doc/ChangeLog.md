@@ -2,8 +2,34 @@
 
 # Changelog
 
-## Version 3.0.0
+## Version 3.1.0
 
+TPRF version 3.1.0 is a compatibility release for TRIQS version 3.1.0 also containing some new functionality.
+
+Eliashberg
+----------
+* Functionality for solving the linearized Eliasberg equation
+
+Bethe Salpeter Equation (BSE)
+-----------------------------
+* Functionality to solve the BSE at one (finite) bosonic frequency at a time
+
+Contributors: Stefan Käser, Hugo U.R. Strand
+
+Maintenance 
+-----------
+* Change np.complex -> complex
+* Compiler warning fixes
+* Thread race-condition bugfix
+
+TRIQS compatibility
+-------------------
+* Compatibility updates to adhere to changes in TRIQS from v3.0.0 to v3.1.0
+* Merges from app4triqs to adhere to changes in the TRIQS application framework from v3.0.0 to v3.1.0
+
+Contributors: Nils Wentzell, Alexander Hampel, Dylan Simon, Hugo U.R. Strand 
+
+## Version 3.0.0
 
 tprf version 3.0.0 is a compatibility
 release for TRIQS version 3.0.0 that
