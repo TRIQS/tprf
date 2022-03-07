@@ -8,11 +8,25 @@ TPRF version 3.1.0 is a compatibility release for TRIQS version 3.1.0 also conta
 
 Eliashberg
 ----------
-* Functionality for solving the linearized Eliasberg equation
+* Added functionality to solve the multi-orbital linearized Eliashberg equation for the most dominant gap functions:
+    * Only irreducible particle-particle vertices dependent on one bosonic frequency and one momentum are supported.
+    * Matrix product inside Eliashberg equation is implemented in two ways:
+        * Explicit loops
+        * Fourier transformations taking advantage of the convolution theorem
+     Depending on the used meshs either implementation can be more efficient.
+    * The Fourier implementation is parallelized over threads.
+    * Functionality to solve for the most dominant gap function using the power method or solving for the `k` most dominant ones using the implicitly restarted Arnoldi method.
+    * Functionality to only solve for gap functions with specific symmetries (frequency, momentum or orbital).
+    * Added constructors for the singlet and triplet irreducible vertices in the random phase approximation.
 
-Bethe Salpeter Equation (BSE)
+Bethe-Salpeter equation (BSE)
 -----------------------------
-* Functionality to solve the BSE at one (finite) bosonic frequency at a time
+* Added functionality to solve the BSE at specific bosonic frequencies individually to avoid memory limitations.
+
+Chi0
+----
+* Added memory optimized version of chi0 construction for smaller frequency meshes.
+* Added functionality to construct chi0 for specific frequency.
 
 Contributors: Stefan Käser, Hugo U.R. Strand
 
