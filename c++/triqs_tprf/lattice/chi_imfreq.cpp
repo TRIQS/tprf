@@ -1076,17 +1076,22 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
   for (int idx = 0; idx < arr.size(); idx++) {
     auto k = std::get<0>(arr(idx));
     auto w = std::get<1>(arr(idx));
-  
+
+    /*
     //for (auto const &[k, w, n1, n2] : chi_kwnn.mesh()) {
-    for (auto const &[n1, n2] : gf_mesh{mesh_f, mesh_f})
+    for (auto const &[n1, n2] : gf_mesh{mesh_f, mesh_f}) {
     for (auto [a, b, c, d] : chi_kwnn.target_indices())
       for (auto [e, f, g, h] : chi_kwnn.target_indices())
 	chi_wk[w, k](a, b, g, h) +=
 	  L_wn[w, n1](a, b, c, d) * chi_kwnn[k, w, n1, n2](c, d, e, f) * L_wn[w, n2](e, f, g, h);
+    */
+
+    auto _ = all_t{};
+    chi_wk[w, k] = scalar_product_PH(L_wn[w, _], chi_kwnn[k, w, _, _], L_wn[w, _]);
   }
   
   chi_wk = mpi::all_reduce(chi_wk);
-  
+
   return chi_wk;
 }
   

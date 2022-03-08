@@ -340,5 +340,7 @@ template <Channel_t CH> g2_nn_t identity(g2_nn_cvt g);
 g2_nn_t identity_PH(g2_nn_vt g);
 g2_nn_t identity_PP(g2_nn_vt g);
 g2_nn_t identity_PH_bar(g2_nn_vt g);
+
+array<g2_nn_cvt::scalar_t, 4> scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR);
   
 } // namespace triqs_tprf
