@@ -31,7 +31,7 @@ using namespace triqs::arrays;
 
 namespace triqs_tprf {
 
-using g2_n_t = gf<cartesian_product<imfreq>, tensor_valued<4>>;
+using g2_n_t = gf<imfreq, tensor_valued<4>>;
 using g2_n_vt = g2_n_t::view_type;
 using g2_n_cvt = g2_n_t::const_view_type;
 
