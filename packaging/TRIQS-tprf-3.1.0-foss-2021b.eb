@@ -27,7 +27,7 @@ toolchainopts = {'pic': True, 'usempi': True}
 
 source_urls = ['https://github.com/TRIQS/tprf/releases/download/%(version)s/']
 sources = ['tprf-%(version)s.tar.gz']
-checksums = ['PUT HERE THE SHA256 OF THE RELEASE TARBALL']
+checksums = ['75f6e79d891342951652353ea4d9914074d9947c67cad60844ebaa3f82bd17b5']
 
 dependencies = [
     ('Python', '3.9.6'),
