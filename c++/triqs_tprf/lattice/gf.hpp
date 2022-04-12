@@ -63,7 +63,23 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh);
  */
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
 
-/** ADD lattice_dyson_g0_fk DESCRIPTION
+/** Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
+
+  Computes
+
+  .. math::
+     G^{(0)}_{a\bar{b}}(\omega, \mathbf{k}) = \left[ 
+         (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
+	 \right]^{-1}_{a\bar{b}},
+
+  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, chemical potential $\mu$,
+  broadening $\delta$, and a real frequency Green's function mesh.
+
+  @param mu chemical potential :math:`\mu`
+  @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+  @param mesh real frequency mesh
+  @param delta broadening :math:`\delta`
+  @return Matsubara frequency lattice Green's function $G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})$
 */
 g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double delta);
 
@@ -77,7 +93,7 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
 	\right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
- chemical potential $\mu$, and a momentum independent Matsubara frequency 
+ chemical potential $\mu$, and a Matsubara frequency 
  self energy $\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})$.
 
  @param mu chemical potential :math:`\mu`
@@ -87,8 +103,25 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
  */
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk);
 
-/** ADD lattice_dyson_g_fk DESCRIPTION
-*/
+/** Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+   
+ Computes
+
+ .. math::
+    G_{a\bar{b}}(\omega, \mathbf{k}) = \left[ 
+        (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega, \mathbf{k})
+	\right]^{-1}_{a\bar{b}},
+
+ using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
+ chemical potential $\mu$, broadening $\delta$, and a real frequency 
+ self energy $\Sigma_{\bar{a}b}(\omega, \mathbf{k})$.
+
+ @param mu chemical potential :math:`\mu`
+ @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+ @param sigma_fk real frequency self-energy :math:`\Sigma_{\bar{a}b}(\omega, \mathbf{k})`
+ @param delta broadening :math:`\delta`
+ @return real frequency lattice Green's function $G_{a\bar{b}}(\omega, \mathbf{k})$
+ */
 g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk, double delta);
 
 /** Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
