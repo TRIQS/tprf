@@ -228,4 +228,41 @@ g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k,
   return sigma_fk;
 }
 
+// ----------------------------------------------------
+// gw_sigma_k_g0w0
+
+e_k_t gw_sigma_k_g0w0(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
+  auto kmesh = e_k.mesh();
+  int nb = e_k.target().shape()[0];
+
+  e_k_t sigma_k(kmesh, e_k.target_shape());
+
+  for (auto const &k : sigma_k.mesh())
+    sigma_k[k] = 0.; 
+ 
+  auto arr = mpi_view(kmesh);
+  #pragma omp parallel for
+  for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
+    auto k = arr(kidx);
+    
+    for (auto const &q : kmesh) {
+      array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);
+      auto eig_kq = linalg::eigenelements(e_kq_mat);
+      auto ekq = eig_kq.first;
+      auto Ukq = eig_kq.second;
+
+      for (int l : range(nb)) {
+        sigma_k[k](a,b) 
+          << sigma_k[k](a,b) - Ukq(l, a) * dagger(Ukq)(b, l) * \
+                               v_k[q](a, b, a, b) * fermi2(ekq(l) * beta) / kmesh.size();
+      }
+    }
+  }
+
+  sigma_k = mpi::all_reduce(sigma_k);
+  
+  return sigma_k;
+}
+
+
 } // namespace triqs_tprf
