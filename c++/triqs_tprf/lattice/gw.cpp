@@ -251,16 +251,16 @@ e_k_t gw_sigma_k_g0w0(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
       auto ekq = eig_kq.first;
       auto Ukq = eig_kq.second;
 
-      for (int l : range(nb)) {
-        sigma_k[k](a,b) 
-          << sigma_k[k](a,b) - Ukq(l, a) * dagger(Ukq)(b, l) * \
+      for (auto [a,b] : sigma_k.target_indices()){
+        for (int l : range(nb)) {
+          sigma_k[k](a,b) += - Ukq(l, a) * dagger(Ukq)(b, l) * \
                                v_k[q](a, b, a, b) * fermi2(ekq(l) * beta) / kmesh.size();
+        }
       }
     }
   }
 
   sigma_k = mpi::all_reduce(sigma_k);
-  
   return sigma_k;
 }
 

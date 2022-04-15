@@ -424,6 +424,10 @@ out
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::gw_sigma_fk_g0w0_spectral (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt Wr_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
 
 
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma_k_g0w0 (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""""")
+
+
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product via summation
 
      Computes the product
