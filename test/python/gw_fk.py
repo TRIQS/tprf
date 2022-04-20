@@ -17,9 +17,9 @@ from triqs.gf.mesh_product import MeshProduct
 
 # ----------------------------------------------------------------------
 
-nw = 3 #101
-wmin = -5.0
-wmax = 5.0
+nw = 2 #101
+wmin = -0.00001
+wmax = +0.00001
 nk = 5
 norb = 1
 beta = 10.0
@@ -63,14 +63,10 @@ print('--> gw_self_energy')
 sigma_fk = gw_sigma_fk_g0w0_spectral(mu=mu, beta=beta, e_k=e_k, mesh=fmesh, Wr_fk=Wr_fk, v_k=V_k, delta=delta)
 sigma_k = gw_sigma_k_g0w0(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
 
-# TODO: Why does this return NaNs?
-print(sigma_fk.data)
-
-
-#f0_ind = len(fmesh)//2
-#assert np.allclose( list(fmesh.values())[f0_ind], 0.0 )
-#
-#np.testing.assert_array_almost_equal(sigma_fk.data[f0_ind,:], sigma_k.data[:])
+# Check if sigma_fk and sigma_k are the same at w=0
+f0_ind = len(fmesh)//2
+assert np.allclose( list(fmesh.values())[f0_ind], 0.0, atol=wmax )
+np.testing.assert_array_almost_equal(sigma_fk.data[f0_ind,:], sigma_k.data[:])
 
 print('--> lattice_dyson_g_wk')
 g_fk = lattice_dyson_g_fk(mu, e_k, sigma_fk, delta)
