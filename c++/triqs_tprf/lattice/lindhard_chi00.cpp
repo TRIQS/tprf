@@ -161,8 +161,8 @@ chi_fk_t lindhard_chi00_fk(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta,
               for (auto const &f : fmesh) {
       
                 chi_fk[f, q](a, b, c, d) 
-                    << chi_fk[f, q](a, b, c, d) + Uk( i, a) * dagger(Uk )(d, i) 
-                                                * Ukq(j, c) * dagger(Ukq)(b, j)
+                    << chi_fk[f, q](a, b, c, d) + Uk( a, i) * dagger(Uk )(i, d) 
+                                                * Ukq(c, j) * dagger(Ukq)(j, b)
                                                 * dn / (f + idelta + de);
                   
               } // f

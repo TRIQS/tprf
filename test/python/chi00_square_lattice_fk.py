@@ -27,7 +27,7 @@ def test_square_lattice_chi00_realfreq():
     wmin = -5.0
     wmax = 5.0
     nw = 10
-    delta = 0.001
+    delta = 0.00001
     
     # ------------------------------------------------------------------
     # -- tight binding parameters
@@ -96,19 +96,8 @@ def test_square_lattice_chi00_realfreq():
     # ------------------------------------------------------------------
     # -- compare at zero freq.
    
-    decimal = 6
- 
     np.testing.assert_array_almost_equal(
-        chi00_f0k[:,0,0,0,0], chi00_w0k[:,0,0,0,0], decimal=decimal)
-    
-    np.testing.assert_array_almost_equal(
-        chi00_f0k[:,1,1,1,1], chi00_w0k[:,1,1,1,1], decimal=decimal)
-    
-    np.testing.assert_array_almost_equal(
-        chi00_f0k.real[:,0,1,1,0], chi00_w0k.real[:,0,1,1,0], decimal=decimal)
-    
-    np.testing.assert_array_almost_equal(
-        chi00_f0k.real[:,1,0,0,1], chi00_w0k.real[:,1,0,0,1], decimal=decimal)
+        chi00_f0k.data, chi00_w0k.data, decimal=5)
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
