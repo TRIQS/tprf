@@ -9,6 +9,7 @@ set(all_tests
   chi4_iw_from_tau
   g_wk_to_from_g_wr_py
   chi00_square_lattice
+  chi00_square_lattice_fk
   chi0_save_memory
   chi0_nr_at_specific_w
   chi0_nk_at_specific_w
