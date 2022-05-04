@@ -50,7 +50,88 @@ namespace triqs_tprf {
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t dynamical_screened_interaction_W_wk(chi_wk_cvt PI_wk, chi_k_cvt V_k);
+chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
+
+/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator 
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
+    :math:`W^{(r)}` (with zero high-frequency offset)
+    
+    .. math::
+        W_{abcd}(\omega, \mathbf{k}) = 
+            W^{(full)}_{abcd}(\omega, \mathbf{k}) - V_{abcd}(\mathbf{k})
+
+    @param PI_fk polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
+    @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
+ */
+
+chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k);
+
+/** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator 
+    for dynamic momentum-dependent interactions :math:`V(i\omega_n, \mathbf{k})`.
+
+    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) = 
+          V_{abcd}(i\omega_n, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
+          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
+
+    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
+    :math:`W^{(r)}` (with zero high-frequency offset)
+    
+    .. math::
+        W_{abcd}(i\omega_n, \mathbf{k}) = 
+            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(i\omega_n, \mathbf{k})
+
+    @param PI_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+    @param V_wk bare interaction :math:`V_{abcd}(i\omega_n, \mathbf{k})`
+    @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+ */
+
+chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk);
+
+/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator 
+    for dynamic momentum-dependent interactions :math:`V(\omega, \mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
+          V_{abcd}(\omega, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
+    :math:`W^{(r)}` (with zero high-frequency offset)
+    
+    .. math::
+        W_{abcd}(\omega, \mathbf{k}) = 
+            W^{(full)}_{abcd}(\omega, \mathbf{k}) - V_{abcd}(\omega, \mathbf{k})
+
+    @param PI_fk polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+    @param V_fk bare interaction :math:`V_{abcd}(\omega, \mathbf{k})`
+    @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
+ */
+
+chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk);
 
 /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator 
     for static momentum-dependent interactions :math:`V(\mathbf{k})` and 

@@ -11,6 +11,7 @@ from triqs_tprf.lattice import lattice_dyson_g0_fk
 from triqs_tprf.lattice import lattice_dyson_g_fk
 from triqs_tprf.lattice import lindhard_chi00_fk
 from triqs_tprf.lattice import gw_sigma_fk_g0w0_spectral, gw_sigma_k_g0w0
+from triqs_tprf.gw import dynamical_screened_interaction_W
 
 from triqs.gf import Gf, MeshReFreq, inverse
 from triqs.gf.mesh_product import MeshProduct
@@ -49,15 +50,14 @@ g_fk = lattice_dyson_g0_fk(mu=mu, e_k=e_k, mesh=fmesh, delta=delta)
 V_k = Gf(mesh=kmesh, target_shape=[norb]*4)
 V_k.data[:] = V
 
+V_fk = Gf(mesh=g_fk.mesh, target_shape=[norb]*4)
+V_fk.data[:] = V
+
 print('--> pi_bubble')
 PI_fk = lindhard_chi00_fk(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
 
 print('--> screened_interaction_W')
-Wr_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=V_k.target_shape)
-for f in fmesh:
-    fi = f.linear_index
-    Wr_fk.data[fi,:] = V_k.data / (1.0 - PI_fk.data[fi,:] * V_k.data)
-
+Wr_fk = dynamical_screened_interaction_W(PI_fk, V_k) 
 
 print('--> gw_self_energy')
 sigma_fk = gw_sigma_fk_g0w0_spectral(mu=mu, beta=beta, e_k=e_k, mesh=fmesh, Wr_fk=Wr_fk, v_k=V_k, delta=delta)

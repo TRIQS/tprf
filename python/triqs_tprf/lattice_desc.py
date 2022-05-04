@@ -291,7 +291,7 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
     for static momentum-dependent interactions :math:`V(\mathbf{k})`.
 
     The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
@@ -323,6 +323,10 @@ Returns
 -------
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_wk_cvt V_wk)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Add documentation!""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk_from_generalized_susceptibility (triqs_tprf::chi_wk_cvt chi_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
     for static momentum-dependent interactions :math:`V(\mathbf{k})` and

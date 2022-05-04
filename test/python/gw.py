@@ -11,7 +11,7 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
 from triqs_tprf.gw import bubble_PI_wk
-from triqs_tprf.gw import retarded_screened_interaction_Wr_wk
+from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma_wk
 
 from triqs.gf import Gf, MeshImFreq, Idx
@@ -50,13 +50,13 @@ V_k.data[:] = V
 print('--> pi_bubble')
 PI_wk = bubble_PI_wk(g_wk)
 
-print('--> screened_interaction_W')
-Wr_wk = retarded_screened_interaction_Wr_wk(PI_wk, V_k)
+print('--> screened_interaction_W (static bare interaction)')
+Wr_wk = dynamical_screened_interaction_W(PI_wk, V_k)
 
 print('--> gw_self_energy')
-sigma_wk = gw_sigma_wk(Wr_wk, g_wk, fft_flag=True)
-sigma_wk_ref = gw_sigma_wk(Wr_wk, g_wk, fft_flag=False)
-np.testing.assert_array_almost_equal(sigma_wk.data, sigma_wk_ref.data)
+sigma_wk = gw_sigma_wk(Wr_wk, g_wk)
+sigma_wk_ref = gw_sigma_wk(Wr_wk, g_wk)
+np.testing.assert_array_almost_equal(sigma_wk.data, sigma_wk_ref.data, decimal=5)
 
 print('--> lattice_dyson_g_wk')
 g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
