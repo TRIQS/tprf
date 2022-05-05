@@ -8,6 +8,8 @@ endforeach()
 set(all_tests
   chi4_iw_from_tau
   g_wk_to_from_g_wr_py
+  gw
+  gw_fk
   chi00_square_lattice
   chi00_square_lattice_fk
   dynamical_screened_interaction_w
