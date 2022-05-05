@@ -362,7 +362,7 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma_dyn (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
 
     Fourier transforms the screened interaction and the single-particle
     Green's function to imagiary time and real space.
@@ -403,7 +403,7 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma_tr (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
+module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 
     Computes the GW self-energy as the product
 
@@ -425,12 +425,11 @@ out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r""" """)
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r""" """)
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::gw_sigma_fk_g0w0_spectral (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
 
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma_k_g0w0 (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""""")
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""""")
 
 
 

@@ -163,8 +163,11 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
 
 /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
-    Fourier transforms the screened interaction and the single-particle
-    Green's function to imagiary time and real space.
+    Splits the interaction into a dynamic and a static part by
+    fitting the high-frequency tail.
+
+    Fourier transforms the dynamic part of the interaction and the 
+    single-particle Green's function to imaginary time and real space.
 
     .. math::
         G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
@@ -186,16 +189,15 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
         \Sigma_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
 
-    @param W_wk dynamic interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+    The GW self-energy from the static part of the interaction is added
+    on top of this.
+
+    @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
     @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
-
-    .. note::
-       This function requires a dynamic interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
-       which has a vanishing tail.
  */
 
-g_wk_t gw_sigma_dyn(chi_wk_cvt W_wk, g_wk_cvt g_wk);
+g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
 /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
@@ -208,31 +210,20 @@ g_wk_t gw_sigma_dyn(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
 e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
 
-/** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator 
-
-    Some documentation ...
-
-    @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
- */
-
-g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
-
 /** GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 
     Computes the GW self-energy as the product
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
-    @param W_tr retarded screened interaction :math:`W^{(r)}_{abcd}(\tau, \mathbf{r})`
+    @param W_tr interaction :math:`W_{abcd}(\tau, \mathbf{r})`
     @param g_tr single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`
     @return GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`
  */
 
-g_tr_t gw_sigma_tr(chi_tr_cvt W_tr, g_tr_cvt g_tr);
+g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
 
 
 /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
@@ -272,7 +263,7 @@ g_tr_t gw_sigma_tr(chi_tr_cvt W_tr, g_tr_cvt g_tr);
     @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
 */
 
-g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, gf_mesh<refreq> mesh, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
+g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, gf_mesh<refreq> mesh, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
 
 /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
@@ -297,6 +288,6 @@ g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, gf_mesh<re
     @return static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
 */
 
-e_k_t gw_sigma_k_g0w0(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
+e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
 
 } // namespace triqs_tprf

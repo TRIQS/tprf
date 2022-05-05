@@ -230,7 +230,7 @@ std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt W_
 
 
  
-g_tr_t gw_sigma_tr(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
+g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
 
   auto Wtm = std::get<0>(W_tr.mesh());
   auto gtm = std::get<0>(g_tr.mesh());
@@ -259,27 +259,6 @@ g_tr_t gw_sigma_tr(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
 
   sigma_tr = mpi::all_reduce(sigma_tr);
   return sigma_tr;
-}
-
-g_wk_t gw_sigma_dyn(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
-
-  auto Wwm = std::get<0>(W_wk.mesh());
-  auto gwm = std::get<0>(g_wk.mesh());
-  
-  if( Wwm.domain().beta != gwm.domain().beta )
-    TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
-
-  if( Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion )
-    TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
-
-  if( std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()) )
-    TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
-
-  auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
-  auto W_tr = make_gf_from_fourier<0, 1>(W_wk);
-  auto sigma_tr = gw_sigma_tr(W_tr, g_tr);
-  auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_tr);
-  return sigma_wk;
 }
 
 e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk){
@@ -326,9 +305,17 @@ g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
 
 
   auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
-  auto sigma_dyn_wk = gw_sigma_dyn(W_dyn_wk, g_wk);
+
+  //Dynamic part
+  auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
+  auto W_tr = make_gf_from_fourier<0, 1>(W_dyn_wk);
+  auto sigma_tr = gw_sigma(W_tr, g_tr);
+  auto sigma_dyn_wk = make_gf_from_fourier<0, 1>(sigma_tr);
+
+  //Static part
   auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
 
+  //Add dynamic and static parts
   g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
 
   auto arr = mpi_view(sigma_wk.mesh());
@@ -353,9 +340,9 @@ double bose2(double e)  { return 1. / (exp(e) - 1.); }
 // ----------------------------------------------------
 // gw_sigma_fk_g0w0_spectral
 
-g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, 
-                                 gf_mesh<refreq> fmesh, chi_fk_cvt W_fk, 
-                                 chi_k_cvt v_k, double delta) {
+g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, 
+                 gf_mesh<refreq> fmesh, chi_fk_cvt W_fk, 
+                 chi_k_cvt v_k, double delta) {
 
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
@@ -421,7 +408,7 @@ g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k,
 // ----------------------------------------------------
 // gw_sigma_k_g0w0
 
-e_k_t gw_sigma_k_g0w0(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
+e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
 

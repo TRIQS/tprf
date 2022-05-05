@@ -10,12 +10,10 @@ from triqs_tprf.tight_binding import TBLattice
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
-from triqs_tprf.lattice import gw_sigma_dyn
-
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma
-from triqs_tprf.gw import gw_sigma_k_g0w0
+from triqs_tprf.gw import g0w_sigma
 
 from triqs.gf import Gf, MeshImFreq, Idx
 
@@ -62,7 +60,7 @@ for w in Wr_full_wk.mesh.components[0]:
 print('--> gw_self_energy')
 sigma_wk = gw_sigma(Wr_full_wk, g0_wk)
 
-sigma_dyn_wk = gw_sigma_dyn(Wr_wk, g0_wk)
+sigma_dyn_wk = gw_sigma(Wr_wk, g0_wk)
 sigma_stat_k = gw_sigma(V_k, g0_wk)
 sigma_wk_ref = Gf(mesh=sigma_dyn_wk.mesh, target_shape=sigma_dyn_wk.target_shape)
 for w in wmesh:
@@ -75,7 +73,7 @@ np.testing.assert_array_almost_equal(sigma_wk.data, sigma_wk_ref.data, decimal=5
 
 
 sigma_k = gw_sigma(V_k, g0_wk)
-sigma_k_ref = gw_sigma_k_g0w0(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
+sigma_k_ref = g0w_sigma(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
 
 np.testing.assert_array_almost_equal(sigma_k.data, sigma_k_ref.data, decimal=4)
 
