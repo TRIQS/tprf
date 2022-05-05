@@ -45,8 +45,10 @@ from triqs_tprf.lattice import dynamical_screened_interaction_W
 from triqs_tprf.lattice import \
     dynamical_screened_interaction_W_wk_from_generalized_susceptibility
 
-from triqs_tprf.lattice import gw_sigma_wk_serial_fft as gw_sigma_wk
+from triqs_tprf.lattice import gw_sigma
 from triqs_tprf.lattice import gw_sigma_tr
+
+from triqs_tprf.lattice import gw_sigma_fk_g0w0_spectral, gw_sigma_k_g0w0
 
 # ----------------------------------------------------------------------
 def bubble_PI_wk(g_wk):

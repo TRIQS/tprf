@@ -32,7 +32,7 @@ namespace triqs_tprf {
 chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
 
   if( std::get<1>(PI_wk.mesh()) != V_k.mesh() )
-    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
   
   auto W_wk = make_gf(PI_wk);
   W_wk *= 0.;
@@ -67,7 +67,7 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
 chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k) {
 
   if( std::get<1>(PI_fk.mesh()) != V_k.mesh() )
-    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
   
   auto W_fk = make_gf(PI_fk);
   W_fk *= 0.;
@@ -102,7 +102,7 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k) {
 chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk) {
 
   if( std::get<1>(PI_wk.mesh()) != std::get<1>(V_wk.mesh()) )
-    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
   
   auto W_wk = make_gf(PI_wk);
   W_wk *= 0.;
@@ -137,7 +137,7 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk) {
 chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk) {
 
   if( std::get<1>(PI_fk.mesh()) != std::get<1>(V_fk.mesh()) )
-    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
   
   auto W_fk = make_gf(PI_fk);
   W_fk *= 0.;
@@ -172,7 +172,7 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk) {
 chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
 
   if( std::get<1>(chi_wk.mesh()) != V_k.mesh() )
-    TRIQS_RUNTIME_ERROR << "retarded_screened_interaction_Wr_wk: k-space meshes are not the same\n";
+    TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
   
   auto W_wk = make_gf(chi_wk);
   W_wk *= 0.;
@@ -202,10 +202,37 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
   W_wk = mpi::all_reduce(W_wk);
   return W_wk;
 }
-  
-g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
+ 
 
-  auto Wtm = std::get<0>(Wr_tr.mesh());
+
+std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt W_wk) {
+
+  auto _ = all_t{};
+  auto wmesh = std::get<0>(W_wk.mesh());
+  auto kmesh = std::get<1>(W_wk.mesh());
+    
+  chi_wk_t W_dyn_wk(W_wk.mesh(), W_wk.target_shape());
+  chi_k_t W_const_k(kmesh, W_wk.target_shape());
+
+  for (auto const &k : kmesh) {
+    auto Gamma_w = W_wk[_, k];
+    auto tail = std::get<0>(fit_tail(Gamma_w));
+
+    for (auto [a, b, c, d] : W_wk.target_indices())
+      W_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
+
+    for (auto const &w : wmesh) 
+      W_dyn_wk[w, k] = W_wk[w, k] - W_const_k[k];
+  }
+
+  return {W_dyn_wk, W_const_k};
+}
+
+
+ 
+g_tr_t gw_sigma_tr(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
+
+  auto Wtm = std::get<0>(W_tr.mesh());
   auto gtm = std::get<0>(g_tr.mesh());
   
   if( Wtm.size() != gtm.size() || Wtm.domain().beta != gtm.domain().beta )
@@ -214,22 +241,19 @@ g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
   if( Wtm.domain().statistic != Boson || gtm.domain().statistic != Fermion )
     TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
   
-  if( std::get<1>(Wr_tr.mesh()) != std::get<1>(g_tr.mesh()) )
+  if( std::get<1>(W_tr.mesh()) != std::get<1>(g_tr.mesh()) )
     TRIQS_RUNTIME_ERROR << "gw_sigma_tr: real-space meshes are not the same.\n";
   
   auto sigma_tr = make_gf(g_tr);
   sigma_tr *= 0.;
 
-  // MPI and openMP parallell loop
   auto arr = mpi_view(g_tr.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[t, r] = arr(idx);
 
-    //for (const auto &[t, r] : g_tr.mesh()) {
-
-    for (const auto &[a, b, c, d] : Wr_tr.target_indices()) {
-      sigma_tr[t, r](a, b) += Wr_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
+    for (const auto &[a, b, c, d] : W_tr.target_indices()) {
+      sigma_tr[t, r](a, b) += W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
     }
   }
 
@@ -237,25 +261,86 @@ g_tr_t gw_sigma_tr(chi_tr_cvt Wr_tr, g_tr_cvt g_tr) {
   return sigma_tr;
 }
 
-g_wk_t gw_sigma_wk_serial_fft(chi_wk_cvt Wr_wk, g_wk_cvt g_wk) {
+g_wk_t gw_sigma_dyn(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
 
-  auto Wwm = std::get<0>(Wr_wk.mesh());
+  auto Wwm = std::get<0>(W_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());
   
   if( Wwm.domain().beta != gwm.domain().beta )
-    TRIQS_RUNTIME_ERROR << "gw_self_energy: inverse temperatures are not the same.\n";
+    TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
 
   if( Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion )
-    TRIQS_RUNTIME_ERROR << "gw_self_energy: statistics are incorrect.\n";
+    TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
 
-  if( std::get<1>(Wr_wk.mesh()) != std::get<1>(g_wk.mesh()) )
-    TRIQS_RUNTIME_ERROR << "gw_self_energy: k-space meshes are not the same.\n";
-  
-  // TODO: parallellize fourier transforms
+  if( std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()) )
+    TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
+
   auto g_tr = make_gf_from_fourier<0, 1>(g_wk);
-  auto Wr_tr = make_gf_from_fourier<0, 1>(Wr_wk);
-  auto sigma_tr = gw_sigma_tr(Wr_tr, g_tr);
+  auto W_tr = make_gf_from_fourier<0, 1>(W_wk);
+  auto sigma_tr = gw_sigma_tr(W_tr, g_tr);
   auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_tr);
+  return sigma_wk;
+}
+
+e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk){
+
+  if( v_k.mesh() != std::get<1>(g_wk.mesh()) )
+    TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
+
+  auto _ = all_t{};
+  auto kmesh = std::get<1>(g_wk.mesh());
+
+  e_k_t sigma_k(kmesh, g_wk.target_shape());
+  
+  auto arr = mpi_view(kmesh);
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto k = arr(idx);
+
+    for (auto const &q : kmesh) {
+      
+      auto density = triqs::gfs::density(g_wk[_,k+q]);
+
+      for (const auto &[a, b] : sigma_k.target_indices()) {
+        sigma_k[k](a, b) += - v_k[q](a, b, a, b) * density(a,b) / kmesh.size();
+      }
+    }
+  }
+  sigma_k = mpi::all_reduce(sigma_k);
+  return sigma_k;
+}
+
+g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
+
+  auto Wwm = std::get<0>(W_wk.mesh());
+  auto gwm = std::get<0>(g_wk.mesh());
+  
+  if( Wwm.domain().beta != gwm.domain().beta )
+    TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
+
+  if( Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion )
+    TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
+
+  if( std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()) )
+    TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
+
+
+  auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
+  auto sigma_dyn_wk = gw_sigma_dyn(W_dyn_wk, g_wk);
+  auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
+
+  g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
+
+  auto arr = mpi_view(sigma_wk.mesh());
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+
+    for (const auto &[a, b] : sigma_wk.target_indices()) {
+      sigma_wk[w, k](a, b) += sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b);
+    }
+  }
+  sigma_wk = mpi::all_reduce(sigma_wk);
   return sigma_wk;
 }
 
@@ -269,7 +354,7 @@ double bose2(double e)  { return 1. / (exp(e) - 1.); }
 // gw_sigma_fk_g0w0_spectral
 
 g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k, 
-                                 gf_mesh<refreq> fmesh, chi_fk_cvt Wr_fk, 
+                                 gf_mesh<refreq> fmesh, chi_fk_cvt W_fk, 
                                  chi_k_cvt v_k, double delta) {
 
   auto kmesh = e_k.mesh();
@@ -287,7 +372,7 @@ g_fk_t gw_sigma_fk_g0w0_spectral(double mu, double beta, e_k_cvt e_k,
   for (auto const & [ f, k ] : WSpec_fk.mesh()) {
     for (int i : range(nb)) {
       for (int j : range(nb)) {
-        WSpec_fk[f, k](i, j) = -1.0/3.141592653589793 * (Wr_fk[f, k](i, j, i, j) - v_k[k](i, j, i, j)).imag();
+        WSpec_fk[f, k](i, j) = -1.0/3.141592653589793 * (W_fk[f, k](i, j, i, j) - v_k[k](i, j, i, j)).imag();
       }
     }
   }
