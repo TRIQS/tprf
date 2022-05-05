@@ -128,8 +128,14 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
 
 /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
-    Splits the interaction into a dynamic and a static part by
-    fitting the high-frequency tail.
+    Splits the interaction into a dynamic and a static part
+    
+    .. math ::
+        W_{abcd}(i\omega_n, \mathbf{k}) = 
+            W^{dyn}_{abcd}(i\omega_n, \mathbf{k})
+            + V_{abcd}(\mathbf{k})
+
+    by fitting the high-frequency tail.
 
     Fourier transforms the dynamic part of the interaction and the 
     single-particle Green's function to imaginary time and real space.
@@ -140,7 +146,7 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
 
     .. math::
         W_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
-          \left\{ W_{abcd}(i\omega_n, \mathbf{k}) \right\}
+          \left\{ W^{dyn}_{abcd}(i\omega_n, \mathbf{k}) \right\}
 
     computes the GW self-energy as the product
 
@@ -151,11 +157,25 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
     and transforms back to frequency and momentum
 
     .. math::
-        \Sigma_{ab}(i\omega_n, \mathbf{k}) =
+        \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
 
-    The GW self-energy from the static part of the interaction is added
-    on top of this.
+    The self-energy of the static part of the interaction is calculated
+    as the sum
+
+    .. math::
+        \Sigma^{stat}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+
+    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    single particle Green's function.
+
+    The total GW self-energy is given by
+
+    ,, math::
+        \Sigma_{ab}(i\omega_n, \mathbf{k}) = 
+          \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k})
+          + \Sigma^{stat}_{ab}(\mathbf{k})
 
     @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
@@ -166,7 +186,14 @@ g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
 /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
-    Some documentation ...
+    Computes the GW self-energy of a static interaction as the sum
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+
+    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    single particle Green's function.
 
     @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
