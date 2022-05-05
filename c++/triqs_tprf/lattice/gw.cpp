@@ -363,13 +363,11 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
       }
     }
   }
-  
+
+  auto arr = mpi_view(kmesh);  
   #pragma omp parallel for shared(sigma_fk)
-  for (int kidx = 0; kidx < kmesh.size(); kidx++) {
-  
-    auto k_iter = kmesh.begin();
-    k_iter += kidx;
-    auto k = *k_iter;
+  for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
+    auto k = arr(kidx);
 
     for (auto const &q : kmesh) {
     
@@ -402,6 +400,7 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
     }
   } 
 
+  sigma_fk = mpi::all_reduce(sigma_fk);
   return sigma_fk;
 }
 
