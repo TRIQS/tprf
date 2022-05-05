@@ -38,13 +38,6 @@ namespace triqs_tprf {
           \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
 
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-    
-    .. math::
-        W_{abcd}(i\omega_n, \mathbf{k}) = 
-            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(\mathbf{k})
-
     @param PI_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
     @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
@@ -64,13 +57,6 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
 	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
           \Pi_{fegh}(\omega, \mathbf{k}) \cdot
           W^{(full)}_{hgcd}(\omega, \mathbf{k})
-
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-    
-    .. math::
-        W_{abcd}(\omega, \mathbf{k}) = 
-            W^{(full)}_{abcd}(\omega, \mathbf{k}) - V_{abcd}(\mathbf{k})
 
     @param PI_fk polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
     @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
@@ -92,13 +78,6 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k);
           \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
 
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-    
-    .. math::
-        W_{abcd}(i\omega_n, \mathbf{k}) = 
-            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(i\omega_n, \mathbf{k})
-
     @param PI_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
     @param V_wk bare interaction :math:`V_{abcd}(i\omega_n, \mathbf{k})`
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
@@ -118,13 +97,6 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk);
 	  \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
           \Pi_{fegh}(\omega, \mathbf{k}) \cdot
           W^{(full)}_{hgcd}(\omega, \mathbf{k})
-
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-    
-    .. math::
-        W_{abcd}(\omega, \mathbf{k}) = 
-            W^{(full)}_{abcd}(\omega, \mathbf{k}) - V_{abcd}(\omega, \mathbf{k})
 
     @param PI_fk polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
     @param V_fk bare interaction :math:`V_{abcd}(\omega, \mathbf{k})`
@@ -146,13 +118,6 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk);
 	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
           \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           V_{hgcd}(\mathbf{k})
-
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-    
-    .. math::
-        W_{abcd}(i\omega_n, \mathbf{k}) = 
-            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(\mathbf{k})
 
     @param chi_wk polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
     @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`

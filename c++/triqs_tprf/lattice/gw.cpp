@@ -55,7 +55,7 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
     auto PI = make_matrix_view(group_indices_view(PI_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto W  = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    W = V * inverse(I - PI * V) - V;
+    W = V * inverse(I - PI * V);
 
     W_wk[w, k] = W_arr;
   }
@@ -90,7 +90,7 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k) {
     auto PI = make_matrix_view(group_indices_view(PI_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto W  = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    W = V * inverse(I - PI * V) - V;
+    W = V * inverse(I - PI * V);
 
     W_fk[f, k] = W_arr;
   }
@@ -125,7 +125,7 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk) {
     auto PI = make_matrix_view(group_indices_view(PI_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto W  = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    W = V * inverse(I - PI * V) - V;
+    W = V * inverse(I - PI * V);
 
     W_wk[w, k] = W_arr;
   }
@@ -160,7 +160,7 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk) {
     auto PI = make_matrix_view(group_indices_view(PI_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto W  = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    W = V * inverse(I - PI * V) - V;
+    W = V * inverse(I - PI * V);
 
     W_fk[f, k] = W_arr;
   }
@@ -195,7 +195,7 @@ chi_wk_t dynamical_screened_interaction_W_wk_from_generalized_susceptibility(chi
     auto chi = make_matrix_view(group_indices_view(chi_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto W   = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    W = V * chi * V;
+    W = V * chi * V + V;
     W_wk[w, k] = W_arr;
   }
 

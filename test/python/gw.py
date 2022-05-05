@@ -63,11 +63,11 @@ def test_gw_sigma_functions():
     PI_wk = bubble_PI_wk(g0_wk)
     
     print('--> dynamical_screened_interaction_W')
-    Wr_dyn_wk = dynamical_screened_interaction_W(PI_wk, V_k)
+    Wr_full_wk = dynamical_screened_interaction_W(PI_wk, V_k)
     
-    Wr_full_wk = Gf(mesh=Wr_dyn_wk.mesh, target_shape=[norb]*4)
+    Wr_dyn_wk = Gf(mesh=Wr_full_wk.mesh, target_shape=[norb]*4)
     for w in Wr_full_wk.mesh.components[0]:
-        Wr_full_wk[w,:] = Wr_dyn_wk[w,:] + V_k
+        Wr_dyn_wk[w,:] = Wr_full_wk[w,:] - V_k
     
     print('--> gw_sigma')
     sigma_wk = gw_sigma(Wr_full_wk, g0_wk)

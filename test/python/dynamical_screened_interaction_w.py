@@ -69,12 +69,12 @@ def test_dynamical_screening_functions_single_orbital():
     Wr_wk_ref = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=V_k.target_shape)
     for w in wmesh:
         wi = w.linear_index
-        Wr_wk_ref.data[wi,:] = V_k.data[:] / (1.0 - PI_wk.data[wi,:] * V_k.data[:]) - V_k.data[:]
+        Wr_wk_ref.data[wi,:] = V_k.data[:] / (1.0 - PI_wk.data[wi,:] * V_k.data[:])
     
     Wr_fk_ref = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=V_k.target_shape)
     for f in fmesh:
         fi = f.linear_index
-        Wr_fk_ref.data[fi,:] = V_k.data[:] / (1.0 - PI_fk.data[fi,:] * V_k.data[:]) - V_k.data[:]
+        Wr_fk_ref.data[fi,:] = V_k.data[:] / (1.0 - PI_fk.data[fi,:] * V_k.data[:])
     
     
     print('--> screened_interaction_W (Matsubara, static)')
@@ -159,12 +159,12 @@ def test_dynamical_screening_functions_multiple_orbitals():
     Wr_wk_ref = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=V_k.target_shape)
     for w in wmesh:
         wi = w.linear_index
-        Wr_wk_ref.data[wi,:] = V_k.data[:] / (1.0 - PI_wk.data[wi,:] * V_k.data[:]) - V_k.data[:]
+        Wr_wk_ref.data[wi,:] = V_k.data[:] / (1.0 - PI_wk.data[wi,:] * V_k.data[:])
     
     Wr_fk_ref = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=V_k.target_shape)
     for f in fmesh:
         fi = f.linear_index
-        Wr_fk_ref.data[fi,:] = V_k.data[:] / (1.0 - PI_fk.data[fi,:] * V_k.data[:]) - V_k.data[:]
+        Wr_fk_ref.data[fi,:] = V_k.data[:] / (1.0 - PI_fk.data[fi,:] * V_k.data[:])
     
     
     print('--> screened_interaction_W (Matsubara, static)')
