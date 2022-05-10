@@ -198,7 +198,7 @@ Returns
 out
      real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00_wk (triqs_tprf::e_k_cvt e_k, int nw, double beta, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::imfreq> wmesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
    in the particle-hole channel. The analytic expression is obtained using residue calculus
@@ -263,7 +263,7 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00_wk (triqs_
       poles are non-degenerate. The degenerate case produces an additional frequency independent
       contribution (the last term on the last row).""")
 
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00_fk (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies.
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies.
    ...
    .. note::
       ...""")

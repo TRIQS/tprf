@@ -9,7 +9,7 @@ from triqs_tprf.tight_binding import TBLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_fk
 from triqs_tprf.lattice import lattice_dyson_g_fk
-from triqs_tprf.lattice import lindhard_chi00_fk
+from triqs_tprf.lattice import lindhard_chi00
 from triqs_tprf.lattice import g0w_sigma
 from triqs_tprf.gw import dynamical_screened_interaction_W
 
@@ -55,7 +55,7 @@ def test_gw_self_energy_real_freq():
     V_fk.data[:] = V
     
     print('--> pi_bubble')
-    PI_fk = lindhard_chi00_fk(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
+    PI_fk = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
     
     print('--> screened_interaction_W')
     Wr_fk = dynamical_screened_interaction_W(PI_fk, V_k) 

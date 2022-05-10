@@ -8,7 +8,7 @@ import numpy as np
 
 from triqs_tprf.tight_binding import TBLattice
 
-from triqs_tprf.lattice import lindhard_chi00_wk, lindhard_chi00_fk
+from triqs_tprf.lattice import lindhard_chi00
 
 
 from triqs_tprf.gw import dynamical_screened_interaction_W
@@ -62,8 +62,8 @@ def test_dynamical_screening_functions_single_orbital():
     
     
     print('--> pi_bubble')
-    PI_wk = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
-    PI_fk = lindhard_chi00_fk(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
+    PI_wk = lindhard_chi00(e_k=e_k, wmesh=wmesh, mu=mu)
+    PI_fk = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
 
     print('--> reference screened_interaction_W')
     Wr_wk_ref = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=V_k.target_shape)
@@ -141,14 +141,14 @@ def test_dynamical_screening_functions_multiple_orbitals():
     
     
     print('--> pi_bubble')
-    PI_wk = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
+    PI_wk = lindhard_chi00(e_k=e_k, wmesh=wmesh, mu=mu)
     PI_wk.data[:] = 0.0
     PI_wk.data[:,:,0,0,0,0] = -5.0
     PI_wk.data[:,:,1,0,1,0] = -2.0
     PI_wk.data[:,:,0,1,0,1] = -23.0
     PI_wk.data[:,:,1,1,1,1] = -12.0
     
-    PI_fk = lindhard_chi00_fk(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
+    PI_fk = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
     PI_fk.data[:] = 0.0
     PI_fk.data[:,:,0,0,0,0] = -5.0
     PI_fk.data[:,:,1,0,1,0] = -2.0

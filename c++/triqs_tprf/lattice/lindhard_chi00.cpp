@@ -36,29 +36,25 @@ double fermiGauss(double e) { return 0.5 * erfc(e); }
 // ----------------------------------------------------
 // chi00 bubble in analytic form
 
-chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
-                          double beta, double mu) {
+chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> wmesh, double mu) {
 
+  if( wmesh.domain().statistic != Boson )
+    TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
+
+  auto beta = wmesh.domain().beta;
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
 
-  chi_wk_t chi_wk{{{beta, Boson, nw}, kmesh}, {nb, nb, nb, nb}};
+  chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
   for (auto const & [ w, k ] : chi_wk.mesh())
     chi_wk[w, k] = 0.;
 
-  auto wmesh = std::get<0>(chi_wk.mesh());
-
   auto arr = mpi_view(kmesh);
 
-  //for (auto const &k : kmesh) {
   for (int kidx = 0; kidx < arr.size(); kidx++) {
     auto k = arr(kidx);
 
-    //std::cout << "kidx, k = " << k.linear_index() << ", " << k << "\n";
-	
-    //for (auto const &q : kmesh) { // can not do range-based for loops with OpenMP
-
-#pragma omp parallel for 
+    #pragma omp parallel for 
     for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
       auto q_iter = kmesh.begin();
       q_iter += qidx;
@@ -114,8 +110,8 @@ chi_wk_t lindhard_chi00_wk(e_k_cvt e_k, int nw,
 // ----------------------------------------------------
 // chi00 bubble in analytic form in real frequencies
 
-chi_fk_t lindhard_chi00_fk(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta, 
-                           double mu, double delta) {
+chi_fk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta, 
+                        double mu, double delta) {
 
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];

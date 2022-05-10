@@ -5,7 +5,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshReFreq, Idx
+from triqs.gf import MeshImFreq, MeshReFreq, Idx
 
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from triqs_tprf.lattice import lattice_dyson_g0_fk
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.lattice import lindhard_chi00_fk, lindhard_chi00_wk
+from triqs_tprf.lattice import lindhard_chi00
 
 # ----------------------------------------------------------------------
 def test_square_lattice_chi00_realfreq():
@@ -76,7 +76,7 @@ def test_square_lattice_chi00_realfreq():
     # -- chi00 in real frequencies at w=0
     
     print('--> chi00_fk')
-    chi00_fk_analytic = lindhard_chi00_fk(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
+    chi00_fk_analytic = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
 
     f0_ind = len(fmesh)//2
     assert np.allclose( list(fmesh.values())[f0_ind], 0.0 )
@@ -86,7 +86,8 @@ def test_square_lattice_chi00_realfreq():
     # -- chi00 in Matsubara frequencies at iw=0
   
     print('--> chi00_wk')
-    chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
+    wmesh_bose = MeshImFreq(beta, "Boson", nw)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, wmesh=wmesh_bose, mu=mu)
 
     wmesh = chi00_wk_analytic.mesh.components[0]
     w0_ind = len(wmesh)//2

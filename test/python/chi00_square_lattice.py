@@ -24,7 +24,7 @@ from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
 from triqs_tprf.lattice import chi_wr_from_chi_wk
 
-from triqs_tprf.lattice import lindhard_chi00_wk
+from triqs_tprf.lattice import lindhard_chi00
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 # ----------------------------------------------------------------------
@@ -84,6 +84,7 @@ def test_square_lattice_chi00():
     e_k = t_r.fourier(kmesh)
 
     wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
+    wmesh_bose = MeshImFreq(beta=beta, S='Boson', n_max=nw)
 
     print('--> g0_wk')
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
@@ -98,7 +99,7 @@ def test_square_lattice_chi00():
     # -- anaytic chi00
     
     print('--> chi00_wk analytic')
-    chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=nw, beta=beta, mu=mu)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, wmesh=wmesh_bose, mu=mu)
 
     print('--> chi00_wr analytic')
     chi00_wr_analytic = chi_wr_from_chi_wk(chi00_wk_analytic)
