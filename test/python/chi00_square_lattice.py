@@ -99,7 +99,7 @@ def test_square_lattice_chi00():
     # -- anaytic chi00
     
     print('--> chi00_wk analytic')
-    chi00_wk_analytic = lindhard_chi00(e_k=e_k, wmesh=wmesh_bose, mu=mu)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, mesh=wmesh_bose, mu=mu)
 
     print('--> chi00_wr analytic')
     chi00_wr_analytic = chi_wr_from_chi_wk(chi00_wk_analytic)

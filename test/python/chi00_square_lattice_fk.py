@@ -87,7 +87,7 @@ def test_square_lattice_chi00_realfreq():
   
     print('--> chi00_wk')
     wmesh_bose = MeshImFreq(beta, "Boson", nw)
-    chi00_wk_analytic = lindhard_chi00(e_k=e_k, wmesh=wmesh_bose, mu=mu)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, mesh=wmesh_bose, mu=mu)
 
     wmesh = chi00_wk_analytic.mesh.components[0]
     w0_ind = len(wmesh)//2

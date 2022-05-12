@@ -36,11 +36,12 @@ double fermiGauss(double e) { return 0.5 * erfc(e); }
 // ----------------------------------------------------
 // chi00 bubble in analytic form
 
-chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> wmesh, double mu) {
+chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> mesh, double mu) {
 
-  if( wmesh.domain().statistic != Boson )
+  if( mesh.domain().statistic != Boson )
     TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
 
+  auto wmesh = mesh;
   auto beta = wmesh.domain().beta;
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
@@ -113,12 +114,11 @@ chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> wmesh, double mu) {
 chi_fk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta, 
                         double mu, double delta) {
 
+  auto fmesh = mesh;
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
 
   chi_fk_t chi_fk{{mesh, kmesh}, {nb, nb, nb, nb}};
-  
-  auto fmesh = std::get<0>(chi_fk.mesh());
   
   for (auto const & [ f, k ] : chi_fk.mesh())
     chi_fk[f, k] = 0.;

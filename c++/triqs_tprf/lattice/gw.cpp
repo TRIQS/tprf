@@ -341,9 +341,10 @@ double bose2(double e)  { return 1. / (exp(e) - 1.); }
 // gw_sigma_fk_g0w0_spectral
 
 g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, 
-                 gf_mesh<refreq> fmesh, chi_fk_cvt W_fk, 
+                 gf_mesh<refreq> mesh, chi_fk_cvt W_fk, 
                  chi_k_cvt v_k, double delta) {
 
+  auto fmesh = mesh;
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
   

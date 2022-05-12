@@ -62,7 +62,7 @@ def test_dynamical_screening_functions_single_orbital():
     
     
     print('--> pi_bubble')
-    PI_wk = lindhard_chi00(e_k=e_k, wmesh=wmesh, mu=mu)
+    PI_wk = lindhard_chi00(e_k=e_k, mesh=wmesh, mu=mu)
     PI_fk = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
 
     print('--> reference screened_interaction_W')
@@ -141,7 +141,7 @@ def test_dynamical_screening_functions_multiple_orbitals():
     
     
     print('--> pi_bubble')
-    PI_wk = lindhard_chi00(e_k=e_k, wmesh=wmesh, mu=mu)
+    PI_wk = lindhard_chi00(e_k=e_k, mesh=wmesh, mu=mu)
     PI_wk.data[:] = 0.0
     PI_wk.data[:,:,0,0,0,0] = -5.0
     PI_wk.data[:,:,1,0,1,0] = -2.0

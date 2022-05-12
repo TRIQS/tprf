@@ -297,7 +297,7 @@ if __name__ == '__main__':
 
     print('--> lindhard_chi00')
     wmesh = MeshImFreq(beta, "Boson", 1)
-    chi00_wk_analytic = lindhard_chi00(e_k=e_k, wmesh=wmesh, mu=mu)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, mesh=wmesh, mu=mu)
     print('chi0_q0_analytic =\n', chi00_wk_analytic[
         Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 

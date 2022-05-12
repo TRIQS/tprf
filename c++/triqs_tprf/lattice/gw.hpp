@@ -248,7 +248,7 @@ g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
     @param mu chemical potential :math:`\mu`
     @param beta inverse temperature
     @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param fmesh real frequency mesh
+    @param mesh real frequency mesh
     @param W_fk fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
     @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
     @param delta broadening :math:`\delta`
