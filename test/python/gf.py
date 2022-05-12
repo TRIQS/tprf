@@ -9,8 +9,8 @@ from triqs_tprf.tight_binding import TBLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk, lattice_dyson_g0_fk
 from triqs_tprf.lattice import lattice_dyson_g_wk, lattice_dyson_g_fk
-from triqs_tprf.lattice import lindhard_chi00
 
+from triqs_tprf.gw import lindhard_chi00
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma
@@ -54,7 +54,6 @@ def test_gf_Matsubara():
     g0_wk_ref = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=[norb]*2)
     for w in wmesh:
         for k in kmesh:
-            #g0_wk_ref[w,k] = 1.0 / (w.value - e_k[k] + mu)
             g0_wk_ref[w,k] = np.linalg.inv( (w.value + mu)*np.eye(norb) - e_k[k] )
 
     np.testing.assert_array_almost_equal(g0_wk.data[:], g0_wk_ref.data[:])
@@ -72,7 +71,6 @@ def test_gf_Matsubara():
     g_wk_ref = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=[norb]*2)
     for w in wmesh:
         for k in kmesh:
-            #g_wk_ref[w,k] = 1.0 / (w.value - e_k[k] + mu - sigma_wk[w,k])
             g_wk_ref[w,k] = np.linalg.inv( (w.value + mu)*np.eye(norb) - e_k[k] - sigma_wk[w,k] )
     
     np.testing.assert_array_almost_equal(g_wk.data[:], g_wk_ref.data[:])

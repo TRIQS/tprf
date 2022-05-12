@@ -67,7 +67,8 @@ def test_gw_sigma_functions():
     
     Wr_dyn_wk = Gf(mesh=Wr_full_wk.mesh, target_shape=[norb]*4)
     for w in Wr_full_wk.mesh.components[0]:
-        Wr_dyn_wk[w,:] = Wr_full_wk[w,:] - V_k
+        iw = w.linear_index
+        Wr_dyn_wk.data[iw,:] = Wr_full_wk.data[iw,:] - V_k.data[:]
     
     print('--> gw_sigma')
     sigma_wk = gw_sigma(Wr_full_wk, g0_wk)
@@ -75,9 +76,11 @@ def test_gw_sigma_functions():
     print('--> test static and dynamic parts')
     sigma_dyn_wk = gw_sigma(Wr_dyn_wk, g0_wk)
     sigma_stat_k = gw_sigma(V_k, g0_wk)
+
     sigma_wk_ref = Gf(mesh=sigma_dyn_wk.mesh, target_shape=sigma_dyn_wk.target_shape)
     for w in wmesh:
-        sigma_wk_ref[w,:].data[:] = sigma_dyn_wk[w,:].data[:] + sigma_stat_k.data[:]
+        iw = w.linear_index
+        sigma_wk_ref.data[iw,:] = sigma_dyn_wk.data[iw,:] + sigma_stat_k.data[:]
  
     diff = sigma_wk.data[:] - sigma_wk_ref.data[:]
     print(np.max(np.abs(np.real(diff))))
