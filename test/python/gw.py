@@ -108,8 +108,15 @@ def test_gw_sigma_functions():
     print('--> g0w_sigma') 
     sigma_k = gw_sigma(V_k, g0_wk)
     sigma_k_ref = g0w_sigma(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
-    np.testing.assert_array_almost_equal(sigma_k.data[:], 
-        sigma_k_ref.data[:], decimal=4)
+
+    diff = sigma_k.data[:] - sigma_k_ref.data[:]
+    print(np.max(np.abs(np.real(diff))))
+    print(np.max(np.abs(np.imag(diff))))
+
+    np.testing.assert_array_almost_equal(sigma_k.real.data[:], 
+        sigma_k_ref.real.data[:])
+    np.testing.assert_array_almost_equal(sigma_k.imag.data[:], 
+        sigma_k_ref.imag.data[:], decimal=3)
     
     print('--> lattice_dyson_g_wk')
     g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
