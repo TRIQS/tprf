@@ -14,6 +14,7 @@ set(all_tests
   chi00_square_lattice
   chi00_square_lattice_fk
   dynamical_screened_interaction_w
+  dynamical_screened_interaction_w_from_generalized_susceptibility
   chi0_save_memory
   chi0_nr_at_specific_w
   chi0_nk_at_specific_w

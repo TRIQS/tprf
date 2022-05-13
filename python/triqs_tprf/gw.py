@@ -43,7 +43,7 @@ from triqs_tprf.lattice import chi0_tr_from_grt_PH
 
 from triqs_tprf.lattice import dynamical_screened_interaction_W
 from triqs_tprf.lattice import \
-    dynamical_screened_interaction_W_wk_from_generalized_susceptibility
+    dynamical_screened_interaction_W_from_generalized_susceptibility
 
 from triqs_tprf.lattice import gw_sigma, g0w_sigma
 from triqs_tprf.lattice import lindhard_chi00
