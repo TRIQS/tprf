@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C triqs -C nda_py --includes="../../c++" --moduledoc="Lattice functionality" --cxxflags="-std=c++20"
+# c++2py ../../c++/triqs_tprf/lattice.hpp --members_read_only -N triqs_tprf -a triqs_tprf -m lattice -o lattice -C triqs -C nda_py --includes=../../c++ --moduledoc="Lattice functionality" --cxxflags="-std=c++20"
 from cpp2py.wrap_generator import *
 
 # The module
@@ -80,7 +80,36 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double delta)", doc = r"""ADD lattice_dyson_g0_fk DESCRIPTION""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, double delta)", doc = r"""Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
+
+  Computes
+
+  .. math::
+     G^{(0)}_{a\bar{b}}(\omega, \mathbf{k}) = \left[
+         (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
+	 \right]^{-1}_{a\bar{b}},
+
+  using a discretized dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, chemical potential :math:`\mu`,
+  broadening :math:`\delta`, and a real frequency Green's function mesh.
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+mesh
+     real frequency mesh
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g_wk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_wk_cvt sigma_wk)", doc = r"""Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
@@ -92,7 +121,7 @@ module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g_wk (double 
 	\right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`,
- chemical potential :math:`\mu`, and a momentum independent Matsubara frequency
+ chemical potential :math:`\mu`, and a Matsubara frequency
  self energy :math:`\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})`.
 
 Parameters
@@ -111,7 +140,37 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g_fk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_fk_cvt sigma_fk, double delta)", doc = r"""ADD lattice_dyson_g_fk DESCRIPTION""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g_fk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_fk_cvt sigma_fk, double delta)", doc = r"""Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+
+ Computes
+
+ .. math::
+    G_{a\bar{b}}(\omega, \mathbf{k}) = \left[
+        (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega, \mathbf{k})
+	\right]^{-1}_{a\bar{b}},
+
+ using a discretized dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`,
+ chemical potential :math:`\mu`, broadening :math:`\delta`, and a real frequency
+ self energy :math:`\Sigma_{\bar{a}b}(\omega, \mathbf{k})`.
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+sigma_fk
+     real frequency self-energy :math:`\Sigma_{\bar{a}b}(\omega, \mathbf{k})`
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_w_t triqs_tprf::lattice_dyson_g_w (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w)", doc = r"""Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
 
@@ -198,75 +257,137 @@ Returns
 out
      real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::imfreq> mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::imfreq> mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
-   Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
-   in the particle-hole channel. The analytic expression is obtained using residue calculus
-   to explicitly evaluate the matsubara sum of the fourier transformed imaginary time
-   bubble product of two non-interacting single-particle Green's functions.
+    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
+    in the particle-hole channel. The analytic expression is obtained using residue calculus
+    to explicitly evaluate the matsubara sum of the fourier transformed imaginary time
+    bubble product of two non-interacting single-particle Green's functions.
 
-   .. math::
-      G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
-      \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
+    .. math::
+       G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
+       \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
 
-   The analytic evaluation of the bubble diagram gives
+    The analytic evaluation of the bubble diagram gives
 
-   .. math::
-        \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) \equiv
-        \mathcal{F} \left\{
-	  - G^{(0)}_{d\bar{a}}(\tau, \mathbf{r}) G^{(0)}_{b\bar{c}}(-\tau, -\mathbf{r})
-	\right\}
-        =
-	- \frac{1}{N_k} \sum_{\nu} \sum_{\mathbf{k}}
-          G^{(0)}_{d\bar{a}}(\nu, \mathbf{k})
-	  G^{(0)}_{b\bar{c}}(\nu + \omega, \mathbf{k} + \mathbf{q})
-	\\ =
-	- \frac{1}{N_k} \sum_{\nu} \sum_{\mathbf{k}}
-	  \left( \sum_{i}
-          U^\dagger_{di}(\mathbf{k}) \frac{1}{i\nu - \epsilon_{\mathbf{k}, i}} U_{i\bar{a}}(\mathbf{k})
-	  \right)
-	  \left( \sum_j
-	  U^\dagger_{bj}(\mathbf{k} + \mathbf{q})
-	  \frac{1}{i\nu + i\omega - \epsilon_{\mathbf{k} + \mathbf{q}, j}}
-	  U_{j\bar{c}}(\mathbf{k} + \mathbf{q})
-	  \right)
-	\\ =
-	\frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij}
-	  \left(
-	    [1 - \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}})]
-	    \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
-	         {i\omega_n + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}}
-	    +
-  	    \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}}
-	    \frac{\beta}{4 \cosh^2 (\beta \epsilon_{\mathbf{k}, i} / 2) }
-	  \right)
-	  \\ \times
-	  U_{i\bar{a}}(\mathbf{k}) U^\dagger_{di}(\mathbf{k})
-	  U_{j\bar{c}}(\mathbf{k} + \mathbf{q}) U^\dagger_{bj}(\mathbf{k} + \mathbf{q})
+    .. math::
+         \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) \equiv
+         \mathcal{F} \left\{
+           - G^{(0)}_{d\bar{a}}(\tau, \mathbf{r}) G^{(0)}_{b\bar{c}}(-\tau, -\mathbf{r})
+         \right\}
+         =
+         - \frac{1}{N_k} \sum_{\nu} \sum_{\mathbf{k}}
+           G^{(0)}_{d\bar{a}}(\nu, \mathbf{k})
+           G^{(0)}_{b\bar{c}}(\nu + \omega, \mathbf{k} + \mathbf{q})
+         \\ =
+         - \frac{1}{N_k} \sum_{\nu} \sum_{\mathbf{k}}
+           \left( \sum_{i}
+           U^\dagger_{di}(\mathbf{k}) \frac{1}{i\nu - \epsilon_{\mathbf{k}, i}} U_{i\bar{a}}(\mathbf{k})
+           \right)
+           \left( \sum_j
+           U^\dagger_{bj}(\mathbf{k} + \mathbf{q})
+           \frac{1}{i\nu + i\omega - \epsilon_{\mathbf{k} + \mathbf{q}, j}}
+           U_{j\bar{c}}(\mathbf{k} + \mathbf{q})
+           \right)
+         \\ =
+         \frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij}
+           \left(
+             [1 - \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}})]
+             \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
+                  {i\omega_n + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}}
+             +
+   	    \delta_{0, \omega_n} \delta_{\epsilon_{\mathbf{k},i},\epsilon_{\mathbf{k}+\mathbf{q}, j}}
+             \frac{\beta}{4 \cosh^2 (\beta \epsilon_{\mathbf{k}, i} / 2) }
+           \right)
+           \\ \times
+           U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k})
+           U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
 
-   where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
-   dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
 
-   .. math::
-      \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
-      = \delta_{ij} \epsilon_{\mathbf{k}, i}
+Parameters
+----------
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
 
-   .. note::
-      The analytic formula is sub-optimal in terms of performance for higher temperatures. The evaluation
-      scales as :math:`\mathcal{O}(N_k^2)` which is worse than computing the bubble explicitly in imaginary
-      time, with scaling :math:`\mathcal{O}(N_k N_\tau \log(N_k N_\tau)` for :math:`N_k \gg N_\tau`.
+mesh
+     bosonic Matsubara frequency mesh
 
-   .. note::
-      Care must be taken when evaluating the fermionic Matsubara frequency sum of the
-      product of two simple poles. By extending the sum to an integral over the complex
-      plane the standard expression for the Lindhard response is obtained when the
-      poles are non-degenerate. The degenerate case produces an additional frequency independent
-      contribution (the last term on the last row).""")
+mu
+     chemical potential :math:`\mu`
 
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies.
-   ...
-   .. note::
-      ...""")
+Returns
+-------
+out
+     generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`
+
+     .. math::
+     \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+     = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+     .. note::
+     The analytic formula is sub-optimal in terms of performance for higher temperatures. The evaluation
+     scales as :math:`\mathcal{O}(N_k^2)` which is worse than computing the bubble explicitly in imaginary
+     time, with scaling :math:`\mathcal{O}(N_k N_\tau \log(N_k N_\tau)` for :math:`N_k \gg N_\tau`.
+
+     .. note::
+     Care must be taken when evaluating the fermionic Matsubara frequency sum of the
+     product of two simple poles. By extending the sum to an integral over the complex
+     plane the standard expression for the Lindhard response is obtained when the
+     poles are non-degenerate. The degenerate case produces an additional frequency independent
+     contribution (the last term on the last row).""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
+
+    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
+    in the particle-hole channel in real frequencies. The analytic expression is obtained using
+    residue calculus to explicitly evaluate the matsubara sum of the fourier transformed imaginary
+    time bubble product of two non-interacting single-particle Green's functions.
+
+    .. math::
+       G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
+       \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
+
+    Analytic continuation of the evaluation of the bubble diagram gives
+
+    .. math::
+       \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) =
+       \frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij}
+              \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
+                   {\omega + i\delta + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}
+            \\ \times
+            U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k})
+            U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
+
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+Parameters
+----------
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+mesh
+     real frequency mesh
+
+beta
+     inverse temperature
+
+mu
+     chemical potential :math:`\mu`
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     real frequency generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_wk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
 
@@ -304,13 +425,6 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_intera
           \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
 
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-
-    .. math::
-        W_{abcd}(i\omega_n, \mathbf{k}) =
-            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(\mathbf{k})
-
 Parameters
 ----------
 PI_wk
@@ -324,9 +438,83 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Add documentation!""")
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_wk_cvt V_wk)", doc = r"""Add documentation!""")
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+Parameters
+----------
+PI_fk
+     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_wk_cvt V_wk)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
+    for dynamic momentum-dependent interactions :math:`V(i\omega_n, \mathbf{k})`.
+
+    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
+          V_{abcd}(i\omega_n, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
+          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
+
+Parameters
+----------
+PI_wk
+     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+
+V_wk
+     bare interaction :math:`V_{abcd}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
+    for dynamic momentum-dependent interactions :math:`V(\omega, \mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
+          V_{abcd}(\omega, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+Parameters
+----------
+PI_fk
+     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+
+V_fk
+     bare interaction :math:`V_{abcd}(\omega, \mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk_from_generalized_susceptibility (triqs_tprf::chi_wk_cvt chi_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
     for static momentum-dependent interactions :math:`V(\mathbf{k})` and
@@ -342,13 +530,6 @@ module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_intera
           \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
           V_{hgcd}(\mathbf{k})
 
-    Instead of returning :math:`W^{(full)}` we return the dynamical/retarded part
-    :math:`W^{(r)}` (with zero high-frequency offset)
-
-    .. math::
-        W_{abcd}(i\omega_n, \mathbf{k}) =
-            W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) - V_{abcd}(\mathbf{k})
-
 Parameters
 ----------
 chi_wk
@@ -362,38 +543,61 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
-    Fourier transforms the screened interaction and the single-particle
-    Green's function to imagiary time and real space.
+    Splits the interaction into a dynamic and a static part
+
+    .. math ::
+        W_{abcd}(i\omega_n, \mathbf{k}) =
+            W^{dyn}_{abcd}(i\omega_n, \mathbf{k})
+            + V_{abcd}(\mathbf{k})
+
+    by fitting the high-frequency tail.
+
+    Fourier transforms the dynamic part of the interaction and the
+    single-particle Green's function to imaginary time and real space.
 
     .. math::
         G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
 
     .. math::
-        W^{(r)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
-          \left\{ W^{(r)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+        W_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{dyn}_{abcd}(i\omega_n, \mathbf{k}) \right\}
 
     computes the GW self-energy as the product
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
     .. math::
-        \Sigma_{ab}(i\omega_n, \mathbf{k}) =
+        \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
+
+    The self-energy of the static part of the interaction is calculated
+    as the sum
+
+    .. math::
+        \Sigma^{stat}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+
+    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    single particle Green's function.
+
+    The total GW self-energy is given by
+
+    ,, math::
+        \Sigma_{ab}(i\omega_n, \mathbf{k}) =
+          \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k})
+          + \Sigma^{stat}_{ab}(\mathbf{k})
 
 Parameters
 ----------
-V_k
-     static bare interaction :math:`V_{abcd}(\mathbf{k})`
-
 W_wk
-     retarded screened interaction :math:`W^{(r)}_{abcd}(i\omega_n, \mathbf{k})`
+     interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
 
 g_wk
      single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
@@ -403,18 +607,42 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+
+    Computes the GW self-energy of a static interaction as the sum
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+
+    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    single particle Green's function.
+
+Parameters
+----------
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
 module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 
     Computes the GW self-energy as the product
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W^{(r)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
 Parameters
 ----------
 W_tr
-     retarded screened interaction :math:`W^{(r)}_{abcd}(\tau, \mathbf{r})`
+     interaction :math:`W_{abcd}(\tau, \mathbf{r})`
 
 g_tr
      single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`
@@ -424,26 +652,112 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r""" """)
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::gfs::refreq> mesh, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""""")
+    Computes the spectral function of the dynamic part of the screened interaction
 
+    .. math::
+        W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
+          \left( W_{abab}(\omega, \mathbf{k}) - V_{abab}(\mathbf{k}) \right)
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""""")
+    and constructs the GW self energy via the spectral representation
 
+    .. math::
+        \Sigma_{ab}(\omega, \mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
+          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+        + \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega^'}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
+          W^{(spec)}_{ab}(\omega^', \mathbf{q})
+          \frac{n_B(\omega^') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}
+          {\omega + i\delta + \omega^' - \epsilon_{\mathbf{k}+\mathbf{q}, l}) + \mu}
 
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+beta
+     inverse temperature
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+mesh
+     real frequency mesh
+
+W_fk
+     fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
+
+V_k
+     bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+
+    Computes the GW self-energy of a static interaction as the product
+
+    .. math::
+        \sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
+          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+beta
+     inverse temperature
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+V_k
+     bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product via summation
 
-     Computes the product
+     Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
      .. math::
-         \Delta^{(out)}_{\bar{a}\bar{b}}(\mathbf{k},i\nu) =  -\frac{1}{N_k \beta}\sum_{\mathbf{k}'} \sum_{i\nu'}
-         \Gamma_{A\bar{a}B\bar{b}}(\mathbf{k}-\mathbf{k}', i\nu - i\nu')
-         \\ \times
-         G_{A\bar{c}}(\mathbf{k}', i\nu')
-         \Delta_{\bar{c}\bar{d}}(\mathbf{k}', i\nu')
-         G_{B\bar{d}}(-\mathbf{k}', -i\nu')
+         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+         =
+         -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+         \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+         \\
+         \times
+         G_{c\bar{e}}(i\nu',\mathbf{k}')
+         G_{d\bar{f}}(-i\nu',-\mathbf{k}')
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+
+     by summation.
 
 Parameters
 ----------
@@ -1003,6 +1317,8 @@ module.add_function ("gf<prod<triqs::mesh::brzone, triqs::mesh::imfreq>, tensor_
 
 module.add_function ("gf<triqs::mesh::imfreq, tensor_valued<4>> triqs_tprf::chiq_sum_nu_q (triqs_tprf::chiq_t chiq)", doc = r"""""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::attatch_tri_vert(triqs_tprf::chi_nn_cvt L_wn, triqs_tprf::chi_kwnn_cvt chi_kwnn)", doc = r"""""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::attatch_tri_vert (triqs_tprf::chi_nn_cvt L_wn, triqs_tprf::chi_kwnn_cvt chi_kwnn)", doc = r"""""")
+
+
 
 module.generate_code()

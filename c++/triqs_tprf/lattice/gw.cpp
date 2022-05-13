@@ -212,7 +212,9 @@ std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt W_
   auto kmesh = std::get<1>(W_wk.mesh());
     
   chi_wk_t W_dyn_wk(W_wk.mesh(), W_wk.target_shape());
+  W_dyn_wk() = 0.0;
   chi_k_t W_const_k(kmesh, W_wk.target_shape());
+  W_const_k() = 0.0;
 
   for (auto const &k : kmesh) {
     auto Gamma_w = W_wk[_, k];
@@ -317,6 +319,7 @@ g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
 
   //Add dynamic and static parts
   g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
+  sigma_wk() = 0.0;
 
   auto arr = mpi_view(sigma_wk.mesh());
 #pragma omp parallel for
@@ -324,7 +327,7 @@ g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
     auto &[w, k] = arr(idx);
 
     for (const auto &[a, b] : sigma_wk.target_indices()) {
-      sigma_wk[w, k](a, b) += sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b);
+      sigma_wk[w, k](a, b) = sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b);
     }
   }
   sigma_wk = mpi::all_reduce(sigma_wk);
