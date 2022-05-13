@@ -104,8 +104,10 @@ e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk){
     auto k = arr(idx);
 
     for (auto const &q : kmesh) {
-      
-      auto dens = density(g_wk[_,k+q]);
+     
+      auto g_w = g_wk(_,k+q);
+      auto dens = density(g_w);
+
       for (const auto &[a, b] : sigma_k.target_indices()) {
         sigma_k[k](a, b) += - v_k[q](a, b, a, b) * dens(a,b) / kmesh.size();
       }
