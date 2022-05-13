@@ -71,7 +71,7 @@ g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
     TRIQS_RUNTIME_ERROR << "gw_sigma_tr: real-space meshes are not the same.\n";
   
   auto sigma_tr = make_gf(g_tr);
-  sigma_tr *= 0.;
+  sigma_tr() = 0.0;
 
   auto arr = mpi_view(g_tr.mesh());
 #pragma omp parallel for
@@ -96,7 +96,8 @@ e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk){
   auto kmesh = std::get<1>(g_wk.mesh());
 
   e_k_t sigma_k(kmesh, g_wk.target_shape());
-  
+  sigma_k() = 0.0;
+
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
@@ -104,10 +105,9 @@ e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk){
 
     for (auto const &q : kmesh) {
       
-      auto density = triqs::gfs::density(g_wk[_,k+q]);
-
+      auto dens = density(g_wk[_,k+q]);
       for (const auto &[a, b] : sigma_k.target_indices()) {
-        sigma_k[k](a, b) += - v_k[q](a, b, a, b) * density(a,b) / kmesh.size();
+        sigma_k[k](a, b) += - v_k[q](a, b, a, b) * dens(a,b) / kmesh.size();
       }
     }
   }
@@ -178,12 +178,11 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
   std::complex<double> idelta(0.0, delta);
   
   g_fk_t sigma_fk({fmesh, kmesh}, e_k.target_shape());
-  
-  for (auto const & [ f, k ] : sigma_fk.mesh())
-    sigma_fk[f, k] = 0.;
- 
+  sigma_fk() = 0.0;
+
   g_fk_t WSpec_fk({fmesh, kmesh}, e_k.target_shape());
- 
+  WSpec_fk() = 0.0;
+
   for (auto const & [ f, k ] : WSpec_fk.mesh()) {
     for (int i : range(nb)) {
       for (int j : range(nb)) {
@@ -240,10 +239,8 @@ e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
   int nb = e_k.target().shape()[0];
 
   e_k_t sigma_k(kmesh, e_k.target_shape());
+  sigma_k() = 0.0;
 
-  for (auto const &k : sigma_k.mesh())
-    sigma_k[k] = 0.; 
- 
   auto arr = mpi_view(kmesh);
   #pragma omp parallel for
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
