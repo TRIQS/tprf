@@ -412,137 +412,6 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
-    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
-
-    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
-    is given by
-
-    .. math::
-        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
-          V_{abcd}(\mathbf{k}) +
-	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
-          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
-          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
-
-Parameters
-----------
-PI_wk
-     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
-
-V_k
-     static interaction :math:`V_{abcd}(\mathbf{k})`
-
-Returns
--------
-out
-     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
-    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
-
-    The full screened interaction :math:`W(\omega, \mathbf{k})`
-    is given by
-
-    .. math::
-        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
-          V_{abcd}(\mathbf{k}) +
-	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
-          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
-          W^{(full)}_{hgcd}(\omega, \mathbf{k})
-
-Parameters
-----------
-PI_fk
-     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
-
-V_k
-     static interaction :math:`V_{abcd}(\mathbf{k})`
-
-Returns
--------
-out
-     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_wk_cvt V_wk)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
-    for dynamic momentum-dependent interactions :math:`V(i\omega_n, \mathbf{k})`.
-
-    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
-    is given by
-
-    .. math::
-        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
-          V_{abcd}(i\omega_n, \mathbf{k}) +
-	  \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
-          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
-          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
-
-Parameters
-----------
-PI_wk
-     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
-
-V_wk
-     bare interaction :math:`V_{abcd}(i\omega_n, \mathbf{k})`
-
-Returns
--------
-out
-     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
-    for dynamic momentum-dependent interactions :math:`V(\omega, \mathbf{k})`.
-
-    The full screened interaction :math:`W(\omega, \mathbf{k})`
-    is given by
-
-    .. math::
-        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
-          V_{abcd}(\omega, \mathbf{k}) +
-	  \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
-          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
-          W^{(full)}_{hgcd}(\omega, \mathbf{k})
-
-Parameters
-----------
-PI_fk
-     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
-
-V_fk
-     bare interaction :math:`V_{abcd}(\omega, \mathbf{k})`
-
-Returns
--------
-out
-     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk_from_generalized_susceptibility (triqs_tprf::chi_wk_cvt chi_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
-    for static momentum-dependent interactions :math:`V(\mathbf{k})` and
-    known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
-
-    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
-    is given by
-
-    .. math::
-        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
-          V_{abcd}(\mathbf{k}) +
-	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
-          \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
-          V_{hgcd}(\mathbf{k})
-
-Parameters
-----------
-chi_wk
-     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
-
-V_k
-     static interaction :math:`V_{abcd}(\mathbf{k})`
-
-Returns
--------
-out
-     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
-
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
@@ -741,6 +610,137 @@ Returns
 -------
 out
      static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
+
+Parameters
+----------
+PI_wk
+     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
+    for static momentum-dependent interactions :math:`V(\mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+Parameters
+----------
+PI_fk
+     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_wk_cvt V_wk)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
+    for dynamic momentum-dependent interactions :math:`V(i\omega_n, \mathbf{k})`.
+
+    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
+          V_{abcd}(i\omega_n, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
+          \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
+
+Parameters
+----------
+PI_wk
+     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+
+V_wk
+     bare interaction :math:`V_{abcd}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator
+    for dynamic momentum-dependent interactions :math:`V(\omega, \mathbf{k})`.
+
+    The full screened interaction :math:`W(\omega, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(\omega, \mathbf{k}) =
+          V_{abcd}(\omega, \mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
+          \Pi_{fegh}(\omega, \mathbf{k}) \cdot
+          W^{(full)}_{hgcd}(\omega, \mathbf{k})
+
+Parameters
+----------
+PI_fk
+     polarization bubble :math:`\Pi_{abcd}(\omega, \mathbf{k})`
+
+V_fk
+     bare interaction :math:`V_{abcd}(\omega, \mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W_wk_from_generalized_susceptibility (triqs_tprf::chi_wk_cvt chi_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator
+    for static momentum-dependent interactions :math:`V(\mathbf{k})` and
+    known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
+
+    The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
+    is given by
+
+    .. math::
+        W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) =
+          V_{abcd}(\mathbf{k}) +
+	  \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+          \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
+          V_{hgcd}(\mathbf{k})
+
+Parameters
+----------
+chi_wk
+     polarization bubble :math:`\Pi_{abcd}(i\omega_n, \mathbf{k})`
+
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""Linearized Eliashberg product via summation
 

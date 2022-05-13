@@ -26,6 +26,7 @@
 #include "./lattice/lindhard_chi00.hpp"
 #include "./lattice/rpa.hpp"
 #include "./lattice/gw.hpp"
+#include "./lattice/dynamical_screened_interaction.hpp"
 #include "./lattice/eliashberg.hpp"
 #include "./lattice/fourier_interpolation.hpp"
 
