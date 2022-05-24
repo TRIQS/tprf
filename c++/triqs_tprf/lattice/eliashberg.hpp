@@ -148,14 +148,6 @@ namespace triqs_tprf {
   g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk);
 
 
-  /** Split Gamma in dynamic and constant part by tail fitting
-
-  @param Gamma_pp : particle-particle pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. 
-  @return Tuple of Gamma_pp_dyn_wk, the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, and Gamma_pp_const_k, the part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
-  */
-  std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp);
-
-
   /** Fourier transform Gamma parts to imaginary time and real-space  
   
   @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.

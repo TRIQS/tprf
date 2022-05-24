@@ -25,36 +25,10 @@
 
 #include "gw.hpp"
 #include "common.hpp"
+#include "lattice_utility.hpp"
 #include "../mpi.hpp"
 
 namespace triqs_tprf {
-
-std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt W_wk) {
-
-  auto _ = all_t{};
-  auto wmesh = std::get<0>(W_wk.mesh());
-  auto kmesh = std::get<1>(W_wk.mesh());
-    
-  chi_wk_t W_dyn_wk(W_wk.mesh(), W_wk.target_shape());
-  W_dyn_wk() = 0.0;
-  chi_k_t W_const_k(kmesh, W_wk.target_shape());
-  W_const_k() = 0.0;
-
-  for (auto const &k : kmesh) {
-    auto Gamma_w = W_wk[_, k];
-    auto tail = std::get<0>(fit_tail(Gamma_w));
-
-    for (auto [a, b, c, d] : W_wk.target_indices())
-      W_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
-
-    for (auto const &w : wmesh) 
-      W_dyn_wk[w, k] = W_wk[w, k] - W_const_k[k];
-  }
-
-  return {W_dyn_wk, W_const_k};
-}
-
-
  
 g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
 
@@ -167,7 +141,7 @@ double fermi2(double e) { return 1. / (exp(e) + 1.); }
 double bose2(double e)  { return 1. / (exp(e) - 1.); }
 
 // ----------------------------------------------------
-// gw_sigma_fk_g0w0_spectral
+// g0w_sigma via spectral representation
 
 g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, 
                  gf_mesh<refreq> mesh, chi_fk_cvt W_fk, 
@@ -232,9 +206,6 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
   sigma_fk = mpi::all_reduce(sigma_fk);
   return sigma_fk;
 }
-
-// ----------------------------------------------------
-// gw_sigma_k_g0w0
 
 e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
   auto kmesh = e_k.mesh();

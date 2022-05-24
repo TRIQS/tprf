@@ -65,24 +65,7 @@ def test_gw_sigma_functions():
     
     print('--> dynamical_screened_interaction_W')
     Wr_full_wk = dynamical_screened_interaction_W(PI_wk, V_k)
-
     Wr_dyn_wk, Wr_stat_k = split_into_dynamic_wk_and_constant_k(Wr_full_wk)
-
-    Wr_dyn_wk_ref = Gf(mesh=Wr_full_wk.mesh, target_shape=[norb]*4)
-    for w in Wr_full_wk.mesh.components[0]:
-        iw = w.linear_index
-        Wr_dyn_wk_ref.data[iw,:] = Wr_full_wk.data[iw,:] - V_k.data[:]
-  
-
-    diff = Wr_dyn_wk.data[:] - Wr_dyn_wk_ref.data[:]
-    print(np.max(np.abs(np.real(diff))))
-    print(np.max(np.abs(np.imag(diff))))
-    np.testing.assert_array_almost_equal(Wr_dyn_wk.data[:], Wr_dyn_wk_ref.data[:])
-    
-    diff = Wr_stat_k.data[:] - V_k.data[:]
-    print(np.max(np.abs(np.real(diff))))
-    print(np.max(np.abs(np.imag(diff))))
-    np.testing.assert_array_almost_equal(Wr_stat_k.data[:], V_k.data[:])
 
     print('--> gw_sigma')
     sigma_wk = gw_sigma(Wr_full_wk, g0_wk)

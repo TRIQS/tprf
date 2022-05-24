@@ -104,30 +104,6 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   return delta_wk_out;
 }
 
-std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp) {
-
-  auto _ = all_t{};
-  //auto [wmesh, kmesh] = Gamma_pp.mesh();
-  auto wmesh = std::get<0>(Gamma_pp.mesh());
-  auto kmesh = std::get<1>(Gamma_pp.mesh());
-    
-  // Fit infinite frequency value
-  auto Gamma_pp_dyn_wk = make_gf(Gamma_pp.mesh(), Gamma_pp.target());
-
-  auto Gamma_pp_const_k = make_gf(kmesh, Gamma_pp.target());
-
-  for (auto const &k : kmesh) {
-    auto Gamma_w = Gamma_pp[_, k];
-    auto tail = std::get<0>(fit_tail(Gamma_w));
-    for (auto [a, b, c, d] : Gamma_pp.target_indices())
-      Gamma_pp_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
-    for (auto const &w : wmesh) Gamma_pp_dyn_wk[w, k] = Gamma_pp[w, k] - Gamma_pp_const_k[k];
-  }
-
-    return {Gamma_pp_dyn_wk, Gamma_pp_const_k};
-
-}
-
 std::tuple<chi_tr_t, chi_r_t> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k) {
 
     auto Gamma_pp_dyn_wr = fourier_wk_to_wr_general_target(Gamma_pp_dyn_wk);
