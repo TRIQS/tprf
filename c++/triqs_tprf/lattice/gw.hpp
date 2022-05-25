@@ -51,7 +51,7 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          - \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
@@ -107,7 +107,7 @@ e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
 
     .. math::
         \Sigma_{ab}(\tau, \mathbf{r}) =
-          \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          - \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     @param W_tr interaction :math:`W_{abcd}(\tau, \mathbf{r})`
     @param g_tr single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`

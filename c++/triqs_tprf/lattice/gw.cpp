@@ -53,7 +53,7 @@ g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
     auto &[t, r] = arr(idx);
 
     for (const auto &[a, b, c, d] : W_tr.target_indices()) {
-      sigma_tr[t, r](a, b) += W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
+      sigma_tr[t, r](a, b) += - W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d);
     }
   }
 
