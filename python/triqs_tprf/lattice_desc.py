@@ -533,7 +533,7 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
     Computes the spectral function of the dynamic part of the screened interaction
 
@@ -570,9 +570,6 @@ beta
 
 e_k
      discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-
-mesh
-     real frequency mesh
 
 W_fk
      fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`

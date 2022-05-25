@@ -61,8 +61,7 @@ def test_gw_self_energy_real_freq():
     Wr_fk = dynamical_screened_interaction_W(PI_fk, V_k) 
     
     print('--> gw_self_energy')
-    sigma_fk = g0w_sigma(mu=mu, beta=beta, e_k=e_k, mesh=fmesh,
-        W_fk=Wr_fk, v_k=V_k, delta=delta)
+    sigma_fk = g0w_sigma(mu=mu, beta=beta, e_k=e_k, W_fk=Wr_fk, v_k=V_k, delta=delta)
     sigma_k = g0w_sigma(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
     
     # Check if sigma_fk and sigma_k are the same at w->inf

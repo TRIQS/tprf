@@ -144,10 +144,14 @@ double bose2(double e)  { return 1. / (exp(e) - 1.); }
 // g0w_sigma via spectral representation
 
 g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, 
-                 gf_mesh<refreq> mesh, chi_fk_cvt W_fk, 
-                 chi_k_cvt v_k, double delta) {
+                 chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
 
-  auto fmesh = mesh;
+  if( std::get<1>(W_fk.mesh()) != e_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
+  if( e_k.mesh() != v_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
+
+  auto fmesh = std::get<0>(W_fk.mesh());
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
   
@@ -183,22 +187,21 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
 
         for (auto const &f : fmesh) {
             
-              for (auto const &fp : fmesh) {
-              
-                auto num   = bose2(fp * beta) + fermi2(ekq(l) * beta);
-                auto den   = f + idelta + fp - ekq(l);
+          for (auto const &fp : fmesh) {
+          
+            auto num   = bose2(fp * beta) + fermi2(ekq(l) * beta);
+            auto den   = f + idelta + fp - ekq(l);
 
-                sigma_fk[f,k](a,b)
-                  << sigma_fk[f,k](a,b) + Ukq(l, a) * dagger(Ukq)(b, l) * \
-                      ( WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size() );
+            sigma_fk[f,k](a,b)
+              << sigma_fk[f,k](a,b) + Ukq(l, a) * dagger(Ukq)(b, l) * \
+                  ( WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size() );
 
-              }
-                
-              sigma_fk[f,k](a,b)
-                << sigma_fk[f,k](a,b) - Ukq(l, a) * dagger(Ukq)(b, l) * \
-                                        v_k[q](a, b, a, b) * fermi2(ekq(l) * beta) / kmesh.size();
+          }
             
-         }
+          sigma_fk[f,k](a,b)
+            << sigma_fk[f,k](a,b) - Ukq(l, a) * dagger(Ukq)(b, l) * \
+                                    v_k[q](a, b, a, b) * fermi2(ekq(l) * beta) / kmesh.size();
+        }
       }
     }
   } 
@@ -208,6 +211,10 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k,
 }
 
 e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
+  
+  if( e_k.mesh() != v_k.mesh() )
+    TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
+
   auto kmesh = e_k.mesh();
   int nb = e_k.target().shape()[0];
 

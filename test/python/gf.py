@@ -123,7 +123,7 @@ def test_gf_realfreq():
     V_k.data[:] = V
     PI_fk = lindhard_chi00(e_k=e_k, mesh=fmesh, beta=beta, mu=mu, delta=delta)
     W_fk = dynamical_screened_interaction_W(PI_fk, V_k)
-    sigma_fk = g0w_sigma(mu=mu, beta=beta, e_k=e_k, mesh=fmesh, W_fk=W_fk, v_k=V_k, delta=delta)
+    sigma_fk = g0w_sigma(mu=mu, beta=beta, e_k=e_k, W_fk=W_fk, v_k=V_k, delta=delta)
 
     # Test setup dressed Gf
     print("  -> dressed real-freq. Gf")

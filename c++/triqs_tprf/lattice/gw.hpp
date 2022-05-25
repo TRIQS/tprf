@@ -147,14 +147,13 @@ g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
     @param mu chemical potential :math:`\mu`
     @param beta inverse temperature
     @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param mesh real frequency mesh
     @param W_fk fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
     @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
     @param delta broadening :math:`\delta`
     @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
 */
 
-g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, gf_mesh<refreq> mesh, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
+g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
 
 /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
