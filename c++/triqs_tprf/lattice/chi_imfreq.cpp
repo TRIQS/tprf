@@ -73,8 +73,8 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
 
   double beta = std::get<0>(g_nr.mesh()).domain().beta;
 
-  auto wmesh = gf_mesh<imfreq>{beta, Boson, nw};
-  auto nmesh = gf_mesh<imfreq>{beta, Fermion, nn};
+  auto wmesh = mesh::imfreq{beta, Boson, nw};
+  auto nmesh = mesh::imfreq{beta, Fermion, nn};
 
   t_alloc.start();
   chi0r_t chi0_wnr{{wmesh, nmesh, rmesh}, {nb, nb, nb, nb}};
@@ -151,8 +151,8 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
   double beta = std::get<0>(g_nr.mesh()).domain().beta;
 
   // Create mesh were last point is the one desired 'nw_index'
-  auto wmesh_to_access = gf_mesh<imfreq>{beta, Boson, abs(nw_index)+1};
-  mesh_point<gf_mesh<imfreq>> w;
+  auto wmesh_to_access = mesh::imfreq{beta, Boson, abs(nw_index) + 1};
+  mesh_point<mesh::imfreq> w;
   if (nw_index >= 0)
   {
     w = wmesh_to_access[wmesh_to_access.last_index()];
@@ -162,8 +162,7 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
     w = wmesh_to_access[wmesh_to_access.first_index()];
   }
 
-  auto nmesh = gf_mesh<imfreq>{beta, Fermion, nn};
-
+  auto nmesh = mesh::imfreq{beta, Fermion, nn};
 
   chi_nr_t chi0_nr{{nmesh, rmesh}, {nb, nb, nb, nb}};
   chi0_nr *= 0.;
@@ -217,8 +216,8 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 
   double beta = std::get<0>(g_nr.mesh()).domain().beta;
 
-  auto wmesh = gf_mesh<imfreq>{beta, Boson, nw};
-  auto nmesh = gf_mesh<imfreq>{beta, Fermion, nn};
+  auto wmesh = mesh::imfreq{beta, Boson, nw};
+  auto nmesh = mesh::imfreq{beta, Fermion, nn};
 
   t_alloc.start();
   chi0r_t chi0_wnr{{wmesh, nmesh, rmesh}, {nb, nb, nb, nb}};
@@ -274,10 +273,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 // Helper function compiting chi0 for fixed bosonic frequency w and momentum q.
   
 CPP2PY_IGNORE
-gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
-                                                 mesh_point<cluster_mesh> q,
-                                                 gf_mesh<imfreq> fmesh,
-                                                 g_wk_cvt g_wk) {
+gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<mesh::imfreq> w, mesh_point<cluster_mesh> q, mesh::imfreq fmesh, g_wk_cvt g_wk) {
 
   int nb = g_wk.target().shape()[0];
   auto kmesh = std::get<1>(g_wk.mesh());
@@ -313,10 +309,8 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<gf_mesh<imfreq>> w,
 // using the self energy and the dispersion (instead of the greens function)
 
 CPP2PY_IGNORE
-gf<imfreq, tensor_valued<4>>
-chi0_n_from_e_k_sigma_w_PH(mesh_point<gf_mesh<imfreq>> w,
-                           mesh_point<cluster_mesh> q, gf_mesh<imfreq> fmesh,
-                           double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
+gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh_point<mesh::imfreq> w, mesh_point<cluster_mesh> q, mesh::imfreq fmesh, double mu,
+                                                        e_k_cvt e_k, g_w_cvt sigma_w) {
 
   int nb = e_k.target().shape()[0];
   auto kmesh = e_k.mesh();
@@ -358,8 +352,8 @@ chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
   int nb = g_wk.target().shape()[0];
   double beta = std::get<0>(g_wk.mesh()).domain().beta;
 
-  gf_mesh<imfreq> bmesh{beta, Boson, nw};
-  gf_mesh<imfreq> fmesh{beta, Fermion, nn};
+  mesh::imfreq bmesh{beta, Boson, nw};
+  mesh::imfreq fmesh{beta, Fermion, nn};
 
   chi0q_t chi0_wnk({bmesh, fmesh, kmesh}, {nb, nb, nb, nb});
 
@@ -855,9 +849,9 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
 
   int nb = gamma_ph_wnn.target_shape()[0];
 
-  gf_mesh<imfreq> fmesh_tail;
+  mesh::imfreq fmesh_tail;
   if (tail_corr_nwf > 0)
-    fmesh_tail = gf_mesh<imfreq>{beta, Fermion, tail_corr_nwf};
+    fmesh_tail = mesh::imfreq{beta, Fermion, tail_corr_nwf};
   else
     fmesh_tail = fmesh;
 
@@ -982,9 +976,9 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
 
   int nb = gamma_ph_wnn.target_shape()[0];
 
-  gf_mesh<imfreq> fmesh_tail;
+  mesh::imfreq fmesh_tail;
   if (tail_corr_nwf > 0)
-    fmesh_tail = gf_mesh<imfreq>{beta, Fermion, tail_corr_nwf};
+    fmesh_tail = mesh::imfreq{beta, Fermion, tail_corr_nwf};
   else
     fmesh_tail = fmesh;
 

@@ -39,12 +39,12 @@ namespace triqs_tprf {
 
 #ifdef TPRF_OMP
 
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
+  g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
 
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
-    
-  auto arr = mpi_view(g0_wk.mesh());
+    auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
+    g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
+
+    auto arr = mpi_view(g0_wk.mesh());
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
@@ -54,21 +54,20 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
   g0_wk = mpi::all_reduce(g0_wk);
   return g0_wk;
-}
+  }
 
 #else
-  
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
-  
-  for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
-      g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
+  g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
 
-  g0_wk = mpi::all_reduce(g0_wk);
-  return g0_wk;
-}
+    auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
+    g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
+
+    for (auto const &[w, k] : mpi_view(g0_wk.mesh())) g0_wk[w, k] = inverse((w + mu) * I - e_k(k));
+
+    g0_wk = mpi::all_reduce(g0_wk);
+    return g0_wk;
+  }
   
 #endif
 

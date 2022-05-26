@@ -253,9 +253,9 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   auto chi_wr = fourier_wk_to_wr_general_target(chi_wk);  
   return chi_wr;
-}  
-  
-  /*
+}
+
+/*
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 
   // auto target = chi_wr.target();
@@ -264,7 +264,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
   auto wmesh = std::get<0>(chi_wr.mesh());
   auto rmesh = std::get<1>(chi_wr.mesh());
 
-  auto kmesh = gf_mesh<brzone>{brillouin_zone{rmesh.domain()}, rmesh.periodization_matrix()};
+  auto kmesh = mesh::brzone{brillouin_zone{rmesh.domain()}, rmesh.periodization_matrix()};
   
   chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
 
@@ -282,7 +282,7 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   auto wmesh = std::get<0>(chi_wk.mesh());
   auto kmesh = std::get<1>(chi_wk.mesh());
 
-  auto rmesh = gf_mesh<cyclat>{bravais_lattice{kmesh.domain()}, kmesh.periodization_matrix()};
+  auto rmesh = mesh::cyclat{bravais_lattice{kmesh.domain()}, kmesh.periodization_matrix()};
   
   chi_wr_t chi_wr{{wmesh, rmesh}, {nb, nb, nb, nb}};
 
@@ -293,5 +293,5 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   return chi_wr;
 }
   */
-  
+
 } // namespace triqs_tprf

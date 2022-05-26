@@ -42,16 +42,16 @@ namespace triqs_tprf::fourier {
   template <typename V> using gf_vec_cvt = gf_const_view<V, tensor_valued<1>>;
 
   // matsubara
-  gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt, fourier_plan &p, array_const_view<dcomplex, 2> mom_23 = {});
-  gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw, fourier_plan &p, array_const_view<dcomplex, 2> mom_123 = {});
-  fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt);
-  fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw);
+  gf_vec_t<imfreq> _fourier_impl(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt, fourier_plan &p, array_const_view<dcomplex, 2> mom_23 = {});
+  gf_vec_t<imtime> _fourier_impl(mesh::imtime const &tau_mesh, gf_vec_cvt<imfreq> gw, fourier_plan &p, array_const_view<dcomplex, 2> mom_123 = {});
+  fourier_plan _fourier_plan(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt);
+  fourier_plan _fourier_plan(mesh::imtime const &tau_mesh, gf_vec_cvt<imfreq> gw);
 
   // lattice
-  gf_vec_t<cyclat> _fourier_impl(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brzone> gk, fourier_plan &p);
-  gf_vec_t<brzone> _fourier_impl(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan &p);
-  fourier_plan _fourier_plan(gf_mesh<cyclat> const &r_mesh, gf_vec_cvt<brzone> gk);
-  fourier_plan _fourier_plan(gf_mesh<brzone> const &k_mesh, gf_vec_cvt<cyclat> gr);
+  gf_vec_t<cyclat> _fourier_impl(mesh::cyclat const &r_mesh, gf_vec_cvt<brzone> gk, fourier_plan &p);
+  gf_vec_t<brzone> _fourier_impl(mesh::brzone const &k_mesh, gf_vec_cvt<cyclat> gr, fourier_plan &p);
+  fourier_plan _fourier_plan(mesh::cyclat const &r_mesh, gf_vec_cvt<brzone> gk);
+  fourier_plan _fourier_plan(mesh::brzone const &k_mesh, gf_vec_cvt<cyclat> gr);
 
   /*------------------------------------------------------------------------------------------------------
    *

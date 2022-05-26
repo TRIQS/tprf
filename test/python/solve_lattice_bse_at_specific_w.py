@@ -17,7 +17,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, Idx, MeshProduct, MeshBrillouinZone
+from triqs.gf import Gf, MeshImFreq, Idx, MeshProduct, MeshBrZone
 from triqs_tprf.utilities import create_g0_wk_for_test_model
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.bse import solve_lattice_bse, solve_lattice_bse_at_specific_w
@@ -59,8 +59,8 @@ def test_lattice_bse_at_specific_w_mesh_types(g0_wk, gamma_wnn, nw_index):
         g0_wk, gamma_wnn, nw_index=nw_index
     )
 
-    assert isinstance(chi_k_at_specific_w.mesh, MeshBrillouinZone)
-    assert isinstance(chi0_k_at_specific_w.mesh, MeshBrillouinZone)
+    assert isinstance(chi_k_at_specific_w.mesh, MeshBrZone)
+    assert isinstance(chi0_k_at_specific_w.mesh, MeshBrZone)
 
 
 if __name__ == "__main__":

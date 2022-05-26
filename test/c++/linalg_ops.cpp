@@ -65,8 +65,8 @@ template <Channel_t CH> void identity_product_impl() {
   double beta = 1.2345;
   int nwb = 4, nwf = 6, norb = 3;
 
-  gf_mesh<imfreq> fmesh{beta, Boson, nwb};
-  gf_mesh<imfreq> bmesh{beta, Fermion, nwf};
+  mesh::imfreq fmesh{beta, Boson, nwb};
+  mesh::imfreq bmesh{beta, Fermion, nwf};
   g2_iw_t A{{bmesh, fmesh, fmesh}, {norb, norb, norb, norb}};
 
   random_fill(A);
@@ -101,8 +101,8 @@ template <Channel_t CH> void inverse_product_impl() {
   double beta = 1.2345;
   int nwb = 4, nwf = 6, norb = 3;
 
-  gf_mesh<imfreq> fmesh{beta, Boson, nwb};
-  gf_mesh<imfreq> bmesh{beta, Fermion, nwf};
+  mesh::imfreq fmesh{beta, Boson, nwb};
+  mesh::imfreq bmesh{beta, Fermion, nwf};
   g2_iw_t A{{bmesh, fmesh, fmesh}, {norb, norb, norb, norb}};
 
   random_fill(A);
