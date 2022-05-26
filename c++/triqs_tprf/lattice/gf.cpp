@@ -33,7 +33,8 @@ namespace triqs_tprf {
   namespace {
     using namespace fourier;
   }
-  
+ 
+
 // ----------------------------------------------------
 // g
 
@@ -58,57 +59,68 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
 // ----------------------------------------------------
 
-g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
+template<typename sigma_t>
+auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
 
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  auto g_wk = make_gf(sigma_wk);
-  g_wk() = 0.0;
+  auto &freqmesh = [&sigma]() -> auto & {
+    if constexpr (sigma_t::arity == 1) return sigma.mesh();
+    else return std::get<0>(sigma.mesh());
+  }();
 
-  for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
-    g_wk[w, k] = inverse((w + mu)*I - e_k[k] - sigma_wk[w, k]);
-
-  g_wk = mpi::all_reduce(g_wk);
-  return g_wk;
-}
+  using scalar_t = e_k_cvt::scalar_t;
+  auto I = nda::eye<scalar_t>(e_k.target_shape()[0]);
   
-
-g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
-
-  auto mesh = sigma_w.mesh();
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g_wk({sigma_w.mesh(), e_k.mesh()}, e_k.target_shape());
+  g_wk_t g_wk({freqmesh, e_k.mesh()}, e_k.target_shape());
   g_wk() = 0.0;
 
   auto arr = mpi_view(g_wk.mesh());
-
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
-    g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
+
+    array<scalar_t, 2> sigmaterm;
+    if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
+    else sigmaterm = sigma[w, k];
+
+    g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigmaterm);
   }
 
   g_wk = mpi::all_reduce(g_wk);
   return g_wk;
+
+
+}
+
+
+
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
+  return lattice_dyson_g_generic(mu, e_k, sigma_wk);
+}
+  
+
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
+  return lattice_dyson_g_generic(mu, e_k, sigma_w);
 }
 
 
 g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
-  auto wmesh = sigma_w.mesh();
-  auto kmesh = e_k.mesh();
+  auto g_wk = lattice_dyson_g_generic(mu, e_k, sigma_w);
+  auto &wmesh = std::get<0>(g_wk.mesh());
+  auto &kmesh = std::get<1>(g_wk.mesh());
 
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_w_t g_w(wmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  auto wkmesh = gk_iw_t::mesh_t{{wmesh, kmesh}};
-  
-  for (auto const &[w, k] : mpi_view(wkmesh) ) 
-    g_w[w] += inverse((w + mu)*I - e_k(k) - sigma_w[w]);
+  auto arr = mpi_view(g_wk.mesh());
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr(idx);
+    g_w[w] += g_wk[w, k];
+  }
 
   g_w = mpi::all_reduce(g_w);
   g_w /= kmesh.size();
-
   return g_w;
 }
 
