@@ -37,8 +37,6 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // g
 
-#ifdef TPRF_OMP
-
 g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
@@ -56,21 +54,6 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
   return g0_wk;
 }
 
-#else
-  
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
-
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
-  
-  for (auto const &[w, k] : mpi_view(g0_wk.mesh()))
-      g0_wk[w, k] = inverse((w + mu)*I - e_k(k));
-
-  g0_wk = mpi::all_reduce(g0_wk);
-  return g0_wk;
-}
-  
-#endif
 
 // ----------------------------------------------------
 
@@ -86,7 +69,6 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
   return g_wk;
 }
   
-#ifdef TPRF_OMP
 
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
@@ -106,22 +88,6 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   return g_wk;
 }
 
-#else
-  
-g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
-
-  auto mesh = sigma_w.mesh();
-  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g_wk({mesh, e_k.mesh()}, e_k.target_shape());
-
-  for (auto const &[w, k] : mpi_view(g_wk.mesh()) ) 
-    g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigma_w[w]);
-
-  g_wk = mpi::all_reduce(g_wk);
-  return g_wk;
-}
-
-#endif
 
 g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
