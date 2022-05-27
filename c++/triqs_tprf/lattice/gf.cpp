@@ -87,10 +87,7 @@ auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
 
   g_wk = mpi::all_reduce(g_wk);
   return g_wk;
-
-
 }
-
 
 
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
@@ -106,18 +103,13 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 
   auto g_wk = lattice_dyson_g_generic(mu, e_k, sigma_w);
-  auto &wmesh = std::get<0>(g_wk.mesh());
-  auto &kmesh = std::get<1>(g_wk.mesh());
+  auto &[wmesh, kmesh] = g_wk.mesh();
 
   g_w_t g_w(wmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  auto arr = mpi_view(g_wk.mesh());
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+  for (auto const &[w, k] : mpi_view(g_wk.mesh())) 
     g_w[w] += g_wk[w, k];
-  }
 
   g_w = mpi::all_reduce(g_w);
   g_w /= kmesh.size();

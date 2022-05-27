@@ -8,6 +8,7 @@ endforeach()
 set(all_tests
   chi4_iw_from_tau
   g_wk_to_from_g_wr_py
+  gf
   chi00_square_lattice
   chi0_save_memory
   chi0_nr_at_specific_w
