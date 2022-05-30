@@ -25,7 +25,7 @@
 namespace triqs_tprf::fourier {
 
   // The implementation is almost the same in both cases...
-  template <typename M1, typename M2> fourier_plan __impl_plan(int fftw_backward_forward, gf_mesh<M1> const &out_mesh, gf_vec_cvt<M2> g_in) {
+  template <typename M1, typename M2> fourier_plan __impl_plan(int fftw_backward_forward, M1 const &out_mesh, gf_vec_cvt<M2> g_in) {
 
     //check periodization_matrix is diagonal
     auto const &period_mat = g_in.mesh().periodization_matrix();

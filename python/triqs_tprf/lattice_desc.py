@@ -23,7 +23,7 @@ using namespace triqs_tprf;
 
 module.add_enum("Channel_t", ['Channel_t::PP', 'Channel_t::PH', 'Channel_t::PH_bar'], "triqs_tprf", doc = r"""Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g0_wk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::imfreq> mesh)", doc = r"""Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::lattice_dyson_g0_wk (double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh)", doc = r"""Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
   Computes
 

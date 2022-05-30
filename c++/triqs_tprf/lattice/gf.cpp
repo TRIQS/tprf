@@ -56,7 +56,6 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
   return g0_wk;
 }
 
-
 // ----------------------------------------------------
 
 template<typename sigma_t>

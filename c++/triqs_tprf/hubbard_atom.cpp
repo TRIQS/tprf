@@ -47,9 +47,9 @@ namespace hubbard_atom {
   }
 
   g2_iw_t chi_ph_magnetic(int nw, int nwf, double beta, double U) {
-    
-    auto mb = gf_mesh<imfreq>{beta, Boson, nw};
-    auto mf = gf_mesh<imfreq>{beta, Fermion, nwf};
+
+    auto mb = mesh::imfreq{beta, Boson, nw};
+    auto mf = mesh::imfreq{beta, Fermion, nwf};
 
     temp_1d_t C{mb, {1, 1, 1, 1}}, D{mb, {1, 1, 1, 1}};
     temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}}, b0{{mb, mf}, {1, 1, 1, 1}};
@@ -88,9 +88,9 @@ namespace hubbard_atom {
   }
 
   g2_iw_t gamma_ph_magnetic(int nw, int nwf, double beta, double U) {
-    
-    auto mb = gf_mesh<imfreq>{beta, Boson, nw};
-    auto mf = gf_mesh<imfreq>{beta, Fermion, nwf};
+
+    auto mb = mesh::imfreq{beta, Boson, nw};
+    auto mf = mesh::imfreq{beta, Fermion, nwf};
 
     temp_2d_t a0{{mb, mf}, {1, 1, 1, 1}}, b0{{mb, mf}, {1, 1, 1, 1}};
     temp_1d_t D{mb, {1, 1, 1, 1}};

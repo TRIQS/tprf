@@ -27,7 +27,7 @@
 namespace triqs_tprf {
 
 using namespace triqs::gfs;
-using namespace triqs::mesh;
+using namespace triqs;
 using namespace nda;
 
 /// Two-particle channel enum class, PP (particle-particle), PH (particle-hole), PH_bar (particle-hole-bar)

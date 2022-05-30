@@ -99,7 +99,7 @@ namespace triqs_tprf::fourier {
   // ------------------------ DIRECT TRANSFORM
   // --------------------------------------------
 
-  fourier_plan _fourier_plan(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt) {
+  fourier_plan _fourier_plan(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt) {
 
     auto L = gt.mesh().size() - 1;
     if (L < 2 * (iw_mesh.last_index() + 1))
@@ -120,8 +120,7 @@ namespace triqs_tprf::fourier {
     return plan;
   }
 
-  gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt, fourier_plan &p,
-                                 arrays::array_const_view<dcomplex, 2> mom_23) {
+  gf_vec_t<imfreq> _fourier_impl(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt, fourier_plan &p, arrays::array_const_view<dcomplex, 2> mom_23) {
     if (mom_23.is_empty()) return _fourier_impl(iw_mesh, gt, p, fit_derivatives(gt));
 
     double beta = gt.mesh().domain().beta;
@@ -186,7 +185,7 @@ namespace triqs_tprf::fourier {
     return gw;
   }
 
-  gf_vec_t<imfreq> _fourier_impl(gf_mesh<imfreq> const &iw_mesh, gf_vec_cvt<imtime> gt, arrays::array_const_view<dcomplex, 2> mom_23) {
+  gf_vec_t<imfreq> _fourier_impl(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt, arrays::array_const_view<dcomplex, 2> mom_23) {
     auto p  = _fourier_plan(iw_mesh, gt);
     auto gw = _fourier_impl(iw_mesh, gt, p, mom_23);
     return gw;
@@ -194,7 +193,7 @@ namespace triqs_tprf::fourier {
   // ------------------------ INVERSE TRANSFORM
   // --------------------------------------------
 
-  fourier_plan _fourier_plan(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw) {
+  fourier_plan _fourier_plan(mesh::imtime const &tau_mesh, gf_vec_cvt<imfreq> gw) {
 
     TRIQS_ASSERT2(!gw.mesh().positive_only(),
                   "Fourier is only implemented for g(i omega_n) with full mesh "
@@ -218,7 +217,7 @@ namespace triqs_tprf::fourier {
     return plan;
   }
 
-  gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw, fourier_plan &p,
+  gf_vec_t<imtime> _fourier_impl(mesh::imtime const &tau_mesh, gf_vec_cvt<imfreq> gw, fourier_plan &p,
                                  arrays::array_const_view<dcomplex, 2> mom_123) {
 
     TRIQS_ASSERT2(!gw.mesh().positive_only(),
@@ -310,7 +309,7 @@ namespace triqs_tprf::fourier {
     return gt;
   }
 
-  gf_vec_t<imtime> _fourier_impl(gf_mesh<imtime> const &tau_mesh, gf_vec_cvt<imfreq> gw, arrays::array_const_view<dcomplex, 2> mom_123) {
+  gf_vec_t<imtime> _fourier_impl(mesh::imtime const &tau_mesh, gf_vec_cvt<imfreq> gw, arrays::array_const_view<dcomplex, 2> mom_123) {
     auto p  = _fourier_plan(tau_mesh, gw);
     auto gt = _fourier_impl(tau_mesh, gw, p, mom_123);
     return gt;

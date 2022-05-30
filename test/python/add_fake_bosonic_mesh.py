@@ -10,7 +10,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone, MeshProduct, Idx
+from triqs.gf import Gf, MeshImFreq, MeshBrZone, MeshProduct, Idx
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice_utils import add_fake_bosonic_mesh
@@ -46,7 +46,7 @@ def test_add_fake_bosonic_mesh_with_gf_k_with_beta(bzmesh):
 if __name__ == "__main__":
     bz = BrillouinZone(BravaisLattice([[1, 0], [0, 1]]))
     periodization_matrix = np.diag(np.array([10, 10, 1], dtype=int))
-    bzmesh = MeshBrillouinZone(bz, periodization_matrix)
+    bzmesh = MeshBrZone(bz, periodization_matrix)
 
     test_add_fake_bosonic_mesh_with_gf_nk(bzmesh)
     test_add_fake_bosonic_mesh_with_gf_k_without_beta(bzmesh)
