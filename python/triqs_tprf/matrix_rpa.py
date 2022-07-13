@@ -161,7 +161,7 @@ def tensor_to_matrix(tensor):
     left = [slice(None)]*len(non_orb_idx) + [np.array(idx)]
     right = [slice(None)]*(len(non_orb_idx)+1) + [np.array(idx)]
     
-    matrix = tensor.reshape(non_orb_idx+(norb**2,)*2)[left][right]
+    matrix = tensor.reshape(non_orb_idx+(norb**2,)*2)[tuple(left)][tuple(right)]
 
     return matrix
 
@@ -186,7 +186,7 @@ def matrix_to_tensor(matrix):
     left = [slice(None)]*len(non_orb_idx) + [np.array(idx)]
     right = [slice(None)]*(len(non_orb_idx)+1) + [np.array(idx)]
     
-    tensor = matrix[left][right].reshape(non_orb_idx + (norb,)*4)
+    tensor = matrix[tuple(left)][tuple(right)].reshape(non_orb_idx + (norb,)*4)
 
     return tensor 
 
