@@ -71,7 +71,7 @@ def lose_spin_degree_of_freedom(gf, rank=2, spin_fast=True):
     else:
         idx.extend(rank*[slice(norb, None)])
     
-    spin_independent_gf = gf[idx]
+    spin_independent_gf = gf[tuple(idx)]
 
     return spin_independent_gf
 
