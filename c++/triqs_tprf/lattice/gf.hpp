@@ -29,9 +29,9 @@ namespace triqs_tprf {
   Computes
 
   .. math::
-     G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[ 
-         (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
-	 \right]^{-1}_{a\bar{b}},
+     G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[
+     (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
+     \right]^{-1}_{a\bar{b}},
 
   using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, chemical potential $\mu$,
   and a Matsubara frequency Green's function mesh.
@@ -48,9 +48,9 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh);
  Computes
 
  .. math::
-    G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[ 
-        (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n)
-	\right]^{-1}_{a\bar{b}},
+    G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[
+    (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n)
+    \right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
  chemical potential $\mu$, and a momentum independent Matsubara frequency 
@@ -68,9 +68,9 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
   Computes
 
   .. math::
-     G^{(0)}_{a\bar{b}}(\omega, \mathbf{k}) = \left[ 
-         (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
-	 \right]^{-1}_{a\bar{b}},
+     G^{(0)}_{a\bar{b}}(\omega, \mathbf{k}) = \left[
+     (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k})
+     \right]^{-1}_{a\bar{b}},
 
   using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, chemical potential $\mu$,
   broadening $\delta$, and a real frequency Green's function mesh.
@@ -88,9 +88,9 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
  Computes
 
  .. math::
-    G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[ 
-        (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n, \mathbf{k})
-	\right]^{-1}_{a\bar{b}},
+    G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \left[
+    (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n, \mathbf{k})
+    \right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
  chemical potential $\mu$, and a Matsubara frequency 
@@ -98,7 +98,7 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
 
  @param mu chemical potential :math:`\mu`
  @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
- @param sigma_wk imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})`
+ @param sigma_wk imaginary frequency self-energy $\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})$
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk);
@@ -108,9 +108,9 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk);
  Computes
 
  .. math::
-    G_{a\bar{b}}(\omega, \mathbf{k}) = \left[ 
-        (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega, \mathbf{k})
-	\right]^{-1}_{a\bar{b}},
+    G_{a\bar{b}}(\omega, \mathbf{k}) = \left[
+    (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega, \mathbf{k})
+    \right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
  chemical potential $\mu$, broadening $\delta$, and a real frequency 
@@ -129,9 +129,9 @@ g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk, double delt
  Computes
 
  .. math::
-    G_{a\bar{b}}(i\omega_n) = \frac{1}{N_k} \sum_\mathbf{k} \left[ 
-        (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n)
-	\right]^{-1}_{a\bar{b}},
+    G_{a\bar{b}}(i\omega_n) = \frac{1}{N_k} \sum_\mathbf{k} \left[
+    (i\omega_n + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(i\omega_n)
+    \right]^{-1}_{a\bar{b}},
 
  using a discretized dispersion $\epsilon_{\bar{a}b}(\mathbf{k})$, 
  chemical potential $\mu$, and a momentum independent Matsubara frequency 
@@ -146,7 +146,7 @@ g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
 
 /** Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
-    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F}^{-1} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{k}) \right\}`
+    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(i\omega_n, \mathbf{k})\right\}`
 
     @param g_wk k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
     @return real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`

@@ -9,7 +9,9 @@ Lattice Green's functions
   :maxdepth: 1
 
   /cpp2rst_generated/triqs_tprf/lattice_dyson_g0_wk
+  /cpp2rst_generated/triqs_tprf/lattice_dyson_g0_fk
   /cpp2rst_generated/triqs_tprf/lattice_dyson_g_wk
+  /cpp2rst_generated/triqs_tprf/lattice_dyson_g_fk
   /cpp2rst_generated/triqs_tprf/lattice_dyson_g_w
   /cpp2rst_generated/triqs_tprf/fourier_wk_to_wr
   /cpp2rst_generated/triqs_tprf/fourier_wr_to_wk
@@ -24,7 +26,7 @@ Lindhard non-interacting generalized susceptibility
 .. toctree::
   :maxdepth: 1
 
-  /cpp2rst_generated/triqs_tprf/lindhard_chi00_wk
+  /cpp2rst_generated/triqs_tprf/lindhard_chi00
 
 Random Phase Approximation
 ==========================
@@ -92,8 +94,10 @@ GW approximation
 .. toctree::
   :maxdepth: 1
 
-  /cpp2rst_generated/triqs_tprf/screened_interaction_W
-  /cpp2rst_generated/triqs_tprf/gw_self_energy
+  /cpp2rst_generated/triqs_tprf/dynamical_screened_interaction_W
+  /cpp2rst_generated/triqs_tprf/dynamical_screened_interaction_W_from_generalized_susceptibility
+  /cpp2rst_generated/triqs_tprf/gw_sigma
+  /cpp2rst_generated/triqs_tprf/g0w_sigma
   
 Linearized Eliashberg equation 
 ==============================

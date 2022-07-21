@@ -2,8 +2,8 @@
  *
  * TRIQS: a Toolbox for Research in Interacting Quantum Systems
  *
- * Copyright (C) 2019, The Simons Foundation
- * Authors: H. U.R. Strand
+ * Copyright (C) 2022, The Simons Foundation
+ * Authors: H. U.R. Strand, Y. in 't Veld, M. Rösner
  *
  * TRIQS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,7 +31,7 @@ namespace triqs_tprf {
     
     .. math ::
         W_{abcd}(i\omega_n, \mathbf{k}) = 
-            W^{dyn}_{abcd}(i\omega_n, \mathbf{k})
+            W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
             + V_{abcd}(\mathbf{k})
 
     by fitting the high-frequency tail.
@@ -44,37 +44,37 @@ namespace triqs_tprf {
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
 
     .. math::
-        W_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
-          \left\{ W^{dyn}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+        W^{(dyn)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
 
     computes the GW self-energy as the product
 
     .. math::
-        \Sigma_{ab}(\tau, \mathbf{r}) =
-          - \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+        \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
+          - \sum_{cd} W^{(dyn)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
     .. math::
-        \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k}) =
-          \mathcal{F} \left\{ \Sigma_{ab}(\tau, \mathbf{r}) \right\}
+        \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k}) =
+          \mathcal{F} \left\{ \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) \right\}
 
     The self-energy of the static part of the interaction is calculated
     as the sum
 
     .. math::
-        \Sigma^{stat}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+        \Sigma^{(stat)}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
 
     where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
     single particle Green's function.
 
     The total GW self-energy is given by
 
-    ,, math::
+    .. math::
         \Sigma_{ab}(i\omega_n, \mathbf{k}) = 
-          \Sigma^{dyn}_{ab}(i\omega_n, \mathbf{k})
-          + \Sigma^{stat}_{ab}(\mathbf{k})
+          \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k})
+          + \Sigma^{(stat)}_{ab}(\mathbf{k})
 
     @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
@@ -89,7 +89,7 @@ g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
     .. math::
         \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
 
     where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
     single particle Green's function.
@@ -129,15 +129,14 @@ g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
     
     .. math::
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
-          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
-        + \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega^'}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
-          W^{(spec)}_{ab}(\omega^', \mathbf{q})
-          \frac{n_B(\omega^') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}
-          {\omega + i\delta + \omega^' - \epsilon_{\mathbf{k}+\mathbf{q}, l}) + \mu}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{bl}(\mathbf{k}+\mathbf{q})
+          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l}) \\
+        + \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{bl}(\mathbf{k}+\mathbf{q})
+          W^{(spec)}_{ab}(\omega', \mathbf{q})
+          \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
           
-    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
+    where $\delta_{\omega}$ is the real-frequency mesh spacing and the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
     dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
 
     .. math::
@@ -160,7 +159,7 @@ g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt
     Computes the GW self-energy of a static interaction as the product
 
     .. math::
-        \sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
           U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
           V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
 

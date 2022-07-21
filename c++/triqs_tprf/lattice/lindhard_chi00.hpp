@@ -102,8 +102,9 @@ chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> mesh, double mu);
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
     in the particle-hole channel in real frequencies. The analytic expression is obtained using 
     residue calculus to explicitly evaluate the matsubara sum of the fourier transformed imaginary
-    time bubble product of two non-interacting single-particle Green's functions.
- 
+    time bubble product of two non-interacting single-particle Green's functions. The resulting
+    expression is analytically continued to the real frequency axis. 
+
     .. math::
        G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
        \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
@@ -111,13 +112,13 @@ chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> mesh, double mu);
     Analytic continuation of the evaluation of the bubble diagram gives
  
     .. math::
-       \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) = 
-       \frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij} 
-              \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
-                   {\omega + i\delta + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}
-            \\ \times
-            U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k}) 
-            U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
+        \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) = 
+        \frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij} 
+        \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
+            {\omega + i\delta + \epsilon_{\mathbf{k} + \mathbf{q}, j} - \epsilon_{\mathbf{k}, i}}
+        \\ \times
+        U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k}) 
+        U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
  
     where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
     dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.

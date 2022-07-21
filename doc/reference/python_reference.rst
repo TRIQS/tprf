@@ -6,13 +6,15 @@ Lattice Green's functions
 =========================
 
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g0_wk
+.. autofunction:: triqs_tprf.lattice.lattice_dyson_g0_fk
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_wk
+.. autofunction:: triqs_tprf.lattice.lattice_dyson_g_fk
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_w
 		  
 Lindhard non-interacting generalized susceptibility
 ===================================================
 
-.. autofunction:: triqs_tprf.lattice.lindhard_chi00_wk
+.. autofunction:: triqs_tprf.lattice.lindhard_chi00
 
 Random Phase Approximation
 ==========================
@@ -41,10 +43,11 @@ Lattice Bethe-Salpeter Equation
 GW approximation
 ================
 
-.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_wk
-.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_wk_from_generalized_susceptibility
+.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W
+.. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_from_generalized_susceptibility
 .. autofunction:: triqs_tprf.gw.bubble_PI_wk
-.. autofunction:: triqs_tprf.gw.gw_sigma_wk
+.. autofunction:: triqs_tprf.gw.gw_sigma
+.. autofunction:: triqs_tprf.gw.g0w_sigma
 
 Linearized Eliashberg equation 
 ==============================
