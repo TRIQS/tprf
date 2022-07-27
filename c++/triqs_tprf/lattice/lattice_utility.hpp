@@ -24,10 +24,19 @@
 #include "../types.hpp"
 
 namespace triqs_tprf {
-  /** Split mtrix-valued Green's function into dynamic and constant parts by tail fitting
+  /** Splits a rank 4 tensor-valued Green's function into dynamic and constant parts by tail fitting
 
-  @param chi_wk : general matrix-valued Green's function :math:`\chi(i\omega_n, \mathbf{k})`. 
-  @return Tuple of chi_dyn_wk, the dynamic part of chi, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi(\mathbf{k})`.
+    Splits a general rank 4 tensor-valued Green's function :math:`\chi_{abcd}(i\omega_n, \mathbf{k})` 
+    into a dynamic and a constant part in Matsubara frequency space by fitting
+    the high-frequency tail.
+    
+    .. math ::
+        \chi_{abcd}(i\omega_n, \mathbf{k}) = 
+            \chi^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
+            + \chi^{(stat)}_{abcd}(\mathbf{k})
+
+  @param chi_wk : general rank 4 tensor-valued Green's function :math:`\chi_{abcd}(i\omega_n, \mathbf{k})`. 
+  @return Tuple of chi_dyn_wk, the dynamic part of chi :math:`\chi^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})`, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi^{(stat)}_{abcd}(\mathbf{k})`.
   */
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk);
 }
