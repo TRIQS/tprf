@@ -38,13 +38,13 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // g
 
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh, mpi::communicator const &c) {
 
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
   g0_wk() = 0.0;
 
-  auto arr = mpi_view(g0_wk.mesh());
+  auto arr = mpi_view(g0_wk.mesh(), c);
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
@@ -52,7 +52,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
     g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
   }
 
-  g0_wk = mpi::all_reduce(g0_wk);
+  g0_wk = mpi::all_reduce(g0_wk, c);
   return g0_wk;
 }
 
@@ -80,7 +80,7 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
 // ----------------------------------------------------
 
 template<typename sigma_t>
-auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
+auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma, mpi::communicator const &c){
 
   auto &freqmesh = [&sigma]() -> auto & {
     if constexpr (sigma_t::arity == 1) return sigma.mesh();
@@ -93,7 +93,7 @@ auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
   g_wk_t g_wk({freqmesh, e_k.mesh()}, e_k.target_shape());
   g_wk() = 0.0;
 
-  auto arr = mpi_view(g_wk.mesh());
+  auto arr = mpi_view(g_wk.mesh(), c);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
@@ -105,18 +105,18 @@ auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
     g_wk[w, k] = inverse((w + mu)*I - e_k(k) - sigmaterm);
   }
 
-  g_wk = mpi::all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk, c);
   return g_wk;
 }
 
 
-g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
-  return lattice_dyson_g_generic(mu, e_k, sigma_wk);
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk, mpi::communicator const &c) {
+  return lattice_dyson_g_generic(mu, e_k, sigma_wk, c);
 }
   
 
-g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
-  return lattice_dyson_g_generic(mu, e_k, sigma_w);
+g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w, mpi::communicator const &c) {
+  return lattice_dyson_g_generic(mu, e_k, sigma_w, c);
 }
 
 
@@ -144,18 +144,18 @@ g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk, double delt
 
 // ----------------------------------------------------
 
-g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
+g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w, mpi::communicator const &c) {
 
-  auto g_wk = lattice_dyson_g_generic(mu, e_k, sigma_w);
+  auto g_wk = lattice_dyson_g_generic(mu, e_k, sigma_w, c);
   auto &[wmesh, kmesh] = g_wk.mesh();
 
   g_w_t g_w(wmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  for (auto const &[w, k] : mpi_view(g_wk.mesh())) 
+  for (auto const &[w, k] : mpi_view(g_wk.mesh(), c))
     g_w[w] += g_wk[w, k];
 
-  g_w = mpi::all_reduce(g_w);
+  g_w = mpi::all_reduce(g_w, c);
   g_w /= kmesh.size();
   return g_w;
 }
@@ -163,26 +163,26 @@ g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 // ----------------------------------------------------
 // Transformations: real space <-> reciprocal space 
   
-g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk) {
-  auto g_wr = fourier_wk_to_wr_general_target(g_wk);
+g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk, mpi::communicator const &c) {
+  auto g_wr = fourier_wk_to_wr_general_target(g_wk, c);
   return g_wr;
 }
 
-g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
-  auto g_wk = fourier_wr_to_wk_general_target(g_wr);
+g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr, mpi::communicator const &c) {
+  auto g_wk = fourier_wr_to_wk_general_target(g_wr, c);
   return g_wk;
 }
 
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
 
-g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw) {
-  auto g_wr = fourier_tr_to_wr_general_target(g_tr, nw);
+g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw, mpi::communicator const &c) {
+  auto g_wr = fourier_tr_to_wr_general_target(g_tr, nw, c);
   return g_wr;
 }
 
-g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
-  auto g_tr = fourier_wr_to_tr_general_target(g_wr, nt);
+g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt, mpi::communicator const &c) {
+  auto g_tr = fourier_wr_to_tr_general_target(g_wr, nt, c);
   return g_tr;
 }
 

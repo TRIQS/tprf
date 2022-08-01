@@ -29,7 +29,7 @@
 namespace triqs_tprf {
 
 template<class T>
-auto mpi_view(const array<T, 1> &arr, mpi::communicator const & c) {
+auto mpi_view(const array<T, 1> &arr, mpi::communicator const &c = {}) {
 
   auto slice = itertools::chunk_range(0, arr.shape()[0], c.size(), c.rank());
 
@@ -42,13 +42,7 @@ auto mpi_view(const array<T, 1> &arr, mpi::communicator const & c) {
 }
 
 template<class T>
-auto mpi_view(const array<T, 1> &arr) {
-  mpi::communicator c;
-  return mpi_view(arr, c);
-}
-  
-template<class T>
-auto mpi_view(const T &mesh, mpi::communicator const & c) {
+auto mpi_view(const T &mesh, mpi::communicator const &c = {}) {
 
   auto slice = itertools::chunk_range(0, mesh.size(), c.size(), c.rank());
   int size = slice.second - slice.first;
@@ -77,12 +71,6 @@ auto mpi_view(const T &mesh, mpi::communicator const & c) {
   */
 
   return arr;
-}
-
-template<class T>
-auto mpi_view(const T &mesh) {
-  mpi::communicator c;
-  return mpi_view(mesh, c);
 }
   
 } // namespace triqs_tprf
