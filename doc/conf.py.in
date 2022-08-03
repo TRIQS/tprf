@@ -51,6 +51,9 @@ copyright = '2017, H. U.R. Strand'
 mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=default"
 templates_path = ['@CMAKE_CURRENT_SOURCE_DIR@/_templates']
 
+# exclude these folders from scanning by sphinx
+exclude_patterns = ['_templates']
+
 # this requires the sphinx_rtd_theme to be installed via pip
 html_theme = 'sphinx_rtd_theme'
 # this loads the custom css file to change the page width
