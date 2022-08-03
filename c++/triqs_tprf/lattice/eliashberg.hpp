@@ -147,7 +147,6 @@ namespace triqs_tprf {
   g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk);
   g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk);
 
-
   /** Fourier transform Gamma parts to imaginary time and real-space  
   
   @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.

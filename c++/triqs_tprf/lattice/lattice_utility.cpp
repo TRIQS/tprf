@@ -29,28 +29,26 @@
 
 namespace triqs_tprf {
 
-std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
+  std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
-  auto _ = all_t{};
-  auto &[wmesh, kmesh] = chi_wk.mesh();
-    
-  chi_wk_t chi_dyn_wk(chi_wk.mesh(), chi_wk.target_shape());
-  chi_dyn_wk() = 0.0;
-  chi_k_t chi_const_k(kmesh, chi_wk.target_shape());
-  chi_const_k() = 0.0;
+    auto _               = all_t{};
+    auto &[wmesh, kmesh] = chi_wk.mesh();
 
-  for (auto const &k : kmesh) {
-    auto chi_w = chi_wk[_, k];
-    auto tail = std::get<0>(fit_tail(chi_w));
+    chi_wk_t chi_dyn_wk(chi_wk.mesh(), chi_wk.target_shape());
+    chi_dyn_wk() = 0.0;
+    chi_k_t chi_const_k(kmesh, chi_wk.target_shape());
+    chi_const_k() = 0.0;
 
-    for (auto [a, b, c, d] : chi_wk.target_indices())
-      chi_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
+    for (auto const &k : kmesh) {
+      auto chi_w = chi_wk[_, k];
+      auto tail  = std::get<0>(fit_tail(chi_w));
 
-    for (auto const &w : wmesh) 
-      chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
+      for (auto [a, b, c, d] : chi_wk.target_indices()) chi_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
+
+      for (auto const &w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
+    }
+
+    return {chi_dyn_wk, chi_const_k};
   }
 
-  return {chi_dyn_wk, chi_const_k};
-}
-
-}
+} // namespace triqs_tprf

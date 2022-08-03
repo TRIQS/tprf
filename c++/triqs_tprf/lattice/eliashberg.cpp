@@ -61,9 +61,9 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
           g_wk[w, k](c, f) * g_wk[-w, -k](d, e) * delta_wk[w, k](e, f);
      }
 
-  F_wk = mpi::all_reduce(F_wk);
+     F_wk = mpi::all_reduce(F_wk);
 
-  return F_wk;
+     return F_wk;
 }
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
@@ -85,22 +85,21 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
 
-  auto arr = mpi_view(kmesh);  
-  #pragma omp parallel for
+  auto arr = mpi_view(kmesh);
+#pragma omp parallel for
   for (int kidx = 0; kidx < arr.size(); kidx++) {
-    auto k = arr(kidx);
-    for (auto const &w : wmesh) {
-      for (auto const &[n, q] : delta_wk.mesh())
-        for (auto [c, a, d, b] : Gamma_pp.target_indices())
-          delta_wk_out[w, k](a, b) +=
-              -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
-    }
+      auto k = arr(kidx);
+      for (auto const &w : wmesh) {
+        for (auto const &[n, q] : delta_wk.mesh())
+          for (auto [c, a, d, b] : Gamma_pp.target_indices())
+            delta_wk_out[w, k](a, b) += -0.5 * Gamma_pp(w - n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
+      }
   }
-  
+
   delta_wk_out /= (wmesh.domain().beta * kmesh.size());
 
   delta_wk_out = mpi::all_reduce(delta_wk_out);
-  
+
   return delta_wk_out;
 }
 

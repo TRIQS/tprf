@@ -1132,12 +1132,12 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
   auto mesh_f = std::get<2>(chi_kwnn.mesh());
 
   auto chi_wk = make_gf<prod<imfreq, brzone>>({mesh_b, mesh_k}, chi_kwnn.target());
-  
+
   auto arr = mpi_view(prod{mesh_k, mesh_b});
 
   std::cout << "--> attatch_tri_vert: Hybrid parallell OpenMP+MPI\n";
 
-#pragma omp parallel for 
+#pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto k = std::get<0>(arr(idx));
     auto w = std::get<1>(arr(idx));
@@ -1150,13 +1150,13 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
 	  L_wn[w, n1](a, b, c, d) * chi_kwnn[k, w, n1, n2](c, d, e, f) * L_wn[w, n2](e, f, g, h);
     */
 
-    auto _ = all_t{};
+    auto _       = all_t{};
     chi_wk[w, k] = scalar_product_PH(L_wn[w, _], chi_kwnn[k, w, _, _], L_wn[w, _]);
   }
-  
+
   chi_wk = mpi::all_reduce(chi_wk);
 
   return chi_wk;
 }
-  
+
 } // namespace triqs_tprf

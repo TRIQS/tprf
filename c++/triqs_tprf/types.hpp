@@ -97,14 +97,14 @@ typedef gf<prod<brzone, imfreq, imfreq, imfreq>, tensor_valued<4>> chi_kwnn_t;
 typedef chi_kwnn_t::const_view_type chi_kwnn_cvt;
 typedef chi_kwnn_t::view_type chi_kwnn_vt;
   
-  // -- New style types FIXME notation
-  
-  // bosonic freq w for "\omega"
-  // fermionic freq "n" for "\nu"
-  // imagnary time "t" for "\tau"
-  // real freq f
-  // real space "r"
-  // momentum space "k"
+// -- New style types FIXME notation
+
+// bosonic freq w for "\omega"
+// fermionic freq "n" for "\nu"
+// imagnary time "t" for "\tau"
+// real freq f
+// real space "r"
+// momentum space "k"
 
 typedef gf<brzone, matrix_valued> e_k_t;
 typedef e_k_t::const_view_type e_k_cvt;

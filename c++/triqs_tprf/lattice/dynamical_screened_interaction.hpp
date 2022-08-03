@@ -25,7 +25,7 @@
 
 namespace triqs_tprf {
 
-/** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
+  /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 
     The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
     is given by
@@ -42,9 +42,9 @@ namespace triqs_tprf {
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
+  chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
 
-/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
+  /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 
     The full screened interaction :math:`W(\omega, \mathbf{k})`
     is given by
@@ -61,9 +61,9 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
     @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
  */
 
-chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k);
+  chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k);
 
-/** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(i\omega_n, \mathbf{k})`.
+  /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(i\omega_n, \mathbf{k})`.
 
     The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
     is given by
@@ -80,9 +80,9 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k);
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk);
+  chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk);
 
-/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})`.
+  /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})`.
 
     The full screened interaction :math:`W(\omega, \mathbf{k})`
     is given by
@@ -99,9 +99,9 @@ chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_wk_cvt V_wk);
     @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
  */
 
-chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk);
+  chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk);
 
-/** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})` and known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
+  /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})` and known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
 
     The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
     is given by
@@ -118,9 +118,9 @@ chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk);
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k);
+  chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k);
 
-/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
+  /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
 
     The full screened interaction :math:`W(\omega, \mathbf{k})`
     is given by
@@ -137,9 +137,9 @@ chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk
     @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
  */
 
-chi_fk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk_cvt chi_fk, chi_k_cvt V_k);
+  chi_fk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk_cvt chi_fk, chi_k_cvt V_k);
 
-/** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(i\omega_n, \mathbf{k})` and known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
+  /** Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(i\omega_n, \mathbf{k})` and known generalized susceptibility :math:`\chi(i\omega_n, \mathbf{k})`
 
     The full screened interaction :math:`W(i\omega_n, \mathbf{k})`
     is given by
@@ -156,9 +156,9 @@ chi_fk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
 
-chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_wk_cvt V_wk);
+  chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_wk_cvt V_wk);
 
-/** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
+  /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
 
     The full screened interaction :math:`W(\omega, \mathbf{k})`
     is given by
@@ -175,6 +175,6 @@ chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk
     @return dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
  */
 
-chi_fk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk_cvt chi_fk, chi_fk_cvt V_fk);
+  chi_fk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk_cvt chi_fk, chi_fk_cvt V_fk);
 
 } // namespace triqs_tprf

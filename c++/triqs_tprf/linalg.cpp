@@ -177,32 +177,30 @@ namespace triqs_tprf {
 
  // ----------------------------------------------------
 
-array<g2_nn_cvt::scalar_t, 4>
-scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR) {
+ array<g2_nn_cvt::scalar_t, 4> scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR) {
 
-  using L_layout = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({1, 2, 0, 4, 3}))>;
-  using R_layout = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({0, 1, 2, 3, 4}))>;
+  using L_layout   = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({1, 2, 0, 4, 3}))>;
+  using R_layout   = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({0, 1, 2, 3, 4}))>;
   using res_layout = contiguous_layout_with_stride_order<nda::encode(std::array<int, 4>({0, 1, 3, 2}))>;
 
   using L_vec_t = array<g2_n_cvt::scalar_t, g2_n_cvt::data_rank, L_layout>;
   using R_vec_t = array<g2_n_cvt::scalar_t, g2_n_cvt::data_rank, R_layout>;
-  using mat_t = array<g2_nn_cvt::scalar_t, g2_nn_cvt::data_rank, channel_memory_layout<Channel_t::PH>>;
-  
+  using mat_t   = array<g2_nn_cvt::scalar_t, g2_nn_cvt::data_rank, channel_memory_layout<Channel_t::PH>>;
+
   array<g2_nn_cvt::scalar_t, 4, res_layout> res_dat(M.target_shape());
 
-  auto M_dat = mat_t{M.data()};
+  auto M_dat  = mat_t{M.data()};
   auto vL_dat = L_vec_t{vL.data()};
   auto vR_dat = R_vec_t{vR.data()};
-  
+
   auto mat = channel_matrix_view<Channel_t::PH>(M_dat);
   matrix_view<g2_n_cvt::scalar_t> res(group_indices_view(res_dat, idx_group<0, 1>, idx_group<3, 2>));
   matrix_view<g2_n_cvt::scalar_t> vecL(group_indices_view(vL_dat, idx_group<1, 2>, idx_group<0, 4, 3>));
-  matrix_view<g2_n_cvt::scalar_t> vecR(group_indices_view(vR_dat, idx_group<0, 1, 2>, idx_group<3, 4>)); 
+  matrix_view<g2_n_cvt::scalar_t> vecR(group_indices_view(vR_dat, idx_group<0, 1, 2>, idx_group<3, 4>));
 
   res = vecL * mat * vecR;
 
   return res_dat;
-}
+ }
 
-  
 } // namespace triqs_tprf
