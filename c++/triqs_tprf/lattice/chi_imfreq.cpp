@@ -949,7 +949,6 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
   // auto [fmesh_large, kmesh] = g_wk.mesh();
 
   auto &kmesh = e_k.mesh();
-  auto &fmesh_large = sigma_w.mesh();
 
   auto &bmesh = std::get<0>(gamma_ph_wnn.mesh());
   auto &fmesh = std::get<1>(gamma_ph_wnn.mesh());
@@ -1114,7 +1113,6 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
 
   auto &mesh_k = std::get<0>(chi_kwnn.mesh());
   auto &mesh_b = std::get<1>(chi_kwnn.mesh());
-  auto &mesh_f = std::get<2>(chi_kwnn.mesh());
 
   auto chi_wk = make_gf<prod<imfreq, brzone>>({mesh_b, mesh_k}, chi_kwnn.target());
 
