@@ -69,7 +69,7 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto k = arr(idx);
+    auto &k = arr(idx);
 
     for (auto const &q : kmesh) {
 
@@ -111,7 +111,7 @@ namespace triqs_tprf {
 
   auto arr = mpi_view(sigma_wk.mesh());
 #pragma omp parallel for
-  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+  for (int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr(idx);
 
     for (const auto &[a, b] : sigma_wk.target_indices()) { sigma_wk[w, k](a, b) = sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b); }
@@ -155,7 +155,7 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for shared(sigma_fk)
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto k = arr(kidx);
+    auto &k = arr(kidx);
 
     for (auto const &q : kmesh) {
 
@@ -200,7 +200,7 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto k = arr(kidx);
+    auto &k = arr(kidx);
 
     for (auto const &q : kmesh) {
       array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);

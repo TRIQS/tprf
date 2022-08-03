@@ -85,7 +85,6 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double 
   std::complex<double> idelta(0.0, delta);
 
   auto arr = mpi_view(g0_fk.mesh());
-
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[f, k] = arr(idx);

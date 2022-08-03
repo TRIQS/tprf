@@ -179,9 +179,9 @@ namespace triqs_tprf {
 
  array<g2_nn_cvt::scalar_t, 4> scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR) {
 
-  using L_layout   = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({1, 2, 0, 4, 3}))>;
-  using R_layout   = contiguous_layout_with_stride_order<nda::encode(std::array<int, 5>({0, 1, 2, 3, 4}))>;
-  using res_layout = contiguous_layout_with_stride_order<nda::encode(std::array<int, 4>({0, 1, 3, 2}))>;
+  using L_layout   = contiguous_layout_with_stride_order<nda::encode(std::array{1, 2, 0, 4, 3})>;
+  using R_layout   = contiguous_layout_with_stride_order<nda::encode(std::array{0, 1, 2, 3, 4})>;
+  using res_layout = contiguous_layout_with_stride_order<nda::encode(std::array{0, 1, 3, 2})>;
 
   using L_vec_t = array<g2_n_cvt::scalar_t, g2_n_cvt::data_rank, L_layout>;
   using R_vec_t = array<g2_n_cvt::scalar_t, g2_n_cvt::data_rank, R_layout>;

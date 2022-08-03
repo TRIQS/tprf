@@ -45,8 +45,8 @@ namespace triqs_tprf {
 
     if (kmesh != vkmesh) TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
 
-    auto W = make_gf(chi);
-    W *= 0.;
+    auto W    = make_gf(chi);
+    W()       = 0.;
     size_t nb = chi.target_shape()[0];
 
     using scalar_t = typename chi_t::scalar_t;

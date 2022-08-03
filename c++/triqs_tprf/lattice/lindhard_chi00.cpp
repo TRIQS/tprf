@@ -48,10 +48,7 @@ namespace triqs_tprf {
     chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
     for (auto const &[w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
 
-    auto arr = mpi_view(kmesh);
-
-    for (int kidx = 0; kidx < arr.size(); kidx++) {
-      auto k = arr(kidx);
+    for (auto &k : mpi_view(kmesh)) {
 
 #pragma omp parallel for
       for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
@@ -96,7 +93,6 @@ namespace triqs_tprf {
     }         // k
 
     chi_wk = mpi::all_reduce(chi_wk);
-
     chi_wk /= kmesh.size();
 
     return chi_wk;
@@ -126,9 +122,7 @@ namespace triqs_tprf {
       q_iter += qidx;
       auto q = *q_iter;
 
-      for (int kidx = 0; kidx < arr.size(); kidx++) {
-
-        auto k = arr(kidx);
+      for (auto &k : arr) {
 
         matrix<std::complex<double>> e_k_mat(e_k(k));
         auto eig_k = linalg::eigenelements(e_k_mat);
@@ -161,7 +155,6 @@ namespace triqs_tprf {
     } // q (omp)
 
     chi_fk = mpi::all_reduce(chi_fk);
-
     chi_fk /= kmesh.size();
 
     return chi_fk;

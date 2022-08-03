@@ -181,7 +181,7 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
     -------
 
     vectors : list of three three-tuples of floats
-        Reciprocal lattice vectors..
+        Reciprocal lattice vectors.
 
     """
 

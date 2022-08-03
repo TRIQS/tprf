@@ -88,7 +88,7 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (int kidx = 0; kidx < arr.size(); kidx++) {
-      auto k = arr(kidx);
+      auto &k = arr(kidx);
       for (auto const &w : wmesh) {
         for (auto const &[n, q] : delta_wk.mesh())
           for (auto [c, a, d, b] : Gamma_pp.target_indices())

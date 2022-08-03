@@ -94,7 +94,6 @@ namespace triqs_tprf {
        poles are non-degenerate. The degenerate case produces an additional frequency independent
        contribution (the last term on the last row).
 */
-
   chi_wk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<imfreq> mesh, double mu);
 
   /** Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
@@ -133,7 +132,6 @@ namespace triqs_tprf {
     @param delta broadening :math:`\delta`
     @return real frequency generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`
 */
-
   chi_fk_t lindhard_chi00(e_k_cvt e_k, gf_mesh<refreq> mesh, double beta, double mu, double delta);
 
 } // namespace triqs_tprf
