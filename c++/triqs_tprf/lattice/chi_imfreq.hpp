@@ -181,4 +181,6 @@ chiq_sum_nu(chiq_t chiq);
   
 gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq);
 
+chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn);
+
 } // namespace triqs_tprf

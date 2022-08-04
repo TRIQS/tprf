@@ -21,7 +21,7 @@ from triqs.gf import MeshImFreq, Idx
 
 from triqs_tprf.numpy_compat import is_numpy_newer_than
 from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice import lindhard_chi00_wk
+from triqs_tprf.lattice import lindhard_chi00
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
@@ -295,8 +295,9 @@ if __name__ == '__main__':
     chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)
     print('chi0_q0 =\n', chi00_wk[Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 
-    print('--> lindhard_chi00_wk')
-    chi00_wk_analytic = lindhard_chi00_wk(e_k=e_k, nw=1, beta=beta, mu=mu)
+    print('--> lindhard_chi00')
+    wmesh = MeshImFreq(beta, "Boson", 1)
+    chi00_wk_analytic = lindhard_chi00(e_k=e_k, mesh=wmesh, mu=mu)
     print('chi0_q0_analytic =\n', chi00_wk_analytic[
         Idx(0), Idx(0, 0, 0)].real.reshape((4,4)))
 

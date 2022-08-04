@@ -181,7 +181,7 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
     -------
 
     vectors : list of three three-tuples of floats
-        Reciprocal lattice vectors. 
+        Reciprocal lattice vectors.
 
     """
 
@@ -199,6 +199,57 @@ def parse_reciprocal_lattice_vectors_from_wannier90_wout(filename):
 
     # -- convert 3x3 array to list of tuples
     
+    vectors = []
+    for idx in range(array.shape[0]):
+        v = tuple(array[idx])
+        vectors.append(v)
+
+    return vectors
+
+# ----------------------------------------------------------------------
+def parse_orbital_positions_from_wannier90_wout(filename, units):
+
+    r""" Wannier90 orbital positions parser of ``*.wout`` files.
+....
+    Parameters
+    ----------
+
+    filename : str
+        Wannier90 ``*.wout`` file to parse.
+
+    vectors : list of three three-tuples of floats
+        Lattice vectors.
+
+    Returns
+    -------
+
+    vectors : list of three three-tuples of floats
+        orbital positions in internal coordinates
+
+    """
+
+    with open(filename, 'r') as fd:
+        lines = fd.readlines()
+
+    # -- Find start of data in text file
+
+    idxstart = -1
+    for idx, line in enumerate(lines):
+        if(('Final State' in line) and (idxstart == -1)):
+            idxstart = idx+1
+        if(('Sum of centres' in line) and (idxstart > -1)):
+            idxend = idx
+            break
+
+    norb = idxend - idxstart
+
+    lines = "".join(lines[idxstart:idxend])
+    array = np.genfromtxt(StringIO(lines),  dtype="|U8")
+    array = np.array(array[:,[6,7,8]], dtype=np.float)
+    array = np.dot( np.linalg.inv(units.T), array[:,:].T ).T
+
+    # -- convert array to list of tuples
+
     vectors = []
     for idx in range(array.shape[0]):
         v = tuple(array[idx])

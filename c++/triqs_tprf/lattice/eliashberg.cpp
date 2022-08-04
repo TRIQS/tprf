@@ -20,6 +20,8 @@
  *
  ******************************************************************************/
 
+#include "common.hpp"
+
 #include "eliashberg.hpp"
 #include <omp.h>
 #include "../mpi.hpp"
@@ -59,7 +61,9 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
           g_wk[w, k](c, f) * g_wk[-w, -k](d, e) * delta_wk[w, k](e, f);
      }
 
-  return F_wk;
+     F_wk = mpi::all_reduce(F_wk);
+
+     return F_wk;
 }
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
@@ -81,37 +85,22 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
 
-  for (auto const &[w, k] : delta_wk.mesh())
-    for (auto const &[n, q] : delta_wk.mesh())
-      for (auto [c, a, d, b] : Gamma_pp.target_indices())
-        delta_wk_out[w, k](a, b) +=
-            -0.5 * Gamma_pp(w-n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
-
-  delta_wk_out /= (wmesh.domain().beta * kmesh.size());
-  
-  return delta_wk_out;
-}
-
-std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_vt Gamma_pp) {
-  auto _ = all_t{};
-  //auto [wmesh, kmesh] = Gamma_pp.mesh();
-  auto wmesh = std::get<0>(Gamma_pp.mesh());
-  auto kmesh = std::get<1>(Gamma_pp.mesh());
-    
-  // Fit infinite frequency value
-  auto Gamma_pp_dyn_wk = make_gf(Gamma_pp);
-
-  auto Gamma_pp_const_k = make_gf(kmesh, Gamma_pp.target());
-
-  for (auto const &k : kmesh) {
-    auto Gamma_w = Gamma_pp[_, k];
-    auto tail = std::get<0>(fit_tail(Gamma_w));
-    for (auto [a, b, c, d] : Gamma_pp.target_indices())
-      Gamma_pp_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
-    for (auto const &w : wmesh) Gamma_pp_dyn_wk[w, k] = Gamma_pp[w, k] - Gamma_pp_const_k[k];
+  auto arr = mpi_view(kmesh);
+#pragma omp parallel for
+  for (int kidx = 0; kidx < arr.size(); kidx++) {
+      auto &k = arr(kidx);
+      for (auto const &w : wmesh) {
+        for (auto const &[n, q] : delta_wk.mesh())
+          for (auto [c, a, d, b] : Gamma_pp.target_indices())
+            delta_wk_out[w, k](a, b) += -0.5 * Gamma_pp(w - n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
+      }
   }
 
-    return {Gamma_pp_dyn_wk, Gamma_pp_const_k};
+  delta_wk_out /= (wmesh.domain().beta * kmesh.size());
+
+  delta_wk_out = mpi::all_reduce(delta_wk_out);
+
+  return delta_wk_out;
 }
 
 std::tuple<chi_tr_t, chi_r_t> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k) {
@@ -166,6 +155,8 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
       for (auto [c, a, d, b] : Gamma_pp_dyn_tr.target_indices())
         delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](d, c);
   }
+
+  delta_tr_out = mpi::all_reduce(delta_tr_out);
 
   return delta_tr_out;
 }

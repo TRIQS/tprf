@@ -57,6 +57,27 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 }
 
 // ----------------------------------------------------
+// g0 real frequencies
+
+g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double delta) {
+
+  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  g_fk_t g0_fk({mesh, e_k.mesh()}, e_k.target_shape());
+  g0_fk() = 0.0;
+  std::complex<double> idelta(0.0, delta);
+
+  auto arr = mpi_view(g0_fk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+    g0_fk[f, k]  = inverse((f + idelta + mu) * I - e_k(k));
+  }
+
+  g0_fk = mpi::all_reduce(g0_fk);
+  return g0_fk;
+}
+
+// ----------------------------------------------------
 
 template<typename sigma_t>
 auto lattice_dyson_g_generic(double mu, e_k_cvt e_k, sigma_t sigma){
@@ -98,6 +119,30 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   return lattice_dyson_g_generic(mu, e_k, sigma_w);
 }
 
+
+// ----------------------------------------------------
+// g in real frequencies
+
+g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk, double delta) {
+
+  auto I    = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
+  auto g_fk = make_gf(sigma_fk);
+  g_fk()    = 0.0;
+  std::complex<double> idelta(0.0, delta);
+
+  auto arr = mpi_view(g_fk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+    g_fk[f, k]   = inverse((f + idelta + mu) * I - e_k(k) - sigma_fk[f, k]);
+  }
+
+  g_fk = mpi::all_reduce(g_fk);
+
+  return g_fk;
+}
+
+// ----------------------------------------------------
 
 g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
 

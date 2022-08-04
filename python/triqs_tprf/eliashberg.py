@@ -120,6 +120,7 @@ def solve_eliashberg(
     :ref:`eliashberg` : Theory of the linearized Eliashberg equation.
     """
 
+    
     def from_x_to_wk(delta_x):
         delta_wk = g_wk.copy()
         delta_wk.data[:] = delta_x.reshape(delta_wk.data.shape)

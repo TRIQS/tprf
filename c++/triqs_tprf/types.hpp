@@ -97,13 +97,14 @@ typedef gf<prod<brzone, imfreq, imfreq, imfreq>, tensor_valued<4>> chi_kwnn_t;
 typedef chi_kwnn_t::const_view_type chi_kwnn_cvt;
 typedef chi_kwnn_t::view_type chi_kwnn_vt;
   
-  // -- New style types FIXME notation
-  
-  // bosonic freq w for "\omega"
-  // fermionic freq "n" for "\nu"
-  // imagnary time "t" for "\tau"
-  // real space "r"
-  // momentum space "k"
+// -- New style types FIXME notation
+
+// bosonic freq w for "\omega"
+// fermionic freq "n" for "\nu"
+// imagnary time "t" for "\tau"
+// real freq f
+// real space "r"
+// momentum space "k"
 
 typedef gf<brzone, matrix_valued> e_k_t;
 typedef e_k_t::const_view_type e_k_cvt;
@@ -120,6 +121,10 @@ typedef g_w_t::view_type g_w_vt;
 typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
+
+typedef gf<prod<refreq, brzone>, matrix_valued> g_fk_t;
+typedef g_fk_t::const_view_type g_fk_cvt;
+typedef g_fk_t::view_type g_fk_vt;
 
 typedef gf<prod<imfreq, brzone>, matrix_valued> g_wk_t;
 typedef g_wk_t::const_view_type g_wk_cvt;
@@ -152,6 +157,10 @@ typedef chi_wr_t::view_type chi_wr_vt;
 typedef gf<prod<imfreq, brzone>, tensor_valued<4>> chi_wk_t;
 typedef chi_wk_t::const_view_type chi_wk_cvt;
 typedef chi_wk_t::view_type chi_wk_vt;
+
+typedef gf<prod<refreq, brzone>, tensor_valued<4>> chi_fk_t;
+typedef chi_fk_t::const_view_type chi_fk_cvt;
+typedef chi_fk_t::view_type chi_fk_vt;
 
 typedef gf<prod<brzone, imfreq>, tensor_valued<4>> chi_kw_t;
 typedef chi_kw_t::const_view_type chi_kw_cvt;
