@@ -2,6 +2,24 @@
 
 # Changelog
 
+## Version 3.1.1
+
+TPRF version 3.1.1 is a patch release that fixes an issue with recent numpy versions.
+
+We thank all contributors: Stefan, Hugo U. R. Strand, Nils Wentzell
+
+Find below an itemized list of changes in this release.
+
+### General
+* Update 3.1 easybuild script with sha256 of release tarball
+
+### py
+* Fix numpy depr warnings (errors with modern numpy)
+
+### doc
+* Provide more details on eliashberg, BSE and chi0 changes in changelog
+
+
 ## Version 3.1.0
 
 TPRF version 3.1.0 is a compatibility release for TRIQS version 3.1.0 also containing some new functionality.
@@ -43,6 +61,7 @@ TRIQS compatibility
 
 Contributors: Nils Wentzell, Alexander Hampel, Dylan Simon, Hugo U.R. Strand 
 
+
 ## Version 3.0.0
 
 tprf version 3.0.0 is a compatibility
@@ -82,6 +101,7 @@ python
 * Make sure to import pytriqs.utility.mpi in lattice module init
 
 Contributors: Philipp Dumitrescu, Dylan Simon, Nils Wentzell, Manuel Zingl
+
 
 ## Version 2.2.0
 
