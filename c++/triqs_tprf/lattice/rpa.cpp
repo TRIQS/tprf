@@ -26,7 +26,8 @@
 
 namespace triqs_tprf {
 
-  chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk, array_contiguous_view<std::complex<double>, 4> U_arr) {
+  template<typename CHI_T, typename CHI_VT>
+  CHI_T solve_rpa_PH(CHI_VT chi0_wk, array_contiguous_view<std::complex<double>, 4> U_arr) {
 
     using scalar_t = chi_wk_t::scalar_t;
 
@@ -60,6 +61,14 @@ namespace triqs_tprf {
   chi_wk = mpi::all_reduce(chi_wk);
 
   return chi_wk;
+  }
+
+  chi_wk_t solve_rpa_PH(chi_wk_vt chi0_wk, array_contiguous_view<std::complex<double>, 4> U_arr) {
+    return solve_rpa_PH<chi_wk_t, chi_wk_vt>(chi0_wk, U_arr);
+  }
+      
+  chi_fk_t solve_rpa_PH(chi_fk_vt chi0_fk, array_contiguous_view<std::complex<double>, 4> U_arr) {
+    return solve_rpa_PH<chi_fk_t, chi_fk_vt>(chi0_fk, U_arr);
   }
 
 } // namespace triqs_tprf

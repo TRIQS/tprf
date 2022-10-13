@@ -413,6 +413,29 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`""")
 
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_fk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
+
+     Computes the equation
+
+     .. math::
+         \chi(\bar{a}b\bar{c}d) = \big(
+         \mathbb{1}
+         - \chi^{(0)}(\bar{a}b\bar{B}A) U(A\bar{B}D\bar{C})
+         \big)^{-1} \chi^{(0)}(\bar{C}D\bar{c}d)\,.
+
+Parameters
+----------
+chi0
+     bare particle-hole bubble :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega)`
+
+U
+     RPA static vertex as obtained from triqs_tprf.rpa_tensor.get_rpa_tensor :math:`U_{a\bar{b}c\bar{d}}`
+
+Returns
+-------
+out
+     RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega)`""")
+
 module.add_function ("std::tuple<chi_wk_t, chi_k_t> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_cvt chi_wk)", doc = r"""Split mtrix-valued Green's function into dynamic and constant parts by tail fitting
 
 Parameters
