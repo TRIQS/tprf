@@ -30,8 +30,14 @@ namespace triqs_tprf {
   // ----------------------------------------------------
   // helper functions
 
-  double fermi(double e) { return 1. / (exp(e) + 1.); }
-  double fermiGauss(double e) { return 0.5 * erfc(e); }
+  double fermi(double e) {
+    if( e < 0 ) {
+      return 1. / (exp(e) + 1.);
+    } else {
+      double exp_me = exp(-e);
+      return exp_me / (1 + exp_me);
+    }
+  }
 
   // ----------------------------------------------------
   // chi00 bubble in analytic form
@@ -137,7 +143,7 @@ namespace triqs_tprf {
         for (int i : range(nb)) {
           for (int j : range(nb)) {
 
-            double dn = fermiGauss((ek(i) - mu) * beta) - fermiGauss((ekq(j) - mu) * beta);
+            double dn = fermi((ek(i) - mu) * beta) - fermi((ekq(j) - mu) * beta);
             double de = ekq(j) - ek(i);
 
             for (auto const &f : fmesh) {
