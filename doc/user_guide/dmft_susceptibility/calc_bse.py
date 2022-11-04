@@ -32,7 +32,7 @@ from triqs_tprf.bse import solve_lattice_bse
 for nwf in [8, 10, 12, 20]:
 
     with HDFArchive('data_g2.h5', 'r') as a: p = a['p']
-    p.nwf, p.tail_corr_nwf = nwf, 100
+    p.nwf = nwf
     
     # -- DMFT impurity vertex
     p.chi_m = p.G2_iw_ph[('up','up')] - p.G2_iw_ph[('up','do')]
@@ -42,6 +42,6 @@ for nwf in [8, 10, 12, 20]:
 
     # -- Lattice BSE
     g_wk = lattice_dyson_g_wk(mu=p.mu, e_k=p.e_k, sigma_w=p.sigma_w)[0:1, 0:1]
-    p.chi_kw, p.chi0_kw = solve_lattice_bse(g_wk, p.gamma_m, tail_corr_nwf=p.tail_corr_nwf)
+    p.chi_kw, p.chi0_kw = solve_lattice_bse(g_wk, p.gamma_m)
 
     with HDFArchive('data_bse_nwf{:03d}.h5'.format(nwf), 'w') as a: a['p'] = p

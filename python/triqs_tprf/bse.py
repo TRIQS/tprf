@@ -309,7 +309,7 @@ def solve_lattice_bse(g_wk, gamma_wnn):
 
     if mpi.is_master_node():
         print(tprf_banner(), "\n")
-        print('Lattcie BSE with local vertex approximation.\n')
+        print('Lattice BSE with local vertex approximation.\n')
         print('nk    =', nk)
         print('nw    =', nw)
         print('nwf   =', nwf)
@@ -416,7 +416,7 @@ def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
 
     if mpi.is_master_node():
         print(tprf_banner(), "\n")
-        print('Lattcie BSE with local vertex approximation at specific \omega.\n')
+        print('Lattice BSE with local vertex approximation at specific \omega.\n')
         print('nk    =', nk)
         print('nw_index    =', nw_index)
         print('nwf   =', nwf)
@@ -491,7 +491,7 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
     if mpi.is_master_node():    
         print((tprf_banner(), "\n"))
 
-        print('Lattcie BSE with local vertex approximation.\n')
+        print('Lattice BSE with local vertex approximation.\n')
         print(('nk  = ', nk))
         print(('nw  = ', nw))
         print(('nwf = ', nwf))
@@ -522,7 +522,7 @@ def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1)
     if mpi.is_master_node():    
         print((tprf_banner(), "\n"))
 
-        print('Lattcie BSE with local vertex approximation.\n')
+        print('Lattice BSE with local vertex approximation.\n')
         print(('nk  =', nk))
         print(('nw  =', nw))
         print(('nwf           =', nwf))
