@@ -173,6 +173,31 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
   return g_wk;
 }
 
+g_fr_t fourier_fk_to_fr(g_fk_cvt g_fk) {
+  auto g_fr = fourier_wk_to_wr_general_target(g_fk);
+  return g_fr;
+}
+
+g_fk_t fourier_fr_to_fk(g_fr_cvt g_fr) {
+  auto g_fk = fourier_wr_to_wk_general_target(g_fr);
+  return g_fk;
+}
+
+g_Tr_t fourier_Tk_to_Tr(g_Tk_cvt g_Tk) {
+  auto g_Tr = fourier_wk_to_wr_general_target(g_Tk);
+  return g_Tr;
+}
+
+g_Tk_t fourier_Tr_to_Tk(g_Tr_cvt g_Tr) {
+  auto g_Tk = fourier_wr_to_wk_general_target(g_Tr);
+  return g_Tk;
+}
+
+chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr) {
+  auto chi_Tk = fourier_wr_to_wk_general_target(chi_Tr);
+  return chi_Tk;
+}
+
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
 

@@ -180,4 +180,49 @@ namespace triqs_tprf {
  */
   g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw = -1);
   
+  /** Inverse fast fourier transform of real frequency Green's function from k-space to real space
+
+    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(\omega, \mathbf{k})\right\}`
+
+    @param g_fk k-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+    @return real-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{r})`
+ */
+  g_fr_t fourier_fk_to_fr(g_fk_cvt g_fk);
+
+  /** Fast fourier transform of real frequency Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(\omega, \mathbf{r}) \right\}`
+
+    @param g_fr real-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{r})`
+    @return k-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+ */
+  g_fk_t fourier_fr_to_fk(g_fr_cvt g_fr);
+
+  /** Inverse fast fourier transform of real time Green's function from k-space to real space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(t, \mathbf{k})\right\}`
+
+    @param g_Tk k-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{k})`
+    @return real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`
+ */
+  g_Tr_t fourier_Tk_to_Tr(g_Tk_cvt g_Tk);
+
+  /** Fast fourier transform of real time Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(t, \mathbf{r}) \right\}`
+
+    @param g_Tr real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`
+    @return k-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{k})`
+ */
+  g_Tk_t fourier_Tr_to_Tk(g_Tr_cvt g_Tr);
+
+  /** Fast fourier transform of real time Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}c\bar{d}}(t, \mathbf{r}) \right\}`
+
+    @param g_Tr real-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{r})`
+    @return k-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k})`
+ */
+  chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr);
+    
 } // namespace triqs_tprf

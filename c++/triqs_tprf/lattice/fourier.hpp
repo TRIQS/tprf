@@ -110,8 +110,7 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
   auto kmesh = std::get<1>(g_wk.mesh());
 
   auto rmesh = make_adjoint_mesh(kmesh);
-  //auto g_wr = gf<prod<imfreq, cyclat>, Target>{{wmesh, rmesh}, g_wk.target_shape()};
-  auto g_wr = make_gf<prod<imfreq, cyclat>>({wmesh, rmesh}, g_wk.target());
+  auto g_wr = make_gf<prod<decltype(wmesh), cyclat>>({wmesh, rmesh}, g_wk.target());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
@@ -145,7 +144,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   auto rmesh = std::get<1>(g_wr.mesh());
 
   auto kmesh = make_adjoint_mesh(rmesh);
-  auto g_wk = make_gf<prod<imfreq, brzone>>({wmesh, kmesh}, g_wr.target());
+  auto g_wk = make_gf<prod<decltype(wmesh), brzone>>({wmesh, kmesh}, g_wr.target());
 
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));

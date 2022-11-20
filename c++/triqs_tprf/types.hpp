@@ -126,6 +126,18 @@ typedef gf<prod<refreq, brzone>, matrix_valued> g_fk_t;
 typedef g_fk_t::const_view_type g_fk_cvt;
 typedef g_fk_t::view_type g_fk_vt;
 
+typedef gf<prod<retime, brzone>, matrix_valued> g_Tk_t;
+typedef g_Tk_t::const_view_type g_Tk_cvt;
+typedef g_Tk_t::view_type g_Tk_vt;
+  
+typedef gf<prod<refreq, cyclat>, matrix_valued> g_fr_t;
+typedef g_fr_t::const_view_type g_fr_cvt;
+typedef g_fr_t::view_type g_fr_vt;
+
+typedef gf<prod<retime, cyclat>, matrix_valued> g_Tr_t;
+typedef g_Tr_t::const_view_type g_Tr_cvt;
+typedef g_Tr_t::view_type g_Tr_vt;
+
 typedef gf<prod<imfreq, brzone>, matrix_valued> g_wk_t;
 typedef g_wk_t::const_view_type g_wk_cvt;
 typedef g_wk_t::view_type g_wk_vt;
@@ -162,6 +174,14 @@ typedef gf<prod<refreq, brzone>, tensor_valued<4>> chi_fk_t;
 typedef chi_fk_t::const_view_type chi_fk_cvt;
 typedef chi_fk_t::view_type chi_fk_vt;
 
+typedef gf<prod<retime, brzone>, tensor_valued<4>> chi_Tk_t;
+typedef chi_Tk_t::const_view_type chi_Tk_cvt;
+typedef chi_Tk_t::view_type chi_Tk_vt;
+
+typedef gf<prod<retime, cyclat>, tensor_valued<4>> chi_Tr_t;
+typedef chi_Tr_t::const_view_type chi_Tr_cvt;
+typedef chi_Tr_t::view_type chi_Tr_vt;
+  
 typedef gf<prod<brzone, imfreq>, tensor_valued<4>> chi_kw_t;
 typedef chi_kw_t::const_view_type chi_kw_cvt;
 typedef chi_kw_t::view_type chi_kw_vt;

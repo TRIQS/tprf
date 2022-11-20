@@ -257,6 +257,76 @@ Returns
 out
      real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
 
+module.add_function ("triqs_tprf::g_fr_t triqs_tprf::fourier_fk_to_fr (triqs_tprf::g_fk_cvt g_fk)", doc = r"""Inverse fast fourier transform of real frequency Green's function from k-space to real space
+
+    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(\omega, \mathbf{k})\right\}`
+
+Parameters
+----------
+g_fk
+     k-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+
+Returns
+-------
+out
+     real-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{r})`""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::fourier_fr_to_fk (triqs_tprf::g_fr_cvt g_fr)", doc = r"""Fast fourier transform of real frequency Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(\omega, \mathbf{r}) \right\}`
+
+Parameters
+----------
+g_fr
+     real-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{r})`
+
+Returns
+-------
+out
+     k-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_Tr_t triqs_tprf::fourier_Tk_to_Tr (triqs_tprf::g_Tk_cvt g_Tk)", doc = r"""Inverse fast fourier transform of real time Green's function from k-space to real space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(t, \mathbf{k})\right\}`
+
+Parameters
+----------
+g_Tk
+     k-space real time Green's function :math:`G_{a\bar{b}}(T, \mathbf{k})`
+
+Returns
+-------
+out
+     real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`""")
+
+module.add_function ("triqs_tprf::g_Tk_t triqs_tprf::fourier_Tr_to_Tk (triqs_tprf::g_Tr_cvt g_Tr)", doc = r"""Fast fourier transform of real time Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(t, \mathbf{r}) \right\}`
+
+Parameters
+----------
+g_Tr
+     real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`
+
+Returns
+-------
+out
+     k-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_Tk_t triqs_tprf::fourier_Tr_to_Tk (triqs_tprf::chi_Tr_cvt g_Tr)", doc = r"""Fast fourier transform of real time Green's function from real-space to k-space
+
+    Computes: :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}c\bar{d}}(t, \mathbf{r}) \right\}`
+
+Parameters
+----------
+g_Tr
+     real-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{r})`
+
+Returns
+-------
+out
+     k-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k})`""")
+
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::imfreq> mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
