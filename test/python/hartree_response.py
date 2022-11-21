@@ -40,14 +40,12 @@ if __name__ == '__main__':
     print('U, J =', U, J)
 
     spin_names = ['up', 'do']
-    #orb_names = [0, 1, 2]
-    orb_names = [0]
-    norb = 2*len(orb_names)
+    norb = 1
 
-    gf_struct = set_operator_structure(spin_names, orb_names, False) # orbital diag    
-    U_mat, UPrime_mat = U_matrix_kanamori(n_orb=len(orb_names), U_int=U, J_hund=J)
+    gf_struct = set_operator_structure(spin_names, norb, False) # orbital diag
+    U_mat, UPrime_mat = U_matrix_kanamori(n_orb=norb, U_int=U, J_hund=J)
     H_int = h_int_kanamori(
-        spin_names, orb_names, U_mat, UPrime_mat, J_hund=J,
+        spin_names, norb, U_mat, UPrime_mat, J_hund=J,
         off_diag=False, map_operator_structure=None, H_dump=None) # orbital diag
 
     # ------------------------------------------------------------------
@@ -69,7 +67,7 @@ if __name__ == '__main__':
         orbital_names = ['up_0', 'up_1', 'up_2', 'do_0', 'do_1', 'do_2'],
         )
 
-    Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb//2))
+    Sz = np.kron(np.diag([+0.5, -0.5]), np.eye(norb))
 
     if True:
         h_loc = np.kron(np.eye(2), np.diag([0.]))
@@ -83,7 +81,7 @@ if __name__ == '__main__':
                 (+1,): T,
                 (-1,): T,
                 },
-            orbital_positions = [(0,0,0)] * norb,
+            orbital_positions = [(0,0,0)] * 2 * norb,
             orbital_names = ['up_0', 'do_0'],
             )
 

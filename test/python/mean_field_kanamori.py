@@ -108,14 +108,14 @@ J = 0.6
 from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
 from triqs.operators.util.hamiltonians import h_int_kanamori
 
-orb_names = [0, 1]
+n_orb = 2
 spin_names = ['up', 'do']
 
 U_ab, UPrime_ab = U_matrix_kanamori(
-    n_orb=len(orb_names), U_int=U, J_hund=J)
+    n_orb=n_orb, U_int=U, J_hund=J)
     
 H_int = h_int_kanamori(
-    spin_names, orb_names, U_ab, UPrime_ab, J_hund=J,
+    spin_names, n_orb, U_ab, UPrime_ab, J_hund=J,
     off_diag=False, map_operator_structure=None, H_dump=None) # orbital diag
 
 print('H_int =\n', H_int)

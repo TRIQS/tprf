@@ -38,18 +38,17 @@ if __name__ == '__main__':
     U = 1.0
     J = 0.3
     
-    orb_names = [0, 1, 2]
     spin_names = ['up', 'do']
-    norb = len(orb_names)
+    norb = 3
 
-    gf_struct = set_operator_structure(spin_names, orb_names, True) # orbital off diag
+    gf_struct = set_operator_structure(spin_names, norb, True) # orbital off diag
     fundamental_operators = fundamental_operators_from_gf_struct(gf_struct)
     
     U_ab, UPrime_ab = U_matrix_kanamori(
-        n_orb=len(orb_names), U_int=U, J_hund=J)
+        n_orb=norb, U_int=U, J_hund=J)
     
     H_int = h_int_kanamori(
-        spin_names, orb_names, U_ab, UPrime_ab, J_hund=J,
+        spin_names, norb, U_ab, UPrime_ab, J_hund=J,
         off_diag=True, map_operator_structure=None, H_dump=None) # orgital offdiag
 
     U_abcd = get_rpa_tensor(H_int, fundamental_operators)
