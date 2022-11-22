@@ -1124,6 +1124,29 @@ Returns
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.""")
 
+module.add_function ("std::tuple<triqs_tprf::g_Tk_t, triqs_tprf::g_Tk_t> triqs_tprf::g0_Tk_les_gtr_from_e_k(triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::retime> Tmesh, double beta)")
+
+module.add_function ("triqs_tprf::chi_Tr_t triqs_tprf::chi0_Tr_from_g_Tr_PH (triqs_tprf::g_Tr_cvt g_Tr_les, triqs_tprf::g_Tr_cvt g_Tr_gtr)", doc = r"""Generalized susceptibility real time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(t, \mathbf{r})`
+
+  Computes
+
+  .. math::
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(t, \mathbf{r}) =
+     i G^<_{d\bar{a}}(t, \mathbf{r}) G^>_{b\bar{c}}(-t, -\mathbf{r})
+     - i G^>_{d\bar{a}}(t, \mathbf{r}) G^<_{b\bar{c}}(-t, -\mathbf{r})
+
+Parameters
+----------
+g_Tr_les
+     Lesser real time Green's function in real-space, :math:`G^<_{a\bar{b}}(t, \mathbf{r})`.
+g_Tr_gtr
+     Greater real time Green's function in real-space, :math:`G^>_{a\bar{b}}(t, \mathbf{r})`.
+
+Returns
+-------
+out
+     Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(t, \mathbf{r})` in real time and real-space.""")
+
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_wr_from_grt_PH (triqs_tprf::g_tr_cvt g_tr, int nw)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_tr_cvt g_tr)", doc = r"""Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`

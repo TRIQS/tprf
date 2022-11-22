@@ -31,6 +31,7 @@
 #include "./lattice/eliashberg.hpp"
 #include "./lattice/fourier_interpolation.hpp"
 
+#include "./lattice/chi_retime.hpp"
 #include "./lattice/chi_imtime.hpp"
 #include "./lattice/chi_imfreq.hpp"
 
