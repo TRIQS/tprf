@@ -237,7 +237,7 @@ Particle-hole channel (:math:`PH`)
 .. math::
    G^{(2),ph,diss}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')
    =
-   \beta \delta_{\nu+\nu', \omega} G_{b\bar{a}}(\nu) G_{b\bar{c}}(\nu')
+   \beta \delta_{0, \omega} G_{b\bar{a}}(\nu) G_{d\bar{c}}(\nu')
    - \beta \delta_{\nu, \nu'} G_{d\bar{a}}(\nu) G_{b\bar{c}}(\omega + \nu)
 
 .. math::
