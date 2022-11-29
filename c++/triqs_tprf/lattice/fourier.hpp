@@ -34,7 +34,7 @@ namespace triqs_tprf {
   }
 
 template <typename Gf_type>
-auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
+auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1, mpi::communicator const &c = {}) {
 
   auto _ = all_t{};
   // Get rid of structured binding declarations in this file due to issue #11
@@ -48,7 +48,7 @@ auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[_, r0]), gf_view(g_tr[_, r0]));
 
-  auto r_arr = mpi_view(rmesh);
+  auto r_arr = mpi_view(rmesh, c);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
@@ -63,12 +63,12 @@ auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
 
     g_tr[_, r] = g_t;
   }
-  g_tr = mpi::all_reduce(g_tr);
+  g_tr = mpi::all_reduce(g_tr, c);
   return g_tr;
 }
 
 template <typename Gf_type>
-auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
+auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1, mpi::communicator const &c = {}) {
   
   auto _ = all_t{};
   //auto [tmesh, rmesh] = g_tr.mesh();
@@ -81,7 +81,7 @@ auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
   auto r0 = *rmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_tr[_, r0]), gf_view(g_wr[_, r0]));
 
-  auto r_arr = mpi_view(rmesh);
+  auto r_arr = mpi_view(rmesh, c);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
@@ -96,12 +96,12 @@ auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
 
     g_wr[_, r] = g_w;
   }
-  g_wr = mpi::all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr, c);
   return g_wr;
 }
 
 template <typename Gf_type>
-auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
+auto fourier_wk_to_wr_general_target(Gf_type g_wk, mpi::communicator const &c = {}) {
   
   auto _ = all_t{};
 
@@ -115,7 +115,7 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wk[w0, _]), gf_view(g_wr[w0, _]));
 
-  auto w_arr = mpi_view(wmesh);
+  auto w_arr = mpi_view(wmesh, c);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < w_arr.size(); idx++) {
@@ -130,12 +130,12 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
 
     g_wr[w, _] = g_r;
   }
-  g_wr = mpi::all_reduce(g_wr);
+  g_wr = mpi::all_reduce(g_wr, c);
   return g_wr;
 }
 
 template <typename Gf_type>
-auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
+auto fourier_wr_to_wk_general_target(Gf_type g_wr, mpi::communicator const &c = {}) {
   
   auto _ = all_t{};
 
@@ -149,7 +149,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
   auto w0 = *wmesh.begin();
   auto p = _fourier_plan<0>(gf_const_view(g_wr[w0, _]), gf_view(g_wk[w0, _]));
 
-  auto w_arr = mpi_view(wmesh);
+  auto w_arr = mpi_view(wmesh, c);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < w_arr.size(); idx++) {
@@ -164,7 +164,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
 
     g_wk[w, _] = g_k;
   }
-  g_wk = mpi::all_reduce(g_wk);
+  g_wk = mpi::all_reduce(g_wk, c);
   return g_wk;
 }
 

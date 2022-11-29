@@ -41,7 +41,7 @@ namespace triqs_tprf {
   @param mesh imaginary frequency mesh
   @return Matsubara frequency lattice Green's function $G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})$
   */
-  g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh);
+  g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh, mpi::communicator const &c = {});
 
   /** Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
    
@@ -61,7 +61,7 @@ namespace triqs_tprf {
  @param sigma_w imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n)`
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-  g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
+  g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w, mpi::communicator const &c = {});
 
   /** Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
 
@@ -101,7 +101,7 @@ namespace triqs_tprf {
  @param sigma_wk imaginary frequency self-energy $\Sigma_{\bar{a}b}(i\omega_n, \mathbf{k})$
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-  g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk);
+  g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk, mpi::communicator const &c = {});
 
   /** Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
    
@@ -142,7 +142,7 @@ namespace triqs_tprf {
  @param sigma_w imaginary frequency self-energy :math:`\Sigma_{\bar{a}b}(i\omega_n)`
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
-  g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
+  g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w, mpi::communicator const &c = {});
 
   /** Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
@@ -151,7 +151,7 @@ namespace triqs_tprf {
     @param g_wk k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
     @return real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
-  g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk);
+  g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk, mpi::communicator const &c = {});
 
   /** Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
@@ -160,7 +160,7 @@ namespace triqs_tprf {
     @param g_wr real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
     @return k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
  */
-  g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr);
+  g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr, mpi::communicator const &c = {});
 
   /** Fast fourier transform of real-space Green's function from Matsubara frequency to imaginary time
 
@@ -169,7 +169,7 @@ namespace triqs_tprf {
     @param g_wr real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
     @return real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
  */
-  g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt = -1);
+  g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt=-1, mpi::communicator const &c = {});
 
   /** Fast fourier transform of real-space Green's function from imaginary time to Matsubara frequency
 
@@ -178,7 +178,7 @@ namespace triqs_tprf {
     @param g_tr real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
     @return real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
-  g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw = -1);
+  g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw=-1, mpi::communicator const &c = {});
   
   /** Inverse fast fourier transform of real frequency Green's function from k-space to real space
 
