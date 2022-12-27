@@ -53,7 +53,8 @@ def fermi_function(E, beta):
     return f
 
 
-def fourier_transformation_with_heaviside_matrix(w, t, G_t, greg=None, order=16, windowing=False):
+def fourier_transformation_with_heaviside_matrix(
+        w, t, G_t, greg=None, order=16, windowing=False, kaiser_beta=14.):
 
     """ Fourier transform G(t) to frequency assuming that G(t) = 0 for t < 0 
 
@@ -66,15 +67,16 @@ def fourier_transformation_with_heaviside_matrix(w, t, G_t, greg=None, order=16,
         from pyneco.gregory import gregory_coeff    
         greg = -1 + np.array(gregory_coeff(order), dtype=float)
 
+    n = G_t.shape[0]
     if windowing:
-        n = G_t.shape[0]
-        window = np.blackman(2*n)[n:].reshape([n] + [1]*len(G_t.shape[1:]))
+        #window = np.blackman(2*n)[n:].reshape([n] + [1]*len(G_t.shape[1:]))
+        window = np.kaiser(2*n, kaiser_beta)[n:].reshape([n] + [1]*len(G_t.shape[1:]))
     else:
         window = 1.
         
     # -- Fourier transform adding zeros for t < 0
     dt = t[1] - t[0]
-    G_t *= window
+    G_t = window * G_t
     G_w = np.fft.ifft(G_t, n=n*2, axis=0) * G_t.shape[0]*2
     n = len(w) // 2
     G_w = dt * np.fft.ifftshift(np.concatenate((G_w[:n], G_w[-n:])), axes=0)
@@ -87,13 +89,14 @@ def fourier_transformation_with_heaviside_matrix(w, t, G_t, greg=None, order=16,
     return G_w
 
 
-def fourier_from_tk_to_fk(g_tk, g_fk, windowing=True):
+def fourier_from_tk_to_fk(g_tk, g_fk, windowing=True, kaiser_beta=14.):
     """ Inplace FFT """
     tmesh = g_tk.mesh[0]
     fmesh = g_fk.mesh[0]
     t = np.array(list(tmesh.values()))
     f = np.array(list(fmesh.values()))
-    g_fk.data[:] = fourier_transformation_with_heaviside_matrix(f, t, g_tk.data, windowing=windowing)
+    g_fk.data[:] = fourier_transformation_with_heaviside_matrix(
+        f, t, g_tk.data, windowing=windowing, kaiser_beta=kaiser_beta)
 
 
 def setup_time_and_frequency_meshes(fmax, df, zero_padding):
@@ -173,8 +176,8 @@ def chi0_tr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
     return chi0_tr
 
 
-def chi0_from_ek(e_k, beta, tmesh, fmesh):
-
+def chi0_from_ek(e_k, beta, tmesh, fmesh, kaiser_beta=14.):
+    
     tmr = time.time()
     print('--> g_tk')
     g_tk_les, g_tk_gtr = g0_Tk_les_gtr_from_e_k(e_k, tmesh, beta)
@@ -190,19 +193,19 @@ def chi0_from_ek(e_k, beta, tmesh, fmesh):
     print('--> chi0_tr from g')
     chi0_tr = chi0_Tr_from_g_Tr_PH(g_tr_les, g_tr_gtr)
     print(f'done {time.time() - tmr} s')
-
+    
     tmr = time.time()
     print('--> fourier_Tr_to_Tk (chi0)')
     chi0_tk = fourier_Tr_to_Tk(chi0_tr)
     print(f'done {time.time() - tmr} s')
-
+    
     # -- Transform to frequency
 
     tmr = time.time()
     print('--> fourier_from_tk_to_fk chi0')
     kmesh = chi0_tk.mesh[-1]
-    chi0_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=(2, 2, 2, 2))
-    fourier_from_tk_to_fk(chi0_tk, chi0_fk)
+    chi0_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=chi0_tk.target_shape)
+    fourier_from_tk_to_fk(chi0_tk, chi0_fk, kaiser_beta=kaiser_beta)
     print(f'done {time.time() - tmr} s')
 
     return chi0_fk
