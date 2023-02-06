@@ -122,6 +122,10 @@ typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
 
+typedef gf<refreq, matrix_valued> g_f_t;
+typedef g_f_t::const_view_type g_f_cvt;
+typedef g_f_t::view_type g_f_vt;
+
 typedef gf<prod<refreq, brzone>, matrix_valued> g_fk_t;
 typedef g_fk_t::const_view_type g_fk_cvt;
 typedef g_fk_t::view_type g_fk_vt;

@@ -172,6 +172,38 @@ Returns
 out
      real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g_fk (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_f_cvt sigma_f, double delta)", doc = r"""Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
+
+ Computes
+
+ .. math::
+    G_{a\bar{b}}(\omega, \mathbf{k}) = \left[
+    (\omega + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega)
+    \right]^{-1}_{a\bar{b}},
+
+ using a discretized dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`,
+ chemical potential :math:`\mu`, broadening :math:`\delta`, and a real frequency
+ self energy :math:`\Sigma_{\bar{a}b}(\omega)`.
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+sigma_fk
+     real frequency self-energy :math:`\Sigma_{\bar{a}b}(\omega)`
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`""")
+
 module.add_function ("triqs_tprf::g_w_t triqs_tprf::lattice_dyson_g_w (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w)", doc = r"""Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
 
  Computes
@@ -200,6 +232,38 @@ Returns
 -------
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_f_t triqs_tprf::lattice_dyson_g_f (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_f_cvt sigma_f, double delta)", doc = r"""Construct an interacting real frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(\omega)`
+
+ Computes
+
+ .. math::
+    G_{a\bar{b}}(\omega) = \frac{1}{N_k} \sum_\mathbf{k} \left[
+    (i\omega_n + i\delta + \mu ) \cdot \mathbf{1}  - \epsilon(\mathbf{k}) - \Sigma(\omega)
+    \right]^{-1}_{a\bar{b}},
+
+ using a discretized dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`,
+ chemical potential :math:`\mu`, and a momentum independent real frequency
+ self energy :math:`\Sigma_{\bar{a}b}(\omega)`.
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+sigma_f
+     real frequency self-energy :math:`\Sigma_{\bar{a}b}(\omega)`
+
+delta
+     broadening :math:`\delta`
+
+Returns
+-------
+out
+     Real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_wr_t triqs_tprf::fourier_wk_to_wr (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
