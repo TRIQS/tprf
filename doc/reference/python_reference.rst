@@ -9,6 +9,7 @@ Lattice Green's functions
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g0_fk
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_wk
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_fk
+.. autofunction:: triqs_tprf.lattice.lattice_dyson_g_f
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_w
 		  
 Lindhard non-interacting generalized susceptibility
