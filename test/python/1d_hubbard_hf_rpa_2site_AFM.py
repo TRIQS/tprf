@@ -35,7 +35,7 @@ if __name__ == '__main__':
         precision=3, linewidth=10000,
         threshold=1000000, suppress=True)
 
-    beta = 1.3
+    beta = 1.2
     N_tot = 0.7 * 2
     n_k = (8, 1, 1)
 
