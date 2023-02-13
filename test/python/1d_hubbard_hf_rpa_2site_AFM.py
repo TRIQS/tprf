@@ -35,7 +35,7 @@ if __name__ == '__main__':
         precision=3, linewidth=10000,
         threshold=1000000, suppress=True)
 
-    beta = 1.3
+    beta = 1.2
     N_tot = 0.7 * 2
     n_k = (8, 1, 1)
 
@@ -208,11 +208,11 @@ if __name__ == '__main__':
     assert( np.array_equal(np.abs(m_FM) < 1e-6, chi_FM.real > 0.) ), \
         "Error: The AF susceptibility and order parameter do not agree."
 
-    spl_chi_AF = InterpolatedUnivariateSpline(U[::-1], 1./chi_AF[::-1])
+    spl_chi_AF = InterpolatedUnivariateSpline(U[::-1], 1./chi_AF[::-1].real)
     U_AF = spl_chi_AF.roots()[0]
     print('U_AF =', U_AF)
 
-    spl_chi_FM = InterpolatedUnivariateSpline(U[::-1], 1./chi_FM[::-1])
+    spl_chi_FM = InterpolatedUnivariateSpline(U[::-1], 1./chi_FM[::-1].real)
     U_FM = spl_chi_FM.roots()[0]
     print('U_FM =', U_FM)
 
@@ -243,16 +243,16 @@ if __name__ == '__main__':
     for label, res in [('AF', res_AF), ('FM', res_FM)]:
         
         U = get_vec(res, 'U')
-        m_AF = get_vec(res, 'm_AF')
-        m_FM = get_vec(res, 'm_FM')
-        chi = get_vec(res, 'chi')
+        m_AF = get_vec(res, 'm_AF').real
+        m_FM = get_vec(res, 'm_FM').real
+        chi = get_vec(res, 'chi').real
 
-        E_tot = get_vec(res, 'E_tot')
-        E_kin = get_vec(res, 'E_kin')
-        E_int = get_vec(res, 'E_int')
+        E_tot = get_vec(res, 'E_tot').real
+        E_kin = get_vec(res, 'E_kin').real
+        E_int = get_vec(res, 'E_int').real
 
-        Omega0 = get_vec(res, 'Omega0')
-        Omega = get_vec(res, 'Omega')
+        Omega0 = get_vec(res, 'Omega0').real
+        Omega = get_vec(res, 'Omega').real
 
         subp = [3, 2, 1]
         plt.subplot(*subp); subp[-1] += 1
