@@ -291,5 +291,5 @@ def test_chi0(verbose=False):
     
 if __name__ == "__main__":
         
-    test_fft(verbose=True)
-    test_chi0(verbose=True)
+    test_fft()
+    test_chi0()
