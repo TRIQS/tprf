@@ -121,9 +121,7 @@ def get_rpa_uc_tensor(norb, U, Up, J, Jp):
 def tensor_to_matrix(tensor):
 
     """Tranforms a 4-rank tensor into a matrix using the matrix-RPA notation 
-
     Parameters:
-
     tensor: np.ndarray, last 4 dimensions must be the orbitals
     """
 
@@ -137,7 +135,7 @@ def tensor_to_matrix(tensor):
     left = [slice(None)]*len(non_orb_idx) + [np.array(idx)]
     right = [slice(None)]*(len(non_orb_idx)+1) + [np.array(idx)]
     
-    matrix = tensor.reshape(non_orb_idx+(norb**2,)*2)[left][right]
+    matrix = tensor.reshape(non_orb_idx+(norb**2,)*2)[tuple(left)][tuple(right)]
 
     return matrix
 
