@@ -37,7 +37,7 @@ def nint_strict(x, precision=1.e-9):
     assert precision >0 and precision <0.5, "nint_strict : precision makes no sense !"
     i = numpy.floor(x+0.5)
     assert abs(i-x).max() < precision, repr(i) + "\n "+repr(x) + "\n The Float is not close enough to the integer "
-    return i.astype(numpy.int)
+    return i.astype(int)
 
 
 class TBSuperLattice(TBLattice):
