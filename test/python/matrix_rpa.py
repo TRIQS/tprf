@@ -143,9 +143,7 @@ def tensor_to_matrix(tensor):
 def matrix_to_tensor(matrix):
 
     """Tranforms a matrix-RPA notation matrix into a 4-rank tensor
-
     Parameters:
-
     matrix: np.ndarray, last 2 dimensions must be the orbitals
     """
 
@@ -160,7 +158,7 @@ def matrix_to_tensor(matrix):
     left = [slice(None)]*len(non_orb_idx) + [np.array(idx)]
     right = [slice(None)]*(len(non_orb_idx)+1) + [np.array(idx)]
     
-    tensor = matrix[left][right].reshape(non_orb_idx + (norb,)*4)
+    tensor = matrix[tuple(left)][tuple(right)].reshape(non_orb_idx + (norb,)*4)
 
     return tensor 
 
