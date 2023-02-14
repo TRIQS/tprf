@@ -254,7 +254,7 @@ class HartreeFockSolver(object):
         if M0 is None:
             M0 = np.zeros(self.target_shape)
 
-        M0 = np.array(M0, dtype=np.complex)
+        M0 = np.array(M0, dtype=complex)
 
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
@@ -398,7 +398,7 @@ class HartreeFockSolver(object):
         if M0 is None:
             M0 = np.zeros(self.target_shape)
 
-        M0 = np.array(M0, dtype=np.complex)
+        M0 = np.array(M0, dtype=complex)
             
         self.M = np.copy(M0)
         self.update_mean_field_dispersion()
@@ -483,7 +483,7 @@ class HartreeFockSolver(object):
 
         assert( len(vec.shape) == 1 )
 
-        mat = np.zeros(self.shape_ab, dtype=np.complex)
+        mat = np.zeros(self.shape_ab, dtype=complex)
 
         diag, up_tri = vec[:self.norb], vec[self.norb:]
         re, im = np.split(up_tri, 2)

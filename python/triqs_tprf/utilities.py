@@ -81,7 +81,7 @@ def BlockGf_data(G):
     import numpy as np
     
     shape = [G.n_blocks] + list(G[next(G.indices)].data.shape)
-    data = np.zeros(shape, dtype=np.complex)
+    data = np.zeros(shape, dtype=complex)
     for bidx, (b, g) in enumerate(G):
         data[bidx] = g.data.copy()
 

@@ -89,7 +89,7 @@ class TBLattice(object):
     def periodization_matrix(self, n_k):
         n_k = np.array(n_k)
         assert( len(n_k) == 3 )
-        assert( n_k.dtype == np.int )
+        assert( n_k.dtype == int )
         periodization_matrix = np.diag(np.array(list(n_k), dtype=np.int32))
         return periodization_matrix
     

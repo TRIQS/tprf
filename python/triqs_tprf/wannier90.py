@@ -74,7 +74,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 
     deg = np.array([])
     for line in lines[:nlines]:
-        deg = np.concatenate((deg, np.loadtxt(StringIO(line), dtype=np.int, ndmin=1)))
+        deg = np.concatenate((deg, np.loadtxt(StringIO(line), dtype=int, ndmin=1)))
     
     assert( deg.shape == (nrpts,) )
 
@@ -83,8 +83,8 @@ def parse_hopping_from_wannier90_hr_dat(filename):
 
     assert( hopp.shape == (num_wann**2 * nrpts, 7) )
     
-    R = np.array(hopp[:, :3], dtype=np.int) # Lattice coordinates in multiples of lattice vectors
-    nm = np.array(hopp[:, 3:5], dtype=np.int) - 1 # orbital index pairs, wannier90 counts from 1, fix by remove 1
+    R = np.array(hopp[:, :3], dtype=int) # Lattice coordinates in multiples of lattice vectors
+    nm = np.array(hopp[:, 3:5], dtype=int) - 1 # orbital index pairs, wannier90 counts from 1, fix by remove 1
 
     t_re = hopp[:, 5]
     t_im = hopp[:, 6]
@@ -103,7 +103,7 @@ def parse_hopping_from_wannier90_hr_dat(filename):
             r_dict[r] += 1
 
         if r not in hopp_dict:
-            hopp_dict[r] = np.zeros((num_wann, num_wann), dtype=np.complex)
+            hopp_dict[r] = np.zeros((num_wann, num_wann), dtype=complex)
 
         n, m = nm[idx]
         hopp_dict[r][n, m] = t[idx]
