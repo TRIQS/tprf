@@ -251,6 +251,11 @@ chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr) {
   return chi_Tk;
 }
 
+chi_Tr_t fourier_Tk_to_Tr(chi_Tk_cvt chi_Tk) {
+  auto chi_Tr = fourier_wk_to_wr_general_target(chi_Tk);
+  return chi_Tr;
+}
+
 // ----------------------------------------------------
 // Transformations: Matsubara frequency <-> imaginary time
 

@@ -408,6 +408,20 @@ Returns
 out
      k-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::chi_Tr_t triqs_tprf::fourier_Tk_to_Tr (triqs_tprf::chi_Tk_cvt chi_Tk)", doc = r"""Inverse fast fourier transform of real time Green's function from k-space to real space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(t, \mathbf{k})\right\}`
+
+Parameters
+----------
+g_Tk
+     k-space real time Green's function :math:`G_{a\bar{b}}(T, \mathbf{k})`
+
+Returns
+-------
+out
+     real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`""")
+
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility

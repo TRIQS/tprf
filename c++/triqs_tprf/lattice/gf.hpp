@@ -350,5 +350,14 @@ namespace triqs_tprf {
     @return k-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k})`
  */
   chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr);
-    
+
+  /** Fast fourier transform of real time Green's function from k-space to real-space
+
+    Computes: :math:`G_{a\bar{b}}(t, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(t, \mathbf{k})\right\}`
+
+    @param g_Tk k-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{k})`
+    @return real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`
+ */
+  chi_Tr_t fourier_Tk_to_Tr(chi_Tk_cvt chi_Tk);
+  
 } // namespace triqs_tprf
