@@ -97,4 +97,18 @@ g2_iw_t chi_from_gg2_PH(g_iw_vt g, g2_iw_vt g2);
   */
 g2_iw_t chi_from_gg2_PP(g_iw_vt g, g2_iw_vt g2);
 
+/** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Hole channel
+
+     Computes
+
+     .. math::
+         \chi^{(0)}_{\bar{a}b\bar{c}d}(\tau) =
+         G_{da}(\nu) \cdot G_{bc}(\beta - \tay)
+
+     @param g single particle Green's function :math:`G_{ab}(\tau)`
+     @return chi0 particle-hole bubble
+   :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau)`
+  */
+chi2_tau_t chi0_tau_from_g_tau_PH(g_tau_cvt g);
+  
 } // namespace triqs_tprf

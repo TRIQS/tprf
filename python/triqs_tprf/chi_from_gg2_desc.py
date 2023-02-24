@@ -117,6 +117,24 @@ out
      chi generalized particle-hole susceptibility
      :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \nu,\nu')`""")
 
+module.add_function ("triqs_tprf::chi2_tau_t triqs_tprf::chi0_tau_from_g_tau_PH(triqs_tprf::g_tau_cvt g)", doc = r"""Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Hole channel
+
+     Computes
+
+     .. math::
+         \chi^{(0)}_{\bar{a}b\bar{c}d}(\tau) =
+         G_{da}(\tau) \cdot G_{bc}(\beta - \tau)
+
+Parameters
+----------
+g
+     single particle Green's function :math:`G_{ab}(\tau)`
+
+Returns
+-------
+out
+     chi0 particle-particle bubble
+     :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau')`""")
 
 
 module.generate_code()

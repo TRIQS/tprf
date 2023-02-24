@@ -32,6 +32,8 @@ placeholder<3> d;
 placeholder<4> Omega;
 placeholder<5> n;
 placeholder<6> np;
+
+placeholder<7> tau;
 } // namespace
 
 namespace triqs_tprf {
@@ -60,6 +62,19 @@ template <> g2_iw_t chi_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
   return chi;
 }
 
+chi2_tau_t chi0_tau_from_g_tau_PH(g_tau_cvt g_tau) {
+
+  int nb = g_tau.target().shape()[0];
+  double beta = g_tau.mesh().domain().beta;
+  int ntau = g_tau.mesh().size();
+  
+  chi2_tau_t chi0_tau{{beta, Boson, ntau}, {nb, nb, nb, nb}};
+
+  chi0_tau(tau)(a, b, c, d) << g_tau(tau)(d, a) * g_tau(beta - tau)(b, c);
+
+  return chi0_tau;
+}
+  
 // ----------------------------------------------------
 // Particle-particle (PP)
 

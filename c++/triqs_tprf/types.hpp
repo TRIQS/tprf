@@ -227,6 +227,8 @@ typedef b_g_iw_t::const_view_type b_g_iw_cvt;
 
 /// Container type of two-particle Green and Vertex functions in imaginary time
 using g_tau_t = gf<imtime, matrix_valued>;
+typedef g_tau_t::const_view_type g_tau_cvt;
+typedef g_tau_t::view_type g_tau_vt;
 
 /// Container type of $\chi_3$ in Matsubara frequencies
 using chi2_iw_t = gf<imfreq, tensor_valued<4>>;
