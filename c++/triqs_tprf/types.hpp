@@ -242,8 +242,7 @@ using chi3_iw_t = gf<prod<imfreq, imfreq>, tensor_valued<4>>;
 /// Container type of $\chi_3$ in imaginary time
 using chi3_tau_t = gf<prod<imtime, imtime>, tensor_valued<4>>;
 
-/// Container type of two-particle Green and Vertex functions in Matsubara
-/// frequencies
+/// Container type of two-particle Green and Vertex functions in Matsubara frequencies
 using chi4_iw_t =
     gf<prod<imfreq, imfreq, imfreq>, tensor_valued<4>>;
 
