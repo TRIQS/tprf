@@ -41,11 +41,9 @@ Theory and notation
    theory/notation
    theory/single_particle_gf
    theory/vertex
-   theory/derivation_index_pairing
    theory/boundary_conditions
    theory/linear_response
    theory/rpa
-   theory/matrix_rpa
    theory/eliashberg
 
 FAQs

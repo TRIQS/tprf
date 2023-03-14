@@ -48,16 +48,16 @@ The singlet and triplet susceptibilties are given by
     \chi^{\mathrm{s}}
     =
     -
-    \chi^{(0), \mathrm{PP}}
+    \chi^{0, \mathrm{PP}}
     +
     \frac{1}{2}
-    \chi^{(0), \mathrm{PP}}
-    \mathbf{\Gamma}^{\mathrm{s}}
+    \chi^{0, \mathrm{PP}}
+    \Gamma^{\mathrm{s}}
     \left[
     -
     \chi^{\mathrm{s}}
     +
-    \chi^{(0), \mathrm{PP}}
+    \chi^{0, \mathrm{PP}}
     \right]
     \,,
 
@@ -66,22 +66,22 @@ and
 .. math::
     \chi^{\mathrm{t}}
     =
-    \chi^{(0), \mathrm{PP}}
+    \chi^{0, \mathrm{PP}}
     +
     \frac{1}{2}
-    \chi^{(0), \mathrm{PP}}
-    \mathbf{\Gamma}^{\mathrm{t}}
+    \chi^{0, \mathrm{PP}}
+    \Gamma^{\mathrm{t}}
     \left[
     \chi^{\mathrm{t}}
     +
-    \chi^{(0), \mathrm{PP}}
+    \chi^{0, \mathrm{PP}}
     \right]
     \,.
 
 A transition from the normal state to a singlet/triplet superconducting one occurs
 when the susceptibilties diverge.
 This is the case, when the largest eigenvalue of 
-:math:`\mp \frac{1}{2}\mathbf{\Gamma^{\mathrm{s/t}}} \mathbf{\chi}^{(0),{PP}}` becomes unity.
+:math:`\mp \frac{1}{2}\Gamma^{\mathrm{s/t}} \chi^{0,{PP}}` becomes unity.
 For a largest eigenvalues that is smaller than :math:`1` we are still in the
 normal state,
 but we can calculate the corresponding eigenvectors :math:`\Delta^{\mathrm{s/t}}`.
@@ -92,17 +92,17 @@ This corresponds to the following eigenvalue equation
     = 
     \frac{1}{2N_{\mathbf{k}}^2 \beta^2}\sum_{K', K''}
     \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(Q=0, K', K)
-    \chi^{(0),{PP}}_{\bar{f}d\bar{e}c}(Q=0, K'', K')
+    \chi^{0,{PP}}_{\bar{f}d\bar{e}c}(Q=0, K'', K')
     \Delta^{\mathrm{s/t}}_{\bar{e}\bar{f}}(K'')\,,
  
 where we incorporate the minus sign of the singlet channel in our definition of the 
 singlet irreducible vertex to only keep track of one version of the Eliashberg equation.
 
 We can write this like Eq. :eq:`linearized_eliashberg_1` by using the definiton
-of :math:`\chi^{(0),{PP}}`
+of :math:`\chi^{0,{PP}}`
 
 .. math::
-    \chi^{(0),{PP}}_{\bar{a}b\bar{c}d}(Q=0, K, K') 
+    \chi^{0,{PP}}_{\bar{a}b\bar{c}d}(Q=0, K, K') 
     =
     -N_{\mathbf{k}} \beta
     G_{d\bar{a}}(K)G_{b\bar{c}}(-K')\delta_{K, K'}\,,
@@ -118,7 +118,7 @@ which yields
     :label: linearized_eliashberg_3
 
 .. note::
-    Our definiton of :math:`\chi^{(0),{PP}}` is different from [#bickers]_
+    Our definiton of :math:`\chi^{0,{PP}}` is different from [#bickers]_
     and [#nourafkan]_. This stems from the fact, that due to the indistinguishability 
     of the particles in the particle-particle channel doublecounting diagrams in the 
     Bethe-Salpeter equation (BSE) must be avoided. 
@@ -310,10 +310,10 @@ given by
     U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}} =
     \begin{cases}
     U/U, & \mathrm{if}\;a=\bar{b}=c=\bar{d} \\
-    -U'+2J/U', & \mathrm{if}\;a=\bar{d}\neq \bar{b}=c \\
-    2U'-J/J, & \mathrm{if}\;a=\bar{b}\neq c=\bar{d} \\
-    J/J, & \mathrm{if}\;a=c\neq \bar{b}=\bar{d} \\
-    0, & \mathrm{else}
+    -U'+2J/U' & \mathrm{if}\;a=\bar{d}\neq \bar{b}=c \\
+    2U'-J/J & \mathrm{if}\;a=\bar{b}\neq c=\bar{d} \\
+    J/J & \mathrm{if}\;a=c\neq \bar{b}=\bar{d} \\
+    0 & \mathrm{else}
     \end{cases}\,,
 
 with the Hubbard interaction :math:`U` and the Hund's :math:`J`.
@@ -487,7 +487,6 @@ This allows us to get rid of the summation by using the convolution theorem
     G_{c\bar{f}}(K')G_{d\bar{e}}(-K')
     \Delta_{\bar{e}\bar{f}}^{\mathrm{s/t}}(K')
     \right]\,,
-    :label: linearized_eliashberg_5
 
 making the calculation computationaly more efficient for large numbers of frequencies
 and momenta.
@@ -501,7 +500,7 @@ instead of the convolution theorem can be more effecient.
     For an idea on how to tackle such a task see the following draft
     `here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/c%2B%2B/triqs_tprf/lattice/eliashberg.cpp#L289>`_
     and 
-    `here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/python/triqs_tprf/eliashberg.py#L216>`_.
+    `also here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/python/triqs_tprf/eliashberg.py#L216>`_.
 
 
 .. rubric:: References
