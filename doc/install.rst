@@ -6,6 +6,7 @@ Packaged Versions of TPRF
 =========================
 
 .. _ubuntu_debian:
+
 Ubuntu Debian packages
 ----------------------
 
@@ -15,7 +16,8 @@ We provide a Debian package for the Ubuntu LTS Versions 16.04 (xenial) and 18.04
 
 can be used to install the TPRF package.
     
-.. _anaconda:
+.. _anaconda_exp:
+
 Anaconda (experimental)
 -----------------------
 
@@ -26,6 +28,7 @@ We provide Linux and OSX packages for the `Anaconda <https://www.anaconda.com/>`
 See also `github.com/conda-forge/triqs_tprf-feedstock <https://github.com/conda-forge/triqs_tprf-feedstock/>`_.
 
 .. _docker:
+
 Docker
 ------
 
@@ -40,7 +43,7 @@ Compiling TPRF from source
 Prerequisites
 -------------
 
-#. The :ref:`TRIQS <triqslibs:welcome>` library, see :ref:`TRIQS installation instruction <triqslibs:installation>`.
+#. The :ref:`TRIQS <triqslibs:welcome>` library, see `TRIQS installation instruction <https://triqs.github.io/triqs/latest/install.html>`_.
    In the following, we assume that TRIQS is installed in the directory ``path_to_triqs``.
 
 Installation steps

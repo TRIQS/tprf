@@ -33,7 +33,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) = 
         V_{abcd}(\mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
         \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
         W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
 
@@ -52,7 +52,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
         V_{abcd}(\mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
         \Pi_{fegh}(\omega, \mathbf{k}) \cdot
         W^{(full)}_{hgcd}(\omega, \mathbf{k})
 
@@ -70,7 +70,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) = 
         V_{abcd}(i\omega_n, \mathbf{k}) +
-	    \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
         \Pi_{fegh}(i\omega_n, \mathbf{k}) \cdot
         W^{(full)}_{hgcd}(i\omega_n, \mathbf{k})
 
@@ -88,7 +88,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
         V_{abcd}(\omega, \mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
         \Pi_{fegh}(\omega, \mathbf{k}) \cdot
         W^{(full)}_{hgcd}(\omega, \mathbf{k})
 
@@ -106,7 +106,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) = 
         V_{abcd}(\mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
         \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
         V_{hgcd}(\mathbf{k})
 
@@ -124,7 +124,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
         V_{abcd}(\mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\mathbf{k}) \cdot
         \chi_{fegh}(\omega, \mathbf{k}) \cdot
         V_{hgcd}(\mathbf{k})
 
@@ -142,7 +142,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(i\omega_n, \mathbf{k}) = 
         V_{abcd}(i\omega_n, \mathbf{k}) +
-	    \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(i\omega_n, \mathbf{k}) \cdot
         \chi_{fegh}(i\omega_n, \mathbf{k}) \cdot
         V_{hgcd}(i\omega_n, \mathbf{k})
 
@@ -161,7 +161,7 @@ namespace triqs_tprf {
     .. math::
         W^{(full)}_{abcd}(\omega, \mathbf{k}) = 
         V_{abcd}(\omega, \mathbf{k}) +
-	    \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
+        \sum_{efgh} V_{abef}(\omega, \mathbf{k}) \cdot
         \chi_{fegh}(\omega, \mathbf{k}) \cdot
         V_{hgcd}(\omega, \mathbf{k})
 

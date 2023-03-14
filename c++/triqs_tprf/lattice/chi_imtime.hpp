@@ -69,7 +69,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr);
  */
 chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr);
   
-/** Parallell Fourier transform from  :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
+/** Parallel Fourier transform from  :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
 
   Computes
 
@@ -94,7 +94,7 @@ chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw);
   .. math::
          \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) =
          \mathcal{F}_{\omega \rightarrow \tau} \left\{
-	 \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
+         \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
          \right\}
 
   @param chi_tr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
@@ -105,7 +105,7 @@ chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw);
 chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
 chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau=-1);
 
-/** Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
+/** Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
 
   Computes
 
@@ -123,7 +123,7 @@ chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau=-1);
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr);
 chi_Dwk_t chi_wk_from_chi_wr(chi_Dwr_cvt chi_wr);
 
-/** Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
+/** Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
 
   Computes
 

@@ -26,43 +26,42 @@ namespace triqs_tprf {
 
 template <Channel_t CH> g2_iw_t chi0_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
 
-/** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Hole channel
+  /** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Hole channel
 
-     Computes
+  Computes
 
-     .. math::
-         \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') =
-         - \beta \delta_{\nu, \nu'} G_{da}(\nu) \cdot G_{bc}(\omega + \nu)
+  .. math::
+      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') =
+      - \beta \delta_{\nu, \nu'} G_{da}(\nu) \cdot G_{bc}(\omega + \nu)
 
-     @param g single particle Green's function :math:`G_{ab}(\nu)`
-     @param g2 two-particle Green's function with the mesh to use for
+  @param g single particle Green's function :math:`G_{ab}(\nu)`
+  @param g2 two-particle Green's function with the mesh to use for
    :math:`\chi^{(0)}`
-     @return chi0 particle-hole bubble
+  @return chi0 particle-hole bubble
    :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu,\nu')`
   */
 g2_iw_t chi0_from_gg2_PH(g_iw_vt g, g2_iw_vt g2);
 
-/** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Particle
-   channel
+  /** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Particle channel
 
-     Computes
+  Computes
 
-     .. math::
-         \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') =
-         - \beta \delta_{\nu, \nu'} G_{da}(\nu) \cdot G_{bc}(\omega - \nu)
+  .. math::
+      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') =
+      - \beta \delta_{\nu, \nu'} G_{da}(\nu) \cdot G_{bc}(\omega - \nu)
 
-     @param g single particle Green's function :math:`G_{ab}(\nu)`
-     @param g2 two-particle Green's function with the mesh to use for
+  @param g single particle Green's function :math:`G_{ab}(\nu)`
+  @param g2 two-particle Green's function with the mesh to use for
    :math:`\chi^{(0)}`
-     @return chi0 particle-particle bubble
+  @return chi0 particle-particle bubble
    :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu,\nu')`
   */
 g2_iw_t chi0_from_gg2_PP(g_iw_vt g, g2_iw_vt g2);
 
 template <Channel_t CH> g2_iw_t chi_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
 
-/** Generalized susceptibility :math:`\chi^{(0)} = G^{(2)} - GG` in the
-   Particle-Hole channel
+/** Generalized susceptibility :math:`\chi = G^{(2)} - GG` in the
+ Particle-Hole channel
 
      Computes
 
@@ -79,8 +78,8 @@ template <Channel_t CH> g2_iw_t chi_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
   */
 g2_iw_t chi_from_gg2_PH(g_iw_vt g, g2_iw_vt g2);
 
-/** Generalized susceptibility :math:`\chi^{(0)} = G^{(2)} - GG` in the
-   Particle-Particle channel
+/** Generalized susceptibility :math:`\chi = G^{(2)} - GG` in the
+ Particle-Particle channel
 
      Computes
 
