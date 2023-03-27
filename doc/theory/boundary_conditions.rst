@@ -241,10 +241,5 @@ The two additional discontinuities in :math:`\tau_{\bar{a}}, \tau_b, \tau_{\bar{
    -
    G^{(2)}_{\bar{a}b\bar{c}d}(\tau^-, \tau_b, \tau^+)
    = 0
-
-.. note::
-   Write test on `pyed` output to explicitly check the boundary conditions.
-
-   Figure out how to enforce boundary conditions on stochastically sampled data.
    
    
