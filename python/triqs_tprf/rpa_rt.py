@@ -153,7 +153,7 @@ def chi0_tr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
 
     rmesh = g_tr_les.mesh[-1]
     target_shape = list(g_tr_les.target_shape) * 2
-    chi0_tr = Gf(mesh=MeshProduct(tmesh, rmesh), target_shape=target_shape)
+    chi0_tr = Gf(mesh=g_tr_les.mesh, target_shape=target_shape)
     
     # Determine map of -r
 
@@ -175,6 +175,41 @@ def chi0_tr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
            1j * np.einsum('tda,tbc->tabcd', g_tr_gtr[:, r_p].data, np.conj(g_tr_les[:, r_m].data))
 
     return chi0_tr
+
+
+def chi0_tr_les_gtr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
+
+    mesh = g_tr_les.mesh
+    rmesh = mesh[-1]
+    target_shape = list(g_tr_les.target_shape) * 2
+    chi0_tr_les = Gf(mesh=mesh, target_shape=target_shape)
+    chi0_tr_gtr = Gf(mesh=mesh, target_shape=target_shape)
+    
+    # Determine map of -r
+
+    def minus_r_value(value, rmesh):
+        value = -value
+        for i, d in enumerate(rmesh.dims):
+            value[i] = np.mod(value[i], d)
+        return tuple(value)
+
+    r_value_vec = [ tuple(r.value) for r in rmesh ]
+    r_value_m_vec = [ minus_r_value(r.value, rmesh) for r in rmesh]
+    r_m_idx = [ r_value_vec.index(r_m) for r_m in r_value_m_vec ]
+    rmesh_list = list(rmesh)
+
+    for r_p in rmesh:
+
+        # look up mesh point corresponding to -r
+        r_m = rmesh_list[r_m_idx[r_p.linear_index]] 
+
+        chi0_tr_les[:, r_p].data[:] = 1j * np.einsum(
+            'tda,tbc->tabcd', g_tr_les[:, r_p].data, np.conj(g_tr_gtr[:, r_m].data))
+
+        chi0_tr_gtr[:, r_p].data[:] = 1j * np.einsum(
+            'tda,tbc->tabcd', g_tr_gtr[:, r_p].data, np.conj(g_tr_les[:, r_m].data))
+
+    return chi0_tr_les, chi0_tr_gtr
 
 
 def chi0_tk_from_ek(e_k, beta, tmesh):
