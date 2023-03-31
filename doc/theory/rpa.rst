@@ -18,8 +18,8 @@ where the sum runs over all unique sets of :math:`\bar{a}\bar{b}cd` of normal or
 
    This is a unique representation of the Hamiltonian and a unique representation of the prefactor :math:`V(\bar{a}\bar{b}cd)`, in contrast to representations where we allow any permutation of :math:`\bar{a}\bar{b}` and :math:`cd`.
 
-RPA tensor
-----------
+Antisymmetrized interaction tensor :math:`U`
+--------------------------------------------
 
 In RPA we approximate the vertex :math:`\Gamma^{PH}` in the Bethe-Salpeter equation
 
@@ -118,6 +118,9 @@ With the mapping we can obtain a full generalized RPA susceptibility from
 spin-independent calculations by decoupling a spin-dependent interaction
 into spin and charge channel.
 
+.. warning::
+   For historical reasons the four-index order used in the matrix RPA differs from the order used in the rest of the TPRF package, see below.
+   
 Matrix RPA
 ^^^^^^^^^^
 
