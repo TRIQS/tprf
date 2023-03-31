@@ -50,13 +50,13 @@ They correspond to the free propagation of non-interacting quasi-particles.
 Bare generalized susceptibility :math:`\chi_0`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-The disconnected components can be collected in the bare suceptibilities :math:`\chi^{=}_0` and :math:`\chi^{\times}_0` defined as
+The disconnected components can be collected in the bare suceptibilities :math:`\chi^{=}_0` and :math:`\chi^{=}_0` defined as
    
 .. math::
-   \chi^{=}_0(\bar{a}b\bar{c}d) \equiv + G(b\bar{a})G(d\bar{c}),
+   \chi^{=}_0(\bar{a}b\bar{c}d) \equiv - G(d\bar{a})G(b\bar{c}).
 
 .. math::
-   \chi^{\times}_0(\bar{a}b\bar{c}d) \equiv - G(d\bar{a})G(b\bar{c}).
+   \chi^{\parallel}_0(\bar{a}b\bar{c}d) \equiv + G(b\bar{a})G(d\bar{c}),
 
 The non-interacting two-particle response of a system is related to one of these bare susceptibilities depending on what pairs of indices are considered to be in-going and out-going.
 
@@ -73,21 +73,21 @@ The remaining connected two-particle Green's function :math:`G^{(2)}_c` is relat
 Full generalized particle-hole susceptibility :math:`\chi`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-The non-interacting particle-hole excitation response is given by :math:`\chi^{\times}_0` when :math:`\bar{c}d` are incoming and :math:`\bar{a}b` are out-going indices, and by :math:`\chi^{=}_0` for the in- and out-going pairings :math:`\bar{c}b` and :math:`\bar{a}d`.
+The non-interacting particle-hole excitation response is given by :math:`\chi^{=}_0` when :math:`\bar{c}d` are incoming and :math:`\bar{a}b` are out-going indices, and by :math:`\chi^{\parallel}_0` for the in- and out-going pairings :math:`\bar{c}b` and :math:`\bar{a}d`.
 
-The interacting response is given by the generalized susceptibilities :math:`\chi^{\times}` and :math:`\chi^{=}` which are given by the two-particle Green's function after subracting the trivial non-correlated propagation of the in-going and out-going pairs
-
-.. math::
-   \chi^{\times} = G^{(2)} - \chi^{=}_0 = \chi^{\times}_0 + G^{(2)}_c,
+The interacting response is given by the generalized susceptibilities :math:`\chi^{=}` and :math:`\chi^{\parallel}` which are given by the two-particle Green's function after subracting the trivial non-correlated propagation of the in-going and out-going pairs
 
 .. math::
-   \chi^{=} = G^{(2)} - \chi^{\times}_0 = \chi^{=}_0 + G^{(2)}_c.
+   \chi^{=} = G^{(2)} - \chi^{\parallel}_0 = \chi^{=}_0 + G^{(2)}_c,
+
+.. math::
+   \chi^{\parallel} = G^{(2)} - \chi^{=}_0 = \chi^{\parallel}_0 + G^{(2)}_c.
 
 Inserting the equation for the connected two-particle Green's function in terms of the reducible vertex :math:`F` and single particle Green's function gives
 
 .. math::
-   \chi^{\times}(\bar{a}b\bar{c}d) & =
-   \chi^{\times}_0(\bar{a}b\bar{c}d)
+   \chi^{=}(\bar{a}b\bar{c}d) & =
+   \chi^{=}_0(\bar{a}b\bar{c}d)
    +
    G(a\bar{a})
    G(b\bar{b})
@@ -96,18 +96,18 @@ Inserting the equation for the connected two-particle Green's function in terms 
    G(d\bar{d})
    \\
    & =
-   \chi^{\times}_0(\bar{a}b\bar{c}d)
+   \chi^{=}_0(\bar{a}b\bar{c}d)
    +
-   \chi^{\times}_0(\bar{a}b \bar{b}a)
+   \chi^{=}_0(\bar{a}b \bar{b}a)
    F(a\bar{b}c\bar{d})
-   \chi^{\times}_0(\bar{d}c \bar{c}d).
+   \chi^{=}_0(\bar{d}c \bar{c}d).
 
 This response channel is commonly called the Particle-Hole channel (:math:`PH`).
 
 The other possible pairing is given by
    
 .. math::
-   \chi^{=}(\bar{a}b\bar{c}d) & = \chi^{=}_0(\bar{a}b\bar{c}d)
+   \chi^{\parallel}(\bar{a}b\bar{c}d) & = \chi^{\parallel}_0(\bar{a}b\bar{c}d)
    +
    G(a\bar{a})
    G(d\bar{d})
@@ -116,21 +116,15 @@ The other possible pairing is given by
    G(c\bar{c})
    \\ 
    & =
-   \chi^{=}_0(\bar{a}b\bar{c}d)
+   \chi^{\parallel}_0(\bar{a}b\bar{c}d)
    +
-   \chi^{=}_0(\bar{a}a\bar{d}d)
+   \chi^{\parallel}_0(\bar{a}a\bar{d}d)
    F(a\bar{b}c\bar{d})
-   \chi^{=}_0(\bar{b}b \bar{c}c)
+   \chi^{\parallel}_0(\bar{b}b \bar{c}c)
 
 and is commonly called the vertical Particle-Hole channel (:math:`\bar{PH}`)
    
-Fix me
-   
-.. math::
-   \chi^{\times}(\bar{a}b\bar{c}d) = \chi^{\times}_0(\bar{a}b\bar{c}d)
-   + \chi^{\times}_0(\bar{a}b\bar{p}q) F(q\bar{p}r\bar{s}) \chi^{\times}_0(\bar{s}r\bar{c}d)
-   
-In abbreviated form we can write this in terms of the crossed and direct product :math:`\stackrel{r}{*}` with :math:`r \in \{ =, \times \}`
+In abbreviated form we can write this in terms of the horizontal and vertical product :math:`\stackrel{r}{*}` with :math:`r \in \{ =, \parallel \}`
 
 .. math::
    \chi^{r} = \chi^{r}_0 + \chi^{r}_0 \stackrel{r}{*} F \stackrel{r}{*} \chi^{r}_0,
@@ -158,16 +152,13 @@ The vertex BSEs defines :math:`\chi^r_0` and :math:`\stackrel{r}{*}`
 .. math::
    \chi^r = \chi^r_0 + \chi^r_0 \stackrel{r}{*} \Gamma^r \stackrel{r}{*} \chi
 
-.. math::
-   \chi(\bar{a} b \bar{c} d) 
-   \equiv 
-   G^{(2)}(\bar{a}b\bar{c}d) 
-   - G(b\bar{a}) G(d\bar{c})
+..
+   .. math::
+   \chi(\bar{a} b \bar{c} d) \equiv G^{(2)}(\bar{a}b\bar{c}d) - G(b\bar{a}) G(d\bar{c})
 
-.. math::
-   \chi^{(0)}(\bar{a}b\bar{c}d) 
-   \equiv
-   - G(d\bar{a}) G(b\bar{c})
+..
+   .. math::
+   \chi^{(0)}(\bar{a}b\bar{c}d) \equiv - G(d\bar{a}) G(b\bar{c})
 
      
 Matsubara frequency transforms
