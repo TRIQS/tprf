@@ -107,7 +107,7 @@ def put_gf_on_mesh(g_in, wmesh):
     g_out = Gf(mesh=wmesh, target_shape=g_in.target_shape)
 
     for w in wmesh:
-        index = w.linear_index + wmesh.first_index() # absolute index
+        index = w.data_index + wmesh.first_index() # absolute index
         g_out[w] = g_in[Idx(index)]
 
     return g_out
@@ -121,7 +121,7 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
     sigma = Gf(mesh=wmesh, target_shape=sigma_in.target_shape)
 
     for w in wmesh:
-        index = w.linear_index + wmesh.first_index() # absolute index
+        index = w.data_index + wmesh.first_index() # absolute index
         sigma[w] = sigma_in[Idx(index)]
 
     if debug:
@@ -418,14 +418,14 @@ def get_rel_k_chi_interpolator(values, bzmesh, bz, nk,
 
     # -- select interpolator type
         
-    if interpolator is 'regular':
+    if interpolator == 'regular':
         from scipy.interpolate import RegularGridInterpolator
         interp = RegularGridInterpolator(
             (kx, ky, kz), values, fill_value=float('nan'), bounds_error=False)
-    elif interpolator is 'nearest':
+    elif interpolator == 'nearest':
         from scipy.interpolate import NearestNDInterpolator        
         interp = NearestNDInterpolator(k_vec_rel, values.flatten())
-    elif interpolator is 'linear':
+    elif interpolator == 'linear':
         from scipy.interpolate import LinearNDInterpolator
         interp = LinearNDInterpolator(k_vec_rel, values.flatten(), fill_value=float('nan'))
     else:

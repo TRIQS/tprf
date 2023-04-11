@@ -66,19 +66,19 @@ namespace triqs_tprf {
     chi_const_k() = 0.0;
 
     auto arr = mpi_view(kmesh);
-    
-    //for (auto const &k : kmesh) {
+
+    //for (auto k : kmesh) {
 
 #pragma omp parallel for 
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &k = arr(idx);
+      auto &k = arr[idx];
       
       auto chi_w = chi_wk[_, k];
       auto tail  = std::get<0>(fit_tail(chi_w));
 
       for (auto [a, b, c, d] : chi_wk.target_indices()) chi_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
 
-      for (auto const &w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
+      for (auto w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
     }
 
     return {chi_dyn_wk, chi_const_k};
@@ -92,9 +92,9 @@ namespace triqs_tprf {
   auto arr = mpi_view(g_fk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[f, k] = arr(idx);
+      auto &[f, k] = arr[idx];
 
-    for (const auto &[a, b] : g_fk.target_indices()) { g_fk[f, k](a, b) = g_dyn_fk[f, k](a, b) + g_stat_k[k](a, b); }
+      for (const auto &[a, b] : g_fk.target_indices()) { g_fk[f, k](a, b) = g_dyn_fk[f, k](a, b) + g_stat_k[k](a, b); }
   }
   g_fk = mpi::all_reduce(g_fk);
   return g_fk;

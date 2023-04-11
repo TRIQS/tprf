@@ -57,7 +57,7 @@ def test_split_into_dynamic_and_constant():
 
     Wr_dyn_wk_ref = Gf(mesh=Wr_full_wk.mesh, target_shape=[norb]*4)
     for w in Wr_full_wk.mesh.components[0]:
-        iw = w.linear_index
+        iw = w.data_index
         Wr_dyn_wk_ref.data[iw,:] = Wr_full_wk.data[iw,:] - V_k.data[:]
   
 

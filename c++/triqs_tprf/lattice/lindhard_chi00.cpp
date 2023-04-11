@@ -33,23 +33,21 @@ namespace triqs_tprf {
 
   chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu) {
 
-    if (mesh.domain().statistic != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
+    if (mesh.statistic() != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
 
     auto wmesh = mesh;
-    auto beta  = wmesh.domain().beta;
+    auto beta  = wmesh.beta();
     auto kmesh = e_k.mesh();
     int nb     = e_k.target().shape()[0];
 
     chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
-    for (auto const &[w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
+    for (auto [w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
 
-    for (auto &k : mpi_view(kmesh)) {
+    for (auto k : mpi_view(kmesh)) {
 
 #pragma omp parallel for
       for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
-        auto q_iter = kmesh.begin();
-        q_iter += qidx;
-        auto q = *q_iter;
+        auto q = *std::next(kmesh.begin(), qidx);
 
         // -- If this is moved out to the k-loop the threading breaks?!?
         matrix<std::complex<double>> e_k_mat(e_k[k] - mu);
@@ -64,7 +62,7 @@ namespace triqs_tprf {
             double de = ekq(j) - ek(i);
             double dn = fermi(ek(i) * beta) - fermi(ekq(j) * beta);
 
-            for (auto const &w : wmesh) {
+            for (auto w : wmesh) {
 
               std::complex<double> total_factor;
 
@@ -104,7 +102,7 @@ namespace triqs_tprf {
 
     chi_fk_t chi_fk{{mesh, kmesh}, {nb, nb, nb, nb}};
 
-    for (auto const &[f, k] : chi_fk.mesh()) chi_fk[f, k] = 0.;
+    for (auto [f, k] : chi_fk.mesh()) chi_fk[f, k] = 0.;
 
     std::complex<double> idelta(0.0, delta);
 
@@ -112,12 +110,9 @@ namespace triqs_tprf {
 
 #pragma omp parallel for
     for (int qidx = 0; qidx < kmesh.size(); qidx++) {
+      auto q = *std::next(kmesh.begin(), qidx);
 
-      auto q_iter = kmesh.begin();
-      q_iter += qidx;
-      auto q = *q_iter;
-
-      for (auto &k : arr) {
+      for (auto k : arr) {
 
         matrix<std::complex<double>> e_k_mat(e_k(k));
         auto eig_k = linalg::eigenelements(e_k_mat);
@@ -135,7 +130,7 @@ namespace triqs_tprf {
             double dn = fermi((ek(i) - mu) * beta) - fermi((ekq(j) - mu) * beta);
             double de = ekq(j) - ek(i);
 
-            for (auto const &f : fmesh) {
+            for (auto f : fmesh) {
 
               chi_fk[f, q](a, b, c, d) << chi_fk[f, q](a, b, c, d)
                     + Uk(a, i) * dagger(Uk)(i, d) * Ukq(c, j) * dagger(Ukq)(j, b) * dn / (f + idelta + de);
@@ -145,7 +140,7 @@ namespace triqs_tprf {
           } // i
         }   // j
 
-      } // k (mpi)
+      }     // k (mpi)
 
     } // q (omp)
 

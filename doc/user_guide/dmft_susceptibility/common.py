@@ -57,7 +57,7 @@ def setup_dmft_calculation(p):
     p.e_k = H.fourier(kmesh)
 
     # -- Initial zero guess for the self-energy    
-    p.sigma_w = Gf(mesh=MeshImFreq(p.init.beta, 'Fermion', p.init.n_iw), target_shape=[2, 2])
+    p.sigma_w = Gf(mesh=MeshImFreq(p.init.beta(), 'Fermion', p.init.n_iw), target_shape=[2, 2])
     p.sigma_w.zero()
 
     return p

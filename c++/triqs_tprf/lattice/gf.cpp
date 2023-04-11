@@ -49,7 +49,7 @@ g_t lattice_dyson_g0_Xk(double mu, e_k_cvt e_k, mesh_t mesh) {
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+    auto &[w, k] = arr[idx];
     g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
   }
 
@@ -78,7 +78,7 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, mesh::refreq mesh, double del
   auto arr = mpi_view(g0_fk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[f, k] = arr(idx);
+    auto &[f, k] = arr[idx];
     g0_fk[f, k]  = inverse((f + idelta + mu) * I - e_k(k));
   }
 
@@ -109,7 +109,7 @@ g_t lattice_dyson_g_Xk(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
   auto arr = mpi_view(g_wk.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+    auto &[w, k] = arr[idx];
 
     array<scalar_t, 2> sigmaterm;
     if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
@@ -157,8 +157,7 @@ g_t lattice_dyson_g_X(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
   g_t g_w(wmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  for (auto const &[w, k] : mpi_view(g_wk.mesh())) 
-    g_w[w] += g_wk[w, k];
+  for (auto [w, k] : mpi_view(g_wk.mesh())) g_w[w] += g_wk[w, k];
 
   g_w = mpi::all_reduce(g_w);
   g_w /= kmesh.size();

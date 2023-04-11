@@ -63,14 +63,14 @@ std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, mesh::retime Tmes
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & k = arr(idx);
+    auto &k = arr[idx];
 
     matrix<std::complex<double>> e_k_mat(e_k[k]);
     auto [ek, Uk] = linalg::eigenelements(e_k_mat);
 
     auto occ = fermi_nda(beta*ek);
-    
-    for (auto const &T : Tmesh) {
+
+    for (auto T : Tmesh) {
       auto exp_T = exp(-I * ek * double(T));
       auto occ_exp_les = +I * occ * exp_T;
       auto occ_exp_gtr = -I * (1. - occ) * exp_T;
@@ -103,17 +103,17 @@ chi_Tr_t chi0_Tr_from_g_Tr_PH(g_Tr_cvt g_Tr_les, g_Tr_cvt g_Tr_gtr) {
 
   chi_Tr_t chi0_Tr{{Tmesh, rmesh}, {nb, nb, nb, nb}};
 
-  //for (auto const &r : rmesh) {
+  //for (auto r : rmesh) {
 
   auto arr = mpi_view(Tmesh);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & T = arr(idx);
-    
-    for (auto const &r : rmesh)
+    auto &T = arr[idx];
+
+    for (auto r : rmesh)
       for (auto [a, b, c, d] : chi0_Tr.target_indices())
-        chi0_Tr[T, r](a, b, c, d) = +I * g_Tr_les[T, r](d, a) * conj(g_Tr_gtr[T, -r](b, c)) - I * g_Tr_gtr[T, r](d, a) * conj(g_Tr_les[T, -r](b, c));
+        chi0_Tr[T, r](a, b, c, d) = +I * g_Tr_les[T, r](d, a) * conj(g_Tr_gtr(T.index(), -r)(b, c)) - I * g_Tr_gtr[T, r](d, a) * conj(g_Tr_les(T.index(), -r)(b, c));
   }
 
   chi0_Tr = mpi::all_reduce(chi0_Tr);

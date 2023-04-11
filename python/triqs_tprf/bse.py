@@ -284,7 +284,6 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
         nwf = len(fmesh) // 2
 
     mpi.barrier()
-    mpi.report('g_wk ' + str(g_wk[Idx(2), Idx(0,1,2)][0,0]))
     n = np.sum(g_wk.data) / len(kmesh)
     mpi.report('n ' + str(n))
     mpi.barrier()

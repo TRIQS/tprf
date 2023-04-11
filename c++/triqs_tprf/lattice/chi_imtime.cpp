@@ -94,7 +94,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 
   int nb = g_tr.target().shape()[0];
   int ntau = tmesh.size();
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
   chi_tr_t chi0_tr{{{beta, Boson, ntau}, rmesh}, {nb, nb, nb, nb}};
 
@@ -106,13 +106,13 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
   // -- gt(beta) == gt(beta + 0^+)
   // chi0_tr(tau, r)(a, b, c, d) << g_tr(tau, r)(d, a) * g_tr(-tau, -r)(b, c);
 
-  //for (auto const &r : rmesh) {
+  //for (auto r : rmesh) {
 
   auto arr = mpi_view(rmesh);
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & r = arr(idx);
+    auto &r = arr[idx];
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
@@ -121,11 +121,10 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr[_, -r];
+      g_mr_t = g_tr(_, -r);
     }
-    
-    for (auto const &t : tmesh)
-      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
 
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
@@ -146,7 +145,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 
   int nb = g_tr.target().shape()[0];
   int ntau = tmesh.size();
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
   chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
@@ -157,7 +156,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & r = arr(idx);
+    auto &r = arr[idx];
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
@@ -166,11 +165,10 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr[_, -r];
+      g_mr_t = g_tr(_, -r);
     }
-    
-    for (auto const &t : tmesh)
-      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
 
 #pragma omp critical
     {
@@ -194,7 +192,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
   int nw = 1;
   int nb = g_tr.target().shape()[0];
   int ntau = tmesh.size();
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
   chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
@@ -205,7 +203,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & r = arr(idx);
+    auto &r = arr[idx];
 
     auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
     auto g_pr_t = make_gf<imtime>(tmesh, g_target);
@@ -214,11 +212,10 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr[_, -r];
+      g_mr_t = g_tr(_, -r);
     }
-    
-    for (auto const &t : tmesh)
-      chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
 
     auto int_chi0 = chi_trapz_tau(chi0_t);
     
@@ -234,13 +231,13 @@ chi_t_t::target_t::value_t chi_trapz_tau(chi_t_cvt chi_t) {
 
   auto tmesh = chi_t.mesh();
   int ntau = tmesh.size();
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
   auto I = zeros<dcomplex>(chi_t.target_shape());
     
   // -- Trapetzoidal integration
 
-  for (auto const &t : tmesh) I += chi_t[t];
+  for (auto t : tmesh) I += chi_t[t];
 
   I -= 0.5 * chi_t[0];
   I -= 0.5 * chi_t[ntau - 1];
@@ -258,7 +255,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr) {
   auto rmesh = std::get<1>(chi_tr.mesh());
 
   int nw = 1;
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
   chi_wr_t chi_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
 
@@ -266,7 +263,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & r = arr(idx);
+    auto &r = arr[idx];
 
     auto _ = all_t{};
     auto I = chi_trapz_tau(chi_tr[_, r]);
@@ -335,7 +332,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
   chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
 
   auto _ = all_t{};
-  for (auto const &w : wmesh)
+  for (auto w : wmesh)
     chi_wk[w, _] = triqs::gfs::fourier(chi_wr[w, _]);
 
   return chi_wk;
@@ -353,7 +350,7 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   chi_wr_t chi_wr{{wmesh, rmesh}, {nb, nb, nb, nb}};
 
   auto _ = all_t{};
-  for (auto const &w : wmesh)
+  for (auto w : wmesh)
     chi_wr[w, _] = triqs::gfs::fourier(chi_wk[w, _]);
 
   return chi_wr;

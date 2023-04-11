@@ -45,8 +45,8 @@ namespace triqs_tprf {
     auto arr = mpi_view(kmesh);
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &k = arr(idx);
-      auto g_w  = g_wk(_, k);
+      auto &k  = arr[idx];
+      auto g_w = g_wk[_, k];
       rho_k[k] = density(g_w);
     }
   
@@ -82,9 +82,9 @@ namespace triqs_tprf {
     auto Wtm = std::get<0>(W_tr.mesh());
     auto gtm = std::get<0>(g_tr.mesh());
 
-    if (Wtm.size() != gtm.size() || Wtm.domain().beta != gtm.domain().beta) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: tau meshes are not the same.\n";
+    if (Wtm.size() != gtm.size() || Wtm.beta() != gtm.beta()) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: tau meshes are not the same.\n";
 
-    if (Wtm.domain().statistic != Boson || gtm.domain().statistic != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
+    if (Wtm.statistic() != Boson || gtm.statistic() != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
 
     if (std::get<1>(W_tr.mesh()) != std::get<1>(g_tr.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: real-space meshes are not the same.\n";
 
@@ -94,9 +94,9 @@ namespace triqs_tprf {
     auto arr = mpi_view(g_tr.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[t, r] = arr(idx);
+    auto &[t, r] = arr[idx];
 
-    for (const auto &[a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, c, d, b) * g_tr[t, r](c, d); }
+    for (auto [a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, c, d, b) * g_tr[t, r](c, d); }
   }
 
   sigma_tr = mpi::all_reduce(sigma_tr);
@@ -117,9 +117,7 @@ namespace triqs_tprf {
   e_r_t sigma_r(rho_r.mesh(), rho_r.target_shape());
   sigma_r() = 0.0;
 
-  for (auto const &[a, b, c, d] : v_k.target_indices()) {
-    sigma_r[{0, 0, 0}](a, b) += v_k[{0, 0, 0}](a, b, c, d) * rho_r[{0, 0, 0}](c, d);
-  }
+  for (auto [a, b, c, d] : v_k.target_indices()) { sigma_r[{0, 0, 0}](a, b) += v_k[{0, 0, 0}](a, b, c, d) * rho_r[{0, 0, 0}](c, d); }
 
   return sigma_r;
   }
@@ -137,14 +135,14 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &k = arr(idx);
+    auto &k = arr[idx];
 
-    for (auto const &q : kmesh) {
+    for (auto q : kmesh) {
 
-      auto g_w  = g_wk(_, k + q);
-      auto dens = density(g_w);
+      auto g_w  = g_wk[_, k + q];
+      auto dens = density(gf{g_w});
 
-      for (auto const &[a, b, c, d] : v_k.target_indices()) { sigma_k[k](a, b) += v_k[q](a, b, c, d) * dens(c, d) / kmesh.size(); }
+      for (auto [a, b, c, d] : v_k.target_indices()) { sigma_k[k](a, b) += v_k[q](a, b, c, d) * dens(c, d) / kmesh.size(); }
     }
   }
   sigma_k = mpi::all_reduce(sigma_k);
@@ -163,11 +161,9 @@ namespace triqs_tprf {
   auto arr = mpi_view(rmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &r = arr(idx);
+    auto &r = arr[idx];
 
-    for (auto const &[a, b, c, d] : v_r.target_indices()) {
-      sigma_r[r](a, b) += -v_r[r](a, c, d, b) * rho_r[r](d, c);
-    }
+    for (auto [a, b, c, d] : v_r.target_indices()) { sigma_r[r](a, b) += -v_r[r](a, c, d, b) * rho_r[r](d, c); }
   }
   sigma_r = mpi::all_reduce(sigma_r);
   return sigma_r;
@@ -186,14 +182,14 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &k = arr(idx);
+    auto &k = arr[idx];
 
-    for (auto const &q : kmesh) {
+    for (auto q : kmesh) {
 
-      auto g_w  = g_wk(_, k + q);
+      auto g_w  = g_wk[_, k + q];
       auto dens = density(g_w);
 
-      for (auto const &[a, b, c, d] : v_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, c, d, b) * dens(d, c) / kmesh.size(); }
+      for (auto [a, b, c, d] : v_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, c, d, b) * dens(d, c) / kmesh.size(); }
     }
   }
   sigma_k = mpi::all_reduce(sigma_k);
@@ -210,9 +206,9 @@ namespace triqs_tprf {
   auto Wwm = std::get<0>(W_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());
 
-  if (Wwm.domain().beta != gwm.domain().beta)
+  if (Wwm.beta() != gwm.beta())
     TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
-  if (Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion)
+  if (Wwm.statistic() != Boson || gwm.statistic() != Fermion)
     TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
   if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()))
     TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
@@ -243,7 +239,7 @@ namespace triqs_tprf {
   // Add dynamic and static parts
   auto _ = all_t{};
   auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_dyn_tr); // Fixme! Use parallell transform
-  for (auto const &w : gwm) sigma_wk[w, _] += sigma_fock_k; // Single loop with no work per w, no need to parallellize over mpi
+  for (auto w : gwm) sigma_wk[w, _] += sigma_fock_k; // Single loop with no work per w, no need to parallellize over mpi
 
   return sigma_wk;
   }
@@ -262,7 +258,7 @@ namespace triqs_tprf {
   // g0w_sigma via spectral representation
   // dynamic part ...
 
-  g_f_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
+  g_f_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::value_t kpoint) {
 
   if (std::get<1>(W_fk.mesh()) != e_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
@@ -276,8 +272,8 @@ namespace triqs_tprf {
   g_f_t sigma_f(fmesh, e_k.target_shape());
   sigma_f() = 0.0;
 
-  for (auto const &q : kmesh) {
-    auto qpoint = mesh::brzone::point_t {q};
+  for (auto q : kmesh) {
+    auto qpoint   = mesh::brzone::value_t{q};
     auto kpqpoint = qpoint + kpoint;
     auto kpqvec = std::array<double, 3>{kpqpoint(0), kpqpoint(1), kpqpoint(2)};
 
@@ -288,27 +284,27 @@ namespace triqs_tprf {
 
     for (int l : range(nb)) {
 
-      for (auto const &f : fmesh) {
+      for (auto f : fmesh) {
 
-        for (auto const &fp : fmesh) {
+        for (auto fp : fmesh) {
 
           auto num = bose(fp * beta) + fermi(ekq(l) * beta);
           auto den = f + idelta + fp - ekq(l);
 
-          for (const auto &[a, b] : sigma_f.target_indices()) { 
+          for (auto [a, b] : sigma_f.target_indices()) {
             auto W_spec = -1.0 / M_PI * (W_fk[fp, q](a, a, b, b) - v_k[q](a, a, b, b)).imag();
             sigma_f[f](a, b) = sigma_f[f](a, b) 
-                  + Ukq(a, l) * dagger(Ukq)(l, b) * (W_spec * num / den * fmesh.delta() / kmesh.size());            
+                  + Ukq(a, l) * dagger(Ukq)(l, b) * (W_spec * num / den * fmesh.delta() / kmesh.size());
           }
         }
       }
     }
   }
-  
+
   return sigma_f;
   }
 
-  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
+  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone kmesh) {
 
   if (std::get<1>(W_fk.mesh()) != e_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
@@ -321,10 +317,10 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for 
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto &k = arr(kidx);
-    auto kpoint = mesh::brzone::point_t {k};
+    auto &k      = arr[kidx];
+    auto kpoint  = mesh::brzone::value_t{k};
     auto sigma_f = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
-    for (auto const &f : fmesh) { sigma_fk[f,k] = sigma_f[f]; }
+    for (auto f : fmesh) { sigma_fk[f, k] = sigma_f[f]; }
   }
 
   sigma_fk = mpi::all_reduce(sigma_fk);
@@ -337,8 +333,8 @@ namespace triqs_tprf {
 
   // static part ...
 
-  array<std::complex<double>, 2> g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone::point_t kpoint) {
-  
+  array<std::complex<double>, 2> g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone::value_t kpoint) {
+
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
 
   auto kmesh = e_k.mesh();
@@ -347,8 +343,8 @@ namespace triqs_tprf {
   array<std::complex<double>, 2> sigma_k(nb ,nb);
   sigma_k() = 0.0;
 
-  for (auto const &q : kmesh) {
-    auto qpoint = mesh::brzone::point_t {q};
+  for (auto q : kmesh) {
+    auto qpoint   = mesh::brzone::value_t{q};
     auto kpqpoint = qpoint + kpoint;
     auto kpqvec = std::array<double, 3>{kpqpoint(0), kpqpoint(1), kpqpoint(2)};
 
@@ -369,7 +365,7 @@ namespace triqs_tprf {
   return sigma_k;
   }
 
-  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, gf_mesh<brzone> kmesh) {
+  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone kmesh) {
 
   e_k_t sigma_k(kmesh, e_k.target_shape());
   sigma_k() = 0.0;
@@ -377,8 +373,8 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for 
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto &k = arr(kidx);
-    auto kpoint = mesh::brzone::point_t {k};
+    auto &k = arr[kidx];
+    auto kpoint = mesh::brzone::value_t{k};
     sigma_k[k] = g0w_sigma(mu, beta, e_k, v_k, kpoint);
   }
 
@@ -392,27 +388,25 @@ namespace triqs_tprf {
 
   // dynamic and static parts ...
 
-  g_f_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
+  g_f_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::value_t kpoint) {
   auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kpoint);
   auto sigma_dyn_fk = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
 
   auto fmesh = std::get<0>(W_fk.mesh());
   g_f_t sigma_fk(fmesh, e_k.target_shape());
   sigma_fk() = 0.0;
-  for (auto const &f : fmesh) {
-    sigma_fk[f] = sigma_stat_k + sigma_dyn_fk[f];
-  }
+  for (auto f : fmesh) { sigma_fk[f] = sigma_stat_k + sigma_dyn_fk[f]; }
 
   return sigma_fk;
   }
 
-  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
+  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone kmesh) {
   auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kmesh);
   auto sigma_dyn_fk = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kmesh);
   auto sigma_fk = add_dynamic_fk_and_static_k(sigma_dyn_fk, sigma_stat_k);
   return sigma_fk;
   }
-  
+
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
   return g0w_sigma(mu, beta, e_k, W_fk, v_k, delta, e_k.mesh());
   }

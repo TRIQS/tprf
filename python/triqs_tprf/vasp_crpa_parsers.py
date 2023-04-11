@@ -112,7 +112,7 @@ def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
             j = tuple(np.array(np.rint(kpts * q), dtype=np.int))
        
             if i == j: 
-                u_q.data[k.linear_index,:] = U_Q[qidx]
+                u_q.data[k.data_index,:] = U_Q[qidx]
 
     return u_q
 

@@ -136,7 +136,7 @@ def test_gf_Matsubara(wmesh):
     g_w_ref = Gf(mesh=wmesh, target_shape=[norb]*2)
     g_w_ref.data[:] = 0.0
     for w in wmesh:
-        wi = w.linear_index
+        wi = w.data_index
         for k in kmesh:
             g_w_ref.data[wi,:] += np.linalg.inv( (w.value + mu)*np.eye(norb) - e_k[k] - sigma_w[w] )
         # g_w_ref.data[wi,:] += np.sum(g_wk_2_ref.data[wi,:], axis=0)
@@ -223,7 +223,7 @@ def test_gf_realfreq():
     g_f_ref = Gf(mesh=fmesh, target_shape=[norb]*2)
     g_f_ref.data[:] = 0.0
     for f in fmesh:
-        fi = f.linear_index
+        fi = f.data_index
         for k in kmesh:
             g_f_ref.data[fi,:] += np.linalg.inv( (f.value + 1.j*delta + mu)*np.eye(norb) - e_k[k] - sigma_f[f] )
     g_f_ref.data[:] /= len(kmesh)

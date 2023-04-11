@@ -4,7 +4,7 @@ import numpy as np
 
 from triqs_tprf.lattice import g0w_sigma, g0w_dynamic_sigma
 
-from triqs.gf import Gf, MeshReFreq, MeshBrillouinZone
+from triqs.gf import Gf, MeshReFreq, MeshBrZone
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
@@ -34,14 +34,14 @@ def test_gw_separate_kpoints():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
+    kmesh = MeshBrZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
     fmesh = MeshReFreq(wmin, wmax, nw)
 
     print('--> lattice_dyson_g0_wk')
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
-        Enk.data[k.linear_index,:] = 0.1*knorm**2.0
+        Enk.data[k.data_index,:] = 0.1*knorm**2.0
 
     print('--> bare interaction')
     # Some k-dependent non-physical interaction
@@ -50,13 +50,13 @@ def test_gw_separate_kpoints():
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
         if(np.isclose(knorm, 0.0)): continue
-        V_k.data[k.linear_index,:,:] = knorm**2.0 + 1.0j / knorm
+        V_k.data[k.data_index,:,:] = knorm**2.0 + 1.0j / knorm
 
     print("--> dynamic interaction")
     W_fk = Gf(mesh=MeshProduct(fmesh,kmesh), target_shape=[1]*4)
     W_fk.data[:] = 0.0
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         W_fk.data[fii,:] = ElectronPhononInteraction(f.value + 1.0j*delta, g2 ,wD) + V_k.data[:]
 
     print('--> g0w_sigma')
@@ -75,7 +75,7 @@ def test_gw_separate_kpoints():
     sigma3_dyn_fk = Gf(mesh=MeshProduct(fmesh,kmesh), target_shape=[1]*2)
     sigma3_fk = Gf(mesh=MeshProduct(fmesh,kmesh), target_shape=[1]*2)
     for k in kmesh:
-        kii = k.linear_index
+        kii = k.data_index
         sigma3_stat_k.data[kii,:,:] = g0w_sigma(mu, beta, Enk, V_k, k.value)
         sigma3_dyn_fk.data[:,kii,:,:] = g0w_dynamic_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
         sigma3_fk.data[:,kii,:,:] = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
@@ -103,7 +103,7 @@ def test_gw_separate_kpoints():
     sigma3_ref_fk = sigma3_dyn_fk.copy()
    
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         sigma1_ref_fk.data[fii,:] += sigma1_stat_k.data[:]
         sigma2_ref_fk.data[fii,:] += sigma2_stat_k.data[:]
         sigma3_ref_fk.data[fii,:] += sigma3_stat_k.data[:]

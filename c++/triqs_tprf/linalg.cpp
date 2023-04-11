@@ -50,10 +50,10 @@ namespace triqs_tprf {
    //channel_grouping<CH> chg;
    auto g_inv = make_gf(g);
 
-   for (auto const &w : std::get<0>(g.mesh())) {
+   for (auto w : std::get<0>(g.mesh())) {
      auto _         = all_t{};
      g_inv[w, _, _] = inverse<CH>(g[w, _, _]);
-  }
+   }
   return g_inv;
  }
 
@@ -85,10 +85,10 @@ namespace triqs_tprf {
 
    auto C = make_gf(A);
 
-   for (auto const &w : std::get<0>(A.mesh())) {
+   for (auto w : std::get<0>(A.mesh())) {
      auto _     = all_t{};
      C[w, _, _] = product<CH>(A[w, _, _], B[w, _, _]);
-  }
+   }
   return C;
  }
 
@@ -114,10 +114,10 @@ namespace triqs_tprf {
 
    auto I = make_gf(g);
 
-   for (auto const &w : std::get<0>(g.mesh())) {
+   for (auto w : std::get<0>(g.mesh())) {
      auto _     = all_t{};
      I[w, _, _] = identity<CH>(I[w, _, _]);
-  }
+   }
   return I;
  }
   

@@ -7,7 +7,7 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 
 from triqs_tprf.gw import gw_sigma, g0w_sigma
 
-from triqs.gf import Gf, MeshImFreq, MeshReFreq, MeshBrillouinZone
+from triqs.gf import Gf, MeshImFreq, MeshReFreq, MeshBrZone
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
@@ -48,7 +48,7 @@ def test_gw_sigma_against_exact_Matsubara():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     numesh = MeshImFreq(beta, 'Boson', nw)
 
@@ -60,7 +60,7 @@ def test_gw_sigma_against_exact_Matsubara():
     print('--> bare electron-phonon interaction')
     I_phon_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
     for nu in numesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         I_phon_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
 
     print('--> gw_sigma')
@@ -68,7 +68,7 @@ def test_gw_sigma_against_exact_Matsubara():
 
     sigma_ref_wk = Gf(mesh=sigma_wk.mesh, target_shape=sigma_wk.target_shape)
     for f in wmesh:
-        fii = f.linear_index
+        fii = f.data_index
         sigma_ref_wk.data[fii,:] = ExactSigma0D(f.value, beta, g2, wD, Enk.data[0,0,0]-mu)
 
     np.testing.assert_array_almost_equal(sigma_wk.data[:], sigma_ref_wk.data[:], decimal=1e-6)
@@ -93,7 +93,7 @@ def test_gw_sigma_against_exact_realfreq():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
     fmesh = MeshReFreq(wmin, wmax, nw)
 
     print('--> lattice_dyson_g0_wk')
@@ -103,7 +103,7 @@ def test_gw_sigma_against_exact_realfreq():
     print('--> bare electron-phonon interaction')
     I_phon_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=[1]*4)
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         I_phon_fk.data[fii,:] = ElectronPhononInteraction(f.value + 1.0j*eta, g2 ,wD)
 
     I_phon_k = Gf(mesh=kmesh, target_shape=[1]*4)
@@ -114,7 +114,7 @@ def test_gw_sigma_against_exact_realfreq():
 
     sigma_ref_fk = Gf(mesh=sigma_fk.mesh, target_shape=sigma_fk.target_shape)
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         sigma_ref_fk.data[fii,:] = ExactSigma0D(f.value + 1.0j*eta, beta, g2, wD, Enk.data[0,0,0]-mu)
 
     # Rather large tolerance needed. Probably due to the numerical spectral function of I not being a

@@ -91,7 +91,7 @@ def test_square_lattice_chi00_realfreq():
 
     wmesh = chi00_wk_analytic.mesh.components[0]
     w0_ind = len(wmesh)//2
-    assert np.allclose( list(wmesh.values())[w0_ind], 0.0 ) 
+    assert np.allclose( complex(wmesh[w0_ind].value), 0.0 ) 
     chi00_w0k = chi00_wk_analytic.data[w0_ind,:]    
     
     # ------------------------------------------------------------------

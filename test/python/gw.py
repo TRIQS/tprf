@@ -77,7 +77,7 @@ def test_gw_sigma_functions():
 
     sigma_wk_ref = Gf(mesh=sigma_dyn_wk.mesh, target_shape=sigma_dyn_wk.target_shape)
     for w in wmesh:
-        iw = w.linear_index
+        iw = w.data_index
         sigma_wk_ref.data[iw,:] = sigma_dyn_wk.data[iw,:] + sigma_stat_k.data[:]
  
     diff = sigma_wk.data[:] - sigma_wk_ref.data[:]

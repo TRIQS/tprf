@@ -32,7 +32,7 @@ g2_iw_t fixed_fermionic_window(g2_iw_t g2_in, int nwf) {
 
      auto mesh_b = std::get<0>(g2_in.mesh());
 
-     mesh::imfreq mesh_f{mesh_b.domain().beta, Fermion, nwf};
+     mesh::imfreq mesh_f{mesh_b.beta, Fermion, nwf};
 
      g2_iw_t g2_out{{mesh_b, mesh_f, mesh_f}, {1, 1, 1, 1}};
 

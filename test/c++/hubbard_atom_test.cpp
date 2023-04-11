@@ -33,7 +33,7 @@ TEST(hubbard_atom, single_particle_greens_function) {
   int nw = 10000;
   auto G_iw = single_particle_greens_function(nw, beta, U);
 
-  for( auto const &iw : G_iw.mesh() ) {
+  for (auto iw : G_iw.mesh()) {
     auto ref_val = 1./(iw - U*U/(4.*iw));
     EXPECT_NEAR(G_iw[iw](0,0).real(), ref_val.real(), eps);
     EXPECT_NEAR(G_iw[iw](0,0).imag(), ref_val.imag(), eps);
