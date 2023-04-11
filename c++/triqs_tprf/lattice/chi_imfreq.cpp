@@ -149,26 +149,15 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
   auto &rmesh = std::get<1>(g_nr.mesh());
 
   double beta = std::get<0>(g_nr.mesh()).domain().beta;
-
-  // Create mesh were last point is the one desired 'nw_index'
-  auto wmesh_to_access = mesh::imfreq{beta, Boson, abs(nw_index) + 1};
-  mesh_point<mesh::imfreq> w;
-  if (nw_index >= 0)
-  {
-    w = wmesh_to_access[wmesh_to_access.last_index()];
-  }
-  else
-  {
-    w = wmesh_to_access[wmesh_to_access.first_index()];
-  }
+  auto w = matsubara_freq{nw_index, beta, Boson};
 
   auto nmesh = mesh::imfreq{beta, Fermion, nn};
-
   chi_nr_t chi0_nr{{nmesh, rmesh}, {nb, nb, nb, nb}};
   chi0_nr *= 0.;
   
   auto chi_target = chi0_nr.target();
   auto g_target = g_nr.target();
+
 
   auto arr = mpi_view(rmesh);
 #pragma omp parallel for
