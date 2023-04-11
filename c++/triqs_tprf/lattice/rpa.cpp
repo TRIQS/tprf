@@ -56,7 +56,7 @@ namespace triqs_tprf {
 
       chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
 
-      chi_wk[w, k] = chi_arr; // assign back using the array_view 
+      chi_wk[w, k] = chi_arr;             // assign back using the array_view
     }
   chi_wk = mpi::all_reduce(chi_wk);
 

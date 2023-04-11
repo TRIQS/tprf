@@ -76,7 +76,7 @@ namespace triqs_tprf {
       auto g_w  = g_wk(_, k + q);
       auto dens = density(g_w);
 
-      for (const auto &[a, b] : sigma_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, b, a, b) * dens(a, b) / kmesh.size(); }
+      for (auto const &[a, b] : sigma_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, b, a, b) * dens(a, b) / kmesh.size(); }
     }
   }
   sigma_k = mpi::all_reduce(sigma_k);

@@ -82,9 +82,11 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, mesh::refreq mesh, double del
 template<typename g_t, typename sigma_t>
 g_t lattice_dyson_g_Xk(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
 
-  auto &freqmesh = [&sigma]() -> auto & {
-    if constexpr (sigma_t::arity == 1) return sigma.mesh();
-    else return std::get<0>(sigma.mesh());
+  auto const &freqmesh = [&sigma]() -> auto & {
+    if constexpr (sigma_t::arity == 1)
+      return sigma.mesh();
+    else
+      return std::get<0>(sigma.mesh());
   }();
 
   using scalar_t = e_k_cvt::scalar_t;

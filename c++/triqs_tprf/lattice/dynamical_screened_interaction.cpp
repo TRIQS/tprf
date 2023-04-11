@@ -33,15 +33,14 @@ namespace triqs_tprf {
 
   template <SusceptibilityType susType, typename chi_t, typename v_t> auto screened_interaction_from_generic_susceptibility(chi_t &chi, v_t &V) {
 
-    auto &[freqmesh, kmesh] = chi.mesh();
+    auto const &[freqmesh, kmesh] = chi.mesh();
 
-    auto &vkmesh = [&V]() -> auto & {
+    auto const &vkmesh = [&V]() -> auto & {
       if constexpr (v_t::arity == 1)
         return V.mesh();
       else
         return std::get<1>(V.mesh());
-    }
-    ();
+    }();
 
     if (kmesh != vkmesh) TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
 

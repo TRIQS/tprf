@@ -79,7 +79,6 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
-
   }
 
   chi0_tr = mpi::all_reduce(chi0_tr);
@@ -128,7 +127,6 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
     auto chi0_w = make_gf_from_fourier(chi0_t, nw);
     chi0_wr[_, r] = chi0_w;
     }
-
   }
 
   chi0_wr = mpi::all_reduce(chi0_wr);
@@ -176,7 +174,6 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
     
 #pragma omp critical
     chi0_wr[0, r] = int_chi0;
-
   }
 
   chi0_wr = mpi::all_reduce(chi0_wr);

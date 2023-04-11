@@ -32,7 +32,7 @@ namespace triqs_tprf {
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
     auto _               = all_t{};
-    auto &[wmesh, kmesh] = chi_wk.mesh();
+    auto const &[wmesh, kmesh] = chi_wk.mesh();
 
     chi_wk_t chi_dyn_wk(chi_wk.mesh(), chi_wk.target_shape());
     chi_dyn_wk() = 0.0;

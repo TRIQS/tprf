@@ -75,11 +75,11 @@ std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, mesh::retime Tmes
       auto occ_exp_les = +I * occ * exp_T;
       auto occ_exp_gtr = -I * (1. - occ) * exp_T;
 
-      for (const auto [a, b] : g0_Tk_les.target_indices())
-	for (const auto c : range(ek.size())) {
-	  g0_Tk_les[T, k](a, b) += Uk(a, c) * occ_exp_les(c) * dagger(Uk)(c, b);
-	  g0_Tk_gtr[T, k](a, b) += Uk(a, c) * occ_exp_gtr(c) * dagger(Uk)(c, b);
-	}
+      for (auto [a, b] : g0_Tk_les.target_indices())
+        for (auto c : range(ek.size())) {
+          g0_Tk_les[T, k](a, b) += Uk(a, c) * occ_exp_les(c) * dagger(Uk)(c, b);
+          g0_Tk_gtr[T, k](a, b) += Uk(a, c) * occ_exp_gtr(c) * dagger(Uk)(c, b);
+        }
     }
   }
 
@@ -116,10 +116,8 @@ chi_Tr_t chi0_Tr_from_g_Tr_PH(g_Tr_cvt g_Tr_les, g_Tr_cvt g_Tr_gtr) {
     auto & T = arr(idx);
     
     for (auto const &r : rmesh)
-      for (const auto [a, b, c, d] : chi0_Tr.target_indices())
-	chi0_Tr[T, r](a, b, c, d) =
-	  + I*g_Tr_les[T, r](d, a)*conj(g_Tr_gtr[T, -r](b, c))
-	  - I*g_Tr_gtr[T, r](d, a)*conj(g_Tr_les[T, -r](b, c));
+      for (auto [a, b, c, d] : chi0_Tr.target_indices())
+        chi0_Tr[T, r](a, b, c, d) = +I * g_Tr_les[T, r](d, a) * conj(g_Tr_gtr[T, -r](b, c)) - I * g_Tr_gtr[T, r](d, a) * conj(g_Tr_les[T, -r](b, c));
   }
 
   chi0_Tr = mpi::all_reduce(chi0_Tr);
