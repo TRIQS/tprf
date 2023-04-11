@@ -59,8 +59,8 @@ g_iw_t block_iw_AB_to_matrix_valued(b_g_iw_vt bg_AB) {
     auto g_AB = bg_AB(bidx);
     int size = g_AB.target_shape()[0];
     
-    g.data()(range(), range(idx, idx+size), range(idx, idx+size))
-      = g_AB.data()(range(), range(), range());
+    g.data()(range::all, range(idx, idx+size), range(idx, idx+size))
+      = g_AB.data()(range::all, range::all, range::all);
 
     idx += size;
   }

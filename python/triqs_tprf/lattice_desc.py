@@ -80,7 +80,7 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, double delta)", doc = r"""Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::lattice_dyson_g0_fk (double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::refreq mesh, double delta)", doc = r"""Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
 
   Computes
 
@@ -391,7 +391,7 @@ Returns
 out
      k-space real time Green's function :math:`G_{a\bar{b}c\bar{d}}(t, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::imfreq> mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh, double mu)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
     in the particle-hole channel. The analytic expression is obtained using residue calculus
@@ -472,7 +472,7 @@ out
      poles are non-degenerate. The degenerate case produces an additional frequency independent
      contribution (the last term on the last row).""")
 
-module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::refreq> mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, triqs::mesh::refreq mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
 
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
     in the particle-hole channel in real frequencies. The analytic expression is obtained using
@@ -1188,7 +1188,7 @@ Returns
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.""")
 
-module.add_function ("std::tuple<triqs_tprf::g_Tk_t, triqs_tprf::g_Tk_t> triqs_tprf::g0_Tk_les_gtr_from_e_k(triqs_tprf::e_k_cvt e_k, gf_mesh<triqs::mesh::retime> Tmesh, double beta)")
+module.add_function ("std::tuple<triqs_tprf::g_Tk_t, triqs_tprf::g_Tk_t> triqs_tprf::g0_Tk_les_gtr_from_e_k(triqs_tprf::e_k_cvt e_k, triqs::mesh::retime Tmesh, double beta)")
 
 module.add_function ("triqs_tprf::chi_Tr_t triqs_tprf::chi0_Tr_from_g_Tr_PH (triqs_tprf::g_Tr_cvt g_Tr_les, triqs_tprf::g_Tr_cvt g_Tr_gtr)", doc = r"""Generalized susceptibility real time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(t, \mathbf{r})`
 

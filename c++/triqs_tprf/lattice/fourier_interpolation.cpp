@@ -40,9 +40,9 @@ array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 
 #pragma omp parallel for
   for(int kidx = 0; kidx < nk; kidx++) {
     
-    chi_out(range(), kidx, range(), range(), range(), range()) *= 0.;
+    chi_out(range::all, kidx, range::all, range::all, range::all, range::all) *= 0.;
 
-    auto k = k_vecs(kidx, range());
+    auto k = k_vecs(kidx, range::all);
     
     for (auto const &r : rmesh ) {
 

@@ -38,7 +38,7 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // g
 
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
 
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
@@ -59,7 +59,7 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, gf_mesh<imfreq> mesh) {
 // ----------------------------------------------------
 // g0 real frequencies
 
-g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, gf_mesh<refreq> mesh, double delta) {
+g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, mesh::refreq mesh, double delta) {
 
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
   g_fk_t g0_fk({mesh, e_k.mesh()}, e_k.target_shape());

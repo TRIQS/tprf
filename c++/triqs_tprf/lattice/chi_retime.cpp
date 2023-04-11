@@ -51,7 +51,7 @@ auto fermi_nda = nda::map([](double e) { return fermi_scalar(e); });
 // ----------------------------------------------------
 // g0_Tk_les, g0_Tk_gtr in real time
 
-std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, gf_mesh<retime> Tmesh, double beta) {
+std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, mesh::retime Tmesh, double beta) {
 
   auto I = std::complex(0.,1.);
   auto kmesh = e_k.mesh();

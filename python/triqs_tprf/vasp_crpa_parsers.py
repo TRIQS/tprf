@@ -71,7 +71,7 @@ def read_vasp_crpa_vq_to_ndarray(path, prefix, verbose=False, orbsub=[]):
 
 def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
 
-    from triqs.gf import Gf, MeshBrillouinZone
+    from triqs.gf import Gf, MeshBrZone
     from triqs.lattice.lattice_tools import BrillouinZone
     from triqs.lattice.lattice_tools import BravaisLattice
     from triqs_tprf.tight_binding import TBLattice
@@ -79,7 +79,7 @@ def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
 
     bl = BravaisLattice(units, orbital_positions)
     bz = BrillouinZone(bl)
-    bzmesh = MeshBrillouinZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
+    bzmesh = MeshBrZone(bz, np.diag(np.array(kpts, dtype=np.int32)))
 
     u_q = Gf(mesh=bzmesh, target_shape=U_Q.shape[1:])
 

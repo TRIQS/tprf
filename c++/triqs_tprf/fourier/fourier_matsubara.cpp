@@ -42,7 +42,7 @@ namespace triqs_tprf::fourier {
   array<dcomplex, 2> fit_derivatives(gf_const_view<imtime, tensor_valued<1>> gt) {
     using matrix_t   = arrays::matrix<dcomplex>;
     int fit_order    = 8;
-    auto _           = range();
+    auto _           = range::all;
     auto d_vec_left  = matrix_t(fit_order, gt.target_shape()[0]);
     auto d_vec_right = d_vec_left;
     int n_tau        = gt.mesh().size();
@@ -143,7 +143,7 @@ namespace triqs_tprf::fourier {
 
     double b1, b2, b3;
     array<dcomplex, 1> m1, a1, a2, a3;
-    auto _  = range();
+    auto _  = range::all;
     auto m2 = mom_23(0, _);
     auto m3 = mom_23(1, _);
 
@@ -237,7 +237,7 @@ namespace triqs_tprf::fourier {
       TRIQS_ASSERT2((tail.shape()[0] > 4),
                     "ERROR: Inverse Fourier implementation requires at least a "
                     "proper 3rd high-frequency moment\n");
-      double _abs_tail0 = max_element(abs(tail(0, range())));
+      double _abs_tail0 = max_element(abs(tail(0, range::all)));
       if (_abs_tail0 > 1e-6) std::cerr << "WARNING: High frequency tail is not zero: " << _abs_tail0;
       /*
       TRIQS_ASSERT2((_abs_tail0 < 1e-10),
@@ -245,7 +245,7 @@ namespace triqs_tprf::fourier {
                     "0th moment\n  error is :" +
                         std::to_string(_abs_tail0));
       */
-      return _fourier_impl(tau_mesh, gw, p, tail(range(1, 4), range()));
+      return _fourier_impl(tau_mesh, gw, p, tail(range(1, 4), range::all));
     }
 
     double beta = tau_mesh.domain().beta;
@@ -268,7 +268,7 @@ namespace triqs_tprf::fourier {
 
     double b1, b2, b3;
     array<dcomplex, 1> a1, a2, a3;
-    auto _  = range();
+    auto _  = range::all;
     auto m1 = mom_123(0, _);
     auto m2 = mom_123(1, _);
     auto m3 = mom_123(2, _);
