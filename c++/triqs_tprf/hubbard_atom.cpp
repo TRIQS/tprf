@@ -60,7 +60,8 @@ namespace hubbard_atom {
     
     val_t A = I*U*0.5;
     val_t B = I*U*0.5 * sqrt( abs(3. - exp(beta*U*0.5)) / (1 + exp(beta*U*0.5)) );
-    C(w) << 0.; C[{mb, 0}] = -beta*U*0.5 / ( 1 + exp(-beta*U*0.5) ); // set w=0
+    C(w) << 0.;
+    C[0] = -beta * U * 0.5 / (1 + exp(-beta * U * 0.5)); // set w=0
     D(w) << U*U*0.25 * (1. + C(w))/(1. - C(w));
     
     val_t B0 = 1.;
