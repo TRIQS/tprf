@@ -55,7 +55,7 @@ namespace triqs_tprf {
     auto arr = mpi_view(W.mesh());
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &[w, k] = arr(idx);
+      auto &[w, k] = arr[idx];
 
       array<scalar_t, 4> V_arr;
       if constexpr (v_t::arity == 1)

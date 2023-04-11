@@ -48,7 +48,7 @@ chi0r_t chi0r_from_gr_PH(int nw, int nnu, gr_iw_vt gr) {
 
 int nb = gr.target().shape()[0];
 auto &clmesh = std::get<1>(gr.mesh());
-double beta = std::get<0>(gr.mesh()).domain().beta;
+double beta = std::get<0>(gr.mesh()).beta();
 
 chi0r_t chi0r{{{beta, Boson, nw}, {beta, Fermion, nnu}, clmesh},
               {nb, nb, nb, nb}};
@@ -71,7 +71,7 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
   int nb = g_nr.target().shape()[0];
   auto const &rmesh = std::get<1>(g_nr.mesh());
 
-  double beta = std::get<0>(g_nr.mesh()).domain().beta;
+  double beta = std::get<0>(g_nr.mesh()).beta();
 
   auto wmesh = mesh::imfreq{beta, Boson, nw};
   auto nmesh = mesh::imfreq{beta, Fermion, nn};
@@ -92,7 +92,7 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
   t_calc.start();
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &r = arr(idx);
+    auto &r = arr[idx];
 
     auto chi0_wn =
       make_gf<prod<imfreq, imfreq>>({wmesh, nmesh}, chi_target);
@@ -102,13 +102,11 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
 #pragma omp critical
     {
       g_pr_n = g_nr[_, r];
-      g_mr_n = g_nr[_, -r];
+      g_mr_n = g_nr(_, -r);
     }
 
-    for (auto const &w : wmesh)
-      for (auto const &n : nmesh)
-        chi0_wn[w, n](a, b, c, d)
-            << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
+    for (auto w : wmesh)
+      for (auto n : nmesh) chi0_wn[w, n](a, b, c, d) << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
 
 #pragma omp critical
     chi0_wnr[_, _, r] = chi0_wn;
@@ -124,14 +122,13 @@ chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr) {
   //chi0_wnr = mpi::all_reduce(chi0_wnr);
 
   /* // Does not give correct result either...
-  for( auto const & w : wmesh )
+  for (auto w : wmesh )
     chi0_wnr[w, _, _] = mpi::all_reduce(chi0_wnr[w, _, _]);
   */
-  
-  for( auto const & w : wmesh )
-    for( auto const & n : nmesh )
-      chi0_wnr[w, n, _] = mpi::all_reduce(chi0_wnr[w, n, _]);
-  
+
+  for (auto w : wmesh)
+    for (auto n : nmesh) chi0_wnr[w, n, _] = mpi::all_reduce(chi0_wnr[w, n, _]);
+
   t_mpi_all_reduce.stop();
 
   std::cout << "--> chi0r_from_gr_PH: alloc " << double(t_alloc)
@@ -148,7 +145,7 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
   int nb = g_nr.target().shape()[0];
   auto &rmesh = std::get<1>(g_nr.mesh());
 
-  double beta = std::get<0>(g_nr.mesh()).domain().beta;
+  double beta = std::get<0>(g_nr.mesh()).beta();
   auto w = matsubara_freq{nw_index, beta, Boson};
 
   auto nmesh = mesh::imfreq{beta, Fermion, nn};
@@ -158,11 +155,10 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
   auto chi_target = chi0_nr.target();
   auto g_target = g_nr.target();
 
-
   auto arr = mpi_view(rmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &r = arr(idx);
+    auto &r = arr[idx];
 
     auto chi0_n = make_gf<imfreq>(nmesh, chi_target);
     auto g_pr_n = make_gf<imfreq>(nmesh, g_target);
@@ -171,19 +167,16 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr) {
 #pragma omp critical
     {
       g_pr_n = g_nr[_, r];
-      g_mr_n = g_nr[_, -r];
+      g_mr_n = g_nr(_, -r);
     }
 
-      for (auto const &n : nmesh)
-        chi0_n[n](a, b, c, d)
-            << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
+    for (auto n : nmesh) chi0_n[n](a, b, c, d) << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
 
 #pragma omp critical
     chi0_nr[_, r] = chi0_n;
   }
 
-  for( auto const & n : nmesh )
-    chi0_nr[n, _] = mpi::all_reduce(chi0_nr[n, _]);
+  for (auto n : nmesh) chi0_nr[n, _] = mpi::all_reduce(chi0_nr[n, _]);
 
   return chi0_nr;
 }
@@ -201,7 +194,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
   int nb = g_nr.target().shape()[0];
   auto const &rmesh = std::get<1>(g_nr.mesh());
 
-  double beta = std::get<0>(g_nr.mesh()).domain().beta;
+  double beta = std::get<0>(g_nr.mesh()).beta();
 
   auto wmesh = mesh::imfreq{beta, Boson, nw};
   auto nmesh = mesh::imfreq{beta, Fermion, nn};
@@ -218,7 +211,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < rmesh.size(); idx++) {
-    auto iter = rmesh.begin(); iter += idx; auto r = *iter;
+    auto r = *std::next(rmesh.begin(), idx);
 
     auto chi0_wn =
       make_gf<prod<imfreq, imfreq>>({wmesh, nmesh}, chi_target);
@@ -228,13 +221,11 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 #pragma omp critical
     {
       g_pr_n = g_nr[_, r];
-      g_mr_n = g_nr[_, -r];
+      g_mr_n = g_nr(_, -r);
     }
 
-    for (auto const &w : wmesh)
-      for (auto const &n : nmesh)
-        chi0_wn[w, n](a, b, c, d)
-            << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
+    for (auto w : wmesh)
+      for (auto n : nmesh) chi0_wn[w, n](a, b, c, d) << -beta * g_pr_n(n)(d, a) * g_mr_n(n + w)(b, c);
 
 #pragma omp critical
     chi0_wnr[_, _, r] = chi0_wn;
@@ -260,12 +251,12 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 // Helper function compiting chi0 for fixed bosonic frequency w and momentum q.
   
 CPP2PY_IGNORE
-gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<mesh::imfreq> w, mesh_point<cluster_mesh> q, mesh::imfreq fmesh, g_wk_cvt g_wk) {
+gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, g_wk_cvt g_wk) {
 
   int nb = g_wk.target().shape()[0];
   auto const &kmesh = std::get<1>(g_wk.mesh());
 
-  double beta = fmesh.domain().beta;
+  double beta = fmesh.beta();
 
   gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
 
@@ -273,9 +264,9 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<mesh::imfreq> w, mes
   // chi0_n(inu)(a, b, c, d) << -beta/kmesh.size() * sum(g_wk(inu, k)(d, a) *
   // g_wk(inu + w, k - q)(b, c), k=kmesh);
 
-  for (auto const &n : fmesh) {
-    for (auto const &k : kmesh) {
-      auto g_da = g_wk[n, k];
+  for (auto n : fmesh) {
+    for (auto k : kmesh) {
+      auto g_da = g_wk[n.value(), k.index()];
       auto g_bc = g_wk(n + w, k - q);
       for (auto a : range(nb))
         for (auto b : range(nb))
@@ -296,7 +287,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh_point<mesh::imfreq> w, mes
 // using the self energy and the dispersion (instead of the greens function)
 
 CPP2PY_IGNORE
-gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh_point<mesh::imfreq> w, mesh_point<cluster_mesh> q, mesh::imfreq fmesh, double mu,
+gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, double mu,
                                                         e_k_cvt e_k, g_w_cvt sigma_w) {
 
   int nb = e_k.target().shape()[0];
@@ -306,13 +297,13 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh_point<mesh::imfreq>
 
   assert(fmesh.size() < fmesh_large.size());
 
-  double beta = fmesh.domain().beta;
+  double beta = fmesh.beta();
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
 
   gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
 
-  for (auto const &k : kmesh) {
-    for (auto const &n : fmesh) {
+  for (auto k : kmesh) {
+    for (auto n : fmesh) {
 
       auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]);
       auto g_bc = inverse((n + mu) * I - e_k[k - q] - sigma_w[n + w]);
@@ -337,7 +328,7 @@ chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
   auto const &kmesh = std::get<1>(g_wk.mesh());
 
   int nb = g_wk.target().shape()[0];
-  double beta = std::get<0>(g_wk.mesh()).domain().beta;
+  double beta = std::get<0>(g_wk.mesh()).beta();
 
   mesh::imfreq bmesh{beta, Boson, nw};
   mesh::imfreq fmesh{beta, Fermion, nn};
@@ -345,9 +336,7 @@ chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk) {
   chi0q_t chi0_wnk({bmesh, fmesh, kmesh}, {nb, nb, nb, nb});
 
   auto _ = all_t{};
-  for (auto const &[w, q] : prod{bmesh, kmesh}) {
-    chi0_wnk[w, _, q] = chi0_n_from_g_wk_PH(w, q, fmesh, g_wk);
-  }
+  for (auto [w, q] : prod{bmesh, kmesh}) { chi0_wnk[w, _, q] = chi0_n_from_g_wk_PH(w, q, fmesh, g_wk); }
 
   return chi0_wnk;
 }
@@ -365,7 +354,7 @@ auto chi0_wnr =
     make_gf<chi0r_t::mesh_t>({bmesh, fmesh, rmesh}, chi0_wnk.target());
 
 auto _ = all_t{};
-for (auto const &[w, n] : mpi_view(prod{bmesh, fmesh}))
+for (auto [w, n] : mpi_view(prod{bmesh, fmesh}))
   chi0_wnr[w, n, _] = fourier(chi0_wnk[w, n, _]);
 chi0_wnr = mpi::all_reduce(chi0_wnr);
 
@@ -394,7 +383,7 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk) {
   auto arr = mpi_view(prod{bmesh, fmesh});
 #pragma omp parallel for shared(kmesh, rmesh)
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, n] = arr(idx);
+    auto &[w, n] = arr[idx];
 
     auto chi_r = make_gf<cyclat>(rmesh, target);
     auto chi_k = make_gf<brzone>(kmesh, target);
@@ -411,9 +400,8 @@ chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk) {
   //chi_wnr = mpi::all_reduce(chi_wnr); // Incorrect results for large args!!
 
   // Workaround.. :P
-  for( auto const &w : bmesh )
-    for( auto const &n : fmesh )
-      chi_wnr[w, n, _] = mpi::all_reduce(chi_wnr[w, n, _]);
+  for (auto w : bmesh)
+    for (auto n : fmesh) chi_wnr[w, n, _] = mpi::all_reduce(chi_wnr[w, n, _]);
 
   return chi_wnr;
 }
@@ -429,7 +417,7 @@ auto chi0_wnk =
     make_gf<chi0q_t::mesh_t>({bmesh, fmesh, kmesh}, chi0_wnr.target());
 
 auto _ = all_t{};
-for (auto const &[w, n] : mpi_view(prod{bmesh, fmesh}))
+for (auto [w, n] : mpi_view(prod{bmesh, fmesh}))
   chi0_wnk[w, n, _] = triqs::gfs::fourier(chi0_wnr[w, n, _]);
 chi0_wnk = mpi::all_reduce(chi0_wnk);
 
@@ -464,7 +452,7 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
   auto arr = mpi_view(prod{bmesh, fmesh});
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, n] = arr(idx);
+    auto &[w, n] = arr[idx];
 
     auto chi_r = make_gf<cyclat>(rmesh, target);
     auto chi_k = make_gf<brzone>(kmesh, target);
@@ -483,10 +471,9 @@ chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr) {
 
   //chi_wnk = mpi::all_reduce(chi_wnk); // Incorrect results for large args!!
 
-  // Workaround.. :P 
-  for( auto const &w : bmesh )
-    for( auto const &n : fmesh )
-      chi_wnk[w, n, _] = mpi::all_reduce(chi_wnk[w, n, _]);
+  // Workaround.. :P
+  for (auto w : bmesh)
+    for (auto n : fmesh) chi_wnk[w, n, _] = mpi::all_reduce(chi_wnk[w, n, _]);
 
   t_mpi_all_reduce.stop();
 
@@ -509,14 +496,14 @@ chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk) {
   chi_wk_t chi_wk({wmesh, kmesh}, chi_wnk.target_shape());
   chi_wk *= 0.;
 
-  double beta = wmesh.domain().beta;
+  double beta = wmesh.beta();
 
   auto arr = mpi_view(chi_wk.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+    auto &[w, k] = arr[idx];
 
-    for (auto &n : nmesh) chi_wk[w, k] += chi_wnk[w, n, k];
+    for (auto n : nmesh) chi_wk[w, k] += chi_wnk[w, n, k];
     chi_wk[w, k] /= beta * beta;
   }
 
@@ -540,17 +527,17 @@ chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk) {
   chi_wk_t chi_wk({wmesh, qmesh}, chi_wnk.target_shape());
 
   int nb = chi_wnk.target_shape()[0];
-  double beta = wmesh.domain().beta;
+  double beta = wmesh.beta();
 
   auto chi_target = chi_wnk.target();
 
-  // for (auto const &w : wmesh) {
-  //  for (auto const &q : qmesh) {
+  // for (auto w : wmesh) {
+  //  for (auto q : qmesh) {
 
   auto arr = mpi_view(chi_wk.mesh()); // FIXME Use library implementation
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, q] = arr(idx);
+    auto &[w, q] = arr[idx];
 
     auto chi = make_gf<imfreq>(nmesh, chi_target);
     array<std::complex<double>, 4> dens(nb, nb, nb, nb);
@@ -585,11 +572,10 @@ chi_w_t chi0q_sum_nu_q(chi_wnk_cvt chi_wnk) {
   auto const &[mesh_b, mesh_f, mesh_k] = chi_wnk.mesh();
   chi_w_t chi_w(mesh_b, chi_wnk.target_shape());
 
-  for (auto const &[w, n, k] : chi_wnk.mesh())
-    chi_w[w] += chi_wnk[w, n, k];
+  for (auto [w, n, k] : chi_wnk.mesh()) chi_w[w] += chi_wnk[w, n, k];
 
   double nk = mesh_k.size();
-  double beta = mesh_f.domain().beta;
+  double beta = mesh_f.beta();
   chi_w = chi_w / nk / (beta * beta);
 
   return chi_w;
@@ -607,7 +593,7 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
 
   auto chiq = make_gf<chiq_t::mesh_t>({mbz, mb, mf, mf}, chi0q.target());
 
-  for (auto const &k : mbz) {
+  for (auto k : mbz) {
 
     // -- Construct matrix version of chi0q_k
 
@@ -617,8 +603,8 @@ chiq_t chiq_from_chi0q_and_gamma_PH(chi0q_vt chi0q, g2_iw_vt gamma_ph) {
     auto chi0q_k =
         make_gf<g2_iw_t::mesh_t>({mb, mf, mf}, chi0q.target());
 
-    for (auto const &w : mb) {
-      for (auto const &n : mf) {
+    for (auto w : mb) {
+      for (auto n : mf) {
         chi0q_k[w, n, n] = chi0q[w, n, k];
       }
     }
@@ -646,19 +632,15 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < mbz.size(); idx++) {
-    auto iter = mbz.begin();
-    iter += idx;
-    auto k = *iter;
+    auto k = *std::next(mbz.begin(), idx);
 
     auto chi0 = make_gf<g2_nn_t::mesh_t>({mf, mf}, chi0_wnk.target());
     auto I = identity<Channel_t::PH>(chi0);
 
-    for (auto const &w : mb) {
+    for (auto w : mb) {
 
       chi0 *= 0.;
-      for (auto const &n : mf) {
-        chi0[n, n] = chi0_wnk[w, n, k];
-      }
+      for (auto n : mf) { chi0[n, n] = chi0_wnk[w, n, k]; }
 
       // this step could be optimized, using the diagonality of chi0 and I
       auto denom = chi_nn_t{I - product<Channel_t::PH>(chi0, gamma_ph_wnn[w, _, _])};
@@ -688,7 +670,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
   auto &fmesh = std::get<1>(chi0_wnk.mesh());
   auto &kmesh = std::get<2>(chi0_wnk.mesh());
 
-  double beta = fmesh.domain().beta;
+  double beta = fmesh.beta();
 
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
@@ -701,7 +683,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
   
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[k, w] = arr(idx);
+    auto &[k, w] = arr[idx];
 
     //triqs::utility::timer t_copy_1, t_chi0_nn, t_bse, t_chi_tr, t_copy_2;
 
@@ -720,8 +702,8 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
 
     chi_nn_t chi0_nn({fmesh, fmesh}, target_shape);
     chi0_nn *= 0.;
-    
-    for (auto const &n : fmesh) chi0_nn[n, n] = chi0_n[n];
+
+    for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
 
     //t_chi0_nn.stop();
     //std::cout << "BSE: chi0_nn " << double(t_chi0_nn) << " s" << std::endl;
@@ -750,9 +732,8 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
     array<std::complex<double>, 4> tr_chi(target_shape);
     
     tr_chi *= 0.0;
-    for (auto const &n1 : fmesh)
-      for (auto const &n2 : fmesh)
-        tr_chi += chi[n1, n2];
+    for (auto n1 : fmesh)
+      for (auto n2 : fmesh) tr_chi += chi[n1, n2];
 
     tr_chi /= beta * beta;
 
@@ -808,7 +789,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
   auto const &bmesh = std::get<0>(gamma_ph_wnn.mesh());
   auto const &fmesh = std::get<1>(gamma_ph_wnn.mesh());
 
-  double beta = fmesh.domain().beta;
+  double beta = fmesh.beta();
 
   auto chi_kw = make_gf<prod<brzone, imfreq>>(
       {kmesh, bmesh}, target);
@@ -833,7 +814,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
   array<std::complex<double>, 4> tr_chi0(gamma_ph_wnn.target_shape());
   array<std::complex<double>, 4> tr_chi0_tail_corr(gamma_ph_wnn.target_shape());
 
-  for (auto const &[k, w] : mpi::chunk(chi_kw.mesh())) {
+  for (auto [k, w] : mpi::chunk(chi_kw.mesh())) {
 
     triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3;
 
@@ -844,8 +825,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
     std::cout << "BSE: chi0_n ";
 
     auto chi0_n_tail = chi0_n_from_g_wk_PH(w, k, fmesh_tail, g_wk);
-    for (auto const &n : fmesh)
-      chi0_n[n] = chi0_n_tail(n);
+    for (auto n : fmesh) chi0_n[n] = chi0_n_tail(n);
 
     std::cout << double(t_chi0_n) << " s\n";
 
@@ -880,8 +860,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
     t_bse_1.start();
     std::cout << "BSE: chi0_nn ";
 
-    for (auto const &n : fmesh)
-      chi0_nn[n, n] = chi0_n[n];
+    for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
 
     std::cout << double(t_bse_1) << " s\n";
 
@@ -904,8 +883,7 @@ chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn,
     // trace out fermionic frequencies
     std::cout << "BSE: Tr[chi] \n";
     tr_chi *= 0.0;
-    for (auto const &[n1, n2] : chi_nn.mesh())
-      tr_chi += chi_nn[n1, n2];
+    for (auto [n1, n2] : chi_nn.mesh()) tr_chi += chi_nn[n1, n2];
     tr_chi /= beta * beta;
 
     // 0th order high frequency correction using the bare bubble chi0
@@ -932,7 +910,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
   auto const &kmesh                  = e_k.mesh();
   auto const &[bmesh, fmesh, f2mesh] = gamma_ph_wnn.mesh();
 
-  double beta = fmesh.domain().beta;
+  double beta = fmesh.beta();
 
   auto chi_kw = make_gf<prod<brzone, imfreq>>(
       {kmesh, bmesh}, target);
@@ -957,7 +935,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
   array<std::complex<double>, 4> tr_chi0(gamma_ph_wnn.target_shape());
   array<std::complex<double>, 4> tr_chi0_tail_corr(gamma_ph_wnn.target_shape());
 
-  for (auto const &[k, w] : mpi_view(chi_kw.mesh())) {
+  for (auto [k, w] : mpi_view(chi_kw.mesh())) {
 
     triqs::utility::timer t_chi0_n, t_chi0_tr, t_bse_1, t_bse_2, t_bse_3;
 
@@ -972,8 +950,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
     auto chi0_n_tail =
         chi0_n_from_e_k_sigma_w_PH(w, k, fmesh_tail, mu, e_k, sigma_w);
 
-    for (auto const &n : fmesh)
-      chi0_n[n] = chi0_n_tail(n);
+    for (auto n : fmesh) chi0_n[n] = chi0_n_tail(n);
 
     std::cout << double(t_chi0_n) << " s\n";
 
@@ -1008,8 +985,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
     t_bse_1.start();
     std::cout << "BSE: chi0_nn ";
 
-    for (auto const &n : fmesh)
-      chi0_nn[n, n] = chi0_n[n];
+    for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
 
     std::cout << double(t_bse_1) << " s\n";
 
@@ -1033,8 +1009,7 @@ chiq_sum_nu_from_e_k_sigma_w_and_gamma_PH(double mu, ek_vt e_k, g_iw_vt sigma_w,
     // trace out fermionic frequencies
     std::cout << "BSE: Tr[chi] \n";
     tr_chi *= 0.0;
-    for (auto const &[n1, n2] : chi_nn.mesh())
-      tr_chi += chi_nn[n1, n2];
+    for (auto [n1, n2] : chi_nn.mesh()) tr_chi += chi_nn[n1, n2];
     tr_chi /= beta * beta;
 
     // 0th order high frequency correction using the bare bubble chi0
@@ -1060,10 +1035,9 @@ chiq_sum_nu(chiq_t chiq) {
   // Does not compile due to treatment of the tail (singularity)
   // chiq_w(k, iw) << sum(chiq(k, iw, inu, inup), inu=mesh, inup=mesh);
 
-  for (auto const &[k, w, n1, n2] : chiq.mesh())
-    chiq_w[k, w] += chiq[k, w, n1, n2];
+  for (auto [k, w, n1, n2] : chiq.mesh()) chiq_w[k, w] += chiq[k, w, n1, n2];
 
-  double beta = mesh_f.domain().beta;
+  double beta = mesh_f.beta();
   chiq_w = chiq_w / (beta * beta);
 
   return chiq_w;
@@ -1076,11 +1050,10 @@ gf<imfreq, tensor_valued<4>> chiq_sum_nu_q(chiq_t chiq) {
   auto &mesh_f = std::get<2>(chiq.mesh());
   auto chi_w = make_gf<imfreq>(mesh_b, chiq.target());
 
-  for (auto const &[k, w, n1, n2] : chiq.mesh())
-    chi_w[w] += chiq[k, w, n1, n2];
+  for (auto [k, w, n1, n2] : chiq.mesh()) chi_w[w] += chiq[k, w, n1, n2];
 
   double nk = mesh_k.size();
-  double beta = mesh_f.domain().beta;
+  double beta = mesh_f.beta();
   chi_w = chi_w / nk / (beta * beta);
 
   return chi_w;
@@ -1100,10 +1073,10 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
   auto arr = mpi_view(chi_wk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+    auto &[w, k] = arr[idx];
 
     /*
-    //for (auto const &[k, w, n1, n2] : chi_kwnn.mesh()) {
+    //for (auto [k, w, n1, n2] : chi_kwnn.mesh()) {
     for (auto [a, b, c, d] : chi_kwnn.target_indices())
       for (auto [e, f, g, h] : chi_kwnn.target_indices())
 	chi_wk[w, k](a, b, g, h) +=

@@ -42,7 +42,7 @@ namespace triqs_tprf {
 // Particle-hole (PH)
 
 template <> g2_iw_t chi0_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
-  double beta = g.mesh().domain().beta;
+  double beta = g.mesh().beta();
   auto chi0   = make_gf(g2.mesh(), g2.target());
 
   chi0(Omega, n, np)(a, b, c, d)
@@ -52,7 +52,7 @@ template <> g2_iw_t chi0_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
 }
 
 template <> g2_iw_t chi_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
-  double beta = g.mesh().domain().beta;
+  double beta = g.mesh().beta();
   auto chi    = make_gf(g2.mesh(), g2.target());
 
   chi(Omega, n, np)(a, b, c, d)
@@ -65,7 +65,7 @@ template <> g2_iw_t chi_from_gg2<Channel_t::PH>(g_iw_cvt g, g2_iw_cvt g2) {
 chi2_tau_t chi0_tau_from_g_tau_PH(g_tau_cvt g_tau) {
 
   int nb = g_tau.target().shape()[0];
-  double beta = g_tau.mesh().domain().beta;
+  double beta = g_tau.mesh().beta();
   int ntau = g_tau.mesh().size();
   
   chi2_tau_t chi0_tau{{beta, Boson, ntau}, {nb, nb, nb, nb}};
@@ -79,7 +79,7 @@ chi2_tau_t chi0_tau_from_g_tau_PH(g_tau_cvt g_tau) {
 // Particle-particle (PP)
 
 template <> g2_iw_t chi0_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
-  double beta = g.mesh().domain().beta;
+  double beta = g.mesh().beta();
   auto chi0   = make_gf(g2.mesh(), g2.target());
 
   chi0(Omega, n, np)(a, b, c, d)
@@ -89,7 +89,7 @@ template <> g2_iw_t chi0_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
 }
 
 template <> g2_iw_t chi_from_gg2<Channel_t::PP>(g_iw_cvt g, g2_iw_cvt g2) {
-  double beta = g.mesh().domain().beta;
+  double beta = g.mesh().beta();
   auto chi    = make_gf(g2.mesh(), g2.target());
 
   chi(Omega, n, np)(a, b, c, d)

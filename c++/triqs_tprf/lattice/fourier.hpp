@@ -52,7 +52,7 @@ auto fourier_wr_to_tr_general_target(Gf_type g_wr, int n_tau = -1) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
-    auto &r = r_arr(idx);
+    auto &r = r_arr[idx];
 
     auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
     auto g_t = make_gf<imtime>(tmesh, g_tr.target());
@@ -85,7 +85,7 @@ auto fourier_tr_to_wr_general_target(Gf_type g_tr, int n_w = -1) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
-    auto &r = r_arr(idx);
+    auto &r = r_arr[idx];
 
     auto g_t = make_gf<imtime>(tmesh, g_tr.target());
     auto g_w = make_gf<imfreq>(wmesh, g_wr.target());
@@ -119,7 +119,7 @@ auto fourier_wk_to_wr_general_target(Gf_type g_wk) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < w_arr.size(); idx++) {
-    auto &w = w_arr(idx);
+    auto &w = w_arr[idx];
 
     auto g_k = make_gf<brzone>(kmesh, g_wk.target());
     auto g_r = make_gf<cyclat>(rmesh, g_wr.target());
@@ -153,7 +153,7 @@ auto fourier_wr_to_wk_general_target(Gf_type g_wr) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < w_arr.size(); idx++) {
-    auto &w = w_arr(idx);
+    auto &w = w_arr[idx];
 
     auto g_r = make_gf<cyclat>(rmesh, g_wr.target());
     auto g_k = make_gf<brzone>(kmesh, g_wk.target());

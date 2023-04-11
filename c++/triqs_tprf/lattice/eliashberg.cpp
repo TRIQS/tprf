@@ -53,7 +53,7 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   auto meshes_mpi = mpi_view(delta_wk.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-    auto &[w, k] = meshes_mpi(idx);
+      auto &[w, k] = meshes_mpi[idx];
 
       for (auto [d, c] : F_wk.target_indices())
         for (auto [e, f] : delta_wk.target_indices())
@@ -88,15 +88,15 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (int kidx = 0; kidx < arr.size(); kidx++) {
-      auto &k = arr(kidx);
-      for (auto const &w : wmesh) {
-        for (auto const &[n, q] : delta_wk.mesh())
+      auto &k = arr[kidx];
+      for (auto w : wmesh) {
+        for (auto [n, q] : delta_wk.mesh())
           for (auto [c, a, d, b] : Gamma_pp.target_indices())
             delta_wk_out[w, k](a, b) += -0.5 * Gamma_pp(w - n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
       }
   }
 
-  delta_wk_out /= (wmesh.domain().beta * kmesh.size());
+  delta_wk_out /= (wmesh.beta() * kmesh.size());
 
   delta_wk_out = mpi::all_reduce(delta_wk_out);
 
@@ -120,10 +120,9 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
   auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), F_tr.target());
   delta_r_out *= 0.;
 
-  for (auto const &r : std::get<1>(F_tr.mesh())) {
-    auto F_t = F_tr[_, r];
-    for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(d, c);
+  for (auto r : std::get<1>(F_tr.mesh())) {
+      auto F_t = F_tr[_, r];
+      for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices()) delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(d, c);
   }
 
   return delta_r_out;
@@ -150,7 +149,7 @@ g_tr_t eliashberg_dynamic_gamma_f_product(chi_tr_vt Gamma_pp_dyn_tr, g_tr_vt F_t
   auto meshes_mpi = mpi_view(F_tr.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-    auto &[t, r] = meshes_mpi(idx);
+      auto &[t, r] = meshes_mpi[idx];
 
       for (auto [c, a, d, b] : Gamma_pp_dyn_tr.target_indices())
         delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](d, c);
@@ -176,7 +175,7 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   auto delta_wr_out = fourier_tr_to_wr(delta_tr_out);
   // Combine dynamic and constant part
   auto _ = all_t{};
-  for (auto const &w : std::get<0>(delta_wr_out.mesh())) delta_wr_out[w, _] += delta_r_out;
+  for (auto w : std::get<0>(delta_wr_out.mesh())) delta_wr_out[w, _] += delta_r_out;
 
   auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
 
@@ -198,7 +197,7 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   delta_wk_out *= 0.;
 
   auto _ = all_t{};
-  for (auto const &w : std::get<0>(delta_wk_out.mesh())) delta_wk_out[w, _] += delta_k_out;
+  for (auto w : std::get<0>(delta_wk_out.mesh())) delta_wk_out[w, _] += delta_k_out;
 
   return delta_wk_out;
 }
@@ -219,7 +218,7 @@ chi_wk_t construct_phi_wk(chi_wk_vt chi, array_contiguous_view<std::complex<doub
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-      auto &[w, k] = meshes_mpi(idx);
+      auto &[w, k] = meshes_mpi[idx];
 
       array<scalar_t, 4> phi_arr{nb, nb, nb, nb};
       array<scalar_t, 4> chi_arr{chi[w, k]};

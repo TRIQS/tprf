@@ -45,18 +45,18 @@ namespace triqs_tprf {
 
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-      auto &[w, k] = meshes_mpi(idx);
+    auto &[w, k] = meshes_mpi[idx];
 
-      array<scalar_t, 4> chi_arr{nb, nb, nb, nb};
-      array<scalar_t, 4> chi0_arr{chi0_wk[w, k]};
+    array<scalar_t, 4> chi_arr{nb, nb, nb, nb};
+    array<scalar_t, 4> chi0_arr{chi0_wk[w, k]};
 
-      // PH grouping (permuting last two indices)
-      auto chi  = make_matrix_view(group_indices_view(chi_arr, idx_group<0, 1>, idx_group<3, 2>));
-      auto chi0 = make_matrix_view(group_indices_view(chi0_arr, idx_group<0, 1>, idx_group<3, 2>));
+    // PH grouping (permuting last two indices)
+    auto chi  = make_matrix_view(group_indices_view(chi_arr, idx_group<0, 1>, idx_group<3, 2>));
+    auto chi0 = make_matrix_view(group_indices_view(chi0_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-      chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
+    chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
 
-      chi_wk[w, k] = chi_arr;             // assign back using the array_view
+    chi_wk[w, k] = chi_arr;             // assign back using the array_view
     }
   chi_wk = mpi::all_reduce(chi_wk);
 

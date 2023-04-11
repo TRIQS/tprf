@@ -14,6 +14,7 @@ module.add_include("triqs_tprf/hubbard_atom.hpp")
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
 #include <triqs/cpp2py_converters/gf.hpp>
+#include <triqs/cpp2py_converters/mesh.hpp>
 
 using namespace triqs_tprf::hubbard_atom;
 """)

@@ -24,65 +24,27 @@
 #include <itertools/itertools.hpp>
 #include <mpi/mpi.hpp>
 
+#include <span>
+
 #include "types.hpp"
 
 namespace triqs_tprf {
 
-template<class T>
-auto mpi_view(const array<T, 1> &arr, mpi::communicator const & c) {
+  template <class T> auto mpi_view(const T &mesh, mpi::communicator c = {}) {
 
-  auto slice = itertools::chunk_range(0, arr.shape()[0], c.size(), c.rank());
+    auto slice = itertools::chunk_range(0, mesh.size(), c.size(), c.rank());
+    int size   = slice.second - slice.first;
 
-  /*
-  std::cout << "mpi_view<array> " << "rank = " << c.rank() << " size = " << arr.shape()[0]
-  	    << " s,e = " << slice.first << ", " << slice.second << "\n";
-  */
+    std::vector<typename T::mesh_point_t> arr{};
+    arr.reserve(size);
 
-  return arr(range(slice.first, slice.second + 1));
-}
+    auto iter = std::next(mesh.begin(), slice.first);
+    for (auto idx : range(0, size)) {
+      arr.emplace_back(*iter);
+      iter++;
+    }
 
-template<class T>
-auto mpi_view(const array<T, 1> &arr) {
-  mpi::communicator c;
-  return mpi_view(arr, c);
-}
-  
-template<class T>
-auto mpi_view(const T &mesh, mpi::communicator const & c) {
-
-  auto slice = itertools::chunk_range(0, mesh.size(), c.size(), c.rank());
-  int size = slice.second - slice.first;
-
-  /*
-  std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
-  	    << " s,e = " << slice.first << ", " << slice.second << "\n";
-  c.barrier();
-  */
-  
-  array<typename T::mesh_point_t, 1> arr(size);
-
-  auto iter = mesh.begin();
-  iter += slice.first;
-
-  for ( auto idx : range(0, size) ) {
-    auto w = *iter;
-    arr(idx) = w;
-    iter++;
+    return arr;
   }
 
-  /*
-  std::cout << "mpi_view<mesh> " << "rank = " << c.rank() << " size = " << size
-  	    << " s,e = " << slice.first << ", " << slice.second << " arr size " << arr.size() << "\n";
-  c.barrier();
-  */
-
-  return arr;
-}
-
-template<class T>
-auto mpi_view(const T &mesh) {
-  mpi::communicator c;
-  return mpi_view(mesh, c);
-}
-  
 } // namespace triqs_tprf

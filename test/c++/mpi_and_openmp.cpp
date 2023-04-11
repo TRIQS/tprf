@@ -30,28 +30,21 @@ TEST(mpi, mpi_view) {
 
   c.barrier();
 
-  for (auto const &[w, k] : mpi_view(g_wk.mesh())) {
-    std::cout << "rank " << c.rank() << " size " << c.size() << " : "
-              << w.linear_index() << ", " << k.linear_index() << std::endl;
+  for (auto [w, k] : mpi_view(g_wk.mesh())) {
+    std::cout << "rank " << c.rank() << " size " << c.size() << " : " << w.data_index() << ", " << k.data_index() << std::endl;
   }
 
   // loop over frequency in mpi
 
   c.barrier();
 
-  for (auto const &w : mpi_view(wmesh)) {
-    std::cout << "rank " << c.rank() << " size " << c.size() << " : "
-              << w.linear_index() << std::endl;
-  }
+  for (auto w : mpi_view(wmesh)) { std::cout << "rank " << c.rank() << " size " << c.size() << " : " << w.data_index() << std::endl; }
 
   // loop over momentum in mpi
 
   c.barrier();
 
-  for (auto const &k : mpi_view(kmesh)) {
-    std::cout << "rank " << c.rank() << " size " << c.size() << " : "
-              << k.linear_index() << std::endl;
-  }
+  for (auto k : mpi_view(kmesh)) { std::cout << "rank " << c.rank() << " size " << c.size() << " : " << k.data_index() << std::endl; }
 
   c.barrier();
 }
@@ -80,12 +73,10 @@ TEST(mpi, mpi_view_openmp) {
     auto arr = mpi_view(g_wk.mesh());
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &[w, k] = arr(idx);
+      auto &[w, k] = arr[idx];
 
       int tid = omp_get_thread_num();
-      std::cout << "thread " << tid << " rank " << c.rank() << " size "
-                << c.size() << " : " << w.linear_index() << ", "
-                << k.linear_index() << std::endl;
+      std::cout << "thread " << tid << " rank " << c.rank() << " size " << c.size() << " : " << w.data_index() << ", " << k.data_index() << std::endl;
     }
   }
 
@@ -97,11 +88,10 @@ TEST(mpi, mpi_view_openmp) {
     auto arr = mpi_view(wmesh);
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &w = arr(idx);
+      auto &w = arr[idx];
 
       int tid = omp_get_thread_num();
-      std::cout << "thread " << tid << " rank " << c.rank() << " size "
-                << c.size() << " : " << w.linear_index() << std::endl;
+      std::cout << "thread " << tid << " rank " << c.rank() << " size " << c.size() << " : " << w.data_index() << std::endl;
     }
   }
 
@@ -113,11 +103,10 @@ TEST(mpi, mpi_view_openmp) {
     auto arr = mpi_view(kmesh);
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &k = arr(idx);
+      auto &k = arr[idx];
 
       int tid = omp_get_thread_num();
-      std::cout << "thread " << tid << " rank " << c.rank() << " size "
-                << c.size() << " : " << k.linear_index() << std::endl;
+      std::cout << "thread " << tid << " rank " << c.rank() << " size " << c.size() << " : " << k.data_index() << std::endl;
     }
   }
 

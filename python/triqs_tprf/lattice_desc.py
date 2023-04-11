@@ -17,6 +17,7 @@ module.add_preamble("""
 #include <cpp2py/converters/tuple.hpp>
 #include <nda_py/cpp2py_converters.hpp>
 #include <triqs/cpp2py_converters/gf.hpp>
+#include <triqs/cpp2py_converters/mesh.hpp>
 
 using namespace triqs_tprf;
 """)

@@ -43,10 +43,10 @@ array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 
     chi_out(range::all, kidx, range::all, range::all, range::all, range::all) *= 0.;
 
     auto k = k_vecs(kidx, range::all);
-    
-    for (auto const &r : rmesh ) {
 
-    /*
+    for (auto r : rmesh) {
+
+      /*
 #pragma omp parallel for
     for (int idx = 0; idx < rmesh.size(); idx++) {
       auto iter = rmesh.begin(); iter += idx; auto r = *iter;
@@ -55,13 +55,12 @@ array<std::complex<double>, 6> cluster_mesh_fourier_interpolation(array<double, 
       auto dot_prod = k(0)*r(0) + k(1)*r(1) + k(2)*r(2);
       auto exponent = exp( - std::complex<double>(0., dot_prod) );
 
-      for (auto const &w : wmesh) {
-	int widx = w.linear_index();
-	for( int a : range(nb) )
-	for( int b : range(nb) )
-	for( int c : range(nb) )
-	for( int d : range(nb) )
-	  chi_out(widx, kidx, a, b, c, d) += exponent * chi[w, r](a, b, c, d);
+      for (auto w : wmesh) {
+        int widx = w.data_index();
+        for (int a : range(nb))
+          for (int b : range(nb))
+            for (int c : range(nb))
+              for (int d : range(nb)) chi_out(widx, kidx, a, b, c, d) += exponent * chi[w, r](a, b, c, d);
       }
     }
   }

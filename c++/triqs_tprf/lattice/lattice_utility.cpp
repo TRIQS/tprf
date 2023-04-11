@@ -39,13 +39,13 @@ namespace triqs_tprf {
     chi_k_t chi_const_k(kmesh, chi_wk.target_shape());
     chi_const_k() = 0.0;
 
-    for (auto const &k : kmesh) {
+    for (auto k : kmesh) {
       auto chi_w = chi_wk[_, k];
       auto tail  = std::get<0>(fit_tail(chi_w));
 
       for (auto [a, b, c, d] : chi_wk.target_indices()) chi_const_k[k](a, b, c, d) = tail(0, a, b, c, d);
 
-      for (auto const &w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
+      for (auto w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
     }
 
     return {chi_dyn_wk, chi_const_k};

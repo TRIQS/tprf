@@ -35,9 +35,9 @@ namespace triqs_tprf {
     auto Wtm = std::get<0>(W_tr.mesh());
     auto gtm = std::get<0>(g_tr.mesh());
 
-    if (Wtm.size() != gtm.size() || Wtm.domain().beta != gtm.domain().beta) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: tau meshes are not the same.\n";
+    if (Wtm.size() != gtm.size() || Wtm.beta() != gtm.beta()) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: tau meshes are not the same.\n";
 
-    if (Wtm.domain().statistic != Boson || gtm.domain().statistic != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
+    if (Wtm.statistic() != Boson || gtm.statistic() != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: statistics are incorrect.\n";
 
     if (std::get<1>(W_tr.mesh()) != std::get<1>(g_tr.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma_tr: real-space meshes are not the same.\n";
 
@@ -47,7 +47,7 @@ namespace triqs_tprf {
     auto arr = mpi_view(g_tr.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[t, r] = arr(idx);
+    auto &[t, r] = arr[idx];
 
     for (const auto &[a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d); }
   }
@@ -69,14 +69,14 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &k = arr(idx);
+    auto &k = arr[idx];
 
-    for (auto const &q : kmesh) {
+    for (auto q : kmesh) {
 
       auto g_w  = g_wk(_, k + q);
-      auto dens = density(g_w);
+      auto dens = density(gf{g_w});
 
-      for (auto const &[a, b] : sigma_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, b, a, b) * dens(a, b) / kmesh.size(); }
+      for (auto [a, b] : sigma_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, b, a, b) * dens(a, b) / kmesh.size(); }
     }
   }
   sigma_k = mpi::all_reduce(sigma_k);
@@ -88,9 +88,9 @@ namespace triqs_tprf {
   auto Wwm = std::get<0>(W_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());
 
-  if (Wwm.domain().beta != gwm.domain().beta) TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
+  if (Wwm.beta() != gwm.beta()) TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
 
-  if (Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
+  if (Wwm.statistic() != Boson || gwm.statistic() != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
 
   if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
 
@@ -112,7 +112,7 @@ namespace triqs_tprf {
   auto arr = mpi_view(sigma_wk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+    auto &[w, k] = arr[idx];
 
     for (const auto &[a, b] : sigma_wk.target_indices()) { sigma_wk[w, k](a, b) = sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b); }
   }
@@ -146,7 +146,7 @@ namespace triqs_tprf {
   g_fk_t WSpec_fk({fmesh, kmesh}, e_k.target_shape());
   WSpec_fk() = 0.0;
 
-  for (auto const &[f, k] : WSpec_fk.mesh()) {
+  for (auto [f, k] : WSpec_fk.mesh()) {
     for (int i : range(nb)) {
       for (int j : range(nb)) { WSpec_fk[f, k](i, j) = -1.0 / 3.141592653589793 * (W_fk[f, k](i, j, i, j) - v_k[k](i, j, i, j)).imag(); }
     }
@@ -155,9 +155,9 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for shared(sigma_fk)
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto &k = arr(kidx);
+    auto &k = arr[kidx];
 
-    for (auto const &q : kmesh) {
+    for (auto q : kmesh) {
 
       array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);
       auto eig_kq = linalg::eigenelements(e_kq_mat);
@@ -166,9 +166,9 @@ namespace triqs_tprf {
 
       for (int l : range(nb)) {
 
-        for (auto const &f : fmesh) {
+        for (auto f : fmesh) {
 
-          for (auto const &fp : fmesh) {
+          for (auto fp : fmesh) {
 
             auto num = bose2(fp * beta) + fermi2(ekq(l) * beta);
             auto den = f + idelta + fp - ekq(l);
@@ -200,9 +200,9 @@ namespace triqs_tprf {
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto &k = arr(kidx);
+    auto &k = arr[kidx];
 
-    for (auto const &q : kmesh) {
+    for (auto q : kmesh) {
       array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);
       auto eig_kq = linalg::eigenelements(e_kq_mat);
       auto ekq    = eig_kq.first;

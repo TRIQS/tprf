@@ -87,7 +87,7 @@ namespace triqs_tprf::fourier {
     // Calculate the 2nd
     matrix_t g_vec_left  = V_inv * d_vec_left;
     matrix_t g_vec_right = V_inv * d_vec_right;
-    double sign          = (gt.mesh().domain().statistic == Fermion) ? -1 : 1;
+    double sign          = (gt.mesh().statistic() == Fermion) ? -1 : 1;
     array<dcomplex, 2> m23(2, g_vec_left.shape()[1]);
     m23(0, _) = g_vec_left(0, _) - sign * g_vec_right(0, _);
     m23(1, _) = -(g_vec_left(1, _) + sign * g_vec_right(1, _)) * 2 / gt.mesh().delta();
@@ -123,7 +123,7 @@ namespace triqs_tprf::fourier {
   gf_vec_t<imfreq> _fourier_impl(mesh::imfreq const &iw_mesh, gf_vec_cvt<imtime> gt, fourier_plan &p, arrays::array_const_view<dcomplex, 2> mom_23) {
     if (mom_23.is_empty()) return _fourier_impl(iw_mesh, gt, p, fit_derivatives(gt));
 
-    double beta = gt.mesh().domain().beta;
+    double beta = gt.mesh().beta();
     auto L      = gt.mesh().size() - 1;
     if (L < 2 * (iw_mesh.last_index() + 1))
       TRIQS_RUNTIME_ERROR << "Fourier: The time mesh mush be at least twice as long as the "
@@ -137,7 +137,7 @@ namespace triqs_tprf::fourier {
                                         // be one less than gt.mesh().size() ?
     array<dcomplex, 2> _gin(L + 1, n_others);
 
-    bool is_fermion = (iw_mesh.domain().statistic == Fermion);
+    bool is_fermion = (iw_mesh.statistic() == Fermion);
     double fact     = beta / L;
     dcomplex iomega = M_PI * 1i / beta;
 
@@ -156,9 +156,8 @@ namespace triqs_tprf::fourier {
       a2 = (m2 + m3) / 2;
       a3 = (m3 - m2) / 2;
 
-      for (auto const &t : gt.mesh())
-        _gin(t.index(), _) =
-           fact * exp(iomega * t) * (gt[t] - (oneFermion(a1, b1, t, beta) + oneFermion(a2, b2, t, beta) + oneFermion(a3, b3, t, beta)));
+      for (auto t : gt.mesh())
+        _gin(t.index(), _) = fact * exp(iomega * t) * (gt[t] - (oneFermion(a1, b1, t, beta) + oneFermion(a2, b2, t, beta) + oneFermion(a3, b3, t, beta)));
 
     } else {
       m1 = -(gt[0] - gt[L]);
@@ -169,8 +168,7 @@ namespace triqs_tprf::fourier {
       a2 = m3 - (m1 + m2) / 2;
       a3 = m1 / 6 + m2 / 2 + m3 / 3;
 
-      for (auto const &t : gt.mesh())
-        _gin(t.index(), _) = fact * (gt[t] - (oneBoson(a1, b1, t, beta) + oneBoson(a2, b2, t, beta) + oneBoson(a3, b3, t, beta)));
+      for (auto t : gt.mesh()) _gin(t.index(), _) = fact * (gt[t] - (oneBoson(a1, b1, t, beta) + oneBoson(a2, b2, t, beta) + oneBoson(a3, b3, t, beta)));
     }
 
     // int dims[] = {int(L)};
@@ -180,7 +178,7 @@ namespace triqs_tprf::fourier {
     auto gw = gf_vec_t<imfreq>{iw_mesh, {int(n_others)}};
 
     // FIXME Avoid copy, by doing proper in-place operation
-    for (auto const &w : iw_mesh) gw[w] = _gout((w.index() + L) % L, _) + a1 / (w - b1) + a2 / (w - b2) + a3 / (w - b3);
+    for (auto w : iw_mesh) gw[w] = _gout((w.index() + L) % L, _) + a1 / (w - b1) + a2 / (w - b2) + a3 / (w - b3);
 
     return gw;
   }
@@ -248,7 +246,7 @@ namespace triqs_tprf::fourier {
       return _fourier_impl(tau_mesh, gw, p, tail(range(1, 4), range::all));
     }
 
-    double beta = tau_mesh.domain().beta;
+    double beta = tau_mesh.beta();
     long L      = tau_mesh.size() - 1;
     if (L < 2 * (gw.mesh().last_index() + 1))
       TRIQS_RUNTIME_ERROR << "Inverse Fourier: The time mesh mush be at least twice as long as "
@@ -262,7 +260,7 @@ namespace triqs_tprf::fourier {
                                        // be one less than gt.mesh().size() ?
     array<dcomplex, 2> _gout(L + 1, n_others);
 
-    bool is_fermion = (gw.domain().statistic == Fermion);
+    bool is_fermion = (gw.mesh().statistic() == Fermion);
     double fact     = 1.0 / beta;
     dcomplex iomega = M_PI * 1i / beta;
 
@@ -289,7 +287,7 @@ namespace triqs_tprf::fourier {
       a3 = m1 / 6 + m2 / 2 + m3 / 3;
     }
 
-    for (auto const &w : gw.mesh()) _gin((w.index() + L) % L, _) = fact * (gw[w] - (a1 / (w - b1) + a2 / (w - b2) + a3 / (w - b3)));
+    for (auto w : gw.mesh()) _gin((w.index() + L) % L, _) = fact * (gw[w] - (a1 / (w - b1) + a2 / (w - b2) + a3 / (w - b3)));
 
     // int dims[] = {int(L)};
     //_fourier_base(_gin, _gout, 1, dims, n_others, FFTW_FORWARD);
@@ -298,10 +296,10 @@ namespace triqs_tprf::fourier {
     auto gt = gf_vec_t<imtime>{tau_mesh, {int(n_others)}};
 
     if (is_fermion)
-      for (auto const &t : tau_mesh)
+      for (auto t : tau_mesh)
         gt[t] = _gout(t.index(), _) * exp(-iomega * t) + oneFermion(a1, b1, t, beta) + oneFermion(a2, b2, t, beta) + oneFermion(a3, b3, t, beta);
     else
-      for (auto const &t : tau_mesh) gt[t] = _gout(t.index(), _) + oneBoson(a1, b1, t, beta) + oneBoson(a2, b2, t, beta) + oneBoson(a3, b3, t, beta);
+      for (auto t : tau_mesh) gt[t] = _gout(t.index(), _) + oneBoson(a1, b1, t, beta) + oneBoson(a2, b2, t, beta) + oneBoson(a3, b3, t, beta);
 
     double pm = (is_fermion ? -1 : 1);
     gt[L]     = pm * (gt[0] + m1);

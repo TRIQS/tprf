@@ -70,7 +70,7 @@ namespace triqs_tprf::fourier {
     // pb std::get<0> would not work on a non composite mesh. We use a little lambda to deduce ref and type
     auto const &out_mesh = [&gout]() -> auto const & { // NB must return a reference
       using m_t = std::decay_t<decltype(gout.mesh())>;
-      if constexpr (triqs::mesh::is_product_v<m_t>)
+      if constexpr (triqs::mesh::is_product<m_t>)
         return std::get<N>(gout.mesh());
       else
         return gout.mesh();
@@ -84,9 +84,9 @@ namespace triqs_tprf::fourier {
     else {
       // inverse operation as flatten_2d, exactly
       auto g_rot = nda::rotate_index_view<N>(gout.data());
-      for (auto const &mp : out_mesh) {
-        auto g_rot_sl = g_rot(mp.linear_index(), _); // if the array is long, it is faster to precompute the view ...
-        auto gout_col = gout_flatten.data()(mp.linear_index(), _);
+      for (auto mp : out_mesh) {
+        auto g_rot_sl = g_rot(mp.data_index(), _); // if the array is long, it is faster to precompute the view ...
+        auto gout_col = gout_flatten.data()(mp.data_index(), _);
         nda::for_each(g_rot_sl.shape(), [&g_rot_sl, &gout_col, c = long(0)](auto &&...i) mutable { return g_rot_sl(i...) = gout_col(c++); });
       }
     }
@@ -100,7 +100,7 @@ namespace triqs_tprf::fourier {
     // pb std::get<0> would not work on a non composite mesh. We use a little lambda to deduce ref and type
     auto const &out_mesh = [&gout]() -> auto const & { // NB must return a reference
       using m_t = std::decay_t<decltype(gout.mesh())>;
-      if constexpr (triqs::mesh::is_product_v<m_t>)
+      if constexpr (triqs::mesh::is_product<m_t>)
         return std::get<N>(gout.mesh());
       else
         return gout.mesh();

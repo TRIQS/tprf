@@ -42,22 +42,21 @@ TEST(Gf, Bubble) {
 
  chi0q(inu_, iw_, q_) << sum(Gk(inu_, k_) * Gk(inu_ + iw_, k_ + q_), k_ = k_mesh) / k_mesh.size();
 
- for (auto const &inu : std::get<0>(Gr.mesh()))
-  Gr[inu, _] = fourier(Gk[inu, _]);
+ for (auto inu : std::get<0>(Gr.mesh())) Gr[inu, _] = fourier(Gk[inu, _]);
 
  chi0r(inu_, iw_, r_) << Gr(inu_, r_) * Gr(inu_ + iw_, -r_);
 
- for (auto const &inu : std::get<0>(chi0q_from_r.mesh())) {
-  for (auto const &iw : std::get<1>(chi0q_from_r.mesh())) {
+ for (auto inu : std::get<0>(chi0q_from_r.mesh())) {
+   for (auto iw : std::get<1>(chi0q_from_r.mesh())) {
 
-   auto size_from_r = chi0q_from_r[inu, iw, _].mesh().size();
-   auto size_r = chi0r[inu, iw, _].mesh().size();
-     
-   EXPECT_EQ(size_from_r, 16);
-   EXPECT_EQ(size_r, 16);
+     auto size_from_r = chi0q_from_r[inu, iw, _].mesh().size();
+     auto size_r      = chi0r[inu, iw, _].mesh().size();
 
-   chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]);
-  }
+     EXPECT_EQ(size_from_r, 16);
+     EXPECT_EQ(size_r, 16);
+
+     chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]);
+   }
  }
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 }
@@ -81,15 +80,12 @@ TEST(Gf, BubbleScalar) {
  auto Gmesh = std::get<1>(Gk.mesh());
  chi0q(inu_, iw_, q_) << sum(Gk(inu_, k_) * Gk(inu_ + iw_, k_ + q_), k_ = Gmesh) / Gmesh.size();
 
- for (auto const &inu : std::get<0>(Gr.mesh()))
-  Gr[inu, _] = fourier(Gk[inu, _]);
+ for (auto inu : std::get<0>(Gr.mesh())) Gr[inu, _] = fourier(Gk[inu, _]);
 
  chi0r(inu_, iw_, r_) << Gr(inu_, r_) * Gr(inu_ + iw_, -r_);
 
- for (auto const &inu : std::get<0>(chi0q_from_r.mesh())) {
-  for (auto const &iw : std::get<1>(chi0q_from_r.mesh())) {
-   chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]);
-  }
+ for (auto inu : std::get<0>(chi0q_from_r.mesh())) {
+   for (auto iw : std::get<1>(chi0q_from_r.mesh())) { chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]); }
  }
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 }
@@ -115,15 +111,12 @@ TEST(Gf, BubbleTensor) {
  // PH chi0q
  chi0q(inu_, iw_, q_)(a, b, c, d) << sum(Gk(inu_, k_)(d, a) * Gk(inu_ + iw_, k_ + q_)(b, c), k_ = Gmesh) / Gmesh.size();
 
- for (auto const &inu : std::get<0>(Gr.mesh()))
-  Gr[inu, _] = fourier(Gk[inu, _]);
+ for (auto inu : std::get<0>(Gr.mesh())) Gr[inu, _] = fourier(Gk[inu, _]);
 
  chi0r(inu_, iw_, r_)(a, b, c, d) << Gr(inu_, r_)(d, a) * Gr(inu_ + iw_, -r_)(b, c);
 
- for (auto const &inu : std::get<0>(chi0q_from_r.mesh())) {
-  for (auto const &iw : std::get<1>(chi0q_from_r.mesh())) {
-   chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]);
-  }
+ for (auto inu : std::get<0>(chi0q_from_r.mesh())) {
+   for (auto iw : std::get<1>(chi0q_from_r.mesh())) { chi0q_from_r[inu, iw, _] = fourier(chi0r[inu, iw, _]); }
  }
  EXPECT_ARRAY_NEAR(chi0q_from_r.data(), chi0q.data());
 }
