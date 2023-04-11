@@ -192,11 +192,8 @@ chi_t_t::target_t::value_t chi_trapz_tau(chi_t_cvt chi_t) {
 
   for (auto const &t : tmesh) I += chi_t[t];
 
-  auto boundary_iter = tmesh.begin();
-  I -= 0.5 * chi_t[*boundary_iter];
-
-  boundary_iter += ntau - 1;
-  I -= 0.5 * chi_t[*boundary_iter];
+  I -= 0.5 * chi_t[0];
+  I -= 0.5 * chi_t[ntau - 1];
 
   I *= beta / (ntau-1);
   return I;  
