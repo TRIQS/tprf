@@ -83,24 +83,53 @@ namespace triqs_tprf {
 
   g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
-  /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+  /** Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator for static interactions
 
-    Computes the GW self-energy of a static interaction as the sum
+    Computes the Hartree self-energy of a static interaction as the sum
 
     .. math::
-        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+        \Sigma_{ab}(\mathbf{k}) = \frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{abcd}(\mathbf{q}) \rho_{cd}(\mathbf{k} + \mathbf{q})
 
-    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
     single particle Green's function.
 
-    @param V_k static interaction :math:`V_{abcd}(\mathbf{k})`
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+    @return Hartree self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+*/
+
+  e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
+
+  /** Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator for static interactions
+
+    Computes the Fock self-energy of a static interaction as the sum
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = \frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{q}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    single particle Green's function.
+
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
+    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+    @return Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+*/
+
+  e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
+
+  /** Static GW self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator 
+
+    Computes the statick GW self-energy (equivalent to the Fock self-energy)
+ 
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
+    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+    @return Static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
 */
 
   e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
-
+  
   /** GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 
     Computes the GW self-energy as the product
