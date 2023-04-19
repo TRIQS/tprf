@@ -58,8 +58,6 @@ namespace triqs_tprf {
 
   e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
 
-  std::cout << "--> hartree_sigma\n";
-  
   if (v_k.mesh() != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "hartree_sigma: k-space meshes are not the same.\n";
 
   auto _     = all_t{};
@@ -86,8 +84,6 @@ namespace triqs_tprf {
   }
 
   e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
-
-  std::cout << "--> fock_sigma\n";
 
   if (v_k.mesh() != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "fock_sigma: k-space meshes are not the same.\n";
 
