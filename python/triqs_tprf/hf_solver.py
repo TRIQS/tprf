@@ -556,4 +556,24 @@ class HartreeSolver(HartreeFockSolver):
         assert( len(vec.shape) == 1 )
         return np.diag(vec.real)
 
+    # ------------------------------------------------------------------
+    def logo(self):
+        if 'UTF' in sys.stdout.encoding:
+            logo = """
+╔╦╗╦═╗╦╔═╗ ╔═╗  ┬ ┬
+ ║ ╠╦╝║║═╬╗╚═╗  ├─┤
+ ╩ ╩╚═╩╚═╝╚╚═╝  ┴ ┴
+TRIQS: Hartree solver
+"""
+        else:
+            logo = """
+ _____ ___ ___ ___  ___   _  _
+|_   _| _ \_ _/ _ \/ __| | || |
+  | | |   /| | (_) \__ \ | __ |
+  |_| |_|_\___\__\_\___/ |_||_|
+
+    TRIQS: Hartree solver
+"""
+        return logo
+
 # ----------------------------------------------------------------------
