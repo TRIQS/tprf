@@ -646,20 +646,16 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)")
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::fock_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)")
-
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
-
-    Computes the GW self-energy of a static interaction as the sum
+    Computes the Hartree self-energy of a static interaction as the sum
 
     .. math::
-        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+        \Sigma_{ab}(\mathbf{k}) = \frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{abcd}(\mathbf{q}) \rho_{cd}(\mathbf{k} + \mathbf{q})
 
-    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
-    single particle Green's function.
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the
+    density matrix of the single particle Green's function.
 
 Parameters
 ----------
@@ -672,7 +668,48 @@ g_wk
 Returns
 -------
 out
-     GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+     Hartree self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::fock_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator 
+
+    Computes the Fock self-energy of a static interaction as the sum
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{q}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density
+    matrix of the single particle Green's function.
+
+Parameters
+----------
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Static GW self energy :math:`\Sigma(\mathbf{k})` calculator
+
+    Computes the GW self-energy (equivalent to the Fock self-energy)
+
+Parameters
+----------
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     Static GW self-energy (Fock) :math:`\Sigma_{ab}(\mathbf{k})`""")
 
 module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 
