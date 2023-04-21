@@ -2,7 +2,7 @@
 #
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
-# Copyright (C) 2032 by Hugo U.R. Strand
+# Copyright (C) 2023 by Hugo U.R. Strand
 # Author: H. U.R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
@@ -42,14 +42,16 @@ from triqs_tprf.lattice import lattice_dyson_g_wk
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 
+from triqs_tprf.rpa_tensor import get_rpa_tensor
+
 #from triqs_tprf.gw import bubble_PI_wk
 #from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.lattice import gw_sigma, hartree_sigma, fock_sigma
 #from triqs_tprf.gw import g0w_sigma
-from triqs_tprf.gw import get_gw_tensor
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W_from_generalized_susceptibility
+from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
 
 
@@ -61,6 +63,40 @@ def print_tensor(U, tol=1e-9):
         value = U[i, j, k, l]
         if np.abs(value) > tol:
             print(f'{i}, {j}, {k}, {l} -- {value}')
+
+
+def get_gw_tensor_new(H_int, fundamental_operators):
+
+    """ Takes a TRIQS operator object and extracts the quartic terms
+    and returns the corresponding antisymmetrized quartic tensor in
+    vertex index order, i.e., cc+cc+. """
+    
+    from triqs_tprf.OperatorUtils import quartic_tensor_from_operator
+    U_abcd = quartic_tensor_from_operator(H_int, fundamental_operators)
+    print(1); print_tensor(U_abcd)
+    
+    # -- Transpose symmetry
+    U_abcd = (U_abcd + np.transpose(U_abcd, (1,0,3,2)))
+    print(2); print_tensor(U_abcd)
+
+    # -- Group in c^+cc^+c ( from c^+c^+cc )
+    #U_abcd = np.ascontiguousarray(np.transpose(U_abcd, (0, 3, 1, 2)))    
+    U_abcd = np.ascontiguousarray(np.transpose(U_abcd, (0, 2, 1, 3)))
+    print(3); print_tensor(U_abcd)
+
+    # -- Two center integral symmetry r <-> r'
+    np.testing.assert_array_almost_equal(
+        U_abcd, np.transpose(U_abcd, (2, 3, 0, 1)))
+
+    # -- Two center integral conjugation symmetry
+    np.testing.assert_array_almost_equal(
+        U_abcd, np.transpose(U_abcd, (1, 0, 3, 2)).conj())
+    
+    return U_abcd
+
+
+from triqs_tprf.gw import get_gw_tensor
+#get_gw_tensor = get_gw_tensor_newa
 
 
 class GWSolver():
@@ -115,22 +151,21 @@ class GWSolver():
         for iter in range(maxiter):
 
             if gw:
-                chi00_wk = imtime_bubble_chi0_wk(g_wk, nw=len(self.wmesh)//2)
-
-                W_wk = \
-                    dynamical_screened_interaction_W_from_generalized_susceptibility(
-                        -chi00_wk, V_k)
+                P_wk = -imtime_bubble_chi0_wk(g_wk, nw=len(self.wmesh)//2)
+                W_wk = dynamical_screened_interaction_W(P_wk, V_k)
+                    #dynamical_screened_interaction_W_from_generalized_susceptibility(P_wk, V_k)
                 W_dyn_wk, W_stat_k = split_into_dynamic_wk_and_constant_k(W_wk)
-            
+
+            np.testing.assert_array_almost_equal(W_stat_k.data, V_k.data)
+
             sigma_wk.data[:] = 0.
             
             if hartree:
-                sigma_wk.data[:] += hartree_sigma(V_k, g_wk).data[None, ...]
+                sigma_wk.data[:] += hartree_sigma(W_stat_k, g_wk).data[None, ...]
             if fock:
-                sigma_wk.data[:] += fock_sigma(V_k, g_wk).data[None, ...]
-
+                sigma_wk.data[:] += fock_sigma(W_stat_k, g_wk).data[None, ...]
             if gw:
-                sigma_wk.data[:] += gw_sigma(W_wk, g_wk).data
+                sigma_wk.data[:] += gw_sigma(W_dyn_wk, g_wk).data
 
             g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
             rho = self.get_rho(g_wk)
@@ -155,7 +190,10 @@ class GWSolver():
 
         if gw:
             self.W_wk = W_wk
-            self.chi00_wk = chi00_wk
+            self.W_dyn_wk = W_dyn_wk
+            self.W_stat_k = W_stat_k
+            self.P_wk = P_wk
+            #self.chi_wk = dynamical_screened_interaction_W(-P_wk, W_wk)
 
 
     def logo(self):
@@ -436,167 +474,721 @@ def hubbard_dimer_hf():
         U @ np.squeeze(gw.sigma_wk.data[0, 0]) @ U.T.conj())
     
 
-def hubbard_dimer_gw():
+def hubbard_dimer_gw(verbose=False):
 
-    beta = 10.0
-    U = 1.0
+    """
+    Comparing to analytical expressions from:
+    Chapter 4: Hubbard Dimer in GW and Beyond, by Pina Romaniello
+
+    In the book:
+    Simulating Correlations with Computers - Modeling and Simulation Vol. 11
+    E. Pavarini and E. Koch (eds.)
+    Forschungszentrum Ju ̈lich, 2021, ISBN 978-3-95806-529-1
+    
+    https://www.cond-mat.de/events/correl21/manuscripts/correl21.pdf    
+    """
+    
+    beta = 20.0
+    U = 1.5
     t = 1.0
     nw = 1024
     mu = 0.0
     
+    wmesh = MeshImFreq(beta, 'Fermion', nw)
+
     tb_opts = dict(
         units = [(1, 0, 0)],
         orbital_positions = [(0,0,0)] * 2,
         orbital_names = ['up_0', 'do_0'],
         )
 
+    # Have to use t/2 hopping in the TBLattice since it considers
+    # hoppings in both directions, which doubles the total hopping
+    # for the Hubbard dimer.
+    
     H_r = TBLattice(hopping = {
-        (+1,): -t * np.eye(2),
-        (-1,): -t * np.eye(2),
+        (+1,): -0.5 * t * np.eye(2),
+        (-1,): -0.5 * t * np.eye(2),
         }, **tb_opts)
 
     kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
     e_k = H_r.fourier(kmesh)
     print(e_k.data)
 
+    g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
+    g0_wr = fourier_wk_to_wr(g0_wk)
+
+    g0_w = Gf(mesh=wmesh, target_shape=[2, 2])
+
+    T = np.array([
+        [0, -t],
+        [-t, 0]])
+
+    from triqs.gf import inverse, iOmega_n
+    g0_w << inverse( iOmega_n + T )
+
+    np.testing.assert_array_almost_equal(
+        g0_w[0, 0].data, g0_wr[:, Idx(0, 0, 0)][0, 0].data)    
+    
     H_int = U * n('up',0) * n('do',0)
     print(f'H_int = {H_int}')
     
     fundamental_operators = [c('up', 0), c('do', 0)]
-    V_aaaa = get_gw_tensor(H_int, fundamental_operators)
+
+    # -- Use two fermions that self interact and interact between eachother
+    
+    V_aaaa = np.zeros((2, 2, 2, 2))
+
+    # -- Density density interaction between different fermions
+    V_aaaa[1, 1, 0, 0] = U
+    V_aaaa[0, 0, 1, 1] = U
+
+    # -- Density density interaction between same fermion
+    V_aaaa[0, 0, 0, 0] = U
+    V_aaaa[1, 1, 1, 1] = U
+        
+    V_k = Gf(mesh=kmesh, target_shape=[2]*4)
+    V_k.data[:] = V_aaaa    
+
+    gw = GWSolver(e_k, V_k, wmesh, mu=mu)
+    g0_wk = gw.g_wk.copy()
+    g0_wr = fourier_wk_to_wr(g0_wk)
+    
+    gw.solve_iter(maxiter=1, gw=True, hartree=True, fock=False)
+
+    # -- Correct for double counting in the Hargree term
+    
+    sigma_wk = gw.sigma_wk.copy()
+    sigma_wk.data[:] -= 0.5*U*np.eye(2)[None, None, ...]
+    g_wk = lattice_dyson_g_wk(gw.mu, gw.e_k, sigma_wk)
+
+    #sigma_wk = gw.sigma_wk
+    #g_wk = gw.g_wk
+    
+    g_wr = fourier_wk_to_wr(g_wk)
+    sigma_wr = fourier_wk_to_wr(sigma_wk)
+    
+    V_wk = gw.W_wk.copy()
+    bmesh = gw.W_wk.mesh[0]
+    V_wk.data[:] = 0
+    for w in bmesh:
+        V_wk[w, :] = V_k
+
+    # -- Compute W by hand using P
+    
+    from triqs_tprf.lattice import chi_wr_from_chi_wk
+    P_wr = chi_wr_from_chi_wk(gw.P_wk)
+    W_wr = chi_wr_from_chi_wk(gw.W_wk)
+    V_wr = chi_wr_from_chi_wk(V_wk)
+    
+    W_wk_ref = gw.W_wk.copy()
+    
+    for k in kmesh:
+        for w in bmesh:
+
+            # -- The extra factor of 2 in the denominator
+            # -- is given by the interaction with two types of fermions.
+
+            # (one of those contributions is strictly speaking self-interaction)
+            
+            W_term = U/(1 - 2*U * gw.P_wk[w, k][0,0,0,0]) # Analytic result Eq. (30)
+
+            W_wk_ref[w, k][0,0,0,0] = W_term 
+            W_wk_ref[w, k][1,1,1,1] = W_term 
+            W_wk_ref[w, k][0,0,1,1] = W_term 
+            W_wk_ref[w, k][0,0,1,1] = W_term 
+
+    W_wr_ref = chi_wr_from_chi_wk(W_wk_ref)
+
+    np.testing.assert_array_almost_equal(W_wr_ref.data, W_wr.data)
+
+    # -- Print index structure of the relevant quantities
+    
+    print(f'g_wr0 =\n{g_wr[Idx(0), Idx(0, 0, 0)]}')
+    print(f'g_wr1 =\n{g_wr[Idx(0), Idx(1, 0, 0)]}')
 
     print('V_aaaa =')
     print_tensor(V_aaaa)
 
-    V_k = Gf(mesh=kmesh, target_shape=[2]*4)
-    V_k.data[:] = V_aaaa    
+    print('V_wr0')
+    print_tensor(V_wr[Idx(0), Idx(0, 0, 0)])
+    print('V_wr1')
+    print_tensor(V_wr[Idx(0), Idx(1, 0, 0)])
 
-    wmesh = MeshImFreq(beta, 'Fermion', nw)
-    gw = GWSolver(e_k, V_k, wmesh, mu=mu)
-    g0_wk = gw.g_wk.copy()
-    g0_wr = fourier_wk_to_wr(g0_wk)
+    print('P_wr0')
+    print_tensor(P_wr[Idx(0), Idx(0, 0, 0)])
+    print('P_wr1')
+    print_tensor(P_wr[Idx(0), Idx(1, 0, 0)])
 
-    if False:
-        #from triqs_tprf.lattice import fourier_wk_to_wr
-        from triqs_tprf.lattice import fourier_wr_to_tr
-        from triqs_tprf.lattice import chi0_tr_from_grt_PH
-        from triqs_tprf.lattice import chi_wr_from_chi_tr
-        from triqs_tprf.lattice import chi_wk_from_chi_wr
+    print('W_wr0')
+    print_tensor(W_wr[Idx(0), Idx(0, 0, 0)])
+    print('W_wr1')
+    print_tensor(W_wr[Idx(0), Idx(1, 0, 0)])
 
-        g_wk = g0_wk
-        nw = len(g_wk.mesh.components[0]) // 2    
-        g_wr = fourier_wk_to_wr(g_wk)
-        g_tr = fourier_wr_to_tr(g_wr)
-        chi00_tr = chi0_tr_from_grt_PH(g_tr)
-        PI_tr = -chi00_tr # NB! sign difference
-        PI_wr = chi_wr_from_chi_tr(PI_tr, nw=nw)
-        PI_wk = chi_wk_from_chi_wr(PI_wr)
+    #i,j,k,l = 0,0,0,0
+    i,j,k,l = 0,0,1,1
+    #i,j,k,l = 1,0,0,1        
 
+    # == Compare GW result with analytic expression
+    # == from the book chapter in the doc string above.
     
-    gw.solve_iter(maxiter=1, gw=True, hartree=False, fock=False)
-    g_wk = gw.g_wk
+    # -- Analytic expression Eq. (18) for G_0
 
-    from triqs_tprf.lattice import chi_wr_from_chi_wk
-    P_wr = -chi_wr_from_chi_wk(gw.chi00_wk)
-    W_wr = chi_wr_from_chi_wk(gw.W_wk)
-
-    #np.testing.assert_array_almost_equal(PI_wk.data, -gw.chi00_wk.data)
-    
-    # Non-interacting reference Gf
-
-    # Pina Romaniello
-    # Hubbard Dimer in GW and Beyond
-    # https://www.cond-mat.de/events/correl21/manuscripts/correl21.pdf    
-
-    # E. Pavarini and E. Koch (eds.)
-    # Simulating Correlations with Computers
-    # Modeling and Simulation Vol. 11
-    # Forschungszentrum Ju ̈lich, 2021, ISBN 978-3-95806-529-1
-    # http://www.cond-mat.de/events/correl21
-        
-    g_0_w = Gf(mesh=wmesh, target_shape=[])
-    g_1_w = Gf(mesh=wmesh, target_shape=[])
-
-    # Eq. 18
+    g0_0_w = Gf(mesh=wmesh, target_shape=[])
+    g0_1_w = Gf(mesh=wmesh, target_shape=[])
     
     for w in wmesh:
-        g_0_w[w] = +0.5/(w - 2*t) + 0.5/(w + 2*t)
-        g_1_w[w] = -0.5/(w - 2*t) + 0.5/(w + 2*t)
+        g0_0_w[w] = +0.5/(w - t) + 0.5/(w + t)
+        g0_1_w[w] = -0.5/(w - t) + 0.5/(w + t)
 
     np.testing.assert_array_almost_equal(
-        g0_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
+        g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        g0_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
-
-    # Eq. 22
+        g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
+    
+    # -- Analytic expression Eq. (29) for P
 
     bmesh = P_wr.mesh[0]
 
     P_0_w = Gf(mesh=bmesh, target_shape=[])
     P_1_w = Gf(mesh=bmesh, target_shape=[])
-    
+
     for w in bmesh:
-        P_0_w[w] = + 0.25 / (w - 4*t) - 0.25 / (w + 4*t)
-        P_1_w[w] = - 0.25 / (w - 4*t) + 0.25 / (w + 4*t)
+        P_0_w[w] = + 0.25 / (w - 2*t) - 0.25 / (w + 2*t)
+        P_1_w[w] = - 0.25 / (w - 2*t) + 0.25 / (w + 2*t)
+        
+    np.testing.assert_array_almost_equal(
+        P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        P_wr[:, Idx(0, 0, 0)][0, 0, 0, 0].data, P_0_w.data)
+        P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
+
+    # -- Analytic expression Eq. (30) for W
+
+    W_0_w = Gf(mesh=bmesh, target_shape=[])
+    W_1_w = Gf(mesh=bmesh, target_shape=[])
+
+    e = 0.0
+    h2 = 4*t**2 + 4*U*t # Eq. in text after Eq. (31)    
+    h = np.sqrt(h2)
+
+    for w in bmesh:
+        W_0_w[w] = U + 2 * U**2 * t / (complex(w)**2 - h2)
+        W_1_w[w] = 0 - 2 * U**2 * t / (complex(w)**2 - h2)
+        
+    np.testing.assert_array_almost_equal(
+        W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        P_wr[:, Idx(1, 0, 0)][0, 0, 0, 0].data, P_1_w.data)
-        
-    W_0_w = Gf(mesh=bmesh, target_shape=(1,))
-    W_1_w = Gf(mesh=bmesh, target_shape=(1,))
+        W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
 
-    h2 = 4*(2*t)**2 + 2*U*(2*t)
+    # Analytic expression in Eq. (31) for Sigma = G_0 W_0
     
+    sigma_0_w = Gf(mesh=wmesh, target_shape=[])
+    sigma_1_w = Gf(mesh=wmesh, target_shape=[])
+
+    for w in wmesh:
+        sigma_0_w[w] = U/2 + U**2 * t / (2*h) * \
+            ( 1/(w - (e + t + h)) + 1/(w - (e - t - h)) )
+        sigma_1_w[w] = U**2 * t / (2*h) * \
+            ( 1/(w - (e + t + h)) - 1/(w - (e - t - h)) )
+        
+    np.testing.assert_array_almost_equal(
+        sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
+        
+    # -- Analytic expression Eq. (32) for G = 1/[1/G_0 - Sigma] with Sigma = G_0 W_0
+    
+    g_0_w = Gf(mesh=wmesh, target_shape=[])
+    g_1_w = Gf(mesh=wmesh, target_shape=[])
+
+    A = np.sqrt((2*t + h + U/2)**2 + 4*U**2*t/h)
+    B = np.sqrt((2*t + h - U/2)**2 + 4*U**2*t/h)
+
+    w1_p = 0.5 * (2*e - h + U/2 + A)
+    w1_m = 0.5 * (2*e - h + U/2 - A)
+
+    w2_p = 0.5 * (2*e + h + U/2 + B)
+    w2_m = 0.5 * (2*e + h + U/2 - B)
+
+    R1 = (h + 2*t + U/2) / (4 * A)
+    R2 = (-h -2*t + U/2) / (4 * B)
+    
+    for w in wmesh:
+        g_0_w[w] = \
+            + (0.25 + R1)/(w - w1_p) + (0.25 - R1)/(w - w1_m) + \
+            + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
+        g_1_w[w] = \
+            - (0.25 + R1)/(w - w1_p) - (0.25 - R1)/(w - w1_m) + \
+            + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
+
+    np.testing.assert_array_almost_equal(
+        g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
+
+    # -- Visualize the result
+    
+    if verbose:
+        from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
+
+        plt.figure(figsize=(9, 11))
+
+        subp = [6, 2, 1]
+        xlim = [-20, 20]
+
+        def plot_cf(g_tprf, g_ref, subp, plot=oploti):
+            plt.subplot(*subp); subp[-1] += 1
+            plot(g_ref, 'g.', label='ref')
+            plot(g_tprf, 'c-', label='tprf')
+            plt.xlim(xlim)
+
+
+        plot_cf(g0_wr[:, Idx(0, 0, 0)][0, 0], g0_0_w, subp, plot=oploti)
+        plt.ylabel(r'$G_0(r=0)$')
+
+        plot_cf(g0_wr[:, Idx(1, 0, 0)][0, 0], g0_1_w, subp, plot=oplotr)
+        plt.ylabel(r'$G_0(r=1)$')
+
+        plot_cf(P_wr[:, Idx(0, 0, 0)][0,0,0,0], P_0_w, subp, plot=oplotr)
+        plt.ylabel(r'$P(r=0)$')
+
+        plot_cf(P_wr[:, Idx(1, 0, 0)][0,0,0,0], P_1_w, subp, plot=oplotr)
+        plt.ylabel(r'$P(r=1)$')
+
+        i,j,k,l = 0,0,0,0
+
+        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=0)$')            
+
+        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=1)$')
+
+        i,j,k,l = 0,0,1,1
+
+        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=0)$')            
+
+        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=1)$')
+
+        plot_cf(sigma_wr[:, Idx(0, 0, 0)][0, 0], sigma_0_w, subp, plot=oplot)
+        plt.ylabel(r'$\Sigma(r=0)$')
+
+        plot_cf(sigma_wr[:, Idx(1, 0, 0)][0, 0], sigma_1_w, subp, plot=oplot)
+        plt.ylabel(r'$\Sigma(r=1)$')
+            
+
+        plt.subplot(*subp); subp[-1] += 1
+        oplot(g_0_w, 'g.', label='ref')
+        oplot(g_wr[:, Idx(0, 0, 0)][0, 0], 'c-', label='tprf g')
+        oploti(g0_wr[:, Idx(0, 0, 0)][0, 0], 'r-', label='tprf g0')
+        plt.xlim(xlim)
+        plt.ylabel(r'$G(r=0)$')
+            
+        plt.subplot(*subp); subp[-1] += 1
+        oplot(g_1_w, 'g.')
+        oplot(g_wr[:, Idx(1, 0, 0)][0, 0], 'c-', label='tprf g')
+        oplotr(g0_wr[:, Idx(1, 0, 0)][0, 0], 'r-', label='tprf g0')
+        plt.xlim(xlim)
+        plt.ylabel(r'$G(r=1)$')
+
+
+        plt.tight_layout()
+        plt.show()
+
+
+def hubbard_dimer_gw_self_interaction_corrected(verbose=False):
+
+    """
+    Comparing to analytical expressions from:
+    Chapter 4: Hubbard Dimer in GW and Beyond, by Pina Romaniello
+
+    In the book:
+    Simulating Correlations with Computers - Modeling and Simulation Vol. 11
+    E. Pavarini and E. Koch (eds.)
+    Forschungszentrum Ju ̈lich, 2021, ISBN 978-3-95806-529-1
+    
+    https://www.cond-mat.de/events/correl21/manuscripts/correl21.pdf    
+    """
+    
+    beta = 20.0
+    U = 1.5
+    t = 1.0
+    nw = 1024
+    mu = 0.0
+    
+    wmesh = MeshImFreq(beta, 'Fermion', nw)
+
+    tb_opts = dict(
+        units = [(1, 0, 0)],
+        orbital_positions = [(0,0,0)] * 2,
+        orbital_names = ['up_0', 'do_0'],
+        )
+
+    # Have to use t/2 hopping in the TBLattice since it considers
+    # hoppings in both directions, which doubles the total hopping
+    # for the Hubbard dimer.
+    
+    H_r = TBLattice(hopping = {
+        (+1,): -0.5 * t * np.eye(2),
+        (-1,): -0.5 * t * np.eye(2),
+        }, **tb_opts)
+
+    kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
+    e_k = H_r.fourier(kmesh)
+    print(e_k.data)
+
+    g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
+    g0_wr = fourier_wk_to_wr(g0_wk)
+
+    g0_w = Gf(mesh=wmesh, target_shape=[2, 2])
+
+    T = np.array([
+        [0, -t],
+        [-t, 0]])
+
+    from triqs.gf import inverse, iOmega_n
+    g0_w << inverse( iOmega_n + T )
+
+    np.testing.assert_array_almost_equal(
+        g0_w[0, 0].data, g0_wr[:, Idx(0, 0, 0)][0, 0].data)    
+    
+    H_int = U * n('up',0) * n('do',0)
+    print(f'H_int = {H_int}')
+    
+    fundamental_operators = [c('up', 0), c('do', 0)]
+
+    #V_aaaa = get_gw_tensor_new(H_int, fundamental_operators)
+    #V_aaaa = get_gw_tensor(H_int, fundamental_operators)
+    #V_aaaa = get_rpa_tensor(H_int, fundamental_operators)
+
+    if True:
+        V_aaaa = np.zeros((2, 2, 2, 2))
+        #V_aaaa[0, 1, 1, 0] = U
+        #V_aaaa[1, 0, 0, 1] = U
+
+        #V_aaaa[0, 1, 0, 1] = U
+        #V_aaaa[1, 0, 1, 0] = U
+
+        V_aaaa[0, 0, 0, 0] = U
+        V_aaaa[1, 1, 1, 1] = U
+
+        V_aaaa[1, 1, 0, 0] = U
+        V_aaaa[0, 0, 1, 1] = U
+        
+    V_k = Gf(mesh=kmesh, target_shape=[2]*4)
+    V_k.data[:] = V_aaaa    
+
+    gw = GWSolver(e_k, V_k, wmesh, mu=mu)
+    g0_wk = gw.g_wk.copy()
+    g0_wr = fourier_wk_to_wr(g0_wk)
+    
+    gw.solve_iter(maxiter=1, gw=True, hartree=True, fock=False)
+
+    # -- Correct for double counting in the Hargree term
+    
+    sigma_wk = gw.sigma_wk.copy()
+    sigma_wk.data[:] -= 0.5*U*np.eye(2)[None, None, ...]
+    g_wk = lattice_dyson_g_wk(gw.mu, gw.e_k, sigma_wk)
+
+    #sigma_wk = gw.sigma_wk
+    #g_wk = gw.g_wk
+    
+    g_wr = fourier_wk_to_wr(g_wk)
+    sigma_wr = fourier_wk_to_wr(sigma_wk)
+    
+    V_wk = gw.W_wk.copy()
+    bmesh = gw.W_wk.mesh[0]
+    V_wk.data[:] = 0
     for w in bmesh:
-        W_0_w[w] = U + U**2 * 2*t/(complex(w)**2 - h2)
-        W_1_w[w] = - U**2 * 2*t /(complex(w)**2 - h2)
+        V_wk[w, :] = V_k
+    
+    from triqs_tprf.lattice import chi_wr_from_chi_wk
+    P_wr = chi_wr_from_chi_wk(gw.P_wk)
+    W_wr = chi_wr_from_chi_wk(gw.W_wk)
+    V_wr = chi_wr_from_chi_wk(V_wk)
+
+    #np.testing.assert_array_almost_equal(
+    #    W_wr[:, Idx(0, 0, 0)][0, 0, 0, 0].data,
+    #    W_wr[:, Idx(0, 0, 0)][0, 0, 1, 1].data,
+    #    )
+    
+    W_wk_ref = gw.W_wk.copy()
+    
+    for k in kmesh:
+        for w in bmesh:
+
+            W_term = U/(1 - 2*U * gw.P_wk[w, k][0,0,0,0]) # Analytic result Eq. (30)
+
+            W_wk_ref[w, k][0,0,0,0] = W_term 
+            W_wk_ref[w, k][1,1,1,1] = W_term 
+            W_wk_ref[w, k][0,0,1,1] = W_term 
+            W_wk_ref[w, k][0,0,1,1] = W_term 
+
+    W_wr_ref = chi_wr_from_chi_wk(W_wk_ref)
+
+    np.testing.assert_array_almost_equal(W_wr_ref.data, W_wr.data)
+
+    if False:
+        # -- sigma_tr_ref
+
+        from triqs_tprf.lattice import fourier_wr_to_tr
+        g_tr = fourier_wr_to_tr(g_wr)
+
+        from triqs_tprf.lattice import chi_tr_from_chi_wr
+        W_dyn_wk = gw.W_wk - U
+        W_dyn_wr = chi_wr_from_chi_wk(W_dyn_wk)
+        W_dyn_tr = chi_tr_from_chi_wr(W_dyn_wr)
+
+        sigma_tr_ref = g_tr.copy()
+
+        rmesh = g_tr.mesh[1]
+        tmesh = g_tr.mesh[0]
+
+        for r in rmesh:
+            for tau in tmesh:
+                sigma_tr_ref[tau, r][0, 0] = -2*W_dyn_tr[tau, r][0, 0, 0, 0] * g_tr[tau, r][0, 0]
+
+        from triqs_tprf.lattice import fourier_tr_to_wr
+        sigma_wr_ref = fourier_tr_to_wr(sigma_tr_ref)
+
+        # -- end sigma_tr_ref
+    
+    print(f'g_wr0 =\n{g_wr[Idx(0), Idx(0, 0, 0)]}')
+    print(f'g_wr1 =\n{g_wr[Idx(0), Idx(1, 0, 0)]}')
+
+    print('V_aaaa =')
+    print_tensor(V_aaaa)
+
+    print('V_wr0')
+    print_tensor(V_wr[Idx(0), Idx(0, 0, 0)])
+    print('V_wr1')
+    print_tensor(V_wr[Idx(0), Idx(1, 0, 0)])
+
+    print('P_wr0')
+    print_tensor(P_wr[Idx(0), Idx(0, 0, 0)])
+    print('P_wr1')
+    print_tensor(P_wr[Idx(0), Idx(1, 0, 0)])
+
+    print('W_wr0')
+    print_tensor(W_wr[Idx(0), Idx(0, 0, 0)])
+    print('W_wr1')
+    print_tensor(W_wr[Idx(0), Idx(1, 0, 0)])
+
+    #i,j,k,l = 0,0,0,0
+    i,j,k,l = 0,0,1,1
+    #i,j,k,l = 1,0,0,1        
+
+    # -- Analytic expression Eq. (18) for G_0
+
+    g0_0_w = Gf(mesh=wmesh, target_shape=[])
+    g0_1_w = Gf(mesh=wmesh, target_shape=[])
+    
+    for w in wmesh:
+        g0_0_w[w] = +0.5/(w - t) + 0.5/(w + t)
+        g0_1_w[w] = -0.5/(w - t) + 0.5/(w + t)
+
+    np.testing.assert_array_almost_equal(
+        g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
+    
+    # -- Analytic expression Eq. (29) for P
+
+    bmesh = P_wr.mesh[0]
+
+    P_0_w = Gf(mesh=bmesh, target_shape=[])
+    P_1_w = Gf(mesh=bmesh, target_shape=[])
+
+    for w in bmesh:
+        P_0_w[w] = + 0.25 / (w - 2*t) - 0.25 / (w + 2*t)
+        P_1_w[w] = - 0.25 / (w - 2*t) + 0.25 / (w + 2*t)
         
-    from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
+    np.testing.assert_array_almost_equal(
+        P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
 
-    plt.figure(figsize=(9, 9))
+    np.testing.assert_array_almost_equal(
+        P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
 
-    subp = [3, 2, 1]
-    xlim = [-10, 10]
+    # -- Analytic expression Eq. (30) for W
+
+    W_0_w = Gf(mesh=bmesh, target_shape=[])
+    W_1_w = Gf(mesh=bmesh, target_shape=[])
+
+    e = 0.0
+    h2 = 4*t**2 + 4*U*t # Eq. in text after Eq. (31)    
+    h = np.sqrt(h2)
+
+    for w in bmesh:
+        W_0_w[w] = U + 2 * U**2 * t / (complex(w)**2 - h2)
+        W_1_w[w] = 0 - 2 * U**2 * t / (complex(w)**2 - h2)
+        
+    np.testing.assert_array_almost_equal(
+        W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
+
+    # Analytic expression in Eq. (31) for Sigma = G_0 W_0
     
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(g0_wr[:, Idx(0, 0, 0)][0, 0], 'k-x')
-    oplot(g_0_w, 'g-+')
-    plt.xlim(xlim)
+    sigma_0_w = Gf(mesh=wmesh, target_shape=[])
+    sigma_1_w = Gf(mesh=wmesh, target_shape=[])
+
+    for w in wmesh:
+        sigma_0_w[w] = U/2 + U**2 * t / (2*h) * \
+            ( 1/(w - (e + t + h)) + 1/(w - (e - t - h)) )
+        sigma_1_w[w] = U**2 * t / (2*h) * \
+            ( 1/(w - (e + t + h)) - 1/(w - (e - t - h)) )
+        
+    np.testing.assert_array_almost_equal(
+        sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
+        
+    # -- Analytic expression Eq. (32) for G = 1/[1/G_0 - Sigma] with Sigma = G_0 W_0
     
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(g0_wr[:, Idx(1, 0, 0)][0, 0], 'k-x')
-    oplot(g_1_w, 'g-+')
-    plt.xlim(xlim)
+    g_0_w = Gf(mesh=wmesh, target_shape=[])
+    g_1_w = Gf(mesh=wmesh, target_shape=[])
 
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(P_wr[:, Idx(0, 0, 0)][0, 0, 0, 0], 'k-x')
-    oplot(P_0_w, 'g-+')
-    plt.xlim(xlim)
+    A = np.sqrt((2*t + h + U/2)**2 + 4*U**2*t/h)
+    B = np.sqrt((2*t + h - U/2)**2 + 4*U**2*t/h)
 
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(P_wr[:, Idx(1, 0, 0)][0, 0, 0, 0], 'k-x')
-    oplot(P_1_w, 'g-+')
-    plt.xlim(xlim)
+    w1_p = 0.5 * (2*e - h + U/2 + A)
+    w1_m = 0.5 * (2*e - h + U/2 - A)
 
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(W_wr[:, Idx(0, 0, 0)][0, 0, 0, 0], 'k-x')
-    oplot(W_0_w - U, 'g-+')
-    plt.xlim(xlim)
-
-    plt.subplot(*subp); subp[-1] += 1
-    oplot(W_wr[:, Idx(1, 0, 0)][0, 0, 0, 0], 'k-x')
-    oplot(W_1_w, 'g-+')
-    plt.xlim(xlim)
-
-    plt.tight_layout()
-    plt.show()
+    w2_p = 0.5 * (2*e + h + U/2 + B)
+    w2_m = 0.5 * (2*e + h + U/2 - B)
     
+    #A = np.sqrt((h + 2*t)**2 + 2*U**2*t/h)
+    #B = np.sqrt((h - 2*t - U/2)**2 + 2*U**2*t/h)
+    #C = np.sqrt((h + 2*t - U/2)**2 + 2*U**2*t/h)
+
+    #w1_p = (2*e - h + A)/2
+    #w1_m = (2*e - h - A)/2
+
+    #w2_p = (2*e + h + A)/2
+    #w2_m = (2*e + h - A)/2
+
+    #w3_p = (2*e + h + U/2 + B/2)
+    #w3_m = (2*e + h + U/2 - B/2)
+
+    #w4_p = (2*e + h + U/2 + C)/2
+    #w4_m = (2*e + h + U/2 - C)/2
+
+    R1 = (h + 2*t + U/2) / (4 * A)
+    R2 = (-h -2*t + U/2) / (4 * B)
+
+    #print(f'A = {A}')
+    #print(f'B = {B}')
+    #print(f'w1_p = {w1_p}')
+    #print(f'w1_m = {w1_m}')
+    #print(f'w2_p = {w2_p}')
+    #print(f'w2_m = {w2_m}')
+    
+    for w in wmesh:
+        g_0_w[w] = \
+            + (0.25 + R1)/(w - w1_p) + (0.25 - R1)/(w - w1_m) + \
+            + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
+        g_1_w[w] = \
+            - (0.25 + R1)/(w - w1_p) - (0.25 - R1)/(w - w1_m) + \
+            + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
+
+    np.testing.assert_array_almost_equal(
+        g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
+
+    np.testing.assert_array_almost_equal(
+        g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
+
+    
+    if verbose:
+        from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
+
+        plt.figure(figsize=(9, 11))
+
+        subp = [6, 2, 1]
+        xlim = [-20, 20]
+
+        def plot_cf(g_tprf, g_ref, subp, plot=oploti):
+            plt.subplot(*subp); subp[-1] += 1
+            plot(g_ref, 'g.', label='ref')
+            plot(g_tprf, 'c-', label='tprf')
+            plt.xlim(xlim)
+
+
+        plot_cf(g0_wr[:, Idx(0, 0, 0)][0, 0], g0_0_w, subp, plot=oploti)
+        plt.ylabel(r'$G_0(r=0)$')
+
+        plot_cf(g0_wr[:, Idx(1, 0, 0)][0, 0], g0_1_w, subp, plot=oplotr)
+        plt.ylabel(r'$G_0(r=1)$')
+
+        plot_cf(P_wr[:, Idx(0, 0, 0)][0,0,0,0], P_0_w, subp, plot=oplotr)
+        plt.ylabel(r'$P(r=0)$')
+
+        plot_cf(P_wr[:, Idx(1, 0, 0)][0,0,0,0], P_1_w, subp, plot=oplotr)
+        plt.ylabel(r'$P(r=1)$')
+
+        i,j,k,l = 0,0,0,0
+
+        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=0)$')            
+
+        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=1)$')
+
+        i,j,k,l = 0,0,1,1
+
+        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=0)$')            
+
+        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
+        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plt.ylabel(r'$W(r=1)$')
+
+        plot_cf(sigma_wr[:, Idx(0, 0, 0)][0, 0], sigma_0_w, subp, plot=oplot)
+        #oplot(sigma_wr_ref[:, Idx(0, 0, 0)][0, 0], 'r--', label='sigma ref')
+        plt.ylabel(r'$\Sigma(r=0)$')
+
+        plot_cf(sigma_wr[:, Idx(1, 0, 0)][0, 0], sigma_1_w, subp, plot=oplot)
+        #oplot(sigma_wr_ref[:, Idx(1, 0, 0)][0, 0], 'r--', label='sigma ref')
+        plt.ylabel(r'$\Sigma(r=1)$')
+            
+
+        plt.subplot(*subp); subp[-1] += 1
+        oplot(g_0_w, 'g.', label='ref')
+        oplot(g_wr[:, Idx(0, 0, 0)][0, 0], 'c-', label='tprf g')
+        oploti(g0_wr[:, Idx(0, 0, 0)][0, 0], 'r-', label='tprf g0')
+        plt.xlim(xlim)
+        plt.ylabel(r'$G(r=0)$')
+            
+        plt.subplot(*subp); subp[-1] += 1
+        oplot(g_1_w, 'g.')
+        oplot(g_wr[:, Idx(1, 0, 0)][0, 0], 'c-', label='tprf g')
+        oplotr(g0_wr[:, Idx(1, 0, 0)][0, 0], 'r-', label='tprf g0')
+        plt.xlim(xlim)
+        plt.ylabel(r'$G(r=1)$')
+
+
+        plt.tight_layout()
+        plt.show()
+        
+
 if __name__ == '__main__':
 
     #hubbard_atom_hf()
     #hubbard_dimer_hf()
-    hubbard_dimer_gw()
+    #hubbard_dimer_gw(verbose=False)
+    hubbard_dimer_gw_self_interaction_corrected(verbose=True)

@@ -49,7 +49,7 @@ namespace triqs_tprf {
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[t, r] = arr(idx);
 
-    for (const auto &[a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, b, c, d) * g_tr[t, r](c, d); }
+    for (const auto &[a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, c, d, b) * g_tr[t, r](c, d); }
   }
 
   sigma_tr = mpi::all_reduce(sigma_tr);
