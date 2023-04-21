@@ -11,6 +11,9 @@ set(all_tests
   lattice_utility
   gf
   gw
+  gw_hubbard_dimer
+  gw_hubbard_atom_hf
+  gw_hubbard_dimer_hf
   gw_fk
   chi00_square_lattice
   chi00_square_lattice_fk
