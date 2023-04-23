@@ -41,7 +41,7 @@ from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 class GWSolver():
 
     
-    def __init__(self, e_k, V_k, wmesh, mu=None):
+    def __init__(self, e_k, V_k, wmesh, mu=None, g_wk=None):
 
         if mpi.is_master_node():
             print(self.logo())
@@ -57,7 +57,11 @@ class GWSolver():
 
         self.g0_wk = lattice_dyson_g0_wk(mu=self.mu, e_k=e_k, mesh=wmesh)
         
-        self.g_wk = self.g0_wk.copy()
+        if g_wk is None:
+            self.g_wk = self.g0_wk.copy()
+        else:
+            self.g_wk = g_wk
+        
         self.sigma_wk = self.g0_wk.copy()
         self.sigma_wk.data[:] = 0.
 
@@ -104,7 +108,9 @@ class GWSolver():
                 sigma_wk.data[:] += fock_sigma(V_k, g_wk).data[None, ...]
 
             if gw:
-                P_wk = -imtime_bubble_chi0_wk(g_wk, nw=len(self.wmesh)//2)
+                P_wk = -imtime_bubble_chi0_wk(
+                    g_wk, nw=len(self.wmesh)//2, verbose=False)
+                
                 W_wk = dynamical_screened_interaction_W(P_wk, V_k)
                 W_dyn_wk, W_stat_k = split_into_dynamic_wk_and_constant_k(W_wk)
                 
