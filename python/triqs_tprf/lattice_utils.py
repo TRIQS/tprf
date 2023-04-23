@@ -185,7 +185,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
         return g_tr, sigma_w
 
 # ----------------------------------------------------------------------
-def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
+def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False, verbose=True):
     ncores = multiprocessing.cpu_count()
 
     wmesh, kmesh =  g_wk.mesh.components
@@ -225,7 +225,7 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
     nbytes = ntot * np.complex128().nbytes
     ngb = nbytes / 1024.**3
 
-    if mpi.is_master_node():
+    if verbose and mpi.is_master_node():
         print(tprf_banner(), "\n")
         print('beta  =', beta)
         print('nk    =', nk)
@@ -234,32 +234,32 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False):
         print()
         print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
 
-    mpi.report('--> fourier_wk_to_wr')
+    if verbose: mpi.report('--> fourier_wk_to_wr')
     g_wr = fourier_wk_to_wr(g_wk)
     del g_wk
 
-    mpi.report('--> fourier_wr_to_tr')
+    if verbose: mpi.report('--> fourier_wr_to_tr')
     g_tr = fourier_wr_to_tr(g_wr)
     del g_wr
     
     if nw == 1:
-        mpi.report('--> chi0_w0r_from_grt_PH (bubble in tau & r)')
+        if verbose: mpi.report('--> chi0_w0r_from_grt_PH (bubble in tau & r)')
         chi0_wr = chi0_w0r_from_grt_PH(g_tr)
         del g_tr
     else:
         if not save_memory:
-            mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
+            if verbose: mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
             chi0_tr = chi0_tr_from_grt_PH(g_tr)
             del g_tr
             
-            mpi.report('--> chi_wr_from_chi_tr')
+            if verbose: mpi.report('--> chi_wr_from_chi_tr')
             chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
             del chi0_tr
         elif save_memory:
             chi0_wr = chi0_wr_from_grt_PH(g_tr, nw=nw)
 
         
-    mpi.report('--> chi_wk_from_chi_wr (r->k)')
+    if verbose: mpi.report('--> chi_wk_from_chi_wr (r->k)')
     chi0_wk = chi_wk_from_chi_wr(chi0_wr)
     del chi0_wr
 
