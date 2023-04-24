@@ -66,6 +66,26 @@ class GWSolver():
         self.sigma_wk.data[:] = 0.
 
 
+    def calc_real_space(self):
+
+        from triqs_tprf.lattice import fourier_wk_to_wr
+        from triqs_tprf.lattice import chi_wr_from_chi_wk
+        
+        self.g0_wr = fourier_wk_to_wr(self.g0_wk)
+        self.g_wr = fourier_wk_to_wr(self.g_wk)
+        self.sigma_wr = fourier_wk_to_wr(self.sigma_wk)
+        self.P_wr = chi_wr_from_chi_wk(self.P_wk)
+        self.W_wr = chi_wr_from_chi_wk(self.W_wk)
+
+        V_wk = self.W_wk.copy()
+        bmesh = self.W_wk.mesh[0]
+        V_wk.data[:] = 0
+        for w in bmesh:
+            V_wk[w, :] = self.V_k
+        self.V_wk = V_wk
+        self.V_wr = chi_wr_from_chi_wk(self.V_wk)
+        
+        
     def get_rho_loc(self, g_wk):
         
         wmesh = g_wk.mesh[0]
@@ -99,7 +119,7 @@ class GWSolver():
         g_wk_old.data[:] = float('inf')
         
         for iter in range(maxiter):
-
+            
             sigma_wk.data[:] = 0.
 
             if hartree:
