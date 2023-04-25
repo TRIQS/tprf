@@ -76,7 +76,7 @@ class GWHubbardDimer:
         kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
         self.e_k = H_r.fourier(kmesh)
 
-        if self_interaction and not spinless:
+        if self_interaction:
             
             V_aaaa = np.zeros((2, 2, 2, 2))
 
@@ -88,13 +88,13 @@ class GWHubbardDimer:
 
             self.V_aaaa = V_aaaa
             
-        elif spinless:
+        if spinless:
 
             V_aaaa = np.zeros((1, 1, 1, 1))
             V_aaaa[0, 0, 0, 0] = U
             self.V_aaaa = V_aaaa
             
-        else:
+        if not spinless and not self_interaction:
             
             from triqs.operators import n, c, c_dag, Operator, dagger
             from triqs_tprf.gw import get_gw_tensor
@@ -102,7 +102,6 @@ class GWHubbardDimer:
             self.H_int = U * n('up',0) * n('do',0)
             self.fundamental_operators = [c('up', 0), c('do', 0)]
             self.V_aaaa = get_gw_tensor(self.H_int, self.fundamental_operators)
-            
         
         self.V_k = Gf(mesh=kmesh, target_shape=self.V_aaaa.shape)
         self.V_k.data[:] = self.V_aaaa    
@@ -148,9 +147,31 @@ def test_gw_hubbard_dimer(verbose=False):
         nw = 1024,
         maxiter = 1,
         spinless = True,
-        self_interaction=True,
-        hartree_flag=True,
+        hartree_flag = True,
         )
+
+    gw_tensor = GWHubbardDimer(
+        beta = beta,
+        U = U,
+        t = t,
+        mu = mu,
+        nw = 1024,
+        maxiter = 1,
+        self_interaction = True, # Use tensor structure with V_0000 = U
+        hartree_flag = False,
+        )
+
+    np.testing.assert_array_almost_equal(
+        gw.P_wk[0,0,0,0].data, gw_tensor.P_wk[0,0,0,0].data)
+
+    np.testing.assert_array_almost_equal(
+        gw.W_wk[0,0,0,0].data, gw_tensor.W_wk[0,0,0,0].data)
+
+    # The self-interaction calc, does not produce correct Hartree sigma, fix here..
+    gw_tensor.sigma_wk.data[:] += U/2
+    
+    np.testing.assert_array_almost_equal(
+        gw.sigma_wk[0,0].data, gw_tensor.sigma_wk[0,0].data)
     
     wmesh = gw.g_wk.mesh[0]
     bmesh = gw.P_wk.mesh[0]
@@ -348,7 +369,6 @@ def test_gw_hubbard_dimer(verbose=False):
         oplot(g_0_w, 'g.', label='ref')
         oplot(gw.g_wr[:, Idx(0, 0, 0)][0, 0], 'c-', label='tprf g')
         oploti(gw.g0_wr[:, Idx(0, 0, 0)][0, 0], 'r-', label='tprf g0')
-        #oplot(g_w_ed[0, 0], 'b--', label='ed g')
         plt.xlim(xlim)
         plt.ylabel(r'$G(r=0)$')
             
@@ -356,11 +376,10 @@ def test_gw_hubbard_dimer(verbose=False):
         oplot(g_1_w, 'g.')
         oplot(gw.g_wr[:, Idx(1, 0, 0)][0, 0], 'c-', label='tprf g')
         oplotr(gw.g0_wr[:, Idx(1, 0, 0)][0, 0], 'r-', label='tprf g0')
-        #oplot(g_w_ed[0, 1], 'b--', label='ed g')
         plt.xlim(xlim)
         plt.ylabel(r'$G(r=1)$')
 
-
+        
         plt.tight_layout()
         plt.show()
 
@@ -378,4 +397,4 @@ def print_tensor(U, tol=1e-9):
 
 if __name__ == '__main__':
 
-    test_gw_hubbard_dimer(verbose=True)
+    test_gw_hubbard_dimer(verbose=False)
