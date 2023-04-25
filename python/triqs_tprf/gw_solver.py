@@ -188,6 +188,7 @@ TRIQS: GW solver
 """
         return logo
 
+
 def pade_analytical_continuation(
     g_wk, fmesh, n_points=32, freq_offset=0.05):
     

@@ -43,8 +43,8 @@ class GWHubbardDimer:
     def __init__(
             self,
             beta=20.0, U=1.5, t=1.0, mu=0.0, nw=1024, maxiter=100,
-            self_interaction=False, spinless=True,
-            gw_flag=True, hartree_flag=True, fock_flag=False):
+            self_interaction=False, spinless=False,
+            gw_flag=True, hartree_flag=False, fock_flag=False):
         
         wmesh = MeshImFreq(beta, 'Fermion', nw)
 
@@ -77,6 +77,7 @@ class GWHubbardDimer:
         self.e_k = H_r.fourier(kmesh)
 
         if self_interaction and not spinless:
+            
             V_aaaa = np.zeros((2, 2, 2, 2))
 
             V_aaaa[0, 0, 0, 0] = U
@@ -87,19 +88,23 @@ class GWHubbardDimer:
 
             self.V_aaaa = V_aaaa
             
-        elif self_interaction and spinless:
+        elif spinless:
 
             V_aaaa = np.zeros((1, 1, 1, 1))
             V_aaaa[0, 0, 0, 0] = U
             self.V_aaaa = V_aaaa
             
         else:
+            
+            from triqs.operators import n, c, c_dag, Operator, dagger
+            from triqs_tprf.gw import get_gw_tensor
+            
             self.H_int = U * n('up',0) * n('do',0)
             self.fundamental_operators = [c('up', 0), c('do', 0)]
             self.V_aaaa = get_gw_tensor(self.H_int, self.fundamental_operators)
             
         
-        self.V_k = Gf(mesh=kmesh, target_shape=V_aaaa.shape)
+        self.V_k = Gf(mesh=kmesh, target_shape=self.V_aaaa.shape)
         self.V_k.data[:] = self.V_aaaa    
 
         gw = GWSolver(self.e_k, self.V_k, wmesh, mu=mu)
@@ -144,6 +149,7 @@ def test_gw_hubbard_dimer(verbose=False):
         maxiter = 1,
         spinless = True,
         self_interaction=True,
+        hartree_flag=True,
         )
     
     wmesh = gw.g_wk.mesh[0]
