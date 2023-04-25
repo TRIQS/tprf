@@ -40,6 +40,9 @@ from triqs_tprf.lattice import chi_wr_from_chi_wk
 from triqs_tprf.gw_solver import GWSolver
 
 
+from gw_hubbard_dimer import GWHubbardDimer
+
+
 def get_ed_g(beta, t, U, wmesh):
     
     from pyed.TriqsExactDiagonalization import TriqsExactDiagonalization
@@ -123,63 +126,6 @@ class GWHubbardDimerMatrix:
             setattr(self, key, val)
 
 
-class GWHubbardDimer:
-
-    def __init__(
-            self,
-            beta=20.0, U=1.5, t=1.0, mu=0.0, nw=1024, maxiter=100,
-            self_interaction=False):
-
-        wmesh = MeshImFreq(beta, 'Fermion', nw)
-
-        tb_opts = dict(
-            units = [(1, 0, 0)],
-            orbital_positions = [(0,0,0)] * 2,
-            orbital_names = ['up_0', 'do_0'],
-            )
-
-        # Have to use t/2 hopping in the TBLattice since it considers
-        # hoppings in both directions, which doubles the total hopping
-        # for the Hubbard dimer.
-
-        H_r = TBLattice(hopping = {
-            (+1,): -0.5 * t * np.eye(2),
-            (-1,): -0.5 * t * np.eye(2),
-            }, **tb_opts)
-
-        kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
-        self.e_k = H_r.fourier(kmesh)
-
-        if self_interaction:
-            V_aaaa = np.zeros((2, 2, 2, 2))
-
-            V_aaaa[0, 0, 0, 0] = U
-            V_aaaa[1, 1, 1, 1] = U
-            
-            V_aaaa[1, 1, 0, 0] = U
-            V_aaaa[0, 0, 1, 1] = U
-
-            self.V_aaaa = V_aaaa
-            
-        else:
-            self.H_int = U * n('up',0) * n('do',0)
-            self.fundamental_operators = [c('up', 0), c('do', 0)]
-            self.V_aaaa = get_gw_tensor(self.H_int, self.fundamental_operators)
-            
-        
-        self.V_k = Gf(mesh=kmesh, target_shape=[2]*4)
-        self.V_k.data[:] = self.V_aaaa    
-
-        gw = GWSolver(self.e_k, self.V_k, wmesh, mu=mu)
-        gw.solve_iter(maxiter=maxiter, gw=True, hartree=False, fock=False)
-        gw.calc_real_space()
-        
-        self.gw = gw
-
-        for key, val in gw.__dict__.items():
-            setattr(self, key, val)
-        
-        
 def test_gw_hubbard_dimer_matrix(verbose=False):
 
     beta = 20.0
