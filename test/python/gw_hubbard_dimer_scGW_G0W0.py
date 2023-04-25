@@ -24,6 +24,7 @@ import sys
 import itertools
 import numpy as np
 
+from h5 import HDFArchive
 from triqs.gf import Gf, MeshImFreq, Idx, inverse
 from triqs.gf.gf_factories import make_gf_from_fourier
 from triqs.operators import n, c, c_dag, Operator, dagger
@@ -61,21 +62,32 @@ def get_ed_g(beta, t, U, wmesh):
 
 class EDHubbardDimer:
 
-    def __init__(self, beta, t, U, wmesh):
+    def __init__(self, beta, t, U, wmesh, from_file=True):
 
-        self.g_w = get_ed_g(beta, t, U, wmesh)
-        self.g0_w = get_ed_g(beta, t, 0*U, wmesh)
-        self.sigma_w = self.g_w.copy()
-        self.sigma_w << inverse(self.g0_w) - inverse(self.g_w)
+        if from_file:
+            with HDFArchive('gw_hubbard_dimer_ed_reference.h5', 'r') as h:
+                self.g_w = h['g_w']
+                self.g0_w = h['g0_w']
+                self.sigma_w = h['sigma_w']
+        else:
+            self.g_w = get_ed_g(beta, t, U, wmesh)
+            self.g0_w = get_ed_g(beta, t, 0*U, wmesh)
+            self.sigma_w = self.g_w.copy()
+            self.sigma_w << inverse(self.g0_w) - inverse(self.g_w)
+
+            with HDFArchive('gw_hubbard_dimer_ed_reference.h5', 'w') as h:
+                h['g_w'] = self.g_w
+                h['g0_w'] = self.g0_w
+                h['sigma_w'] = self.sigma_w
 
 
 def compare_gw_solutions(verbose=True):
 
-    beta = 40.0
+    beta = 8.0
     U = 0.5
     t = 1.0
     mu = 0.0
-    nw = 1024 * 2
+    nw = 128
 
     opts = dict(beta=beta, U=U, t=t, mu=mu, nw=nw)
 
