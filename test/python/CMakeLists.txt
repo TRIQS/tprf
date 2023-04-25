@@ -12,6 +12,8 @@ set(all_tests
   gf
   gw
   gw_hubbard_dimer
+  gw_hubbard_dimer_matrix
+  gw_hubbard_dimer_scGW_G0W0
   gw_hubbard_atom_hf
   gw_hubbard_dimer_hf
   gw_fk
