@@ -38,6 +38,83 @@ from triqs_tprf.lattice import chi_wr_from_chi_wk
 from triqs_tprf.gw_solver import GWSolver
 
 
+class GWHubbardDimer:
+
+    def __init__(
+            self,
+            beta=20.0, U=1.5, t=1.0, mu=0.0, nw=1024, maxiter=100,
+            self_interaction=False, spinless=True,
+            gw_flag=True, hartree_flag=True, fock_flag=False):
+        
+        wmesh = MeshImFreq(beta, 'Fermion', nw)
+
+        if spinless:
+            tb_opts = dict(
+                units = [(1, 0, 0)],
+                orbital_positions = [(0,0,0)],
+                orbital_names = ['0'],
+                )
+            I = np.eye(1)
+            
+        else:
+            tb_opts = dict(
+                units = [(1, 0, 0)],
+                orbital_positions = [(0,0,0)] * 2,
+                orbital_names = ['up_0', 'do_0'],
+                )
+            I = np.eye(2)
+
+        # Have to use t/2 hopping in the TBLattice since it considers
+        # hoppings in both directions, which doubles the total hopping
+        # for the Hubbard dimer.
+
+        H_r = TBLattice(hopping = {
+            (+1,): -0.5 * t * I,
+            (-1,): -0.5 * t * I,
+            }, **tb_opts)
+
+        kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
+        self.e_k = H_r.fourier(kmesh)
+
+        if self_interaction and not spinless:
+            V_aaaa = np.zeros((2, 2, 2, 2))
+
+            V_aaaa[0, 0, 0, 0] = U
+            V_aaaa[1, 1, 1, 1] = U
+            
+            V_aaaa[1, 1, 0, 0] = U
+            V_aaaa[0, 0, 1, 1] = U
+
+            self.V_aaaa = V_aaaa
+            
+        elif self_interaction and spinless:
+
+            V_aaaa = np.zeros((1, 1, 1, 1))
+            V_aaaa[0, 0, 0, 0] = U
+            self.V_aaaa = V_aaaa
+            
+        else:
+            self.H_int = U * n('up',0) * n('do',0)
+            self.fundamental_operators = [c('up', 0), c('do', 0)]
+            self.V_aaaa = get_gw_tensor(self.H_int, self.fundamental_operators)
+            
+        
+        self.V_k = Gf(mesh=kmesh, target_shape=V_aaaa.shape)
+        self.V_k.data[:] = self.V_aaaa    
+
+        gw = GWSolver(self.e_k, self.V_k, wmesh, mu=mu)
+        gw.solve_iter(
+            maxiter=maxiter,
+            gw=gw_flag, hartree=hartree_flag, fock=fock_flag,
+            spinless=spinless)
+        gw.calc_real_space()
+        
+        self.gw = gw
+
+        for key, val in gw.__dict__.items():
+            setattr(self, key, val)
+
+
 def test_gw_hubbard_dimer(verbose=False):
  
     """
@@ -58,134 +135,62 @@ def test_gw_hubbard_dimer(verbose=False):
     nw = 1024
     mu = 0.0
     
-    wmesh = MeshImFreq(beta, 'Fermion', nw)
-
-    tb_opts = dict(
-        units = [(1, 0, 0)],
-        orbital_positions = [(0,0,0)] * 2,
-        orbital_names = ['up_0', 'do_0'],
+    gw = GWHubbardDimer(
+        beta = beta,
+        U = U,
+        t = t,
+        mu = mu,
+        nw = 1024,
+        maxiter = 1,
+        spinless = True,
+        self_interaction=True,
         )
-
-    # Have to use t/2 hopping in the TBLattice since it considers
-    # hoppings in both directions, which doubles the total hopping
-    # for the Hubbard dimer.
     
-    H_r = TBLattice(hopping = {
-        (+1,): -0.5 * t * np.eye(2),
-        (-1,): -0.5 * t * np.eye(2),
-        }, **tb_opts)
+    wmesh = gw.g_wk.mesh[0]
+    bmesh = gw.P_wk.mesh[0]
+    kmesh = gw.P_wk.mesh[1]
 
-    kmesh = H_r.get_kmesh(n_k=(2, 1, 1))
-    e_k = H_r.fourier(kmesh)
-    #print(e_k.data)
-
-    g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
-    g0_wr = fourier_wk_to_wr(g0_wk)
-
-    g0_w = Gf(mesh=wmesh, target_shape=[2, 2])
-
-    T = np.array([
-        [0, -t],
-        [-t, 0]])
-
-    g0_w << inverse( iOmega_n + T )
-
-    np.testing.assert_array_almost_equal(
-        g0_w[0, 0].data, g0_wr[:, Idx(0, 0, 0)][0, 0].data)    
-    
-    # -- Use two fermions that self interact and interact between eachother
-    
-    V_aaaa = np.zeros((2, 2, 2, 2))
-
-    # -- Density density interaction between different fermions
-
-    V_aaaa[1, 1, 0, 0] = U
-    V_aaaa[0, 0, 1, 1] = U
-
-    # -- Density density interaction between same fermion
-
-    V_aaaa[0, 0, 0, 0] = U
-    V_aaaa[1, 1, 1, 1] = U
-        
-    V_k = Gf(mesh=kmesh, target_shape=[2]*4)
-    V_k.data[:] = V_aaaa    
-
-    gw = GWSolver(e_k, V_k, wmesh, mu=mu)
-    g0_wk = gw.g_wk.copy()
-    g0_wr = fourier_wk_to_wr(g0_wk)
-    
-    gw.solve_iter(maxiter=1, gw=True, hartree=True, fock=False)
-
-    # -- Correct for double counting in the Hargree term
-    
-    sigma_wk = gw.sigma_wk.copy()
-    sigma_wk.data[:] -= 0.5*U*np.eye(2)[None, None, ...]
-    g_wk = lattice_dyson_g_wk(gw.mu, gw.e_k, sigma_wk)
-
-    #sigma_wk = gw.sigma_wk
-    #g_wk = gw.g_wk
-    
-    g_wr = fourier_wk_to_wr(g_wk)
-    sigma_wr = fourier_wk_to_wr(sigma_wk)
-    
-    V_wk = gw.W_wk.copy()
-    bmesh = gw.W_wk.mesh[0]
-    V_wk.data[:] = 0
-    for w in bmesh:
-        V_wk[w, :] = V_k
-
-    # -- Compute W by hand using P
-    
-    P_wr = chi_wr_from_chi_wk(gw.P_wk)
-    W_wr = chi_wr_from_chi_wk(gw.W_wk)
-    V_wr = chi_wr_from_chi_wk(V_wk)
-    
     W_wk_ref = gw.W_wk.copy()
-    
+
     for k in kmesh:
         for w in bmesh:
 
             # -- The extra factor of 2 in the denominator
             # -- is given by the interaction with two types of fermions.
-
             # (one of those contributions is strictly speaking self-interaction)
-            
-            W_term = U/(1 - 2*U * gw.P_wk[w, k][0,0,0,0]) # Analytic result Eq. (30)
 
-            W_wk_ref[w, k][0,0,0,0] = W_term 
-            W_wk_ref[w, k][1,1,1,1] = W_term 
-            W_wk_ref[w, k][0,0,1,1] = W_term 
-            W_wk_ref[w, k][0,0,1,1] = W_term 
+            # Analytic result Eq. (30)
+            
+            W_wk_ref[w, k][0,0,0,0] = U/(1 - 2*U * gw.P_wk[w, k][0,0,0,0])
 
     W_wr_ref = chi_wr_from_chi_wk(W_wk_ref)
 
-    np.testing.assert_array_almost_equal(W_wr_ref.data, W_wr.data)
+    np.testing.assert_array_almost_equal(W_wr_ref.data, gw.W_wr.data)
 
     # -- Print index structure of the relevant quantities
     
-    print(f'g_wr0 =\n{g_wr[Idx(0), Idx(0, 0, 0)]}')
-    print(f'g_wr1 =\n{g_wr[Idx(0), Idx(1, 0, 0)]}')
+    print(f'g_wr0 =\n{gw.g_wr[Idx(0), Idx(0, 0, 0)]}')
+    print(f'g_wr1 =\n{gw.g_wr[Idx(0), Idx(1, 0, 0)]}')
 
     print('V_aaaa =')
-    print_tensor(V_aaaa)
+    print_tensor(gw.V_aaaa)
 
     print('V_wr0')
-    print_tensor(V_wr[Idx(0), Idx(0, 0, 0)])
+    print_tensor(gw.V_wr[Idx(0), Idx(0, 0, 0)])
     print('V_wr1')
-    print_tensor(V_wr[Idx(0), Idx(1, 0, 0)])
+    print_tensor(gw.V_wr[Idx(0), Idx(1, 0, 0)])
 
     print('P_wr0')
-    print_tensor(P_wr[Idx(0), Idx(0, 0, 0)])
+    print_tensor(gw.P_wr[Idx(0), Idx(0, 0, 0)])
     print('P_wr1')
-    print_tensor(P_wr[Idx(0), Idx(1, 0, 0)])
+    print_tensor(gw.P_wr[Idx(0), Idx(1, 0, 0)])
 
     print('W_wr0')
-    print_tensor(W_wr[Idx(0), Idx(0, 0, 0)])
+    print_tensor(gw.W_wr[Idx(0), Idx(0, 0, 0)])
     print('W_wr1')
-    print_tensor(W_wr[Idx(0), Idx(1, 0, 0)])
+    print_tensor(gw.W_wr[Idx(0), Idx(1, 0, 0)])
 
-    #i,j,k,l = 0,0,0,0
-    i,j,k,l = 0,0,1,1
+    i,j,k,l = 0,0,0,0
 
     # == Compare GW result with analytic expression
     # == from the book chapter in the doc string above.
@@ -200,14 +205,12 @@ def test_gw_hubbard_dimer(verbose=False):
         g0_1_w[w] = -0.5/(w - t) + 0.5/(w + t)
 
     np.testing.assert_array_almost_equal(
-        g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
+        gw.g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
+        gw.g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
     
     # -- Analytic expression Eq. (29) for P
-
-    bmesh = P_wr.mesh[0]
 
     P_0_w = Gf(mesh=bmesh, target_shape=[])
     P_1_w = Gf(mesh=bmesh, target_shape=[])
@@ -217,10 +220,10 @@ def test_gw_hubbard_dimer(verbose=False):
         P_1_w[w] = - 0.25 / (w - 2*t) + 0.25 / (w + 2*t)
         
     np.testing.assert_array_almost_equal(
-        P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
+        gw.P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
+        gw.P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
 
     # -- Analytic expression Eq. (30) for W
 
@@ -236,10 +239,10 @@ def test_gw_hubbard_dimer(verbose=False):
         W_1_w[w] = 0 - 2 * U**2 * t / (complex(w)**2 - h2)
         
     np.testing.assert_array_almost_equal(
-        W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
+        gw.W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
+        gw.W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
 
     # Analytic expression in Eq. (31) for Sigma = G_0 W_0
     
@@ -253,10 +256,10 @@ def test_gw_hubbard_dimer(verbose=False):
             ( 1/(w - (e + t + h)) - 1/(w - (e - t - h)) )
         
     np.testing.assert_array_almost_equal(
-        sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
+        gw.sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
+        gw.sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
         
     # -- Analytic expression Eq. (32) for G = 1/[1/G_0 - Sigma] with Sigma = G_0 W_0
     
@@ -284,20 +287,20 @@ def test_gw_hubbard_dimer(verbose=False):
             + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
 
     np.testing.assert_array_almost_equal(
-        g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
+        gw.g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
 
     np.testing.assert_array_almost_equal(
-        g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
+        gw.g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
 
     # -- Visualize the result
     
     if verbose:
         from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
 
-        plt.figure(figsize=(9, 11))
+        plt.figure(figsize=(9, 10))
 
-        subp = [6, 2, 1]
-        xlim = [-20, 20]
+        subp = [5, 2, 1]
+        xlim = [-10, 10]
 
         def plot_cf(g_tprf, g_ref, subp, plot=oploti):
             plt.subplot(*subp); subp[-1] += 1
@@ -306,56 +309,48 @@ def test_gw_hubbard_dimer(verbose=False):
             plt.xlim(xlim)
 
 
-        plot_cf(g0_wr[:, Idx(0, 0, 0)][0, 0], g0_0_w, subp, plot=oploti)
+        plot_cf(gw.g0_wr[:, Idx(0, 0, 0)][0, 0], g0_0_w, subp, plot=oploti)
         plt.ylabel(r'$G_0(r=0)$')
 
-        plot_cf(g0_wr[:, Idx(1, 0, 0)][0, 0], g0_1_w, subp, plot=oplotr)
+        plot_cf(gw.g0_wr[:, Idx(1, 0, 0)][0, 0], g0_1_w, subp, plot=oplotr)
         plt.ylabel(r'$G_0(r=1)$')
 
-        plot_cf(P_wr[:, Idx(0, 0, 0)][0,0,0,0], P_0_w, subp, plot=oplotr)
+        plot_cf(gw.P_wr[:, Idx(0, 0, 0)][0,0,0,0], P_0_w, subp, plot=oplotr)
         plt.ylabel(r'$P(r=0)$')
 
-        plot_cf(P_wr[:, Idx(1, 0, 0)][0,0,0,0], P_1_w, subp, plot=oplotr)
+        plot_cf(gw.P_wr[:, Idx(1, 0, 0)][0,0,0,0], P_1_w, subp, plot=oplotr)
         plt.ylabel(r'$P(r=1)$')
 
         i,j,k,l = 0,0,0,0
 
-        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
-        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plot_cf(gw.W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
         plt.ylabel(r'$W(r=0)$')            
+        plt.title(f'{i},{j},{k},{l}')
 
-        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
-        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
+        plot_cf(gw.W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
         plt.ylabel(r'$W(r=1)$')
+        plt.title(f'{i},{j},{k},{l}')
 
-        i,j,k,l = 0,0,1,1
-
-        plot_cf(W_wr[:, Idx(0, 0, 0)][i,j,k,l], W_0_w, subp, plot=oplot)
-        oplot(W_wr_ref[:, Idx(0, 0, 0)][i,j,k,l], 'r--', label='W ref')
-        plt.ylabel(r'$W(r=0)$')            
-
-        plot_cf(W_wr[:, Idx(1, 0, 0)][i,j,k,l], W_1_w, subp, plot=oplot)
-        oplot(W_wr_ref[:, Idx(1, 0, 0)][i,j,k,l], 'r--', label='W ref')
-        plt.ylabel(r'$W(r=1)$')
-
-        plot_cf(sigma_wr[:, Idx(0, 0, 0)][0, 0], sigma_0_w, subp, plot=oplot)
+        plot_cf(gw.sigma_wr[:, Idx(0, 0, 0)][0, 0], sigma_0_w, subp, plot=oplot)
         plt.ylabel(r'$\Sigma(r=0)$')
 
-        plot_cf(sigma_wr[:, Idx(1, 0, 0)][0, 0], sigma_1_w, subp, plot=oplot)
+        plot_cf(gw.sigma_wr[:, Idx(1, 0, 0)][0, 0], sigma_1_w, subp, plot=oplot)
         plt.ylabel(r'$\Sigma(r=1)$')
             
 
         plt.subplot(*subp); subp[-1] += 1
         oplot(g_0_w, 'g.', label='ref')
-        oplot(g_wr[:, Idx(0, 0, 0)][0, 0], 'c-', label='tprf g')
-        oploti(g0_wr[:, Idx(0, 0, 0)][0, 0], 'r-', label='tprf g0')
+        oplot(gw.g_wr[:, Idx(0, 0, 0)][0, 0], 'c-', label='tprf g')
+        oploti(gw.g0_wr[:, Idx(0, 0, 0)][0, 0], 'r-', label='tprf g0')
+        #oplot(g_w_ed[0, 0], 'b--', label='ed g')
         plt.xlim(xlim)
         plt.ylabel(r'$G(r=0)$')
             
         plt.subplot(*subp); subp[-1] += 1
         oplot(g_1_w, 'g.')
-        oplot(g_wr[:, Idx(1, 0, 0)][0, 0], 'c-', label='tprf g')
-        oplotr(g0_wr[:, Idx(1, 0, 0)][0, 0], 'r-', label='tprf g0')
+        oplot(gw.g_wr[:, Idx(1, 0, 0)][0, 0], 'c-', label='tprf g')
+        oplotr(gw.g0_wr[:, Idx(1, 0, 0)][0, 0], 'r-', label='tprf g0')
+        #oplot(g_w_ed[0, 1], 'b--', label='ed g')
         plt.xlim(xlim)
         plt.ylabel(r'$G(r=1)$')
 
@@ -377,4 +372,4 @@ def print_tensor(U, tol=1e-9):
 
 if __name__ == '__main__':
 
-    test_gw_hubbard_dimer(verbose=False)
+    test_gw_hubbard_dimer(verbose=True)

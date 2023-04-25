@@ -98,13 +98,14 @@ class GWSolver():
         
     def solve_iter(self, tol=1e-7, maxiter=100,
                    hartree=True, fock=True, gw=True,
-                   verbose=True):
+                   verbose=True, spinless=False):
 
         if mpi.is_master_node():
             print(f'--> GWSolver.solve_iter')
             print(f'Hartree {hartree}')
             print(f'Fock    {fock}')
             print(f'GW      {gw}')
+            print(f'spinless {spinless}')
             print()
         
         e_k, V_k, mu = self.e_k, self.V_k, self.mu
@@ -130,8 +131,12 @@ class GWSolver():
             if gw:
                 P_wk = -imtime_bubble_chi0_wk(
                     g_wk, nw=len(self.wmesh)//2, verbose=False)
-                
-                W_wk = dynamical_screened_interaction_W(P_wk, V_k)
+
+                if spinless:
+                    W_wk = dynamical_screened_interaction_W(2*P_wk, V_k)
+                else:
+                    W_wk = dynamical_screened_interaction_W(P_wk, V_k)
+                    
                 W_dyn_wk, W_stat_k = split_into_dynamic_wk_and_constant_k(W_wk)
                 
                 np.testing.assert_array_almost_equal(W_stat_k.data, V_k.data)
