@@ -40,6 +40,7 @@ from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
+from triqs_tprf.ParameterCollection import ParameterCollection
 
 class GWSolver():
 
@@ -92,22 +93,38 @@ class GWSolver():
         self.V_wr = chi_wr_from_chi_wk(self.V_wk)
         
 
-    def calc_real_freq(self, fmesh, opts=dict()):
+    def calc_real_freq(self, fmesh, fbmesh=None, opts=dict()):
 
         print(f'--> GWSolver.calc_real_freq')
-        
+
         self.g0_fk = pade_analytical_continuation(self.g0_wk, fmesh, **opts)
         self.g_fk = pade_analytical_continuation(self.g_wk, fmesh, **opts)
         self.sigma_fk = pade_analytical_continuation(self.sigma_wk, fmesh, **opts)
 
-        if hasattr(self, 'P_wk'):
-            self.P_fk = pade_analytical_continuation(self.P_wk, fmesh, **opts)
-        if hasattr(self, 'W_wk'):
-            self.W_fk = pade_analytical_continuation(self.W_wk, fmesh, **opts)
-        if hasattr(self, 'W_dyn_wk'):
-            self.W_dyn_fk = pade_analytical_continuation(self.W_dyn_wk, fmesh, **opts)
-            
+        gw_rf = ParameterCollection(
+            mu = self.mu,
+            e_k = self.e_k,
+            V_k = self.V_k,
+            g0_fk = self.g0_fk,
+            g_fk = self.g_fk,
+            )
+
+        if fbmesh is None:
+            fbmesh = fmesh
         
+        if hasattr(self, 'P_wk'):
+            self.P_fk = pade_analytical_continuation(self.P_wk, fbmesh, **opts)
+            gw_rf.P_fk = self.P_fk
+        if hasattr(self, 'W_wk'):
+            self.W_fk = pade_analytical_continuation(self.W_wk, fbmesh, **opts)
+            gw_rf.W_fk = self.W_fk
+        if hasattr(self, 'W_dyn_wk'):
+            self.W_dyn_fk = pade_analytical_continuation(self.W_dyn_wk, fbmesh, **opts)
+            gw_rf.W_dyn_fk = self.W_dyn_fk
+
+        return gw_rf
+
+
     def get_rho_loc(self, g_wk):
         
         wmesh = g_wk.mesh[0]
