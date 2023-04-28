@@ -46,7 +46,8 @@ from triqs_tprf.lattice import dynamical_screened_interaction_W
 from triqs_tprf.lattice import \
     dynamical_screened_interaction_W_from_generalized_susceptibility
 
-from triqs_tprf.lattice import gw_sigma, g0w_sigma
+from triqs_tprf.lattice import hartree_sigma, fock_sigma
+from triqs_tprf.lattice import gw_sigma, gw_dynamic_sigma, g0w_sigma
 from triqs_tprf.lattice import lindhard_chi00
 
 from triqs_tprf.OperatorUtils import quartic_tensor_from_operator
