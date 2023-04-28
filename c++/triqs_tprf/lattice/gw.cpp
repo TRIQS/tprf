@@ -30,6 +30,26 @@
 
 namespace triqs_tprf {
 
+  e_k_t rho_k_from_g_wk(g_wk_cvt g_wk) {
+
+    auto _     = all_t{};
+    auto kmesh = std::get<1>(g_wk.mesh());
+
+    e_k_t rho_k(kmesh, g_wk.target_shape());
+    rho_k() = 0.0;
+
+    auto arr = mpi_view(kmesh);
+#pragma omp parallel for
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &k = arr(idx);
+      auto g_w  = g_wk(_, k);
+      rho_k[k] = density(g_w);
+    }
+  
+    rho_k = mpi::all_reduce(rho_k);
+    return rho_k;
+  }
+
   g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
 
     auto Wtm = std::get<0>(W_tr.mesh());
@@ -54,6 +74,28 @@ namespace triqs_tprf {
 
   sigma_tr = mpi::all_reduce(sigma_tr);
   return sigma_tr;
+  }
+
+  e_r_t hartree_sigma(chi_r_cvt v_r, e_r_cvt rho_r) {
+
+  if (v_r.mesh() != rho_r.mesh()) TRIQS_RUNTIME_ERROR << "hartree_sigma: r-space meshes are not the same.\n";
+
+  auto rmesh = rho_r.mesh();
+
+  e_r_t sigma_r(rmesh, rho_r.target_shape());
+  sigma_r() = 0.0;
+
+  auto arr = mpi_view(rmesh);
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr(idx);
+
+    for (auto const &[a, b, c, d] : v_r.target_indices()) {
+      sigma_r[r](a, b) += v_r[r](a, b, c, d) * rho_r[r](c, d);
+    }
+  }
+  sigma_r = mpi::all_reduce(sigma_r);
+  return sigma_r;
   }
 
   e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
@@ -81,6 +123,28 @@ namespace triqs_tprf {
   }
   sigma_k = mpi::all_reduce(sigma_k);
   return sigma_k;
+  }
+
+  e_r_t fock_sigma(chi_r_cvt v_r, e_r_cvt rho_r) {
+
+  if (v_r.mesh() != rho_r.mesh()) TRIQS_RUNTIME_ERROR << "fock_sigma: r-space meshes are not the same.\n";
+
+  auto rmesh = rho_r.mesh();
+
+  e_r_t sigma_r(rmesh, rho_r.target_shape());
+  sigma_r() = 0.0;
+
+  auto arr = mpi_view(rmesh);
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr(idx);
+
+    for (auto const &[a, b, c, d] : v_r.target_indices()) {
+      sigma_r[r](a, b) += -v_r[r](a, c, d, b) * rho_r[r](d, c);
+    }
+  }
+  sigma_r = mpi::all_reduce(sigma_r);
+  return sigma_r;
   }
 
   e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
@@ -125,17 +189,19 @@ namespace triqs_tprf {
 
   if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
 
-  auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
+  //auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
 
   //Dynamic part
   auto g_tr         = make_gf_from_fourier<0, 1>(g_wk);
-  auto W_tr         = make_gf_from_fourier<0, 1>(W_dyn_wk);
+  //auto W_tr         = make_gf_from_fourier<0, 1>(W_dyn_wk);
+  auto W_tr         = make_gf_from_fourier<0, 1>(W_wk);
   auto sigma_tr     = gw_sigma(W_tr, g_tr);
   auto sigma_dyn_wk = make_gf_from_fourier<0, 1>(sigma_tr);
 
   //Static part
-  auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
+  //auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
 
+  /*
   //Add dynamic and static parts
   g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
   sigma_wk() = 0.0;
@@ -149,6 +215,8 @@ namespace triqs_tprf {
   }
   sigma_wk = mpi::all_reduce(sigma_wk);
   return sigma_wk;
+  */
+  return sigma_dyn_wk;
   }
 
   // ----------------------------------------------------
