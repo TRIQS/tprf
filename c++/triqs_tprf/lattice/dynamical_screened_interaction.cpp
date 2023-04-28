@@ -30,7 +30,7 @@
 namespace triqs_tprf {
 
   enum SusceptibilityType { bubble, generalized };
-
+ 
   template <SusceptibilityType susType, typename chi_t, typename v_t> auto screened_interaction_from_generic_susceptibility(chi_t &chi, v_t &V) {
 
     auto const &[freqmesh, kmesh] = chi.mesh();
@@ -82,9 +82,62 @@ namespace triqs_tprf {
     return W;
   }
 
+  chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
+    
+    auto const &[wmesh, kmesh] = chi_wk.mesh();
+    auto const &v_kmesh = V_k.mesh();
+
+    if (kmesh != v_kmesh) TRIQS_RUNTIME_ERROR << "dynamical_screened_interaction_W: k-space meshes are not the same\n";
+
+    auto W_wk    = make_gf(chi_wk);
+    W_wk()       = 0.;
+    size_t nb = chi_wk.target_shape()[0];
+
+    using scalar_t = typename chi_wk_cvt::scalar_t;
+    auto I         = nda::eye<scalar_t>(nb * nb);
+
+    array<scalar_t, 4> I_arr{nb, nb, nb, nb};
+    auto I_mat   = make_matrix_view(group_indices_view(I_arr, idx_group<0, 1>, idx_group<3, 2>));
+    I_mat = I;
+    
+    // MPI and openMP parallell loop
+    auto arr = mpi_view(W_wk.mesh());
+    
+#pragma omp parallel for 
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &[w, k] = arr(idx);
+
+      array<scalar_t, 4> denom{nb, nb, nb, nb};
+      array<scalar_t, 4> inv_denom{nb, nb, nb, nb};
+
+      auto inv_denom_mat   = make_matrix_view(group_indices_view(inv_denom, idx_group<0, 1>, idx_group<3, 2>));
+      auto denom_mat   = make_matrix_view(group_indices_view(denom, idx_group<0, 1>, idx_group<3, 2>));
+
+
+      denom_mat = I;
+
+      for (auto const &[a, b, c, d] : V_k.target_indices())
+	for( auto e : range(nb) ) 
+	  for( auto f : range(nb) ) 
+	    denom(a,b,c,d) -= chi_wk[w,k](a,b,e,f)*V_k[k](f,e,c,d);
+      
+      inv_denom_mat = inverse(denom_mat);
+
+      for (auto const &[a, b, c, d] : V_k.target_indices())
+	for( auto e : range(nb) ) 
+	  for( auto f : range(nb) ) 
+	    W_wk[w, k](a,b,c,d) += V_k[k](a,b,e,f) * inv_denom(f,e,c,d);
+    }
+
+    W_wk = mpi::all_reduce(W_wk);
+    return W_wk;
+  }
+
+  /*
   chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
     return screened_interaction_from_generic_susceptibility<bubble>(PI_wk, V_k);
   }
+  */
 
   chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k) {
     return screened_interaction_from_generic_susceptibility<bubble>(PI_fk, V_k);
