@@ -229,6 +229,8 @@ class GWSolver():
             print(f'    Fock {fock}')
             print(f'      GW {gw}')
             print()
+        else:
+            verbose = False
         
         e_k, V_k, V_r, mu = self.e_k, self.V_k, self.V_r, self.mu
 
@@ -301,8 +303,9 @@ class GWSolver():
             self.W_stat_k = W_stat_k
             self.P_wk = P_wk
             
-        print()
-        self.timer.write()                
+        if mpi.is_master_node():
+            print()
+            self.timer.write()                
 
 
     def __reduce_to_dict__(self):
