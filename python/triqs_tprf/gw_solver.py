@@ -51,6 +51,9 @@ from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 
+from triqs_tprf.ase_timing import Timer, timer
+
+
 class GWSolver():
 
     
@@ -79,6 +82,8 @@ class GWSolver():
         self.sigma_wk = self.g0_wk.copy()
         self.sigma_wk.data[:] = 0.
 
+        self.timer = Timer()
+        
 
     def calc_real_space(self):
 
@@ -144,6 +149,24 @@ class GWSolver():
         return rho
 
     
+    @timer('Density matrix rho_r')
+    def get_rho_r(self, g_wk):
+        rho_k = rho_k_from_g_wk(g_wk)
+        rho_r = make_gf_from_fourier(rho_k)
+        return rho_r
+
+    
+    @timer('Hartree Sigma_H')
+    def hartree_sigma(self, V_r, rho_r):
+        return make_gf_from_fourier(hartree_sigma(V_r, rho_r))
+
+    
+    @timer('Fock Sigma_F')
+    def fock_sigma(self, V_r, rho_r):
+        return make_gf_from_fourier(fock_sigma(V_r, rho_r))
+    
+        
+    @timer('GW Sigma_dyn')
     def gw_dynamic_sigma(self, W_dyn_wk, g_wk):
  
         g_wr = fourier_wk_to_wr(g_wk)
@@ -164,7 +187,35 @@ class GWSolver():
         del sigma_dyn_wr
 
         return sigma_dyn_wk
+
+
+    @timer('Polarization P_wk')
+    def polarization(self, g_wk):
+        P_wk = -imtime_bubble_chi0_wk(
+            g_wk, nw=len(self.wmesh)//2, verbose=False)
+        return P_wk
+
+
+    @timer('Interaction W_wk')
+    def screened_interaction(self, P_wk, V_k, spinless=False):
+        if spinless:
+            W_wk = dynamical_screened_interaction_W(2*P_wk, V_k)
+        else:
+            W_wk = dynamical_screened_interaction_W(P_wk, V_k)
+        return W_wk
+
     
+    @timer('Split W_dyn_k, W_stat_wk')
+    def dynamic_and_static_interaction(self, W_wk):
+        W_dyn_wk, W_stat_k = split_into_dynamic_wk_and_constant_k(W_wk)
+        return W_dyn_wk, W_stat_k
+    
+
+    @timer('Dyson equation')
+    def dyson_equation(self, mu, e_k, sigma_wk):
+        g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
+        return g_wk
+        
     
     def solve_iter(self, tol=1e-7, maxiter=100,
                    hartree=True, fock=True, gw=True,
@@ -194,36 +245,27 @@ class GWSolver():
             
             sigma_wk.data[:] = 0.
 
-            if verbose: print('--> rho_k')
-            rho_k = rho_k_from_g_wk(g_wk)
-            rho_r = make_gf_from_fourier(rho_k)
+            if verbose: print('--> rho_r')
+            rho_r = self.get_rho_r(g_wk)
 
             if hartree:
                 if verbose: print('--> Sigma Hartree')
-                #self.sigma_hartree_k = hartree_sigma(V_k, g_wk)
-                self.sigma_hartree_k = \
-                    make_gf_from_fourier(hartree_sigma(V_r, rho_r))
+                self.sigma_hartree_k = self.hartree_sigma(V_r, rho_r)
                 sigma_wk.data[:] += self.sigma_hartree_k.data[None, ...]
             if fock:
                 if verbose: print('--> Sigma Fock')
-                #self.sigma_fock_k = fock_sigma(V_k, g_wk)
-                self.sigma_fock_k = \
-                    make_gf_from_fourier(fock_sigma(V_r, rho_r))
+                self.sigma_fock_k = self.fock_sigma(V_r, rho_r)
                 sigma_wk.data[:] += self.sigma_fock_k.data[None, ...]
 
             if gw:
                 if verbose: print('--> Polarization')
-                P_wk = -imtime_bubble_chi0_wk(
-                    g_wk, nw=len(self.wmesh)//2, verbose=False)
+                P_wk = self.polarization(g_wk)
 
                 if verbose: print('--> Screened interaction')
-                if spinless:
-                    W_wk = dynamical_screened_interaction_W(2*P_wk, V_k)
-                else:
-                    W_wk = dynamical_screened_interaction_W(P_wk, V_k)
+                W_wk = self.screened_interaction(P_wk, V_k, spinless=spinless)
                     
                 if verbose: print('--> Screened interaction split in static and dynamic')
-                W_dyn_wk, W_stat_k = split_into_dynamic_wk_and_constant_k(W_wk)
+                W_dyn_wk, W_stat_k = self.dynamic_and_static_interaction(W_wk)
                 
                 np.testing.assert_array_almost_equal(W_stat_k.data, V_k.data)
 
@@ -232,7 +274,8 @@ class GWSolver():
                 sigma_wk.data[:] += self.sigma_dyn_wk.data
 
             if verbose: print('--> Dyson equation')
-            g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
+            g_wk = self.dyson_equation(mu, e_k, sigma_wk)
+            
             rho = self.get_rho_loc(g_wk)
             N = np.sum(np.diag(rho).real)
             if verbose: print('--> done.')
@@ -257,6 +300,9 @@ class GWSolver():
             self.W_dyn_wk = W_dyn_wk
             self.W_stat_k = W_stat_k
             self.P_wk = P_wk
+            
+        print()
+        self.timer.write()                
 
 
     def __reduce_to_dict__(self):
