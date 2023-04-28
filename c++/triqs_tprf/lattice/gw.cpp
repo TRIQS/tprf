@@ -50,7 +50,7 @@ namespace triqs_tprf {
     return rho_k;
   }
 
-  g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
+  g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
 
     auto Wtm = std::get<0>(W_tr.mesh());
     auto gtm = std::get<0>(g_tr.mesh());
@@ -189,19 +189,18 @@ namespace triqs_tprf {
 
   if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
 
-  //auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
+  auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
 
   //Dynamic part
   auto g_tr         = make_gf_from_fourier<0, 1>(g_wk);
-  //auto W_tr         = make_gf_from_fourier<0, 1>(W_dyn_wk);
-  auto W_tr         = make_gf_from_fourier<0, 1>(W_wk);
-  auto sigma_tr     = gw_sigma(W_tr, g_tr);
-  auto sigma_dyn_wk = make_gf_from_fourier<0, 1>(sigma_tr);
+  auto W_dyn_tr         = make_gf_from_fourier<0, 1>(W_dyn_wk);
+  //auto W_tr         = make_gf_from_fourier<0, 1>(W_wk);
+  auto sigma_dyn_tr     = gw_dynamic_sigma(W_dyn_tr, g_tr);
+  auto sigma_dyn_wk = make_gf_from_fourier<0, 1>(sigma_dyn_tr);
 
   //Static part
-  //auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
+  auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
 
-  /*
   //Add dynamic and static parts
   g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
   sigma_wk() = 0.0;
@@ -215,8 +214,6 @@ namespace triqs_tprf {
   }
   sigma_wk = mpi::all_reduce(sigma_wk);
   return sigma_wk;
-  */
-  return sigma_dyn_wk;
   }
 
   // ----------------------------------------------------

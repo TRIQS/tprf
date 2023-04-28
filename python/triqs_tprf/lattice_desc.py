@@ -727,7 +727,7 @@ Returns
 out
      Static GW self-energy (Fock) :math:`\Sigma_{ab}(\mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
+module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_dynamic_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 
     Computes the GW self-energy as the product
 
@@ -746,7 +746,7 @@ g_tr
 Returns
 -------
 out
-     GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
+     Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 

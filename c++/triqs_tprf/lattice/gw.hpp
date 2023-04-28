@@ -141,7 +141,7 @@ namespace triqs_tprf {
 
   e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
   
-  /** GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
+  /** Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 
     Computes the GW self-energy as the product
 
@@ -151,10 +151,10 @@ namespace triqs_tprf {
 
     @param W_tr interaction :math:`W_{abcd}(\tau, \mathbf{r})`
     @param g_tr single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`
-    @return GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`
+    @return Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`
  */
 
-  g_tr_t gw_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
+  g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
 
   /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 

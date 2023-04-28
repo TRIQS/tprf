@@ -24,6 +24,7 @@ from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma
+from triqs_tprf.gw import gw_dynamic_sigma
 from triqs_tprf.gw import g0w_sigma
 
 from triqs.gf import Gf, MeshImFreq, Idx, MeshImTime
@@ -92,7 +93,7 @@ def test_gw_sigma_functions():
     Wr_wr = chi_wr_from_chi_wk(Wr_dyn_wk)
     Wr_tr = chi_tr_from_chi_wr(Wr_wr, ntau=ntau)
   
-    sigma_tr = gw_sigma(Wr_tr, g0_tr)
+    sigma_tr = gw_dynamic_sigma(Wr_tr, g0_tr)
     sigma_wr = fourier_tr_to_wr(sigma_tr, nw=nw)
     sigma_dyn_wk_ref = fourier_wr_to_wk(sigma_wr)
 

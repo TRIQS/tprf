@@ -34,9 +34,18 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
 from triqs_tprf.lattice import rho_k_from_g_wk
-from triqs_tprf.lattice import gw_sigma, hartree_sigma, fock_sigma
+from triqs_tprf.lattice import gw_dynamic_sigma, hartree_sigma, fock_sigma
 from triqs_tprf.lattice import dynamical_screened_interaction_W
 from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
+
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_tr
+
+from triqs_tprf.lattice import chi_wr_from_chi_wk
+from triqs_tprf.lattice import chi_tr_from_chi_wr
+
+from triqs_tprf.lattice import fourier_tr_to_wr
+from triqs_tprf.lattice import fourier_wr_to_wk
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 
@@ -133,8 +142,30 @@ class GWSolver():
         g_w.data[:] = np.sum(g_wk.data, axis=1) / len(kmesh)
         rho = g_w.density()
         return rho
+
     
-        
+    def gw_dynamic_sigma(self, W_dyn_wk, g_wk):
+ 
+        g_wr = fourier_wk_to_wr(g_wk)
+        g_tr = fourier_wr_to_tr(g_wr)
+        del g_wr
+
+        W_dyn_wr = chi_wr_from_chi_wk(W_dyn_wk)
+        W_dyn_tr = chi_tr_from_chi_wr(W_dyn_wr)
+        del W_dyn_wr
+
+        sigma_dyn_tr = gw_dynamic_sigma(W_dyn_tr, g_tr)
+        del g_tr
+        del W_dyn_tr
+
+        sigma_dyn_wr = fourier_tr_to_wr(sigma_dyn_tr)
+        del sigma_dyn_tr
+        sigma_dyn_wk = fourier_wr_to_wk(sigma_dyn_wr)
+        del sigma_dyn_wr
+
+        return sigma_dyn_wk
+    
+    
     def solve_iter(self, tol=1e-7, maxiter=100,
                    hartree=True, fock=True, gw=True,
                    verbose=True, spinless=False):
@@ -197,7 +228,7 @@ class GWSolver():
                 np.testing.assert_array_almost_equal(W_stat_k.data, V_k.data)
 
                 if verbose: print('--> Sigma GW dynamic')
-                self.sigma_dyn_wk = gw_sigma(W_dyn_wk, g_wk)
+                self.sigma_dyn_wk = self.gw_dynamic_sigma(W_dyn_wk, g_wk)
                 sigma_wk.data[:] += self.sigma_dyn_wk.data
 
             if verbose: print('--> Dyson equation')
