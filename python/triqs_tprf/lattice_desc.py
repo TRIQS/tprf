@@ -582,6 +582,19 @@ Returns
 out
      Tuple of chi_dyn_wk, the dynamic part of chi, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi(\mathbf{k})`.""")
 
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Density matrix from lattic Green's function
+      
+Parameters
+----------
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+rho_k
+     density matrix :math:`\rho_{ab}(\mathbf{k})`
+""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
@@ -645,6 +658,9 @@ Returns
 -------
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::hartree_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::fock_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
 
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 

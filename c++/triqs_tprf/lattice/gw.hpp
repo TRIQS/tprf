@@ -25,6 +25,13 @@
 
 namespace triqs_tprf {
 
+  /** Density matrix from lattic Green's function
+      
+    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+    @return rho_k density matrix :math:`\rho_{ab}(\mathbf{k})`
+  */
+  e_k_t rho_k_from_g_wk(g_wk_cvt g_wk);
+
   /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
@@ -82,7 +89,7 @@ namespace triqs_tprf {
  */
 
   g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
-
+  
   /** Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
     Computes the Hartree self-energy of a static interaction as the sum
@@ -101,6 +108,8 @@ namespace triqs_tprf {
 
   e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
 
+  e_r_t hartree_sigma(chi_r_cvt v_r, e_r_cvt rho_r);
+  
   /** Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
     Computes the Fock self-energy of a static interaction as the sum
@@ -118,6 +127,8 @@ namespace triqs_tprf {
 */
 
   e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
+
+  e_r_t fock_sigma(chi_r_cvt v_r, e_r_cvt rho_r);
 
   /** Static GW self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
