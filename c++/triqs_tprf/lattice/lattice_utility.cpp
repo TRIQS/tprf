@@ -39,7 +39,14 @@ namespace triqs_tprf {
     chi_k_t chi_const_k(kmesh, chi_wk.target_shape());
     chi_const_k() = 0.0;
 
-    for (auto const &k : kmesh) {
+    auto arr = mpi_view(kmesh);
+    
+    //for (auto const &k : kmesh) {
+
+#pragma omp parallel for 
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &k = arr(idx);
+      
       auto chi_w = chi_wk[_, k];
       auto tail  = std::get<0>(fit_tail(chi_w));
 

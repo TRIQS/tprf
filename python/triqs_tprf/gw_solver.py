@@ -87,8 +87,9 @@ class GWSolver():
 
     def calc_real_space(self):
 
-        print(f'--> GWSolver.calc_real_space')
-
+        if mpi.is_master_node():
+            print(f'--> GWSolver.calc_real_space')
+        
         from triqs_tprf.lattice import fourier_wk_to_wr
         from triqs_tprf.lattice import chi_wr_from_chi_wk
         
@@ -109,7 +110,8 @@ class GWSolver():
 
     def calc_real_freq(self, fmesh, fbmesh=None, opts=dict()):
 
-        print(f'--> GWSolver.calc_real_freq')
+        if mpi.is_master_node():
+            print(f'--> GWSolver.calc_real_freq')
 
         self.g0_fk = pade_analytical_continuation(self.g0_wk, fmesh, **opts)
         self.g_fk = pade_analytical_continuation(self.g_wk, fmesh, **opts)
