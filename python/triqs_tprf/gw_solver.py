@@ -85,6 +85,7 @@ class GWSolver():
         self.timer = Timer()
         
 
+    @timer('calc_real_space')
     def calc_real_space(self):
 
         if mpi.is_master_node():
@@ -108,6 +109,7 @@ class GWSolver():
         self.V_wr = chi_wr_from_chi_wk(self.V_wk)
         
 
+    @timer('calc_real_freq')
     def calc_real_freq(self, fmesh, fbmesh=None, opts=dict()):
 
         if mpi.is_master_node():
