@@ -65,7 +65,7 @@ class EDHubbardDimer:
     def __init__(self, beta, t, U, wmesh, from_file=True):
 
         if from_file:
-            with HDFArchive('gw_hubbard_dimer_ed_reference.h5', 'r') as h:
+            with HDFArchive('gw_hubbard_dimer_ed.ref.h5', 'r') as h:
                 self.g_w = h['g_w']
                 self.g0_w = h['g0_w']
                 self.sigma_w = h['sigma_w']
@@ -75,7 +75,7 @@ class EDHubbardDimer:
             self.sigma_w = self.g_w.copy()
             self.sigma_w << inverse(self.g0_w) - inverse(self.g_w)
 
-            with HDFArchive('gw_hubbard_dimer_ed_reference.h5', 'w') as h:
+            with HDFArchive('gw_hubbard_dimer_ed.ref.h5', 'w') as h:
                 h['g_w'] = self.g_w
                 h['g0_w'] = self.g0_w
                 h['sigma_w'] = self.sigma_w
