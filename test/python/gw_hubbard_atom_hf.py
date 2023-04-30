@@ -133,10 +133,10 @@ def test_gw_hubbard_atom_hf():
     gwp = GWSolver(ep_k, Vp_k, wmesh, mu=mu)
     gwp.solve_iter(gw=False)
 
-    np.testing.assert_array_almost_equal(rho_aa, gw.rho)
-    np.testing.assert_array_almost_equal(rhop_aa, gwp.rho)
+    np.testing.assert_array_almost_equal(rho_aa, gw.get_local_density_matrix())
+    np.testing.assert_array_almost_equal(rhop_aa, gwp.get_local_density_matrix())
 
-    np.testing.assert_array_almost_equal(U @ gw.rho @ U.T.conj(), gwp.rho) 
+    np.testing.assert_array_almost_equal(U @ gw.get_local_density_matrix() @ U.T.conj(), gwp.get_local_density_matrix()) 
     
     np.testing.assert_array_almost_equal(hs.M, np.squeeze(gw.sigma_wk.data[0, 0]))
     np.testing.assert_array_almost_equal(hsp.M, np.squeeze(gwp.sigma_wk.data[0, 0]))
