@@ -27,7 +27,7 @@ import numpy as np
 from h5.formats import register_class 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshProduct
+from triqs.gf import Gf, MeshProduct, Idx
 from triqs.gf.gf_factories import make_gf_from_fourier
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
@@ -57,7 +57,9 @@ from triqs_tprf.ase_timing import Timer, timer
 class GWSolver():
 
     
-    def __init__(self, e_k, V_k, wmesh, mu=None, g_wk=None):
+    def __init__(self, e_k, V_k, wmesh, mu=None, g_wk=None, N_fix=None, N_tol=1e-5):
+
+        self.timer = Timer()
 
         if mpi.is_master_node():
             print(self.logo())
@@ -69,10 +71,13 @@ class GWSolver():
         self.V_k = V_k
         self.V_r = make_gf_from_fourier(V_k)
         self.wmesh = wmesh
+        self.N_fix = N_fix
+        self.N_tol = N_tol
 
         self.mu = mu if mu is not None else 0.0
+        self.mu_bracket = np.array([e_k.data.real.min(), e_k.data.real.max()])
 
-        self.g0_wk = lattice_dyson_g0_wk(mu=self.mu, e_k=e_k, mesh=wmesh)
+        self.g0_wk, self.mu = self.dyson_equation(mu, e_k, wmesh=wmesh, N_fix=N_fix)
         
         if g_wk is None:
             self.g_wk = self.g0_wk.copy()
@@ -82,8 +87,6 @@ class GWSolver():
         self.sigma_wk = self.g0_wk.copy()
         self.sigma_wk.data[:] = 0.
 
-        self.timer = Timer()
-        
 
     @timer('calc_real_space')
     def calc_real_space(self):
@@ -143,18 +146,18 @@ class GWSolver():
         return gw_rf
 
 
-    def get_rho_loc(self, g_wk):
-        
-        wmesh = g_wk.mesh[0]
-        kmesh = g_wk.mesh[1]
-        g_w = Gf(mesh=wmesh, target_shape=g_wk.target_shape)
-        g_w.data[:] = np.sum(g_wk.data, axis=1) / len(kmesh)
-        rho = g_w.density()
-        return rho
+    def calc_rho_loc(self, rho_r):
+        rho_loc = rho_r[Idx(0, 0, 0)].data
+        return rho_loc
 
     
+    def calc_total_density(self, rho_loc):
+        N = np.sum(np.diag(rho_loc).real)
+        return N
+    
+    
     @timer('Density matrix rho_r')
-    def get_rho_r(self, g_wk):
+    def calc_rho_r(self, g_wk):
         rho_k = rho_k_from_g_wk(g_wk)
         rho_r = make_gf_from_fourier(rho_k)
         return rho_r
@@ -216,8 +219,38 @@ class GWSolver():
     
 
     @timer('Dyson equation')
-    def dyson_equation(self, mu, e_k, sigma_wk):
-        g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
+    def dyson_equation(self, mu, e_k, sigma_wk=None, wmesh=None, N_fix=None):
+
+        if N_fix is None:
+            g_wk = self._dyson_equation_dispatch(mu, e_k, sigma_wk=sigma_wk, wmesh=wmesh)
+        else:
+            # -- Seek chemical potential
+
+            def target_function(mu):
+                g_wk = self._dyson_equation_dispatch(mu, e_k, sigma_wk=sigma_wk, wmesh=wmesh)
+                rho_r = self.calc_rho_r(g_wk)
+                rho_loc = self.calc_rho_loc(rho_r)
+                N = self.calc_total_density(rho_loc)
+                return N - N_fix
+
+            from scipy.optimize import root_scalar
+
+            sol = root_scalar(target_function, method='brentq', bracket=self.mu_bracket, rtol=self.N_tol)
+            mu = sol.root
+            g_wk = self._dyson_equation_dispatch(mu, e_k, sigma_wk=sigma_wk, wmesh=wmesh)
+            
+        return g_wk, mu
+
+
+    def _dyson_equation_dispatch(self, mu, e_k, sigma_wk=None, wmesh=None):
+
+        if sigma_wk is not None:
+            g_wk = lattice_dyson_g_wk(mu, e_k, sigma_wk)
+        elif sigma_wk is None and wmesh is not None:
+            g_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
+        else:
+            raise NotImplementedError
+
         return g_wk
         
     
@@ -236,7 +269,7 @@ class GWSolver():
         else:
             verbose = False
         
-        e_k, V_k, V_r, mu = self.e_k, self.V_k, self.V_r, self.mu
+        e_k, V_k, V_r, mu, N_fix = self.e_k, self.V_k, self.V_r, self.mu, self.N_fix
 
         g_wk = self.g_wk
         
@@ -252,7 +285,7 @@ class GWSolver():
             sigma_wk.data[:] = 0.
 
             if verbose: print('--> rho_r')
-            rho_r = self.get_rho_r(g_wk)
+            rho_r = self.calc_rho_r(g_wk)
 
             if hartree:
                 if verbose: print('--> Sigma Hartree')
@@ -280,10 +313,8 @@ class GWSolver():
                 sigma_wk.data[:] += self.sigma_dyn_wk.data
 
             if verbose: print('--> Dyson equation')
-            g_wk = self.dyson_equation(mu, e_k, sigma_wk)
+            g_wk, mu = self.dyson_equation(mu, e_k, sigma_wk=sigma_wk, N_fix=N_fix)
             
-            rho = self.get_rho_loc(g_wk)
-            N = np.sum(np.diag(rho).real)
             if verbose: print('--> done.')
 
             diff = np.max(np.abs(g_wk.data - g_wk_old.data))
@@ -295,9 +326,15 @@ class GWSolver():
             if diff < tol:
                 break
 
-        self.N = N
-        self.rho = rho
+        rho_r = self.calc_rho_r(g_wk)
+        rho_loc = self.calc_rho_loc(rho_r)
+        N = self.calc_total_density(rho_loc)
 
+        self.rho_r = rho_r
+        self.rho_loc = rho_loc
+        self.N = N
+
+        self.mu = mu
         self.g_wk = g_wk
         self.sigma_wk = sigma_wk
 
@@ -309,7 +346,12 @@ class GWSolver():
             
         if mpi.is_master_node():
             print()
-            self.timer.write()                
+            self.timer.write()
+
+
+    def get_local_density_matrix(self): return self.rho_loc
+
+    def get_total_density(self): return self.N
 
 
     def __reduce_to_dict__(self):
