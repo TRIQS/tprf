@@ -108,7 +108,7 @@ namespace triqs_tprf {
 
   e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
 
-  e_r_t hartree_sigma(chi_r_cvt v_r, e_r_cvt rho_r);
+  e_r_t hartree_sigma(chi_k_cvt v_k, e_r_cvt rho_r);
   
   /** Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 

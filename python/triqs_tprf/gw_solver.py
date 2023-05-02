@@ -57,7 +57,9 @@ from triqs_tprf.ase_timing import Timer, timer
 class GWSolver():
 
     
-    def __init__(self, e_k, V_k, wmesh, mu=None, g_wk=None, N_fix=None, N_tol=1e-5):
+    def __init__(self, e_k, V_k, wmesh,
+                 mu=None, g_wk=None, N_fix=None, N_tol=1e-5,
+                 mu_bracket=None):
 
         self.timer = Timer()
 
@@ -75,7 +77,11 @@ class GWSolver():
         self.N_tol = N_tol
 
         self.mu = mu if mu is not None else 0.0
-        self.mu_bracket = np.array([e_k.data.real.min(), e_k.data.real.max()])
+        
+        if mu_bracket is None:
+            self.mu_bracket = np.array([e_k.data.real.min(), e_k.data.real.max()])
+        else:
+            self.mu_bracket = mu_bracket
 
         self.g0_wk, self.mu = self.dyson_equation(mu, e_k, wmesh=wmesh, N_fix=N_fix)
         
@@ -128,6 +134,8 @@ class GWSolver():
             V_k = self.V_k,
             g0_fk = self.g0_fk,
             g_fk = self.g_fk,
+            sigma_hartree_k = self.sigma_hartree_k,
+            sigma_fock_k = self.sigma_fock_k,
             )
 
         if fbmesh is None:
@@ -147,7 +155,7 @@ class GWSolver():
 
 
     def calc_rho_loc(self, rho_r):
-        rho_loc = rho_r[Idx(0, 0, 0)].data
+        rho_loc = np.array(rho_r[Idx(0, 0, 0)].data)
         return rho_loc
 
     
@@ -164,8 +172,8 @@ class GWSolver():
 
     
     @timer('Hartree Sigma_H')
-    def hartree_sigma(self, V_r, rho_r):
-        return make_gf_from_fourier(hartree_sigma(V_r, rho_r))
+    def hartree_sigma(self, V_k, rho_r):
+        return make_gf_from_fourier(hartree_sigma(V_k, rho_r))
 
     
     @timer('Fock Sigma_F')
@@ -289,7 +297,7 @@ class GWSolver():
 
             if hartree:
                 if verbose: print('--> Sigma Hartree')
-                self.sigma_hartree_k = self.hartree_sigma(V_r, rho_r)
+                self.sigma_hartree_k = self.hartree_sigma(V_k, rho_r)
                 sigma_wk.data[:] += self.sigma_hartree_k.data[None, ...]
             if fock:
                 if verbose: print('--> Sigma Fock')
