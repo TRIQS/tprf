@@ -76,25 +76,15 @@ namespace triqs_tprf {
   return sigma_tr;
   }
 
-  e_r_t hartree_sigma(chi_r_cvt v_r, e_r_cvt rho_r) {
+  e_r_t hartree_sigma(chi_k_cvt v_k, e_r_cvt rho_r) {
 
-  if (v_r.mesh() != rho_r.mesh()) TRIQS_RUNTIME_ERROR << "hartree_sigma: r-space meshes are not the same.\n";
-
-  auto rmesh = rho_r.mesh();
-
-  e_r_t sigma_r(rmesh, rho_r.target_shape());
+  e_r_t sigma_r(rho_r.mesh(), rho_r.target_shape());
   sigma_r() = 0.0;
 
-  auto arr = mpi_view(rmesh);
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &r = arr(idx);
-
-    for (auto const &[a, b, c, d] : v_r.target_indices()) {
-      sigma_r[r](a, b) += v_r[r](a, b, c, d) * rho_r[r](c, d);
-    }
+  for (auto const &[a, b, c, d] : v_k.target_indices()) {
+    sigma_r[{0, 0, 0}](a, b) += v_k[{0, 0, 0}](a, b, c, d) * rho_r[{0, 0, 0}](c, d);
   }
-  sigma_r = mpi::all_reduce(sigma_r);
+
   return sigma_r;
   }
 

@@ -128,11 +128,23 @@ def test_gw_hubbard_atom_hf():
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     
     gw  = GWSolver(e_k,  V_k,  wmesh, mu=mu)
-    gw.solve_iter(gw=False)
+    gw.solve_iter(gw=False, tol=1e-12)
 
     gwp = GWSolver(ep_k, Vp_k, wmesh, mu=mu)
-    gwp.solve_iter(gw=False)
+    gwp.solve_iter(gw=False, tol=1e-12)
 
+    gw.sigma_k = gw.sigma_hartree_k + gw.sigma_fock_k
+
+    print(f'sigma_h =\n{gw.sigma_hartree_k.data}')
+    print(f'sigma_f =\n{gw.sigma_fock_k.data}')
+    print(f'sigma =\n{gw.sigma_k.data}')
+    print(f'M =\n{hs.M}')
+
+    np.testing.assert_array_almost_equal(hs.M, gw.sigma_k.data[0])
+        
+    print(f'rho_aa (hf) =\n{rho_aa}')
+    print(f'rho_aa (gw) =\n{gw.get_local_density_matrix()}')
+    
     np.testing.assert_array_almost_equal(rho_aa, gw.get_local_density_matrix())
     np.testing.assert_array_almost_equal(rhop_aa, gwp.get_local_density_matrix())
 

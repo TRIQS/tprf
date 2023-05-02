@@ -659,7 +659,7 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::e_r_t triqs_tprf::hartree_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::e_r_cvt rho_r)")
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::fock_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
 
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
