@@ -312,9 +312,8 @@ class GWSolver():
                 W_wk = self.screened_interaction(P_wk, V_k, spinless=spinless)
                     
                 if verbose: print('--> Screened interaction split in static and dynamic')
-                W_dyn_wk, W_stat_k = self.dynamic_and_static_interaction(W_wk)
-                
-                np.testing.assert_array_almost_equal(W_stat_k.data, V_k.data)
+                W_dyn_wk = W_wk.copy()
+                W_dyn_wk.data[None,...] -= V_k.data[:]
 
                 if verbose: print('--> Sigma GW dynamic')
                 self.sigma_dyn_wk = self.gw_dynamic_sigma(W_dyn_wk, g_wk)
@@ -349,7 +348,6 @@ class GWSolver():
         if gw:
             self.W_wk = W_wk
             self.W_dyn_wk = W_dyn_wk
-            self.W_stat_k = W_stat_k
             self.P_wk = P_wk
             
         if mpi.is_master_node():
