@@ -313,7 +313,8 @@ class GWSolver():
                     
                 if verbose: print('--> Screened interaction split in static and dynamic')
                 W_dyn_wk = W_wk.copy()
-                W_dyn_wk.data[None,...] -= V_k.data[:]
+                for w in W_dyn_wk.mesh.components[0]:
+                    W_dyn_wk[w,:] -= V_k
 
                 if verbose: print('--> Sigma GW dynamic')
                 self.sigma_dyn_wk = self.gw_dynamic_sigma(W_dyn_wk, g_wk)
