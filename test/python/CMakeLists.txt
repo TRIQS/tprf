@@ -16,6 +16,7 @@ set(all_tests
   gw_hubbard_dimer_scGW_G0W0
   gw_hubbard_atom_hf
   gw_hubbard_dimer_hf
+  gw_singlekpoint_exactresult
   gw_fk
   chi00_square_lattice
   chi00_square_lattice_fk
