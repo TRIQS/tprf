@@ -83,10 +83,11 @@ class GWSolver():
         else:
             self.mu_bracket = mu_bracket
 
-        self.g0_wk, self.mu = self.dyson_equation(mu, e_k, wmesh=wmesh, N_fix=N_fix)
+        self.g0_wk, self.mu0 = self.dyson_equation(self.mu, e_k, wmesh=wmesh, N_fix=N_fix)
         
         if g_wk is None:
             self.g_wk = self.g0_wk.copy()
+            self.mu = self.mu0
         else:
             self.g_wk = g_wk
         
@@ -130,6 +131,7 @@ class GWSolver():
 
         gw_rf = ParameterCollection(
             mu = self.mu,
+            mu0 = self.mu0,
             e_k = self.e_k,
             V_k = self.V_k,
             g0_fk = self.g0_fk,
