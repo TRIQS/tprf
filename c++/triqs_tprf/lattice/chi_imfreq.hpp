@@ -171,6 +171,15 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
  */
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn);
 
+/** Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+
+  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
+  @param L_wn Local triangular particle-hole vertex function :math:`L^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu)`.
+  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+ */
+chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn, chi_nn_cvt L_wn);
+  
 gf<prod<brzone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf=-1);
 
