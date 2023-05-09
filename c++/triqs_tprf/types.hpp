@@ -182,6 +182,18 @@ typedef gf<prod<dlr_imfreq, brzone>, matrix_valued> g_Dwk_t;
 typedef g_Dwk_t::const_view_type g_Dwk_cvt;
 typedef g_Dwk_t::view_type g_Dwk_vt;
 
+typedef gf<prod<dlr_imfreq, cyclat>, matrix_valued> g_Dwr_t;
+typedef g_Dwr_t::const_view_type g_Dwr_cvt;
+typedef g_Dwr_t::view_type g_Dwr_vt;
+
+typedef gf<prod<dlr_imfreq, cyclat>, matrix_valued> g_Dwr_t;
+typedef g_Dwr_t::const_view_type g_Dwr_cvt;
+typedef g_Dwr_t::view_type g_Dwr_vt;
+
+typedef gf<prod<dlr_imtime, cyclat>, matrix_valued> g_Dtr_t;
+typedef g_Dtr_t::const_view_type g_Dtr_cvt;
+typedef g_Dtr_t::view_type g_Dtr_vt;
+  
 // Susceptibilities
   
 typedef gf<imtime, tensor_valued<4>> chi_t_t;

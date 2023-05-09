@@ -186,6 +186,16 @@ g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr) {
   return g_wk;
 }
 
+g_Dwr_t fourier_wk_to_wr(g_Dwk_cvt g_wk) {
+  auto g_wr = fourier_wk_to_wr_general_target(g_wk);
+  return g_wr;
+}
+
+g_Dwk_t fourier_wr_to_wk(g_Dwr_cvt g_wr) {
+  auto g_wk = fourier_wr_to_wk_general_target(g_wr);
+  return g_wk;
+}
+
 g_fr_t fourier_fk_to_fr(g_fk_cvt g_fk) {
   auto g_fr = fourier_wk_to_wr_general_target(g_fk);
   return g_fr;
@@ -224,4 +234,15 @@ g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
   return g_tr;
 }
 
+g_Dwr_t fourier_tr_to_wr(g_Dtr_cvt g_tr, int nw) {
+  auto g_wr = fourier_Dtr_to_Dwr_general_target(g_tr);
+  return g_wr;
+}
+
+g_Dtr_t fourier_wr_to_tr(g_Dwr_cvt g_wr, int nt) {
+  auto g_tr = fourier_Dwr_to_Dtr_general_target(g_wr);
+  return g_tr;
+}
+  
+  
 } // namespace triqs_tprf

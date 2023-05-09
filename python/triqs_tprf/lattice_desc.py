@@ -285,6 +285,8 @@ Returns
 out
      real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
 
+module.add_function ("triqs_tprf::g_Dwr_t triqs_tprf::fourier_wk_to_wr (triqs_tprf::g_Dwk_cvt g_wk)")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::fourier_wr_to_wk (triqs_tprf::g_wr_cvt g_wr)", doc = r"""Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
     Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{r}) \right\}`
@@ -298,6 +300,8 @@ Returns
 -------
 out
      k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::fourier_wr_to_wk (triqs_tprf::g_Dwr_cvt g_wr)")
 
 module.add_function ("triqs_tprf::g_tr_t triqs_tprf::fourier_wr_to_tr (triqs_tprf::g_wr_cvt g_wr, int nt = -1)", doc = r"""Fast fourier transform of real-space Green's function from Matsubara frequency to imaginary time
 
@@ -313,6 +317,8 @@ Returns
 out
      real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`""")
 
+module.add_function ("triqs_tprf::g_Dtr_t triqs_tprf::fourier_wr_to_tr (triqs_tprf::g_Dwr_cvt g_wr, int nt = -1)")
+
 module.add_function ("triqs_tprf::g_wr_t triqs_tprf::fourier_tr_to_wr (triqs_tprf::g_tr_cvt g_tr, int nw = -1)", doc = r"""Fast fourier transform of real-space Green's function from imaginary time to Matsubara frequency
 
     Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F} \left\{ G_{a\bar{b}}(\tau, \mathbf{r}) \right\}`
@@ -326,6 +332,8 @@ Returns
 -------
 out
      real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`""")
+
+module.add_function ("triqs_tprf::g_Dwr_t triqs_tprf::fourier_tr_to_wr (triqs_tprf::g_Dtr_cvt g_tr, int nw = -1)")
 
 module.add_function ("triqs_tprf::g_fr_t triqs_tprf::fourier_fk_to_fr (triqs_tprf::g_fk_cvt g_fk)", doc = r"""Inverse fast fourier transform of real frequency Green's function from k-space to real space
 

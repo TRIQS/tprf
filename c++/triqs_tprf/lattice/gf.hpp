@@ -273,6 +273,7 @@ namespace triqs_tprf {
     @return real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
   g_wr_t fourier_wk_to_wr(g_wk_cvt g_wk);
+  g_Dwr_t fourier_wk_to_wr(g_Dwk_cvt g_wk);
 
   /** Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
@@ -282,6 +283,7 @@ namespace triqs_tprf {
     @return k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
  */
   g_wk_t fourier_wr_to_wk(g_wr_cvt g_wr);
+  g_Dwk_t fourier_wr_to_wk(g_Dwr_cvt g_wr);
 
   /** Fast fourier transform of real-space Green's function from Matsubara frequency to imaginary time
 
@@ -291,6 +293,7 @@ namespace triqs_tprf {
     @return real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
  */
   g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt = -1);
+  g_Dtr_t fourier_wr_to_tr(g_Dwr_cvt g_wr, int nt = -1);
 
   /** Fast fourier transform of real-space Green's function from imaginary time to Matsubara frequency
 
@@ -300,6 +303,7 @@ namespace triqs_tprf {
     @return real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
  */
   g_wr_t fourier_tr_to_wr(g_tr_cvt g_tr, int nw = -1);
+  g_Dwr_t fourier_tr_to_wr(g_Dtr_cvt g_tr, int nw = -1);
   
   /** Inverse fast fourier transform of real frequency Green's function from k-space to real space
 
