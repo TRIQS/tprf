@@ -35,16 +35,16 @@ enum class Channel_t { PP, PH, PH_bar };
 
 typedef std::array<int,3> kpt_t;
   
-/// Singl-particle response function type with one Matsubara frequency
-typedef gf<imfreq, matrix_valued> g_iw_t;
-typedef g_iw_t::const_view_type g_iw_cvt;
-typedef g_iw_t::view_type g_iw_vt;
-
 /// Lattice types
 typedef gf<brzone, matrix_valued> ek_t;
 typedef ek_t::const_view_type ek_cvt;
 typedef ek_t::view_type ek_vt;
-  
+
+/// Single-particle response function type with one Matsubara frequency
+typedef gf<imfreq, matrix_valued> g_iw_t;
+typedef g_iw_t::const_view_type g_iw_cvt;
+typedef g_iw_t::view_type g_iw_vt;
+
 typedef gf<prod<imfreq, brzone>, matrix_valued> gk_iw_t;
 typedef gk_iw_t::const_view_type gk_iw_cvt;
 typedef gk_iw_t::view_type gk_iw_vt;
@@ -122,10 +122,28 @@ typedef gf<imtime, matrix_valued> g_t_t;
 typedef g_t_t::const_view_type g_t_cvt;
 typedef g_t_t::view_type g_t_vt;
 
+// DLR
+  
+typedef gf<dlr_imfreq, matrix_valued> g_Dw_t;
+typedef g_Dw_t::const_view_type g_Dw_cvt;
+typedef g_Dw_t::view_type g_Dw_vt;
+
+typedef gf<dlr_imtime, matrix_valued> g_Dt_t;
+typedef g_Dt_t::const_view_type g_Dt_cvt;
+typedef g_Dt_t::view_type g_Dt_vt;
+
+typedef gf<dlr_coeffs, matrix_valued> g_Dc_t;
+typedef g_Dc_t::const_view_type g_Dc_cvt;
+typedef g_Dc_t::view_type g_Dc_vt;
+
+// Real-freq
+  
 typedef gf<refreq, matrix_valued> g_f_t;
 typedef g_f_t::const_view_type g_f_cvt;
 typedef g_f_t::view_type g_f_vt;
 
+// On lattice in real- and k-space
+  
 typedef gf<prod<refreq, brzone>, matrix_valued> g_fk_t;
 typedef g_fk_t::const_view_type g_fk_cvt;
 typedef g_fk_t::view_type g_fk_vt;
@@ -157,6 +175,14 @@ typedef g_tr_t::view_type g_tr_vt;
 typedef gf<prod<imtime, brzone>, matrix_valued> g_tk_t;
 typedef g_tk_t::const_view_type g_tk_cvt;
 typedef g_tk_t::view_type g_tk_vt;
+
+// DLR
+
+typedef gf<prod<dlr_imfreq, brzone>, matrix_valued> g_Dwk_t;
+typedef g_Dwk_t::const_view_type g_Dwk_cvt;
+typedef g_Dwk_t::view_type g_Dwk_vt;
+
+// Susceptibilities
   
 typedef gf<imtime, tensor_valued<4>> chi_t_t;
 typedef chi_t_t::const_view_type chi_t_cvt;

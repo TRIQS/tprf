@@ -38,10 +38,11 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // g
 
-g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
+template<typename g_t, typename mesh_t>  
+g_t lattice_dyson_g0_Xk(double mu, e_k_cvt e_k, mesh_t mesh) {
 
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
-  g_wk_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
+  g_t g0_wk({mesh, e_k.mesh()}, e_k.target_shape());
   g0_wk() = 0.0;
 
   auto arr = mpi_view(g0_wk.mesh());
@@ -56,6 +57,14 @@ g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
   return g0_wk;
 }
 
+g_wk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::imfreq mesh) {
+  return lattice_dyson_g0_Xk<g_wk_t, mesh::imfreq>(mu, e_k, mesh);
+}
+
+g_Dwk_t lattice_dyson_g0_wk(double mu, e_k_cvt e_k, mesh::dlr_imfreq mesh) {
+  return lattice_dyson_g0_Xk<g_Dwk_t, mesh::dlr_imfreq>(mu, e_k, mesh);
+}
+  
 // ----------------------------------------------------
 // g0 real frequencies
 
@@ -121,7 +130,15 @@ g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_wk_cvt sigma_wk) {
 g_wk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   return lattice_dyson_g_Xk<g_wk_t, g_w_cvt>(mu, e_k, sigma_w);
 }
- 
+
+g_Dwk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_Dwk_cvt sigma_wk) {
+  return lattice_dyson_g_Xk<g_Dwk_t, g_Dwk_cvt>(mu, e_k, sigma_wk);
+}
+
+g_Dwk_t lattice_dyson_g_wk(double mu, e_k_cvt e_k, g_Dw_cvt sigma_w) {
+  return lattice_dyson_g_Xk<g_Dwk_t, g_Dw_cvt>(mu, e_k, sigma_w);
+}
+
 g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_fk_cvt sigma_fk, double delta) {
   return lattice_dyson_g_Xk<g_fk_t, g_fk_cvt>(mu, e_k, sigma_fk, delta);
 }
