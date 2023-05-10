@@ -17,6 +17,7 @@ set(all_tests
   gw_hubbard_atom_hf
   gw_hubbard_dimer_hf
   gw_singlekpoint_exactresult
+  gw_compare_Matsubara_realFreq
   gw_fk
   chi00_square_lattice
   chi00_square_lattice_fk
