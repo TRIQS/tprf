@@ -41,8 +41,8 @@ def test_gw_compare_Matsubara_realFreq():
     nw = 1000
     norb = 2
     beta = 10.0
-    A = 1.0
-    B = 0.9
+    A = 1.0 + 0.1j
+    B = 0.9 - 0.05j
     C = 0.0
     D = 0.0
     mu = 0.0
@@ -76,7 +76,7 @@ def test_gw_compare_Matsubara_realFreq():
     V_k.data[:,0,0,0,0] = A
     V_k.data[:,1,1,1,1] = A
     V_k.data[:,0,0,1,1] = B
-    V_k.data[:,1,1,0,0] = B
+    V_k.data[:,1,1,0,0] = np.conjugate(V_k.data[:,0,0,1,1])
     
     V_k.data[:,0,1,0,1] = C
     V_k.data[:,1,0,1,0] = C
