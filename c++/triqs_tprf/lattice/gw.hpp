@@ -162,16 +162,16 @@ namespace triqs_tprf {
     
     .. math::
         W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
-          \left( W_{abab}(\omega, \mathbf{k}) - V_{abab}(\mathbf{k}) \right)
+          \left( W_{aabb}(\omega, \mathbf{k}) - V_{aabb}(\mathbf{k}) \right)
           
     and constructs the GW self energy via the spectral representation
     
     .. math::
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{bl}(\mathbf{k}+\mathbf{q})
-          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l}) \\
+          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
+          V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l}) \\
         + \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{bl}(\mathbf{k}+\mathbf{q})
+          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
           W^{(spec)}_{ab}(\omega', \mathbf{q})
           \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
           
@@ -179,7 +179,7 @@ namespace triqs_tprf {
     dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
 
     .. math::
-       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
        
     @param mu chemical potential :math:`\mu`
@@ -199,14 +199,14 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
-          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+          U_{bl}(\mathbf{k}+\mathbf{q}) U^\dagger_{la}(\mathbf{k}+\mathbf{q})
+          V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
 
     where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
     dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
 
     .. math::
-       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
 
     @param mu chemical potential :math:`\mu`
