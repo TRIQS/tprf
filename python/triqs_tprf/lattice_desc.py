@@ -748,6 +748,44 @@ Returns
 out
      Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dyn_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""add documentation!""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+
+    Computes the GW self-energy of a static interaction as the product
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
+          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+beta
+     inverse temperature
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+V_k
+     bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
     Computes the spectral function of the dynamic part of the screened interaction
@@ -798,41 +836,6 @@ Returns
 -------
 out
      real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
-
-    Computes the GW self-energy of a static interaction as the product
-
-    .. math::
-        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
-          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
-
-    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
-    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
-
-    .. math::
-       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
-       = \delta_{ij} \epsilon_{\mathbf{k}, i}
-
-Parameters
-----------
-mu
-     chemical potential :math:`\mu`
-
-beta
-     inverse temperature
-
-e_k
-     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-
-V_k
-     bare interaction :math:`V_{abcd}(\mathbf{k})`
-
-Returns
--------
-out
-     static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 

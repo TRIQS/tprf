@@ -164,6 +164,65 @@ namespace triqs_tprf {
         W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
           \left( W_{aabb}(\omega, \mathbf{k}) - V_{aabb}(\mathbf{k}) \right)
           
+    and constructs the dynamic part of the GW self energy via the spectral representation
+    
+    .. math::
+        \Sigma_{ab}(\omega, \mathbf{k}) = \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
+          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
+          W^{(spec)}_{ab}(\omega', \mathbf{q})
+          \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
+          
+    where $\delta_{\omega}$ is the real-frequency mesh spacing and the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+       
+    @param mu chemical potential :math:`\mu`
+    @param beta inverse temperature
+    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+    @param W_fk fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
+    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
+    @param delta broadening :math:`\delta`
+    @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
+*/
+
+  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
+
+  /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+
+    Computes the GW self-energy of a static interaction as the product
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+          U_{bl}(\mathbf{k}+\mathbf{q}) U^\dagger_{la}(\mathbf{k}+\mathbf{q})
+          V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+
+    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+    @param mu chemical potential :math:`\mu`
+    @param beta inverse temperature
+    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
+    @return static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+*/
+
+  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
+
+  /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
+
+    Computes the spectral function of the dynamic part of the screened interaction
+    
+    .. math::
+        W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
+          \left( W_{aabb}(\omega, \mathbf{k}) - V_{aabb}(\mathbf{k}) \right)
+          
     and constructs the GW self energy via the spectral representation
     
     .. math::
@@ -192,30 +251,5 @@ namespace triqs_tprf {
 */
 
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
-
-  /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
-
-    Computes the GW self-energy of a static interaction as the product
-
-    .. math::
-        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{bl}(\mathbf{k}+\mathbf{q}) U^\dagger_{la}(\mathbf{k}+\mathbf{q})
-          V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
-
-    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
-
-    .. math::
-       \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
-       = \delta_{ij} \epsilon_{\mathbf{k}, i}
-
-    @param mu chemical potential :math:`\mu`
-    @param beta inverse temperature
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
-    @return static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
-*/
-
-  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
 
 } // namespace triqs_tprf

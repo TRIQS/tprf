@@ -215,7 +215,7 @@ namespace triqs_tprf {
   // ----------------------------------------------------
   // g0w_sigma via spectral representation
 
-  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
+  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
 
   if (std::get<1>(W_fk.mesh()) != e_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
@@ -260,10 +260,8 @@ namespace triqs_tprf {
             auto den = f + idelta + fp - ekq(l);
 
             sigma_fk[f, k](a, b) << sigma_fk[f, k](a, b)
-                  + Ukq(b, l) * dagger(Ukq)(l, a) * (WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size());
+                  + Ukq(a, l) * dagger(Ukq)(l, b) * (WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size());
           }
-
-          sigma_fk[f, k](a, b) << sigma_fk[f, k](a, b) - Ukq(b, l) * dagger(Ukq)(l, a) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
         }
       }
     }
@@ -295,7 +293,7 @@ namespace triqs_tprf {
       auto Ukq    = eig_kq.second;
 
       for (int l : range(nb)) {
-        sigma_k[k](a, b) << sigma_k[k](a, b) - Ukq(b, l) * dagger(Ukq)(l, a) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
+        sigma_k[k](a, b) << sigma_k[k](a, b) - Ukq(a, l) * dagger(Ukq)(l, b) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
       }
     }
   }
@@ -304,4 +302,24 @@ namespace triqs_tprf {
   return sigma_k;
   }
 
+  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
+
+  // Calculate dynamic and static parts separately
+  auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k);
+  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta);
+
+  //Add dynamic and static parts
+  g_fk_t sigma_fk(sigma_dyn_fk.mesh(), e_k.target_shape());
+  sigma_fk() = 0.0;
+
+  auto arr = mpi_view(sigma_fk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+
+    for (const auto &[a, b] : sigma_fk.target_indices()) { sigma_fk[f, k](a, b) = sigma_dyn_fk[f, k](a, b) + sigma_stat_k[k](a, b); }
+  }
+  sigma_fk = mpi::all_reduce(sigma_fk);
+  return sigma_fk;
+  }
 } // namespace triqs_tprf
