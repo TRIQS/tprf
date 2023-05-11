@@ -5,29 +5,14 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.lattice import fourier_wk_to_wr
-from triqs_tprf.lattice import fourier_wr_to_wk
-from triqs_tprf.lattice import fourier_wr_to_tr
-from triqs_tprf.lattice import fourier_tr_to_wr
-
-from triqs_tprf.lattice import chi_wr_from_chi_tr
-from triqs_tprf.lattice import chi_tr_from_chi_wr
-from triqs_tprf.lattice import chi_wk_from_chi_wr
-from triqs_tprf.lattice import chi_wr_from_chi_wk 
-
 from triqs_tprf.tight_binding import TBLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice import lattice_dyson_g_wk
-from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
 
-from triqs_tprf.gw import bubble_PI_wk
-from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma
-from triqs_tprf.gw import gw_dynamic_sigma
 from triqs_tprf.gw import g0w_sigma
 
-from triqs.gf import Gf, MeshImFreq, Idx, MeshImTime
+from triqs.gf import Gf, MeshImFreq
 from triqs.gf.mesh_product import MeshProduct
 
 # ----------------------------------------------------------------------
@@ -44,6 +29,7 @@ def test_gw_compare_Matsubara_realFreq():
     A = 1.0 + 0.1j
     B = 0.9 - 0.05j
     C = 0.0
+    C2 = 0.0
     D = 0.0
     mu = 0.0
     
@@ -60,9 +46,11 @@ def test_gw_compare_Matsubara_realFreq():
         orbital_positions = [(0,0,0)]*norb,
         )
     
+    print('--> setup e_k')
     kmesh = t_r.get_kmesh(n_k=(1, 1, 1))
     e_k = t_r.fourier(kmesh)
-    
+    print(e_k.data[0,:])
+
     kmesh = e_k.mesh
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
@@ -79,9 +67,9 @@ def test_gw_compare_Matsubara_realFreq():
     V_k.data[:,1,1,0,0] = np.conjugate(V_k.data[:,0,0,1,1])
     
     V_k.data[:,0,1,0,1] = C
-    V_k.data[:,1,0,1,0] = C
-    V_k.data[:,0,1,1,0] = C
-    V_k.data[:,1,0,0,1] = C
+    V_k.data[:,1,0,1,0] = np.conjugate(V_k.data[:,0,1,0,1])
+    V_k.data[:,0,1,1,0] = C2
+    V_k.data[:,1,0,0,1] = C2
     
     V_k.data[:,0,0,0,1] = D
     V_k.data[:,0,0,1,0] = D
