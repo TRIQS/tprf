@@ -15,18 +15,29 @@ from triqs_tprf.gw import lindhard_chi00
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma
+from triqs_tprf.gw import gw_dynamic_sigma
 from triqs_tprf.gw import g0w_sigma
 
+from triqs.gf.meshes import MeshDLRImFreq
 from triqs.gf import Gf, MeshImFreq, MeshReFreq
 from triqs.gf.mesh_product import MeshProduct
 
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_tr
+
+from triqs_tprf.lattice import chi_wr_from_chi_wk
+from triqs_tprf.lattice import chi_tr_from_chi_wr
+
+from triqs_tprf.lattice import fourier_tr_to_wr
+from triqs_tprf.lattice import fourier_wr_to_wk
+
 # ----------------------------------------------------------------------
 
-def test_gf_Matsubara():
-    nw = 100
-    nk = 8
+def test_gf_Matsubara(wmesh):
+
+    nk = 16
+    #nk = 8
     norb = 2
-    beta = 10.0
     V = 5.0
     mu = 0.0
     
@@ -46,7 +57,6 @@ def test_gf_Matsubara():
     e_k = t_r.fourier(kmesh)
     
     kmesh = e_k.mesh
-    wmesh = MeshImFreq(beta, 'Fermion', nw)
 
     # Test setup bare Gf
     print("  -> bare Matsubara Gf")
@@ -59,12 +69,41 @@ def test_gf_Matsubara():
 
     np.testing.assert_array_almost_equal(g0_wk.data[:], g0_wk_ref.data[:])
 
+    print("  -> Bubble and screened interaction")
     # Get self-energy
     V_k = Gf(mesh=kmesh, target_shape=[norb]*4)
     V_k.data[:] = V
     PI_wk = bubble_PI_wk(g0_wk)
     W_wk = dynamical_screened_interaction_W(PI_wk, V_k)
-    sigma_wk = gw_sigma(W_wk, g0_wk)
+
+    print(type(wmesh))
+    if type(wmesh) == MeshImFreq:
+    #if False:
+        sigma_wk = gw_sigma(W_wk, g0_wk)
+
+    elif type(wmesh) == MeshDLRImFreq:
+    #elif True:
+
+        #sigma_wk = gw_sigma(W_wk, g0_wk)
+
+        g0_wr = fourier_wk_to_wr(g0_wk)
+        g0_tr = fourier_wr_to_tr(g0_wr)
+        
+        W_dyn_wk = W_wk.copy()
+        W_dyn_wk.data[:] -= V_k.data[None, ...]
+        
+        W_dyn_wr = chi_wr_from_chi_wk(W_dyn_wk)
+        W_dyn_tr = chi_tr_from_chi_wr(W_dyn_wr)
+
+        sigma_dyn_tr = gw_dynamic_sigma(W_dyn_tr, g0_tr)
+
+        sigma_dyn_wr = fourier_tr_to_wr(sigma_dyn_tr)
+        sigma_dyn_wk = fourier_wr_to_wk(sigma_dyn_wr)
+
+        sigma_wk = sigma_dyn_wk
+        
+    else:
+        raise NotImplementedError
     
     # Construct a kmesh-independent self-energy
     sigma_w = Gf(mesh=wmesh, target_shape=[norb]*2)
@@ -192,5 +231,16 @@ def test_gf_realfreq():
 
     
 if __name__ == "__main__":
-    test_gf_Matsubara()
+    
+    nw = 256
+    beta = 1.0
+
+    wmesh = MeshImFreq(beta, 'Fermion', nw)
+    test_gf_Matsubara(wmesh)
+
+    lamb = 20.
+    eps = 1e-10
+    wmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+    test_gf_Matsubara(wmesh)
+
     test_gf_realfreq()

@@ -239,6 +239,8 @@ Returns
 out
      Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::g_Dw_t triqs_tprf::lattice_dyson_g_w (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_Dw_cvt sigma_w)")
+
 module.add_function ("triqs_tprf::g_f_t triqs_tprf::lattice_dyson_g_f (double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_f_cvt sigma_f, double delta)", doc = r"""Construct an interacting real frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(\omega)`
 
  Computes
@@ -616,6 +618,8 @@ rho_k
      density matrix :math:`\rho_{ab}(\mathbf{k})`
 """)
 
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_Dwk_cvt g_wk)")
+                     
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
@@ -769,7 +773,8 @@ Returns
 out
      Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
-
+module.add_function ("triqs_tprf::g_Dtr_t triqs_tprf::gw_dynamic_sigma (triqs_tprf::chi_Dtr_cvt W_tr, triqs_tprf::g_Dtr_cvt g_tr)")
+                     
 module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
 
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
@@ -894,6 +899,8 @@ Returns
 -------
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
+
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_Dwk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)")
 
 module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_fk_cvt PI_fk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 

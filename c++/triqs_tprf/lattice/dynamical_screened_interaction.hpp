@@ -42,6 +42,7 @@ namespace triqs_tprf {
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
   chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k);
+  chi_Dwk_t dynamical_screened_interaction_W(chi_Dwk_cvt PI_wk, chi_k_cvt V_k);
 
   /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 

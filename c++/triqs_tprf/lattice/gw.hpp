@@ -31,6 +31,7 @@ namespace triqs_tprf {
     @return rho_k density matrix :math:`\rho_{ab}(\mathbf{k})`
   */
   e_k_t rho_k_from_g_wk(g_wk_cvt g_wk);
+  e_k_t rho_k_from_g_wk(g_Dwk_cvt g_wk);
 
   /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
@@ -155,6 +156,7 @@ namespace triqs_tprf {
  */
 
   g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
+  g_Dtr_t gw_dynamic_sigma(chi_Dtr_cvt W_tr, g_Dtr_cvt g_tr);
 
   /** some documentation */
 

@@ -240,7 +240,21 @@ typedef gf<imfreq, tensor_valued<4>> chi_w_t;
 typedef chi_w_t::const_view_type chi_w_cvt;
 typedef chi_w_t::view_type chi_w_vt;
 
-    // -- back to old style
+// DLR
+
+typedef gf<prod<dlr_imtime, cyclat>, tensor_valued<4>> chi_Dtr_t;
+typedef chi_Dtr_t::const_view_type chi_Dtr_cvt;
+typedef chi_Dtr_t::view_type chi_Dtr_vt;
+
+typedef gf<prod<dlr_imfreq, cyclat>, tensor_valued<4>> chi_Dwr_t;
+typedef chi_Dwr_t::const_view_type chi_Dwr_cvt;
+typedef chi_Dwr_t::view_type chi_Dwr_vt;
+
+typedef gf<prod<dlr_imfreq, brzone>, tensor_valued<4>> chi_Dwk_t;
+typedef chi_Dwk_t::const_view_type chi_Dwk_cvt;
+typedef chi_Dwk_t::view_type chi_Dwk_vt;
+  
+// -- back to old style
 
 typedef gf<prod<brzone, imfreq, imfreq, imfreq>, tensor_valued<4>> chiq_t;
 typedef chiq_t::const_view_type chiq_cvt;

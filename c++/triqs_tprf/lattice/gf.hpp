@@ -243,6 +243,7 @@ namespace triqs_tprf {
  @return Matsubara frequency lattice Green's function $G_{a\bar{b}}(i\omega_n, \mathbf{k})$
  */
   g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w);
+  g_Dw_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_Dw_cvt sigma_w);
 
   /** Construct an interacting real frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(\omega)`
    

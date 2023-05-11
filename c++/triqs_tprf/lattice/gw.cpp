@@ -28,6 +28,10 @@
 #include "lattice_utility.hpp"
 #include "../mpi.hpp"
 
+// -- For parallell Fourier transform routines
+#include "gf.hpp"
+#include "chi_imtime.hpp"
+
 namespace triqs_tprf {
 
   e_k_t rho_k_from_g_wk(g_wk_cvt g_wk) {
@@ -50,7 +54,28 @@ namespace triqs_tprf {
     return rho_k;
   }
 
-  g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
+  e_k_t rho_k_from_g_wk(g_Dwk_cvt g_wk) {
+
+    auto _     = all_t{};
+    auto kmesh = std::get<1>(g_wk.mesh());
+
+    e_k_t rho_k(kmesh, g_wk.target_shape());
+    rho_k() = 0.0;
+
+    auto arr = mpi_view(kmesh);
+#pragma omp parallel for
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &k = arr(idx);
+      auto g_w  = g_wk(_, k);
+      rho_k[k] = density(dlr_coeffs_from_dlr_imfreq(g_w));
+    }
+  
+    rho_k = mpi::all_reduce(rho_k);
+    return rho_k;
+  }
+  
+  template<typename W_t, typename g_t>
+  auto gw_dynamic_sigma_impl(W_t W_tr, g_t g_tr) {
 
     auto Wtm = std::get<0>(W_tr.mesh());
     auto gtm = std::get<0>(g_tr.mesh());
@@ -75,6 +100,15 @@ namespace triqs_tprf {
   sigma_tr = mpi::all_reduce(sigma_tr);
   return sigma_tr;
   }
+
+  g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr) {
+    return gw_dynamic_sigma_impl(W_tr, g_tr);
+  }
+
+  g_Dtr_t gw_dynamic_sigma(chi_Dtr_cvt W_tr, g_Dtr_cvt g_tr) {
+    return gw_dynamic_sigma_impl(W_tr, g_tr);
+  }
+  
 
   e_r_t hartree_sigma(chi_k_cvt v_k, e_r_cvt rho_r) {
 
@@ -168,44 +202,60 @@ namespace triqs_tprf {
     return fock_sigma(v_k, g_wk);
   }
 
-  g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
+  template<typename W_t, typename g_t>
+  auto gw_sigma_impl(W_t W_wk, g_t g_wk) {
 
   auto Wwm = std::get<0>(W_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());
 
-  if (Wwm.domain().beta != gwm.domain().beta) TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
-
-  if (Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion) TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
-
-  if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
+  if (Wwm.domain().beta != gwm.domain().beta)
+    TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
+  if (Wwm.domain().statistic != Boson || gwm.domain().statistic != Fermion)
+    TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
+  if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()))
+    TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
 
   auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
 
-  //Dynamic part
-  auto g_tr         = make_gf_from_fourier<0, 1>(g_wk);
-  auto W_dyn_tr         = make_gf_from_fourier<0, 1>(W_dyn_wk);
-  //auto W_tr         = make_gf_from_fourier<0, 1>(W_wk);
-  auto sigma_dyn_tr     = gw_dynamic_sigma(W_dyn_tr, g_tr);
-  auto sigma_dyn_wk = make_gf_from_fourier<0, 1>(sigma_dyn_tr);
+  // Dynamic GW self energy
+  //auto g_tr = make_gf_from_fourier<0, 1>(g_wk); // Fixme! Use parallell transform
+  auto g_wr = fourier_wk_to_wr(g_wk);
+  auto g_tr = fourier_wr_to_tr(g_wr);
+  
+  //auto W_dyn_tr = make_gf_from_fourier<0, 1>(W_dyn_wk); // Fixme! Use parallell transform
+  auto W_dyn_wr = chi_wr_from_chi_wk(W_dyn_wk);
+  auto W_dyn_tr = chi_tr_from_chi_wr(W_dyn_wr);
+  
+  auto sigma_dyn_tr = gw_dynamic_sigma(W_dyn_tr, g_tr);
 
-  //Static part
-  auto sigma_stat_k = gw_sigma(W_const_k, g_wk);
+  // Static Fock part
 
-  //Add dynamic and static parts
-  g_wk_t sigma_wk(g_wk.mesh(), g_wk.target_shape());
-  sigma_wk() = 0.0;
+  //auto sigma_fock_k = fock_sigma(W_const_k, g_wk); // Has N_k^2 scaling, not fast..
 
-  auto arr = mpi_view(sigma_wk.mesh());
-#pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr(idx);
+  auto W_const_r = make_gf_from_fourier(W_const_k);
+  auto rho_k = rho_k_from_g_wk(g_wk);
+  auto rho_r = make_gf_from_fourier(rho_k);
+  auto sigma_fock_r = fock_sigma(W_const_r, rho_r);
+  auto sigma_fock_k = make_gf_from_fourier(sigma_fock_r);
 
-    for (const auto &[a, b] : sigma_wk.target_indices()) { sigma_wk[w, k](a, b) = sigma_dyn_wk[w, k](a, b) + sigma_stat_k[k](a, b); }
-  }
-  sigma_wk = mpi::all_reduce(sigma_wk);
+  // Add dynamic and static parts
+  auto _ = all_t{};
+  auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_dyn_tr); // Fixme! Use parallell transform
+  for (auto const &w : gwm) sigma_wk[w, _] += sigma_fock_k; // Single loop with no work per w, no need to parallellize over mpi
+
   return sigma_wk;
   }
 
+  g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
+    return gw_sigma_impl(W_wk, g_wk);
+  }
+
+  /*
+  g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, g_Dwk_cvt g_wk) {
+    return gw_sigma_impl(W_wk, g_wk);
+  }
+  */
+  
   // ----------------------------------------------------
   // g0w_sigma via spectral representation
   // dynamic part ...

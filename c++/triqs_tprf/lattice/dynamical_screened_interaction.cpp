@@ -82,7 +82,8 @@ namespace triqs_tprf {
     return W;
   }
 
-  chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
+  template <typename chi_t>
+    auto dynamical_screened_interaction_W_opt_bubble(chi_t chi_wk, chi_k_cvt V_k) {
     
     auto const &[wmesh, kmesh] = chi_wk.mesh();
     auto const &v_kmesh = V_k.mesh();
@@ -128,11 +129,13 @@ namespace triqs_tprf {
     return W_wk;
   }
 
-  /*
   chi_wk_t dynamical_screened_interaction_W(chi_wk_cvt PI_wk, chi_k_cvt V_k) {
-    return screened_interaction_from_generic_susceptibility<bubble>(PI_wk, V_k);
+    return dynamical_screened_interaction_W_opt_bubble<chi_wk_cvt>(PI_wk, V_k);
   }
-  */
+
+  chi_Dwk_t dynamical_screened_interaction_W(chi_Dwk_cvt PI_wk, chi_k_cvt V_k) {
+    return dynamical_screened_interaction_W_opt_bubble<chi_Dwk_cvt>(PI_wk, V_k);
+  }
   
   chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_k_cvt V_k) {
     return screened_interaction_from_generic_susceptibility<bubble>(PI_fk, V_k);

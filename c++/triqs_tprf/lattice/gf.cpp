@@ -169,6 +169,10 @@ g_w_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_w_cvt sigma_w) {
   return lattice_dyson_g_X<g_w_t, g_wk_t, g_w_cvt>(mu, e_k, sigma_w);
 }
 
+g_Dw_t lattice_dyson_g_w(double mu, e_k_cvt e_k, g_Dw_cvt sigma_w) {
+  return lattice_dyson_g_X<g_Dw_t, g_Dwk_t, g_Dw_cvt>(mu, e_k, sigma_w);
+}
+  
 g_f_t lattice_dyson_g_f(double mu, e_k_cvt e_k, g_f_cvt sigma_f, double delta) {
   return lattice_dyson_g_X<g_f_t, g_fk_t, g_f_cvt>(mu, e_k, sigma_f, delta);
 }
