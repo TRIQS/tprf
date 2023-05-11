@@ -17,8 +17,9 @@ from triqs.gf.mesh_product import MeshProduct
 
 # ----------------------------------------------------------------------
 
-def test_gw_compare_Matsubara_realFreq():
-    """ Compares the real-frequency and Matsubara implementations against each other in the static limit.
+def test_gw_compare_direct_and_spectralRep():
+    """ Compares the direct Matsubara sum method and the spectral-representation
+    method of calculating the static GW self-energy 
     This is to test if the orbital index order is consistent between the two methods.
     The values used for the Coulomb interaction here are arbitrary and non-physical.
     Author: Yann in 't Veld (2023)"""
@@ -82,11 +83,11 @@ def test_gw_compare_Matsubara_realFreq():
     V_k.data[:,0,1,1,1] = D
     
     
-    print('--> gw_sigma')
+    print('--> gw_sigma (direct)')
     sigma_k = gw_sigma(V_k, g0_wk)
     print(sigma_k.data[0,:])
 
-    print('--> g0w_sigma')
+    print('--> g0w_sigma (via spectral representation)')
     sigma_k_ref = g0w_sigma(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
     print(sigma_k_ref.data[0,:])
 
@@ -99,5 +100,5 @@ def test_gw_compare_Matsubara_realFreq():
     
 
 if __name__ == "__main__":
-    test_gw_compare_Matsubara_realFreq()
+    test_gw_compare_direct_and_spectralRep()
 
