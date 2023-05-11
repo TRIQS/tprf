@@ -1281,6 +1281,8 @@ Returns
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.""")
 
+module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr)")
+                     
 module.add_function ("std::tuple<triqs_tprf::g_Tk_t, triqs_tprf::g_Tk_t> triqs_tprf::g0_Tk_les_gtr_from_e_k(triqs_tprf::e_k_cvt e_k, triqs::mesh::retime Tmesh, double beta)")
 
 module.add_function ("triqs_tprf::chi_Tr_t triqs_tprf::chi0_Tr_from_g_Tr_PH (triqs_tprf::g_Tr_cvt g_Tr_les, triqs_tprf::g_Tr_cvt g_Tr_gtr)", doc = r"""Generalized susceptibility real time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(t, \mathbf{r})`
@@ -1368,6 +1370,8 @@ out
      Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
      in Matsubara frequency and real-space.""")
 
+module.add_function ("triqs_tprf::chi_Dwr_t triqs_tprf::chi_wr_from_chi_tr (triqs_tprf::chi_Dtr_cvt chi_tr, int nw)")
+
 module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::chi_tr_from_chi_wr (triqs_tprf::chi_wr_cvt chi_wr, int ntau = -1)", doc = r"""Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
 
   Computes
@@ -1389,6 +1393,8 @@ Returns
 out
      Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
      in Matsubara frequency and real-space.""")
+
+module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi_tr_from_chi_wr (triqs_tprf::chi_Dwr_cvt chi_wr, int ntau = -1)")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::chi_wk_from_chi_wr (triqs_tprf::chi_wr_cvt chi_wr)", doc = r"""Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
 
@@ -1412,6 +1418,8 @@ out
      Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
      in Matsubara frequency and momentum space.""")
 
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::chi_wk_from_chi_wr (triqs_tprf::chi_Dwr_cvt chi_wr)")
+
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi_wr_from_chi_wk (triqs_tprf::chi_wk_cvt chi_wk)", doc = r"""Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
 
   Computes
@@ -1434,6 +1442,8 @@ out
      Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
      in Matsubara frequency and real space.""")
 
+module.add_function ("triqs_tprf::chi_Dwr_t triqs_tprf::chi_wr_from_chi_wk (triqs_tprf::chi_Dwk_cvt chi_wk)")
+                     
 module.add_function ("chi_t_t::target_t::value_t triqs_tprf::chi_trapz_tau (triqs_tprf::chi_t_cvt chi_t)", doc = r"""""")
 
 module.add_function ("triqs_tprf::chi_wnr_t triqs_tprf::chi0r_from_gr_PH (int nw, int nn, triqs_tprf::g_wr_cvt g_nr)", doc = r"""Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})`.

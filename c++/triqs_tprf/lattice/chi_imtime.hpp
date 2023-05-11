@@ -36,6 +36,7 @@ namespace triqs_tprf {
   @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.
  */
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr);
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
 
 /** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
@@ -84,6 +85,7 @@ chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr);
           in Matsubara frequency and real-space.
  */
 chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw);
+chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw);
 
 /** Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
 
@@ -101,6 +103,7 @@ chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw);
           in Matsubara frequency and real-space.
  */
 chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
+chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau=-1);
 
 /** Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
 
@@ -118,6 +121,7 @@ chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
           in Matsubara frequency and momentum space.
  */
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr);
+chi_Dwk_t chi_wk_from_chi_wr(chi_Dwr_cvt chi_wr);
 
 /** Parallell Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
 
@@ -135,6 +139,7 @@ chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr);
           in Matsubara frequency and real space.
  */
 chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
+chi_Dwr_t chi_wr_from_chi_wk(chi_Dwk_cvt chi_wk);
 
 chi_t_t::target_t::value_t chi_trapz_tau(chi_t_cvt chi_t);
 

@@ -33,6 +33,56 @@ namespace triqs_tprf {
   }
 
 // ----------------------------------------------------
+// chi0 bubble in DLR imaginary time
+
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
+
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
+  
+  int nb = g_tr.target().shape()[0];
+  double beta = tmesh.domain().beta;
+
+  dlr_imtime btmesh{beta, Boson, tmesh.lambda(), tmesh.eps()};
+  chi_Dtr_t chi0_tr{{btmesh, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = g_tr.target();
+  auto chi_target = chi0_tr.target();
+  
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr(idx);
+
+    auto chi0_t = make_gf<dlr_imtime>(btmesh, chi_target);
+    auto g_pr_t = make_gf<dlr_imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<dlr_imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = g_tr[_, r];
+      g_mr_t = g_tr[_, -r];
+    }
+
+    auto g_pr_c = dlr_coeffs_from_dlr_imtime(g_pr_t);
+    auto g_mr_c = dlr_coeffs_from_dlr_imtime(g_mr_t);
+    
+    for (auto const &t : tmesh)
+      chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
+
+#pragma omp critical
+    chi0_tr[_, r] = chi0_t;
+  }
+
+  chi0_tr = mpi::all_reduce(chi0_tr);
+
+  return chi0_tr;
+}
+
+// ----------------------------------------------------
 // chi0 bubble in imaginary time
 
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
@@ -249,6 +299,28 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
   return chi_wr;
 }
 
+// DLR
+  
+chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw) {
+  auto chi_wr = fourier_Dtr_to_Dwr_general_target(chi_tr);
+  return chi_wr;
+}
+
+chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau) {
+  auto chi_tr = fourier_Dwr_to_Dtr_general_target(chi_wr);
+  return chi_tr;
+}  
+
+chi_Dwk_t chi_wk_from_chi_wr(chi_Dwr_cvt chi_wr) {
+  auto chi_wk = fourier_wr_to_wk_general_target(chi_wr);
+  return chi_wk;
+}
+
+chi_Dwr_t chi_wr_from_chi_wk(chi_Dwk_cvt chi_wk) {
+  auto chi_wr = fourier_wk_to_wr_general_target(chi_wk);  
+  return chi_wr;
+}
+  
 /*
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr) {
 
