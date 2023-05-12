@@ -37,24 +37,30 @@ template <typename Gf_type>
 auto fourier_Dwr_to_Dtr_general_target(Gf_type g_wr) {
 
   auto _ = all_t{};
-  // Get rid of structured binding declarations in this file due to issue #11
-  //auto [wmesh, rmesh] = g_wr.mesh();
+
   auto wmesh = std::get<0>(g_wr.mesh());
   auto rmesh = std::get<1>(g_wr.mesh());
 
-  //auto tmesh = make_adjoint_mesh(wmesh, n_tau);
   auto tmesh = triqs::mesh::dlr_imtime(wmesh);
+
   auto g_tr = make_gf<prod<dlr_imtime, cyclat>>({tmesh, rmesh}, g_wr.target());
-
+  
   auto r_arr = mpi_view(rmesh);
-
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
     auto &r = r_arr(idx);
-    auto g_c = dlr_coeffs_from_dlr_imfreq(g_wr[_, r]);
-    g_tr[_, r] = dlr_imtime_from_dlr_coeffs(g_c);
+        
+    auto g_w = make_gf<dlr_imfreq>({wmesh}, g_wr.target());
+ 
+    g_w = g_wr[_, r];
+
+    auto g_c = dlr_coeffs_from_dlr_imfreq(g_w);
+    auto g_t = dlr_imtime_from_dlr_coeffs(g_c);
+      
+    g_tr[_, r] = g_t;
   }
   g_tr = mpi::all_reduce(g_tr);
+  
   return g_tr;
 }
 
@@ -62,23 +68,30 @@ template <typename Gf_type>
 auto fourier_Dtr_to_Dwr_general_target(Gf_type g_tr) {
   
   auto _ = all_t{};
-  //auto [tmesh, rmesh] = g_tr.mesh();
+
   auto tmesh = std::get<0>(g_tr.mesh());
   auto rmesh = std::get<1>(g_tr.mesh());
 
-  //auto wmesh = make_adjoint_mesh(tmesh, n_w);
   auto wmesh = triqs::mesh::dlr_imfreq(tmesh);
+  
   auto g_wr = make_gf<prod<dlr_imfreq, cyclat>>({wmesh, rmesh}, g_tr.target());
 
   auto r_arr = mpi_view(rmesh);
-
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
     auto &r = r_arr(idx);
-    auto g_c = dlr_coeffs_from_dlr_imtime(g_tr[_, r]);
-    g_wr[_, r] = dlr_imfreq_from_dlr_coeffs(g_c);
+
+    auto g_t = make_gf<dlr_imtime>({tmesh}, g_tr.target());
+ 
+    g_t = g_tr[_, r];
+
+    auto g_c = dlr_coeffs_from_dlr_imtime(g_t);
+    auto g_w = dlr_imfreq_from_dlr_coeffs(g_c);
+
+    g_wr[_, r] = g_w;
   }
   g_wr = mpi::all_reduce(g_wr);
+  
   return g_wr;
 }
   
