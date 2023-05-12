@@ -27,7 +27,7 @@ import numpy as np
 from h5.formats import register_class 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshProduct, Idx
+from triqs.gf import Gf, MeshProduct, Idx, MeshImFreq
 from triqs.gf.gf_factories import make_gf_from_fourier
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
@@ -52,6 +52,11 @@ from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
 from triqs_tprf.ParameterCollection import ParameterCollection
 
 from triqs_tprf.ase_timing import Timer, timer
+
+
+from triqs.gf.meshes import MeshDLRImFreq
+from triqs_tprf.lattice import dlr_on_imfreq
+from triqs.gf.gf_fnt import dlr_coeffs_from_dlr_imfreq
 
 
 class GWSolver():
@@ -364,7 +369,9 @@ class GWSolver():
 
 
     def __reduce_to_dict__(self):
-        return self.__dict__
+        out = self.__dict__.copy()
+        out.pop('timer')
+        return out
 
     
     @classmethod
@@ -432,6 +439,13 @@ def pade_analytical_continuation(
         if len(g_wk.target_shape) == 4:
             g_w = gf_tensor_to_matrix(g_w)
             g_f = gf_tensor_to_matrix(g_f)
+
+        if type(g_w.mesh) == MeshDLRImFreq:
+            g_c = dlr_coeffs_from_dlr_imfreq(g_w)
+            small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
+            g_w = dlr_on_imfreq(g_c, small_mesh)
+            if g_w.mesh.statistic == 'Boson':
+                g_w.data[:] = -g_w.data.conj()
             
         g_f.set_from_pade(g_w, n_points=n_points, freq_offset=freq_offset)
 

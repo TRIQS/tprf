@@ -586,6 +586,8 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega)`""")
 
+module.add_function ("g_w_t triqs_tprf::dlr_on_imfreq (triqs_tprf::g_Dc_cvt g_c, triqs::mesh::imfreq wmesh)")
+
 module.add_function ("std::tuple<chi_wk_t, chi_k_t> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_cvt chi_wk)", doc = r"""Split mtrix-valued Green's function into dynamic and constant parts by tail fitting
 
 Parameters
