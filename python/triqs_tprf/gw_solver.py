@@ -63,7 +63,7 @@ class GWSolver():
 
     
     def __init__(self, e_k, V_k, wmesh,
-                 mu=None, g_wk=None, N_fix=None, N_tol=1e-5,
+                 mu=None, g_wk=None, N_fix=False, N_tol=1e-5,
                  mu_bracket=None):
 
         self.timer = Timer()
@@ -234,9 +234,9 @@ class GWSolver():
     
 
     @timer('Dyson equation')
-    def dyson_equation(self, mu, e_k, sigma_wk=None, wmesh=None, N_fix=None):
+    def dyson_equation(self, mu, e_k, sigma_wk=None, wmesh=None, N_fix=False):
 
-        if N_fix is None:
+        if not N_fix:
             g_wk = self._dyson_equation_dispatch(mu, e_k, sigma_wk=sigma_wk, wmesh=wmesh)
         else:
             # -- Seek chemical potential
