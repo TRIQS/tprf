@@ -36,17 +36,20 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi_wr_from_chi_wk
 
 from triqs_tprf.gw_solver import GWSolver
+from triqs.gf.meshes import MeshDLRImFreq
 
 
-class GWHubbardDimer:
+class GWHubbardDimerDLR:
 
     def __init__(
             self,
-            beta=20.0, U=1.5, t=1.0, mu=0.0, nw=1024, maxiter=100,
+            beta=20.0, U=1.5, t=1.0, mu=0.0, lamb=100., eps=1e-10, maxiter=100,
             self_interaction=False, spinless=False,
             gw_flag=True, hartree_flag=False, fock_flag=False):
-        
-        wmesh = MeshImFreq(beta, 'Fermion', nw)
+
+        nw = 1024
+        #wmesh = MeshImFreq(beta, 'Fermion', nw)
+        wmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
 
         if spinless:
             tb_opts = dict(
@@ -138,24 +141,29 @@ def test_gw_hubbard_dimer(verbose=False):
     t = 1.0
     nw = 1024
     mu = 0.0
+
+    lamb = 100.
+    eps = 1e-10
     
-    gw = GWHubbardDimer(
+    gw = GWHubbardDimerDLR(
         beta = beta,
         U = U,
         t = t,
         mu = mu,
-        nw = 1024,
+        lamb = lamb,
+        eps = eps,
         maxiter = 1,
         spinless = True,
         hartree_flag = True,
         )
 
-    gw_tensor = GWHubbardDimer(
+    gw_tensor = GWHubbardDimerDLR(
         beta = beta,
         U = U,
         t = t,
         mu = mu,
-        nw = 1024,
+        lamb = lamb,
+        eps = eps,
         maxiter = 1,
         self_interaction = True, # Use tensor structure with V_0000 = U
         hartree_flag = False,
@@ -324,6 +332,29 @@ def test_gw_hubbard_dimer(verbose=False):
     if verbose:
         from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
 
+        def pp(g, style, label=None, filter=lambda x: x):
+            w = np.array([ w.value for w in g.mesh ])
+            x = w.imag
+            y = filter( np.squeeze(g.data) )
+
+            sidx = np.argsort(x)
+            x, y = x[sidx], y[sidx]
+            
+            plt.plot(x, y, style, label=label)
+        
+        def oplot(g, style, label=None):
+            if type(g.mesh) == MeshDLRImFreq:
+                pp(g, style, label, filter=np.real)
+                pp(g, style, label, filter=np.imag)
+            else:
+                pp(g, style, label)
+
+        def oploti(g, style, label=None):
+            pp(g, style, label, filter=np.imag)
+
+        def oplotr(g, style, label=None):
+            pp(g, style, label, filter=np.real)
+            
         plt.figure(figsize=(9, 10))
 
         subp = [5, 2, 1]
@@ -397,4 +428,4 @@ def print_tensor(U, tol=1e-9):
 
 if __name__ == '__main__':
 
-    test_gw_hubbard_dimer(verbose=True)
+    test_gw_hubbard_dimer(verbose=False)
