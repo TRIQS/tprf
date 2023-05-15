@@ -27,8 +27,8 @@ def test_gw_compare_direct_and_spectralRep():
     nw = 1000
     norb = 2
     beta = 10.0
-    A = 1.0 + 0.1j
-    B = 0.9 - 0.05j
+    A = 10.0 + 1.0j
+    B = 20.0 - 0.5j
     C = 0.0
     C2 = 0.0
     D = 0.0
@@ -48,7 +48,8 @@ def test_gw_compare_direct_and_spectralRep():
         )
     
     print('--> setup e_k')
-    kmesh = t_r.get_kmesh(n_k=(1, 1, 1))
+    nk = 10
+    kmesh = t_r.get_kmesh(n_k=(nk, 1, 1))
     e_k = t_r.fourier(kmesh)
     print(e_k.data[0,:])
 
@@ -65,10 +66,10 @@ def test_gw_compare_direct_and_spectralRep():
     V_k.data[:,0,0,0,0] = A
     V_k.data[:,1,1,1,1] = A
     V_k.data[:,0,0,1,1] = B
-    V_k.data[:,1,1,0,0] = np.conjugate(V_k.data[:,0,0,1,1])
+    V_k.data[:,1,1,0,0] = B
     
     V_k.data[:,0,1,0,1] = C
-    V_k.data[:,1,0,1,0] = np.conjugate(V_k.data[:,0,1,0,1])
+    V_k.data[:,1,0,1,0] = C
     V_k.data[:,0,1,1,0] = C2
     V_k.data[:,1,0,0,1] = C2
     
@@ -85,11 +86,11 @@ def test_gw_compare_direct_and_spectralRep():
     
     print('--> gw_sigma (direct)')
     sigma_k = gw_sigma(V_k, g0_wk)
-    print(sigma_k.data[0,:])
+    print(sigma_k.data[5,:])
 
     print('--> g0w_sigma (via spectral representation)')
     sigma_k_ref = g0w_sigma(mu=mu, beta=beta, e_k=e_k, v_k=V_k)
-    print(sigma_k_ref.data[0,:])
+    print(sigma_k_ref.data[5,:])
 
     diff = sigma_k.data[:] - sigma_k_ref.data[:]
     print(np.max(np.abs(np.real(diff))))
