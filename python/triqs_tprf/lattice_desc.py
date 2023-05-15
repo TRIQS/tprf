@@ -751,6 +751,10 @@ out
 
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dyn_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""add documentation!""")
 
+module.add_function ("array<std::complex<double>, 2> g0w_sigma(double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k, mesh::brzone::point_t kpoint)", doc = r"""Add some docs""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k, gf_mesh<brzone> kmesh)", doc = r"""Add some docs""")
+
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
     Computes the GW self-energy of a static interaction as the product

@@ -229,15 +229,6 @@ namespace triqs_tprf {
   g_fk_t sigma_fk({fmesh, kmesh}, e_k.target_shape());
   sigma_fk() = 0.0;
 
-  g_fk_t WSpec_fk({fmesh, kmesh}, e_k.target_shape());
-  WSpec_fk() = 0.0;
-
-  for (auto const &[f, k] : WSpec_fk.mesh()) {
-    for (int i : range(nb)) {
-      for (int j : range(nb)) { WSpec_fk[f, k](i, j) = -1.0 / 3.141592653589793 * (W_fk[f, k](i, i, j, j) - v_k[k](i, i, j, j)).imag(); }
-    }
-  }
-
   auto arr = mpi_view(kmesh);
 #pragma omp parallel for shared(sigma_fk)
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
@@ -259,8 +250,11 @@ namespace triqs_tprf {
             auto num = bose2(fp * beta) + fermi2(ekq(l) * beta);
             auto den = f + idelta + fp - ekq(l);
 
-            sigma_fk[f, k](a, b) << sigma_fk[f, k](a, b)
-                  + Ukq(a, l) * dagger(Ukq)(l, b) * (WSpec_fk[fp, q](a, b) * num / den * fmesh.delta() / kmesh.size());
+            for (const auto &[a, b] : sigma_fk.target_indices()) { 
+              auto W_spec = -1.0 / std::numbers::pi * (W_fk[fp, q](a, a, b, b) - v_k[q](a, a, b, b)).imag();
+              sigma_fk[f, k](a, b) = sigma_fk[f, k](a, b) 
+                    + Ukq(a, l) * dagger(Ukq)(l, b) * (W_spec * num / den * fmesh.delta() / kmesh.size());            
+            }
           }
         }
       }
@@ -271,35 +265,57 @@ namespace triqs_tprf {
   return sigma_fk;
   }
 
-  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
-
+  array<std::complex<double>, 2> g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone::point_t kpoint) {
+  
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
 
   auto kmesh = e_k.mesh();
   int nb     = e_k.target().shape()[0];
 
-  e_k_t sigma_k(kmesh, e_k.target_shape());
+  array<std::complex<double>, 2> sigma_k(nb ,nb);
   sigma_k() = 0.0;
 
-  auto arr = mpi_view(kmesh);
-#pragma omp parallel for
-  for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
-    auto &k = arr(kidx);
+  for (auto const &q : kmesh) {
+    auto qpoint = mesh::brzone::point_t {q};
+    auto kpqpoint = qpoint + kpoint;
+    auto kpqvec = std::array<double, 3>{kpqpoint(0), kpqpoint(1), kpqpoint(2)};
 
-    for (auto const &q : kmesh) {
-      array<std::complex<double>, 2> e_kq_mat(e_k(k + q) - mu);
-      auto eig_kq = linalg::eigenelements(e_kq_mat);
-      auto ekq    = eig_kq.first;
-      auto Ukq    = eig_kq.second;
+    array<std::complex<double>, 2> e_kq_mat(e_k(kpqvec) - mu);
+    auto eig_kq = linalg::eigenelements(e_kq_mat);
+    auto ekq    = eig_kq.first;
+    auto Ukq    = eig_kq.second;
 
-      for (int l : range(nb)) {
-        sigma_k[k](a, b) << sigma_k[k](a, b) - Ukq(a, l) * dagger(Ukq)(l, b) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
+    for (int l : range(nb)) {
+      for (int a : range(nb)) {
+        for (int b : range(nb)) {
+          sigma_k(a, b) = sigma_k(a, b) - Ukq(a, l) * dagger(Ukq)(l, b) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
+        }
       }
     }
   }
 
+  return sigma_k;
+  }
+
+  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, gf_mesh<brzone> kmesh) {
+
+  e_k_t sigma_k(kmesh, e_k.target_shape());
+  sigma_k() = 0.0;
+
+  auto arr = mpi_view(kmesh);
+#pragma omp parallel for 
+  for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
+    auto &k = arr(kidx);
+    auto kpoint = mesh::brzone::point_t {k};
+    sigma_k[k] = g0w_sigma(mu, beta, e_k, v_k, kpoint);
+  }
+
   sigma_k = mpi::all_reduce(sigma_k);
   return sigma_k;
+  }
+
+  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k) {
+  return g0w_sigma(mu, beta, e_k, v_k, e_k.mesh());
   }
 
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {

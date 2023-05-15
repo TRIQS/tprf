@@ -190,6 +190,14 @@ namespace triqs_tprf {
 
   g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
 
+  /** Some documentation */
+
+  array<std::complex<double>, 2> g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone::point_t kpoint);
+
+  /** Some documentation */
+
+  e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, gf_mesh<brzone> kmesh);
+
   /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
 
     Computes the GW self-energy of a static interaction as the product
