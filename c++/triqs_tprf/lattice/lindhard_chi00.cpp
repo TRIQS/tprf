@@ -23,21 +23,10 @@
 
 #include "common.hpp"
 #include "lindhard_chi00.hpp"
+#include "lattice_utility.hpp"
 #include "../mpi.hpp"
 
 namespace triqs_tprf {
-
-  // ----------------------------------------------------
-  // helper functions
-
-  double fermi(double e) {
-    if( e < 0 ) {
-      return 1. / (exp(e) + 1.);
-    } else {
-      double exp_me = exp(-e);
-      return exp_me / (1 + exp_me);
-    }
-  }
 
   // ----------------------------------------------------
   // chi00 bubble in analytic form

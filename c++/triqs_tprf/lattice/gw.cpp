@@ -207,12 +207,6 @@ namespace triqs_tprf {
   }
 
   // ----------------------------------------------------
-  // helper functions
-
-  double fermi2(double e) { return 1. / (exp(e) + 1.); }
-  double bose2(double e) { return 1. / (exp(e) - 1.); }
-
-  // ----------------------------------------------------
   // g0w_sigma via spectral representation
 
   g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
@@ -247,7 +241,7 @@ namespace triqs_tprf {
 
           for (auto const &fp : fmesh) {
 
-            auto num = bose2(fp * beta) + fermi2(ekq(l) * beta);
+            auto num = bose(fp * beta) + fermi(ekq(l) * beta);
             auto den = f + idelta + fp - ekq(l);
 
             for (const auto &[a, b] : sigma_fk.target_indices()) { 
@@ -288,7 +282,7 @@ namespace triqs_tprf {
     for (int l : range(nb)) {
       for (int a : range(nb)) {
         for (int b : range(nb)) {
-          sigma_k(a, b) = sigma_k(a, b) - Ukq(a, l) * dagger(Ukq)(l, b) * v_k[q](a, a, b, b) * fermi2(ekq(l) * beta) / kmesh.size();
+          sigma_k(a, b) = sigma_k(a, b) - Ukq(a, l) * dagger(Ukq)(l, b) * v_k[q](a, a, b, b) * fermi(ekq(l) * beta) / kmesh.size();
         }
       }
     }
