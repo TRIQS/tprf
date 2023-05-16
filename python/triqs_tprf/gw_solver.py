@@ -450,8 +450,6 @@ def pade_analytical_continuation(
             g_c = dlr_coeffs_from_dlr_imfreq(g_w)
             small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
             g_w = dlr_on_imfreq(g_c, small_mesh)
-            if g_w.mesh.statistic == 'Boson':
-                g_w.data[:] = -g_w.data.conj()
             
         g_f.set_from_pade(g_w, n_points=n_points, freq_offset=freq_offset)
 

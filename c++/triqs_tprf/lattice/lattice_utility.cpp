@@ -32,7 +32,7 @@ namespace triqs_tprf {
   g_w_t dlr_on_imfreq(g_Dc_cvt g_c, mesh::imfreq wmesh) {
     auto g_w = make_gf<imfreq>(wmesh, g_c.target());
     for (auto const &w : wmesh) {
-      g_w[w] = -conj(g_c(w));
+      g_w[w] = g_c(w);
     }
     return g_w;
   }
