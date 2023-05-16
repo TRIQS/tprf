@@ -59,6 +59,22 @@ namespace triqs_tprf {
     return {chi_dyn_wk, chi_const_k};
   }
 
+  g_fk_t add_dynamic_fk_and_static_k(g_fk_t g_dyn_fk, e_k_t g_stat_k) {
+  
+  g_fk_t g_fk(g_dyn_fk.mesh(), g_dyn_fk.target_shape());
+  g_fk() = 0.0;
+
+  auto arr = mpi_view(g_fk.mesh());
+#pragma omp parallel for
+  for (int idx = 0; idx < arr.size(); idx++) {
+    auto &[f, k] = arr(idx);
+
+    for (const auto &[a, b] : g_fk.target_indices()) { g_fk[f, k](a, b) = g_dyn_fk[f, k](a, b) + g_stat_k[k](a, b); }
+  }
+  g_fk = mpi::all_reduce(g_fk);
+  return g_fk;
+  }
+
   double fermi(double e) {
     if( e < 0 ) {
       return 1. / (exp(e) + 1.);

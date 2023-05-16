@@ -231,6 +231,14 @@ namespace triqs_tprf {
 
   e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
 
+  /** some documentation */
+
+  g_f_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint);
+
+  /** some documentation */
+  
+  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh);
+
   /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
     Computes the spectral function of the dynamic part of the screened interaction

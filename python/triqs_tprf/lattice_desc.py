@@ -582,6 +582,13 @@ Returns
 out
      Tuple of chi_dyn_wk, the dynamic part of chi, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi(\mathbf{k})`.""")
 
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::add_dynamic_fk_and_static_k(triqs_tprf::g_fk_t g_dyn_fk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+
+module.add_function ("double triqs_tprf::fermi(double e)", doc = r"""Add documentation!""")
+
+module.add_function ("double triqs_tprf::bose(double e)", doc = r"""Add documentation!""")
+
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Density matrix from lattic Green's function
       
 Parameters
@@ -793,6 +800,10 @@ Returns
 -------
 out
      static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
 
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
