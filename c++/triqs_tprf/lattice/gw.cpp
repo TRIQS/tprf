@@ -210,7 +210,7 @@ namespace triqs_tprf {
   // g0w_sigma via spectral representation
   // dynamic part ...
 
-  g_f_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
+  g_f_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
 
   if (std::get<1>(W_fk.mesh()) != e_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
@@ -256,7 +256,7 @@ namespace triqs_tprf {
   return sigma_f;
   }
 
-  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
+  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
 
   if (std::get<1>(W_fk.mesh()) != e_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
   if (e_k.mesh() != v_k.mesh()) TRIQS_RUNTIME_ERROR << "g0w_sigma: k-space meshes are not the same.\n";
@@ -271,7 +271,7 @@ namespace triqs_tprf {
   for (unsigned int kidx = 0; kidx < arr.size(); kidx++) {
     auto &k = arr(kidx);
     auto kpoint = mesh::brzone::point_t {k};
-    auto sigma_f = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
+    auto sigma_f = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
     for (auto const &f : fmesh) { sigma_fk[f,k] = sigma_f[f]; }
   }
 
@@ -279,8 +279,8 @@ namespace triqs_tprf {
   return sigma_fk;
   }
 
-  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
-  return g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, e_k.mesh());
+  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
+  return g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, e_k.mesh());
   }
 
   // static part ...
@@ -342,7 +342,7 @@ namespace triqs_tprf {
 
   g_f_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
   auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kpoint);
-  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
+  auto sigma_dyn_fk = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
 
   auto fmesh = std::get<0>(W_fk.mesh());
   g_f_t sigma_fk(fmesh, e_k.target_shape());
@@ -356,7 +356,7 @@ namespace triqs_tprf {
 
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
   auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kmesh);
-  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, kmesh);
+  auto sigma_dyn_fk = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kmesh);
   auto sigma_fk = add_dynamic_fk_and_static_k(sigma_dyn_fk, sigma_stat_k);
   return sigma_fk;
   }

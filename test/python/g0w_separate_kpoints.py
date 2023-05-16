@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from triqs_tprf.lattice import g0w_sigma, g0w_dyn_sigma
+from triqs_tprf.lattice import g0w_sigma, g0w_dynamic_sigma
 
 from triqs.gf import Gf, MeshReFreq, MeshBrillouinZone
 from triqs.gf.mesh_product import MeshProduct
@@ -62,12 +62,12 @@ def test_gw_separate_kpoints():
     print('--> g0w_sigma')
     print("full")
     sigma1_stat_k = g0w_sigma(mu, beta, Enk, V_k)
-    sigma1_dyn_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta)
+    sigma1_dyn_fk = g0w_dynamic_sigma(mu, beta, Enk, W_fk, V_k, delta)
     sigma1_fk = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta)
 
     print("on a given kmesh")
     sigma2_stat_k = g0w_sigma(mu, beta, Enk, V_k, kmesh)
-    sigma2_dyn_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
+    sigma2_dyn_fk = g0w_dynamic_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
     sigma2_fk = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
 
     print("per k point")
@@ -77,7 +77,7 @@ def test_gw_separate_kpoints():
     for k in kmesh:
         kii = k.linear_index
         sigma3_stat_k.data[kii,:,:] = g0w_sigma(mu, beta, Enk, V_k, k.value)
-        sigma3_dyn_fk.data[:,kii,:,:] = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
+        sigma3_dyn_fk.data[:,kii,:,:] = g0w_dynamic_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
         sigma3_fk.data[:,kii,:,:] = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
    
     print(sigma1_stat_k.data[0:10,0,0])
