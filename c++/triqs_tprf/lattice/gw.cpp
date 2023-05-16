@@ -340,24 +340,28 @@ namespace triqs_tprf {
 
   // dynamic and static parts ...
 
-  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
+  g_f_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint) {
+  auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kpoint);
+  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint);
 
-  // Calculate dynamic and static parts separately
-  auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k);
-  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta);
-
-  //Add dynamic and static parts
-  g_fk_t sigma_fk(sigma_dyn_fk.mesh(), e_k.target_shape());
+  auto fmesh = std::get<0>(W_fk.mesh());
+  g_f_t sigma_fk(fmesh, e_k.target_shape());
   sigma_fk() = 0.0;
-
-  auto arr = mpi_view(sigma_fk.mesh());
-#pragma omp parallel for
-  for (int idx = 0; idx < arr.size(); idx++) {
-    auto &[f, k] = arr(idx);
-
-    for (const auto &[a, b] : sigma_fk.target_indices()) { sigma_fk[f, k](a, b) = sigma_dyn_fk[f, k](a, b) + sigma_stat_k[k](a, b); }
+  for (auto const &f : fmesh) {
+    sigma_fk[f] = sigma_stat_k + sigma_dyn_fk[f];
   }
-  sigma_fk = mpi::all_reduce(sigma_fk);
+
   return sigma_fk;
+  }
+
+  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh) {
+  auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kmesh);
+  auto sigma_dyn_fk = g0w_dyn_sigma(mu, beta, e_k, W_fk, v_k, delta, kmesh);
+  auto sigma_fk = add_dynamic_fk_and_static_k(sigma_dyn_fk, sigma_stat_k);
+  return sigma_fk;
+  }
+  
+  g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta) {
+  return g0w_sigma(mu, beta, e_k, W_fk, v_k, delta, e_k.mesh());
   }
 } // namespace triqs_tprf

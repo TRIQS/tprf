@@ -2,7 +2,6 @@
 
 import numpy as np
 
-#from triqs_tprf.gw import g0w_sigma, g0w_dyn_sigma
 from triqs_tprf.lattice import g0w_sigma, g0w_dyn_sigma
 
 from triqs.gf import Gf, MeshReFreq, MeshBrillouinZone
@@ -62,32 +61,57 @@ def test_gw_separate_kpoints():
 
     print('--> g0w_sigma')
     print("full")
-    sigma1_k = g0w_sigma(mu, beta, Enk, V_k)
-    sigma1_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta)
+    sigma1_stat_k = g0w_sigma(mu, beta, Enk, V_k)
+    sigma1_dyn_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta)
+    sigma1_fk = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta)
 
     print("on a given kmesh")
-    sigma2_k = g0w_sigma(mu, beta, Enk, V_k, kmesh)
-    sigma2_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
+    sigma2_stat_k = g0w_sigma(mu, beta, Enk, V_k, kmesh)
+    sigma2_dyn_fk = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
+    sigma2_fk = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta, kmesh)
 
     print("per k point")
-    sigma3_k = Gf(mesh=kmesh, target_shape=[1]*2)
+    sigma3_stat_k = Gf(mesh=kmesh, target_shape=[1]*2)
+    sigma3_dyn_fk = Gf(mesh=MeshProduct(fmesh,kmesh), target_shape=[1]*2)
     sigma3_fk = Gf(mesh=MeshProduct(fmesh,kmesh), target_shape=[1]*2)
     for k in kmesh:
         kii = k.linear_index
-        sigma3_k.data[kii,:,:] = g0w_sigma(mu, beta, Enk, V_k, k.value)
-        sigma3_fk.data[:,kii,:,:] = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
+        sigma3_stat_k.data[kii,:,:] = g0w_sigma(mu, beta, Enk, V_k, k.value)
+        sigma3_dyn_fk.data[:,kii,:,:] = g0w_dyn_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
+        sigma3_fk.data[:,kii,:,:] = g0w_sigma(mu, beta, Enk, W_fk, V_k, delta, k.value).data[:]
    
-    print(sigma1_k.data[0:10,0,0])
+    print(sigma1_stat_k.data[0:10,0,0])
 
     print("--> compare static parts")
-    np.testing.assert_array_almost_equal(sigma1_k.data[:], sigma2_k.data[:])
-    np.testing.assert_array_almost_equal(sigma2_k.data[:], sigma3_k.data[:])
-    np.testing.assert_array_almost_equal(sigma3_k.data[:], sigma1_k.data[:])
+    np.testing.assert_array_almost_equal(sigma1_stat_k.data[:], sigma2_stat_k.data[:])
+    np.testing.assert_array_almost_equal(sigma2_stat_k.data[:], sigma3_stat_k.data[:])
+    np.testing.assert_array_almost_equal(sigma3_stat_k.data[:], sigma1_stat_k.data[:])
 
     print("--> compare dynamic parts")
+    np.testing.assert_array_almost_equal(sigma1_dyn_fk.data[:], sigma2_dyn_fk.data[:])
+    np.testing.assert_array_almost_equal(sigma2_dyn_fk.data[:], sigma3_dyn_fk.data[:])
+    np.testing.assert_array_almost_equal(sigma3_dyn_fk.data[:], sigma1_dyn_fk.data[:])
+
+    print("--> compare full sigma")
     np.testing.assert_array_almost_equal(sigma1_fk.data[:], sigma2_fk.data[:])
     np.testing.assert_array_almost_equal(sigma2_fk.data[:], sigma3_fk.data[:])
     np.testing.assert_array_almost_equal(sigma3_fk.data[:], sigma1_fk.data[:])
+
+    print("--> compare full against sum")
+    sigma1_ref_fk = sigma1_dyn_fk.copy()
+    sigma2_ref_fk = sigma2_dyn_fk.copy()
+    sigma3_ref_fk = sigma3_dyn_fk.copy()
+   
+    for f in fmesh:
+        fii = f.linear_index
+        sigma1_ref_fk.data[fii,:] += sigma1_stat_k.data[:]
+        sigma2_ref_fk.data[fii,:] += sigma2_stat_k.data[:]
+        sigma3_ref_fk.data[fii,:] += sigma3_stat_k.data[:]
+
+    np.testing.assert_array_almost_equal(sigma1_fk.data[:], sigma1_ref_fk.data[:])
+    np.testing.assert_array_almost_equal(sigma2_fk.data[:], sigma2_ref_fk.data[:])
+    np.testing.assert_array_almost_equal(sigma3_fk.data[:], sigma3_ref_fk.data[:])
+
 
 if __name__ == "__main__":
     test_gw_separate_kpoints()
