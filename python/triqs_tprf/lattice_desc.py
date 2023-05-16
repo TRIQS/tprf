@@ -756,11 +756,11 @@ out
      Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
 
 
-module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_dyn_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
+module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dyn_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dyn_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""add documentation!""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""add documentation!""")
 
 module.add_function ("array<std::complex<double>, 2> g0w_sigma(double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k, mesh::brzone::point_t kpoint)", doc = r"""Add some docs""")
 

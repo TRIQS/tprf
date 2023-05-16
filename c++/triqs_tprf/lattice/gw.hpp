@@ -158,11 +158,11 @@ namespace triqs_tprf {
 
   /** some documentation */
 
-  g_f_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint);
+  g_f_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint);
 
   /** some documentation */
   
-  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh);
+  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh);
 
   /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
@@ -196,7 +196,7 @@ namespace triqs_tprf {
     @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
 */
 
-  g_fk_t g0w_dyn_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
+  g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
 
   /** Some documentation */
 
