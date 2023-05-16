@@ -3,7 +3,8 @@
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
 # Copyright (C) 2019 by The Simons Foundation
-# Author: H. U.R. Strand
+# Copyright (C) 2023 by Hugo U.R. Strand
+# Authors: H. U.R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -45,8 +46,11 @@ from triqs_tprf.lattice import dynamical_screened_interaction_W
 from triqs_tprf.lattice import \
     dynamical_screened_interaction_W_from_generalized_susceptibility
 
-from triqs_tprf.lattice import gw_sigma, g0w_sigma
+from triqs_tprf.lattice import hartree_sigma, fock_sigma
+from triqs_tprf.lattice import gw_sigma, gw_dynamic_sigma, g0w_sigma
 from triqs_tprf.lattice import lindhard_chi00
+
+from triqs_tprf.OperatorUtils import quartic_tensor_from_operator
 
 # ----------------------------------------------------------------------
 def bubble_PI_wk(g_wk):
@@ -85,3 +89,20 @@ def bubble_PI_wk(g_wk):
 
     return PI_wk
 
+
+# ----------------------------------------------------------------------
+def get_gw_tensor(H_int, fundamental_operators):
+
+    """ Takes a TRIQS operator object and extracts the quartic terms
+    and returns the corresponding antisymmetrized quartic tensor in
+    vertex index order, i.e., cc+cc+. """
+    
+    U_abcd = quartic_tensor_from_operator(H_int, fundamental_operators)
+    
+    # -- Group in c^+cc^+c ( from c^+c^+cc )
+    U_abcd = np.ascontiguousarray(np.transpose(U_abcd, (0, 3, 1, 2)))    
+
+    # -- Density-density permutations
+    U_abcd = (U_abcd + np.transpose(U_abcd, (2,3,0,1)))
+
+    return U_abcd

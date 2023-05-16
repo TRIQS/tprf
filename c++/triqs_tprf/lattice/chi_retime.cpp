@@ -94,7 +94,6 @@ std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, mesh::retime Tmes
   
 chi_Tr_t chi0_Tr_from_g_Tr_PH(g_Tr_cvt g_Tr_les, g_Tr_cvt g_Tr_gtr) {
 
-  auto _ = all_t{};
   auto I = std::complex(0.,1.);
   
   auto Tmesh = std::get<0>(g_Tr_les.mesh());
@@ -104,9 +103,6 @@ chi_Tr_t chi0_Tr_from_g_Tr_PH(g_Tr_cvt g_Tr_les, g_Tr_cvt g_Tr_gtr) {
 
   chi_Tr_t chi0_Tr{{Tmesh, rmesh}, {nb, nb, nb, nb}};
 
-  auto g_target = g_Tr_les.target();
-  auto chi_target = chi0_Tr.target();
-  
   //for (auto const &r : rmesh) {
 
   auto arr = mpi_view(Tmesh);

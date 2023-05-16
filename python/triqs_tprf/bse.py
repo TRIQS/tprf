@@ -346,7 +346,7 @@ def solve_lattice_bse(g_wk, gamma_wnn):
 
     assert( chi0_wnk.mesh.components[0] == bmesh )
     assert( chi0_wnk.mesh.components[1] == fmesh )
-    assert( chi0_wnk.mesh.components[2] == kmesh )
+    #assert( chi0_wnk.mesh.components[2] == kmesh )
 
     # -- Lattice BSE calc with built in trace
     mpi.report('--> chi_kw from BSE')

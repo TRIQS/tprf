@@ -11,7 +11,15 @@ set(all_tests
   lattice_utility
   gf
   gw
+  gw_hubbard_dimer
+  gw_hubbard_dimer_matrix
+  gw_hubbard_dimer_scGW_G0W0
+  gw_hubbard_atom_hf
+  gw_hubbard_dimer_hf
+  gw_singlekpoint_exactresult
+  gw_compare_spectralRep_and_direct
   gw_fk
+  g0w_separate_kpoints
   chi00_square_lattice
   chi00_square_lattice_fk
   dynamical_screened_interaction_w

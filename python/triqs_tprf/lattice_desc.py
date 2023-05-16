@@ -582,6 +582,26 @@ Returns
 out
      Tuple of chi_dyn_wk, the dynamic part of chi, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi(\mathbf{k})`.""")
 
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::add_dynamic_fk_and_static_k(triqs_tprf::g_fk_t g_dyn_fk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+
+module.add_function ("double triqs_tprf::fermi(double e)", doc = r"""Add documentation!""")
+
+module.add_function ("double triqs_tprf::bose(double e)", doc = r"""Add documentation!""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Density matrix from lattic Green's function
+      
+Parameters
+----------
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+rho_k
+     density matrix :math:`\rho_{ab}(\mathbf{k})`
+""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::gw_sigma (triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
@@ -646,16 +666,19 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::e_r_cvt rho_r)")
+module.add_function ("triqs_tprf::e_r_t triqs_tprf::fock_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
 
-    Computes the GW self-energy of a static interaction as the sum
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
+
+    Computes the Hartree self-energy of a static interaction as the sum
 
     .. math::
-        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+        \Sigma_{ab}(\mathbf{k}) = \frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{abcd}(\mathbf{q}) \rho_{cd}(\mathbf{k} + \mathbf{q})
 
-    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
-    single particle Green's function.
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the
+    density matrix of the single particle Green's function.
 
 Parameters
 ----------
@@ -668,9 +691,50 @@ g_wk
 Returns
 -------
 out
-     GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+     Hartree self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::fock_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator 
+
+    Computes the Fock self-energy of a static interaction as the sum
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{q}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density
+    matrix of the single particle Green's function.
+
+Parameters
+----------
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Static GW self energy :math:`\Sigma(\mathbf{k})` calculator
+
+    Computes the GW self-energy (equivalent to the Fock self-energy)
+
+Parameters
+----------
+V_k
+     static interaction :math:`V_{abcd}(\mathbf{k})`
+
+g_wk
+     single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+
+Returns
+-------
+out
+     Static GW self-energy (Fock) :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_dynamic_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 
     Computes the GW self-energy as the product
 
@@ -689,7 +753,57 @@ g_tr
 Returns
 -------
 out
-     GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
+     Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`""")
+
+
+module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_dynamic_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""add documentation!""")
+
+module.add_function ("array<std::complex<double>, 2> g0w_sigma(double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k, mesh::brzone::point_t kpoint)", doc = r"""Add some docs""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k, gf_mesh<brzone> kmesh)", doc = r"""Add some docs""")
+
+module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+
+    Computes the GW self-energy of a static interaction as the product
+
+    .. math::
+        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
+          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
+          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+
+    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
+    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
+
+    .. math::
+       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
+       = \delta_{ij} \epsilon_{\mathbf{k}, i}
+
+Parameters
+----------
+mu
+     chemical potential :math:`\mu`
+
+beta
+     inverse temperature
+
+e_k
+     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+
+V_k
+     bare interaction :math:`V_{abcd}(\mathbf{k})`
+
+Returns
+-------
+out
+     static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("triqs_tprf::g_f_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, mesh::brzone::point_t kpoint)", doc = r"""add documentation!""")
+
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta, gf_mesh<brzone> kmesh)", doc = r"""add documentation!""")
 
 module.add_function ("triqs_tprf::g_fk_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta)", doc = r"""Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
 
@@ -741,41 +855,6 @@ Returns
 -------
 out
      real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`""")
-
-module.add_function ("triqs_tprf::e_k_t triqs_tprf::g0w_sigma (double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k)", doc = r"""GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
-
-    Computes the GW self-energy of a static interaction as the product
-
-    .. math::
-        \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{la}(\mathbf{k}+\mathbf{q}) U^\dagger_{bl}(\mathbf{k}+\mathbf{q})
-          V_{abab}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
-
-    where the :math:`U(\mathbf{k})` matrices are the diagonalizing unitary transform of the matrix valued
-    dispersion relation :math:`\epsilon_{\bar{a}b}(\mathbf{k})`, i.e.
-
-    .. math::
-       \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
-       = \delta_{ij} \epsilon_{\mathbf{k}, i}
-
-Parameters
-----------
-mu
-     chemical potential :math:`\mu`
-
-beta
-     inverse temperature
-
-e_k
-     discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-
-V_k
-     bare interaction :math:`V_{abcd}(\mathbf{k})`
-
-Returns
--------
-out
-     static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
 
 module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::dynamical_screened_interaction_W (triqs_tprf::chi_wk_cvt PI_wk, triqs_tprf::chi_k_cvt V_k)", doc = r"""Dynamical screened interaction :math:`W(i\omega_n, \mathbf{k})` calculator for static momentum-dependent bare interactions :math:`V(\mathbf{k})`.
 
@@ -1549,6 +1628,30 @@ chi0_wnk
 
 gamma_ph_wnn
      Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
+
+Returns
+-------
+out
+     Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.""")
+
+module.add_function ("triqs_tprf::chi_kw_t triqs_tprf::chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH (triqs_tprf::chi_wnk_cvt chi0_wnk, triqs_tprf::chi_wnn_cvt gamma_ph_wnn, triqs_tprf::chi_nn_cvt L_wn)", doc = r"""Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+
+  Computes
+
+  .. math::
+     \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+
+Parameters
+----------
+chi0_wnk
+     Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+
+gamma_ph_wnn
+     Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
+
+L_wn
+     Local triangular particle-hole vertex function :math:`L^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu)`.
 
 Returns
 -------
