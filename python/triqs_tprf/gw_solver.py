@@ -171,9 +171,14 @@ class GWSolver():
         return N
     
     
+    @timer('Density matrix rho_k')
+    def calc_rho_k(self, g_wk):
+        return rho_k_from_g_wk(g_wk)
+            
+
     @timer('Density matrix rho_r')
     def calc_rho_r(self, g_wk):
-        rho_k = rho_k_from_g_wk(g_wk)
+        rho_k = self.calc_rho_k(g_wk)
         rho_r = make_gf_from_fourier(rho_k)
         return rho_r
 
@@ -345,6 +350,7 @@ class GWSolver():
         rho_loc = self.calc_rho_loc(rho_r)
         N = self.calc_total_density(rho_loc)
 
+        self.rho_k = self.calc_rho_k(g_wk)
         self.rho_r = rho_r
         self.rho_loc = rho_loc
         self.N = N

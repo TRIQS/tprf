@@ -57,6 +57,7 @@ namespace triqs_tprf {
   e_k_t rho_k_from_g_wk(g_Dwk_cvt g_wk) {
 
     auto _     = all_t{};
+    auto wmesh = std::get<0>(g_wk.mesh());
     auto kmesh = std::get<1>(g_wk.mesh());
 
     e_k_t rho_k(kmesh, g_wk.target_shape());
@@ -66,7 +67,8 @@ namespace triqs_tprf {
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
       auto &k = arr(idx);
-      auto g_w  = g_wk(_, k);
+      auto g_w = make_gf<dlr_imfreq>({wmesh}, g_wk.target());
+      g_w  = g_wk(_, k);
       rho_k[k] = density(dlr_coeffs_from_dlr_imfreq(g_w));
     }
   

@@ -169,17 +169,19 @@ def test_gw_hubbard_dimer(verbose=False):
         hartree_flag = False,
         )
 
-    np.testing.assert_array_almost_equal(
-        gw.P_wk[0,0,0,0].data, gw_tensor.P_wk[0,0,0,0].data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.P_wk[0,0,0,0].data, gw_tensor.P_wk[0,0,0,0].data)
 
-    np.testing.assert_array_almost_equal(
-        gw.W_wk[0,0,0,0].data, gw_tensor.W_wk[0,0,0,0].data)
+        np.testing.assert_array_almost_equal(
+            gw.W_wk[0,0,0,0].data, gw_tensor.W_wk[0,0,0,0].data)
 
     # The self-interaction calc, does not produce correct Hartree sigma, fix here..
     gw_tensor.sigma_wk.data[:] += U/2
     
-    np.testing.assert_array_almost_equal(
-        gw.sigma_wk[0,0].data, gw_tensor.sigma_wk[0,0].data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.sigma_wk[0,0].data, gw_tensor.sigma_wk[0,0].data)
     
     wmesh = gw.g_wk.mesh[0]
     bmesh = gw.P_wk.mesh[0]
@@ -200,7 +202,8 @@ def test_gw_hubbard_dimer(verbose=False):
 
     W_wr_ref = chi_wr_from_chi_wk(W_wk_ref)
 
-    np.testing.assert_array_almost_equal(W_wr_ref.data, gw.W_wr.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(W_wr_ref.data, gw.W_wr.data)
 
     # -- Print index structure of the relevant quantities
     
@@ -239,11 +242,12 @@ def test_gw_hubbard_dimer(verbose=False):
         g0_0_w[w] = +0.5/(w - t) + 0.5/(w + t)
         g0_1_w[w] = -0.5/(w - t) + 0.5/(w + t)
 
-    np.testing.assert_array_almost_equal(
-        gw.g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.g0_wr[:, Idx(0, 0, 0)][0, 0].data, g0_0_w.data)
 
-    np.testing.assert_array_almost_equal(
-        gw.g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
+        np.testing.assert_array_almost_equal(
+            gw.g0_wr[:, Idx(1, 0, 0)][0, 0].data, g0_1_w.data)
     
     # -- Analytic expression Eq. (29) for P
 
@@ -254,11 +258,12 @@ def test_gw_hubbard_dimer(verbose=False):
         P_0_w[w] = + 0.25 / (w - 2*t) - 0.25 / (w + 2*t)
         P_1_w[w] = - 0.25 / (w - 2*t) + 0.25 / (w + 2*t)
         
-    np.testing.assert_array_almost_equal(
-        gw.P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.P_wr[:, Idx(0, 0, 0)][0,0,0,0].data, P_0_w.data)
 
-    np.testing.assert_array_almost_equal(
-        gw.P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
+        np.testing.assert_array_almost_equal(
+            gw.P_wr[:, Idx(1, 0, 0)][0,0,0,0].data, P_1_w.data)
 
     # -- Analytic expression Eq. (30) for W
 
@@ -273,11 +278,12 @@ def test_gw_hubbard_dimer(verbose=False):
         W_0_w[w] = U + 2 * U**2 * t / (complex(w)**2 - h2)
         W_1_w[w] = 0 - 2 * U**2 * t / (complex(w)**2 - h2)
         
-    np.testing.assert_array_almost_equal(
-        gw.W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.W_wr[:, Idx(0, 0, 0)][i,j,k,l].data, W_0_w.data)
 
-    np.testing.assert_array_almost_equal(
-        gw.W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
+        np.testing.assert_array_almost_equal(
+            gw.W_wr[:, Idx(1, 0, 0)][i,j,k,l].data, W_1_w.data)
 
     # Analytic expression in Eq. (31) for Sigma = G_0 W_0
     
@@ -290,11 +296,12 @@ def test_gw_hubbard_dimer(verbose=False):
         sigma_1_w[w] = U**2 * t / (2*h) * \
             ( 1/(w - (e + t + h)) - 1/(w - (e - t - h)) )
         
-    np.testing.assert_array_almost_equal(
-        gw.sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.sigma_wr[:, Idx(0, 0, 0)][0, 0].data, sigma_0_w.data)
 
-    np.testing.assert_array_almost_equal(
-        gw.sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
+        np.testing.assert_array_almost_equal(
+            gw.sigma_wr[:, Idx(1, 0, 0)][0, 0].data, sigma_1_w.data)
         
     # -- Analytic expression Eq. (32) for G = 1/[1/G_0 - Sigma] with Sigma = G_0 W_0
     
@@ -321,11 +328,12 @@ def test_gw_hubbard_dimer(verbose=False):
             - (0.25 + R1)/(w - w1_p) - (0.25 - R1)/(w - w1_m) + \
             + (0.25 + R2)/(w - w2_p) + (0.25 - R2)/(w - w2_m)
 
-    np.testing.assert_array_almost_equal(
-        gw.g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
+    if not verbose:
+        np.testing.assert_array_almost_equal(
+            gw.g_wr[:, Idx(0, 0, 0)][0, 0].data, g_0_w.data)
 
-    np.testing.assert_array_almost_equal(
-        gw.g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
+        np.testing.assert_array_almost_equal(
+            gw.g_wr[:, Idx(1, 0, 0)][0, 0].data, g_1_w.data)
 
     # -- Visualize the result
     
