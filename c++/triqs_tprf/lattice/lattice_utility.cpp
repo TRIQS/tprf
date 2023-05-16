@@ -59,4 +59,16 @@ namespace triqs_tprf {
     return {chi_dyn_wk, chi_const_k};
   }
 
+  double fermi(double e) {
+    if( e < 0 ) {
+      return 1. / (exp(e) + 1.);
+    } else {
+      double exp_me = exp(-e);
+      return exp_me / (1 + exp_me);
+    }
+  }
+
+  double bose(double e) {
+    return 1. / (exp(e) - 1.);
+  }
 } // namespace triqs_tprf
