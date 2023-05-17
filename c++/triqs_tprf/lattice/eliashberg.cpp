@@ -55,16 +55,72 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
     auto &[w, k] = meshes_mpi(idx);
 
-      for (auto [d, c] : F_wk.target_indices())
-        for (auto [e, f] : delta_wk.target_indices())
-          F_wk[w, k](d, c) +=
-          g_wk[w, k](c, f) * g_wk[-w, -k](d, e) * delta_wk[w, k](e, f);
-     }
+    for (auto [d, c] : F_wk.target_indices()){
+      for (auto [e, f] : delta_wk.target_indices()){
+        F_wk[w, k](d, c) +=
+        g_wk[w, k](c, f) * g_wk[-w, -k](d, e) * delta_wk[w, k](e, f);
+      }
+    }
+  }
 
-     F_wk = mpi::all_reduce(F_wk);
+  F_wk = mpi::all_reduce(F_wk);
 
-     return F_wk;
+  return F_wk;
 }
+
+g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
+
+  // Get rid of structured binding declarations in this file due to issue #11
+  //auto [wmesh, kmesh] = delta_wk.mesh();
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
+  auto wmesh_gf = std::get<0>(g_wk.mesh());
+
+  auto cmesh = triqs::mesh::dlr_coeffs(wmesh);
+
+  if (wmesh.size() > wmesh_gf.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
+
+  auto F_wk = make_gf(delta_wk);
+  F_wk *= 0.;
+
+  auto _ = all_t{};
+
+  auto meshes_mpi = mpi_view(delta_wk.mesh());
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+    auto &[w, k] = meshes_mpi(idx);
+
+    // This does not work due to problem in cppdlr
+    //auto g_Dck = dlr_coeffs_from_dlr_imfreq(g_wk[_,k]);
+    //auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_wk[_,-k]);
+    //auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_wk[_,k]);
+
+    g_Dw_t g_w({cmesh}, g_wk.target_shape());
+    g_w() = g_wk[_,k];
+    auto g_Dck = dlr_coeffs_from_dlr_imfreq(g_w);
+    g_Dw_t g_w2({cmesh}, g_wk.target_shape());
+    g_w2() = g_wk[_,-k];
+    auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_w2);
+    g_Dw_t delta_w({cmesh}, delta_wk.target_shape());
+    delta_w() = delta_wk[_,k];
+    auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_w);
+
+    for (auto [d, c] : F_wk.target_indices()) {
+      for (auto [e, f] : delta_wk.target_indices()) {
+        F_wk[w, k](d, c) += g_Dck(w)(c, f) * g_Dcmk(-w)(d, e) * delta_Dck(w)(e, f);
+      }
+    }
+  }
+
+  F_wk = mpi::all_reduce(F_wk);
+
+  return F_wk;
+}
+
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
                        g_wk_vt delta_wk) {
