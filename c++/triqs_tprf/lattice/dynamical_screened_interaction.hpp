@@ -151,6 +151,7 @@ namespace triqs_tprf {
     @return dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
  */
   chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_wk_cvt V_wk);
+  chi_Dwk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_Dwk_cvt chi_wk, chi_Dwk_cvt V_wk);
 
   /** Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
 

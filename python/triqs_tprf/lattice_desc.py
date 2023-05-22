@@ -1054,6 +1054,8 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`""")
 
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::dynamical_screened_interaction_W_from_generalized_susceptibility (triqs_tprf::chi_Dwk_cvt chi_wk, triqs_tprf::chi_Dwk_cvt V_wk)")
+
 module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::dynamical_screened_interaction_W_from_generalized_susceptibility (triqs_tprf::chi_fk_cvt chi_fk, triqs_tprf::chi_fk_cvt V_fk)", doc = r"""Dynamical screened interaction :math:`W(\omega, \mathbf{k})` calculator for dynamic momentum-dependent bare interactions :math:`V(\omega, \mathbf{k})` and known generalized susceptibility :math:`\chi(\omega, \mathbf{k})`
 
     The full screened interaction :math:`W(\omega, \mathbf{k})`

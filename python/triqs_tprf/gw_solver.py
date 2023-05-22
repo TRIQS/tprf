@@ -36,6 +36,11 @@ from triqs_tprf.lattice import lattice_dyson_g_wk
 from triqs_tprf.lattice import rho_k_from_g_wk
 from triqs_tprf.lattice import gw_dynamic_sigma, hartree_sigma, fock_sigma
 from triqs_tprf.lattice import dynamical_screened_interaction_W
+
+from triqs_tprf.lattice import \
+    dynamical_screened_interaction_W_from_generalized_susceptibility \
+    as generalized_susceptibility
+
 from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k
 
 from triqs_tprf.lattice import fourier_wk_to_wr
@@ -154,6 +159,9 @@ class GWSolver():
         if hasattr(self, 'W_wk'):
             self.W_fk = pade_analytical_continuation(self.W_wk, fbmesh, **opts)
             gw_rf.W_fk = self.W_fk
+        if hasattr(self, 'chi_wk'):
+            self.chi_fk = pade_analytical_continuation(self.chi_wk, fbmesh, **opts)
+            gw_rf.chi_fk = self.chi_fk
         if hasattr(self, 'W_dyn_wk'):
             self.W_dyn_fk = pade_analytical_continuation(self.W_dyn_wk, fbmesh, **opts)
             gw_rf.W_dyn_fk = self.W_dyn_fk
@@ -231,6 +239,12 @@ class GWSolver():
             W_wk = dynamical_screened_interaction_W(P_wk, V_k)
         return W_wk
 
+    
+    @timer('Susceptibiltiy chi_wk')
+    def susceptibiltiy(self, P_wk, W_wk):
+        chi_wk = generalized_susceptibility(W_wk, P_wk)
+        return chi_wk
+    
     
     @timer('Split W_dyn_k, W_stat_wk')
     def dynamic_and_static_interaction(self, W_wk):
@@ -363,6 +377,7 @@ class GWSolver():
             self.W_wk = W_wk
             self.W_dyn_wk = W_dyn_wk
             self.P_wk = P_wk
+            self.chi_wk = self.susceptibiltiy(P_wk, W_wk)
             
         if mpi.is_master_node():
             print()
