@@ -4,8 +4,7 @@ import numpy as np
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import eliashberg_g_delta_g_product, dynamic_and_constant_to_tr
-#from triqs_tprf.lattice import eliashberg_constant_gamma_f_product, eliashberg_dynamic_gamma_f_product
-from triqs_tprf.lattice import eliashberg_product_fft
+from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from triqs_tprf.lattice import dlr_on_imfreq
 
 from triqs_tprf.lattice import fourier_wk_to_wr
@@ -125,7 +124,7 @@ def eliashberg_compare_dlr_and_direct():
     np.testing.assert_array_almost_equal(I_r.data[:], I_r_ref.data[:])
     #TODO: compare I_dyn_tr and I_dyn_Dtr?
 
-    print("--> eliashberg_constant_gamma_f_product")
+    print("--> eliashberg_product_fft")
     F_wr = fourier_wk_to_wr(F_wk)
     F_tr = fourier_wr_to_tr(F_wr)
 
@@ -136,6 +135,12 @@ def eliashberg_compare_dlr_and_direct():
     delta_Dwk_out = eliashberg_product_fft(I_dyn_Dtr, I_r, g0_Dwk, delta_Dwk)
     compare_g_Dwk_and_g_wk(delta_Dwk_out, delta_wk_out)
 
+
+    print("--> eliashberg_product_fft_constant")
+
+    delta_wk_out_const = eliashberg_product_fft_constant(I_r, g0_wk, delta_wk)
+    delta_Dwk_out_const = eliashberg_product_fft_constant(I_r, g0_Dwk, delta_Dwk)
+    compare_g_Dwk_and_g_wk(delta_Dwk_out_const, delta_wk_out_const)
 
 if __name__ == "__main__":
     eliashberg_compare_dlr_and_direct()

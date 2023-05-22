@@ -1222,6 +1222,8 @@ module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft (tr
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk)", doc = r"""""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
 module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk)", doc = r"""""")

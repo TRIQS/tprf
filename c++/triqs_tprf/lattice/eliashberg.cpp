@@ -343,6 +343,27 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
+g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r,
+                                        g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
+
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  auto F_wr = fourier_wk_to_wr(F_wk);
+  auto F_tr = fourier_wr_to_tr(F_wr);
+
+  auto delta_r_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
+  auto delta_k_out = make_gf_from_fourier<0>(delta_r_out);
+
+  auto delta_wk_out = make_gf(F_wk);
+  delta_wk_out *= 0.;
+
+  auto _ = all_t{};
+  for (auto const &w : std::get<0>(delta_wk_out.mesh())) delta_wk_out[w, _] += delta_k_out;
+
+  return delta_wk_out;
+}
+
+
+
 chi_wk_t construct_phi_wk(chi_wk_vt chi, array_contiguous_view<std::complex<double>, 4> U) {
 
   using scalar_t = chi_wk_t::scalar_t;
