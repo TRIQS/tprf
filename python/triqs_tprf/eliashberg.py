@@ -120,7 +120,6 @@ def solve_eliashberg(
     --------
     :ref:`eliashberg` : Theory of the linearized Eliashberg equation.
     """
-
     
     def from_x_to_wk(delta_x):
         delta_wk = g_wk.copy()
@@ -130,6 +129,8 @@ def solve_eliashberg(
     def from_wk_to_x(delta_wk):
         delta_x = delta_wk.data.copy().flatten()
         return delta_x
+
+    hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
 
     if product == "FFT":
 
@@ -150,6 +151,12 @@ def solve_eliashberg(
             )
 
     elif product == "SUM":
+        if(hasDLRMesh): 
+            raise NotImplementedError(
+                "There is no implementation of the eliashberg product "
+                "called %s when using DLR. Please use the FFT product instead."%product
+            )
+
         eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
 
     else:
@@ -161,19 +168,6 @@ def solve_eliashberg(
     def matvec(delta_x):
         delta_wk = from_x_to_wk(delta_x)
         delta_out_wk = eli_prod(delta_wk)
-
-        #Gamma = Gf(mesh=Gamma_pp_dyn_tr.mesh, target_shape=Gamma_pp_dyn_tr.target_shape)
-        #Gamma.data[:] = Gamma_pp_dyn_tr.data[:]
-        #Gamma_c = Gf(mesh=Gamma_pp_const_r.mesh, target_shape=Gamma_pp_const_r.target_shape)
-        #Gamma_c.data[:] = Gamma_pp_const_r.data[:]
-        #GG = Gf(mesh=g_wk.mesh, target_shape=g_wk.target_shape)
-        #GG.data[:] = g_wk.data[:]
-        #DD = Gf(mesh=delta_wk.mesh, target_shape=delta_wk.target_shape)
-        #DD.data[:] = delta_wk.data[:]
-        #delta_out_wk = eliashberg_product_fft(Gamma, Gamma_c, GG, DD)
-
-        #delta_out_wk = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk)
-
         delta_out_wk = symmetrize_fct(delta_out_wk)
         delta_out_x = from_wk_to_x(delta_out_wk)
         return delta_out_x
