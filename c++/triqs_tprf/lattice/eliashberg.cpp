@@ -77,7 +77,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
   auto wmesh_gf = std::get<0>(g_wk.mesh());
 
-  auto cmesh = triqs::mesh::dlr_coeffs(wmesh);
+  //auto cmesh = triqs::mesh::dlr_coeffs(wmesh);
 
   if (wmesh.size() > wmesh_gf.size())
       TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
@@ -99,13 +99,13 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
     //auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_wk[_,-k]);
     //auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_wk[_,k]);
 
-    g_Dw_t g_w({cmesh}, g_wk.target_shape());
+    g_Dw_t g_w({wmesh}, g_wk.target_shape());
     g_w() = g_wk[_,k];
     auto g_Dck = dlr_coeffs_from_dlr_imfreq(g_w);
-    g_Dw_t g_w2({cmesh}, g_wk.target_shape());
+    g_Dw_t g_w2({wmesh}, g_wk.target_shape());
     g_w2() = g_wk[_,-k];
     auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_w2);
-    g_Dw_t delta_w({cmesh}, delta_wk.target_shape());
+    g_Dw_t delta_w({wmesh}, delta_wk.target_shape());
     delta_w() = delta_wk[_,k];
     auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_w);
 
