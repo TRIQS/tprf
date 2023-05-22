@@ -1217,6 +1217,9 @@ Returns
 out
      Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`""")
 
+
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_Dtr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk)", doc = r"""Add documentation!""")
+
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
@@ -1237,6 +1240,22 @@ Returns
 -------
 out
      Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.""")
+
+module.add_function ("std::tuple<chi_Dtr_t, chi_r_t> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_Dwk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""Fourier transform Gamma parts to imaginary time and real-space
+
+Parameters
+----------
+Gamma_pp_dyn_wk
+     : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.
+
+Gamma_pp_const_k
+     : The part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
+
+Returns
+-------
+out
+     Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.""")
+
 
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::eliashberg_constant_gamma_f_product (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_tr_t F_tr)", doc = r"""""")
 

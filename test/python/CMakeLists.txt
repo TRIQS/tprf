@@ -50,7 +50,7 @@ set(all_tests
   eliashberg/regression_test_two_band
   eliashberg/fft_product_constant_vs_full
   eliashberg/symmetrize_delta
-  eliashberg/g_delta_g_product_dlr_test
+  eliashberg/compare_dlr_and_direct
 )
 
 foreach(test ${all_tests})

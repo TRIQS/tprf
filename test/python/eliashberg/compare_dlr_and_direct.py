@@ -3,8 +3,14 @@
 import numpy as np
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs_tprf.lattice import eliashberg_g_delta_g_product
+from triqs_tprf.lattice import eliashberg_g_delta_g_product, dynamic_and_constant_to_tr
+#from triqs_tprf.lattice import eliashberg_constant_gamma_f_product, eliashberg_dynamic_gamma_f_product
+from triqs_tprf.lattice import eliashberg_product_fft
 from triqs_tprf.lattice import dlr_on_imfreq
+
+from triqs_tprf.lattice import fourier_wk_to_wr
+from triqs_tprf.lattice import fourier_wr_to_tr
+
 
 from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone
 from triqs.gf.meshes import MeshDLRImFreq, MeshDLRCoeffs
@@ -28,7 +34,12 @@ def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, decimal=7):
     
     np.testing.assert_array_almost_equal(g_wk.data[:], g_ref_wk.data[:], decimal=decimal)
 
-def test_g_delta_g_product_dlr():
+def ElectronPhononInteraction(iw, g2, wD):
+    """Electron-phonon interaction with a dispersionless phonon wD and a scalar electron-phonon coupling g2"""
+    return g2 * 2.0 * wD / (iw**2.0 - wD**2.0)
+
+
+def eliashberg_compare_dlr_and_direct():
     """ Some test description
     Author: Yann in 't Veld (2023) """ 
     
@@ -84,5 +95,47 @@ def test_g_delta_g_product_dlr():
 
     compare_g_Dwk_and_g_wk(F_Dwk, F_wk)
 
+    print('--> setup interaction vertex')
+    numesh = MeshImFreq(beta, 'Boson', nw)
+    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
+
+    I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
+    for nu in numesh:
+        nuii = nu.linear_index
+        I_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
+
+    I_Dwk = Gf(mesh=MeshProduct(DLRnumesh, kmesh), target_shape=[1]*4)
+    for nu in DLRnumesh:
+        nuii = nu.linear_index
+        I_Dwk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
+
+    I_k = Gf(mesh=kmesh, target_shape=[1]*4)
+    I_k.data[:] = 0.0
+    for k in kmesh:
+        knorm = np.linalg.norm(k.value)
+        if(np.isclose(knorm, 0.0)): break
+        I_k.data[:] = 1.0 / knorm 
+
+    compare_g_Dwk_and_g_wk(I_Dwk, I_wk)
+
+    print("--> dynamic_and_constant_to_tr")
+    I_dyn_tr, I_r_ref = dynamic_and_constant_to_tr(I_wk, I_k)
+    I_dyn_Dtr, I_r = dynamic_and_constant_to_tr(I_Dwk, I_k)
+
+    np.testing.assert_array_almost_equal(I_r.data[:], I_r_ref.data[:])
+    #TODO: compare I_dyn_tr and I_dyn_Dtr?
+
+    print("--> eliashberg_constant_gamma_f_product")
+    F_wr = fourier_wk_to_wr(F_wk)
+    F_tr = fourier_wr_to_tr(F_wr)
+
+    F_Dwr = fourier_wk_to_wr(F_Dwk)
+    F_Dtr = fourier_wr_to_tr(F_Dwr)
+
+    delta_wk_out = eliashberg_product_fft(I_dyn_tr, I_r, g0_wk, delta_wk)
+    delta_Dwk_out = eliashberg_product_fft(I_dyn_Dtr, I_r, g0_Dwk, delta_Dwk)
+    compare_g_Dwk_and_g_wk(delta_Dwk_out, delta_wk_out)
+
+
 if __name__ == "__main__":
-    test_g_delta_g_product_dlr()
+    eliashberg_compare_dlr_and_direct()
