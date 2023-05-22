@@ -242,6 +242,19 @@ typedef chi_w_t::view_type chi_w_vt;
 
 // DLR
 
+typedef gf<dlr_imtime, tensor_valued<4>> chi_Dt_t;
+typedef chi_Dt_t::const_view_type chi_Dt_cvt;
+typedef chi_Dt_t::view_type chi_Dt_vt;
+
+typedef gf<dlr_imfreq, tensor_valued<4>> chi_Dw_t;
+typedef chi_Dw_t::const_view_type chi_Dw_cvt;
+typedef chi_Dw_t::view_type chi_Dw_vt;
+
+typedef gf<dlr_coeffs, tensor_valued<4>> chi_Dc_t;
+typedef chi_Dc_t::const_view_type chi_Dc_cvt;
+typedef chi_Dc_t::view_type chi_Dc_vt;
+
+
 typedef gf<prod<dlr_imtime, cyclat>, tensor_valued<4>> chi_Dtr_t;
 typedef chi_Dtr_t::const_view_type chi_Dtr_cvt;
 typedef chi_Dtr_t::view_type chi_Dtr_vt;

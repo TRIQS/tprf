@@ -36,7 +36,15 @@ namespace triqs_tprf {
     }
     return g_w;
   }
-  
+
+  chi_w_t dlr_on_imfreq(chi_Dc_cvt chi_c, mesh::imfreq wmesh) {
+    auto chi_w = make_gf<imfreq>(wmesh, chi_c.target());
+    for (auto const &w : wmesh) {
+      chi_w[w] = chi_c(w);
+    }
+    return chi_w;
+  }
+
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
     auto _               = all_t{};

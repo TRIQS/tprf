@@ -27,6 +27,8 @@ namespace triqs_tprf {
 
   g_w_t dlr_on_imfreq(g_Dc_cvt g_c, mesh::imfreq wmesh);
 
+  chi_w_t dlr_on_imfreq(chi_Dc_cvt chi_c, mesh::imfreq wmesh);
+
   /** Splits a rank 4 tensor-valued Green's function into dynamic and constant parts by tail fitting
 
     Splits a general rank 4 tensor-valued Green's function :math:`\chi_{abcd}(i\omega_n, \mathbf{k})` 
