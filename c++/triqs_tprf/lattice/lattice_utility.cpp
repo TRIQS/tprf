@@ -29,38 +29,30 @@
 
 namespace triqs_tprf {
 
-  g_w_t dlr_on_imfreq(g_Dc_cvt g_c, mesh::imfreq wmesh) {
-    auto g_w = make_gf<imfreq>(wmesh, g_c.target());
-    for (auto const &w : wmesh) {
-      g_w[w] = g_c(w);
+  template<typename g_out_t, typename g_in_t, typename mesh_t>  
+  g_out_t dlr_on_immesh_template(g_in_t g_c, mesh_t mesh) {
+    g_out_t g_out(mesh, g_c.target_shape());
+    for (auto const &p : mesh) {
+      g_out[p] = g_c(p);
     }
-    return g_w;
+    return g_out;
   }
 
-  g_t_t dlr_on_imtime(g_Dc_cvt g_c, mesh::imtime tmesh) {
-    auto g_t = make_gf<imtime>(tmesh, g_c.target());
-    for (auto const &t : tmesh) {
-      g_t[t] = g_c(t);
-    }
-    return g_t;
+  g_w_t dlr_on_imfreq(g_Dc_cvt g_c, mesh::imfreq wmesh) {
+    return dlr_on_immesh_template<g_w_t, g_Dc_cvt, mesh::imfreq>(g_c, wmesh);
   }
 
   chi_w_t dlr_on_imfreq(chi_Dc_cvt chi_c, mesh::imfreq wmesh) {
-    auto chi_w = make_gf<imfreq>(wmesh, chi_c.target());
-    for (auto const &w : wmesh) {
-      chi_w[w] = chi_c(w);
-    }
-    return chi_w;
+    return dlr_on_immesh_template<chi_w_t, chi_Dc_cvt, mesh::imfreq>(chi_c, wmesh);
+  }
+
+  g_t_t dlr_on_imtime(g_Dc_cvt g_c, mesh::imtime tmesh) {
+    return dlr_on_immesh_template<g_t_t, g_Dc_cvt, mesh::imtime>(g_c, tmesh);
   }
 
   chi_t_t dlr_on_imtime(chi_Dc_cvt chi_c, mesh::imtime tmesh) {
-    auto chi_t = make_gf<imtime>(tmesh, chi_c.target());
-    for (auto const &t : tmesh) {
-      chi_t[t] = chi_c(t);
-    }
-    return chi_t;
+    return dlr_on_immesh_template<chi_t_t, chi_Dc_cvt, mesh::imtime>(chi_c, tmesh);
   }
-
 
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
