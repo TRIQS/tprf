@@ -30,6 +30,7 @@ from scipy.sparse.linalg import eigs
 # ----------------------------------------------------------------------
 
 from triqs.gf import Gf
+from triqs.gf.meshes import MeshDLRImFreq
 from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
@@ -160,6 +161,19 @@ def solve_eliashberg(
     def matvec(delta_x):
         delta_wk = from_x_to_wk(delta_x)
         delta_out_wk = eli_prod(delta_wk)
+
+        #Gamma = Gf(mesh=Gamma_pp_dyn_tr.mesh, target_shape=Gamma_pp_dyn_tr.target_shape)
+        #Gamma.data[:] = Gamma_pp_dyn_tr.data[:]
+        #Gamma_c = Gf(mesh=Gamma_pp_const_r.mesh, target_shape=Gamma_pp_const_r.target_shape)
+        #Gamma_c.data[:] = Gamma_pp_const_r.data[:]
+        #GG = Gf(mesh=g_wk.mesh, target_shape=g_wk.target_shape)
+        #GG.data[:] = g_wk.data[:]
+        #DD = Gf(mesh=delta_wk.mesh, target_shape=delta_wk.target_shape)
+        #DD.data[:] = delta_wk.data[:]
+        #delta_out_wk = eliashberg_product_fft(Gamma, Gamma_c, GG, DD)
+
+        #delta_out_wk = eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk)
+
         delta_out_wk = symmetrize_fct(delta_out_wk)
         delta_out_x = from_wk_to_x(delta_out_wk)
         return delta_out_x
@@ -209,6 +223,15 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
                        The constant part of Gamma with mesh attribute MeshCycLat.
     """
 
+    # -- If the function has a DLR mesh we cannot use split_into_dynamic_wk_and_constant_k yet
+    # TODO: implement split_into_dynamic_wk_and_constant_k for DLR-mesh Gfs
+    hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
+    if(hasDLRMesh):
+        if(Gamma_pp_const_k is None):
+            Gamma_pp_const_k = Gf(mesh=Gamma_pp_wk.mesh.components[1], target_shape=Gamma_pp_wk.target_shape)
+            Gamma_pp_const_k.data[:] = 0.0
+        return dynamic_and_constant_to_tr(Gamma_pp_wk, Gamma_pp_const_k)
+
     # -- Determine the dynamic and constant part via a tail fit
     # -- (This is done even if the constant term is given to get the specific Gf types)
     Gamma_pp_dyn_wk_fit, Gamma_pp_const_k_fit = split_into_dynamic_wk_and_constant_k(
@@ -221,7 +244,7 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
         Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k
         Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k
     elif const_type == Gf:
-        Gamma_pp_const_k_fit[:] = Gamma_pp_const_k.data
+        Gamma_pp_const_k_fit.data[:] = Gamma_pp_const_k.data
         Gamma_pp_dyn_wk_fit.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
     # -- FFT dynamic and constant term to (tau, real) or (real)
     Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(

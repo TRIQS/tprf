@@ -51,6 +51,7 @@ set(all_tests
   eliashberg/fft_product_constant_vs_full
   eliashberg/symmetrize_delta
   eliashberg/compare_dlr_and_direct
+  eliashberg/dlr_eliashberg_solver
 )
 
 foreach(test ${all_tests})
