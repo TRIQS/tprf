@@ -5,7 +5,7 @@ import numpy as np
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import eliashberg_g_delta_g_product, dynamic_and_constant_to_tr
 from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
-from triqs_tprf.lattice import dlr_on_imfreq
+from triqs_tprf.lattice import dlr_on_imfreq, dlr_on_imtime
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
@@ -16,7 +16,7 @@ from triqs.gf.meshes import MeshDLRImFreq, MeshDLRCoeffs
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
-from triqs.gf.gf_fnt import dlr_coeffs_from_dlr_imfreq
+from triqs.gf.gf_fnt import dlr_coeffs_from_dlr_imfreq, dlr_coeffs_from_dlr_imtime
 
 # ----------------------------------------------------------------------
 
@@ -32,6 +32,20 @@ def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, decimal=7):
         g_ref_wk[:,k] = dlr_on_imfreq(g_Dc, wmesh)
     
     np.testing.assert_array_almost_equal(g_wk.data[:], g_ref_wk.data[:], decimal=decimal)
+
+def compare_g_Dtk_and_g_tk(g_Dtk, g_tk, decimal=7):
+    tmesh, kmesh = g_tk.mesh.components
+    DLRtmesh = g_Dtk.mesh.components[0]
+
+    g_ref_tk =Gf(mesh=g_tk.mesh, target_shape=g_tk.target_shape)
+    for k in kmesh:
+        g_Dt = Gf(mesh=DLRtmesh, target_shape=g_Dtk.target_shape)
+        g_Dt.data[:] = g_Dtk.data[:,k.linear_index,:]
+        g_Dc = dlr_coeffs_from_dlr_imtime(g_Dt)
+        g_ref_tk[:,k] = dlr_on_imtime(g_Dc, tmesh)
+    
+    np.testing.assert_array_almost_equal(g_tk.data[:], g_ref_tk.data[:], decimal=decimal)
+
 
 def ElectronPhononInteraction(iw, g2, wD):
     """Electron-phonon interaction with a dispersionless phonon wD and a scalar electron-phonon coupling g2"""
@@ -121,8 +135,8 @@ def eliashberg_compare_dlr_and_direct():
     I_dyn_tr, I_r_ref = dynamic_and_constant_to_tr(I_wk, I_k)
     I_dyn_Dtr, I_r = dynamic_and_constant_to_tr(I_Dwk, I_k)
 
+    compare_g_Dtk_and_g_tk(I_dyn_Dtr, I_dyn_tr, decimal=6)
     np.testing.assert_array_almost_equal(I_r.data[:], I_r_ref.data[:])
-    #TODO: compare I_dyn_tr and I_dyn_Dtr?
 
     print("--> eliashberg_product_fft")
     F_wr = fourier_wk_to_wr(F_wk)

@@ -37,6 +37,14 @@ namespace triqs_tprf {
     return g_w;
   }
 
+  g_t_t dlr_on_imtime(g_Dc_cvt g_c, mesh::imtime tmesh) {
+    auto g_t = make_gf<imtime>(tmesh, g_c.target());
+    for (auto const &t : tmesh) {
+      g_t[t] = g_c(t);
+    }
+    return g_t;
+  }
+
   chi_w_t dlr_on_imfreq(chi_Dc_cvt chi_c, mesh::imfreq wmesh) {
     auto chi_w = make_gf<imfreq>(wmesh, chi_c.target());
     for (auto const &w : wmesh) {
@@ -44,6 +52,15 @@ namespace triqs_tprf {
     }
     return chi_w;
   }
+
+  chi_t_t dlr_on_imtime(chi_Dc_cvt chi_c, mesh::imtime tmesh) {
+    auto chi_t = make_gf<imtime>(tmesh, chi_c.target());
+    for (auto const &t : tmesh) {
+      chi_t[t] = chi_c(t);
+    }
+    return chi_t;
+  }
+
 
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
