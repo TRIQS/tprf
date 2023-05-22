@@ -34,7 +34,9 @@ from triqs.gf import MeshImFreq, MeshProduct, Gf, Idx
 # ----------------------------------------------------------------------
 
 from triqs_tprf.logo import tprf_banner
+
 from triqs_tprf.linalg import inverse_PH
+from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH, chi_from_gg2_PH
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH
@@ -45,7 +47,44 @@ from triqs_tprf.lattice import chi0q_sum_nu
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_PH
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk, add_fake_bosonic_mesh
 
-# ----------------------------------------------------------------------
+
+def impurity_irreducible_vertex_Gamma(g_w, g2_wnn):
+
+    r"""Compute the impurity reducible vertex function 
+    :math:`F_{abcd}(\omega, \nu, \nu')`.
+
+    Computes:
+
+    .. math::
+       F_{abcd}(\omega, \nu, \nu') =  [\chi^{(0)}]^{-1} (\chi - \chi^{(0)} ) [\chi^{(0)}]^{-1} 
+
+    where the inverses are taken in the particle-hole channel pairing
+    of fermionic frequencies :math:`\nu` and :math:`\nu'` and orbital
+    indices.
+
+    Parameters
+    ----------
+
+    g_w : Single particle Green's function
+          :math:`G_{ab}(\nu)`
+    g2_wnn : Two-particle Green's function
+             :math:`G^{(2)}_{abcd}(\omega, \nu, \nu')`
+
+    Returns
+    -------
+
+    F_wnn : Particle-hole reducible vertex function 
+            :math:`F_{abcd}(\omega, \nu, \nu')`
+    """
+
+    chi_wnn = chi_from_gg2_PH(g_w, g2_wnn)
+    chi0_wnn = chi0_from_gg2_PH(g_w, g2_wnn)
+
+    Gamma_wnn = inverse_PH(chi0_wnn) - inverse_PH(chi_wnn)    
+    
+    return Gamma_wnn
+
+
 def solve_local_bse(chi0_wnn, chi_wnn):
 
     r"""Solve the Bethe-Salpeter equation for the local vertex function 
@@ -78,7 +117,7 @@ def solve_local_bse(chi0_wnn, chi_wnn):
     gamma_wnn = inverse_PH(chi0_wnn) - inverse_PH(chi_wnn)    
     return gamma_wnn
 
-# ----------------------------------------------------------------------
+
 def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
 
     r""" Helper routine to reduce the number of fermionic Matsubara 
@@ -115,7 +154,7 @@ def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
 
     return chi_wnk_out
 
-# ----------------------------------------------------------------------
+
 def get_chi0_wnk(g_wk, nw=1, nwf=None):
     r""" Compute the generalized bare lattice susceptibility 
     :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_n, i\nu_n, \mathbf{k})` from the single-particle
@@ -213,7 +252,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     
     return chi0_wnk    
 
-# ----------------------------------------------------------------------
+
 def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
     r""" Compute the generalized bare lattice susceptibility 
     :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, i\nu_n, \mathbf{k})` from the single-particle
@@ -270,7 +309,7 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
 
     return chi0_nk    
         
-# ----------------------------------------------------------------------
+
 def solve_lattice_bse(g_wk, gamma_wnn):
     r""" Compute the generalized lattice susceptibility 
     :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega_n)` using the Bethe-Salpeter 
@@ -369,7 +408,7 @@ def solve_lattice_bse(g_wk, gamma_wnn):
 
     return chi_kw, chi0_kw
 
-# ----------------------------------------------------------------------
+
 def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
     r""" Compute the generalized lattice susceptibility 
     :math:`\chi_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, \mathbf{k})` using the Bethe-Salpeter 
@@ -476,7 +515,7 @@ def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
 
     return chi_k, chi0_k
  
-# ----------------------------------------------------------------------
+
 def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
 
     fmesh_huge, kmesh = g_wk.mesh.components
@@ -506,7 +545,7 @@ def solve_lattice_bse_depr(g_wk, gamma_wnn, tail_corr_nwf=-1):
     
     return chi_kw
     
-# ----------------------------------------------------------------------
+
 def solve_lattice_bse_e_k_sigma_w(mu, e_k, sigma_w, gamma_wnn, tail_corr_nwf=-1):
 
     kmesh = e_k.mesh
