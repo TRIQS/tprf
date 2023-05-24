@@ -244,7 +244,7 @@ namespace triqs_tprf {
           auto den = f + idelta + fp - ekq(l);
 
           for (const auto &[a, b] : sigma_f.target_indices()) { 
-            auto W_spec = -1.0 / std::numbers::pi * (W_fk[fp, q](a, a, b, b) - v_k[q](a, a, b, b)).imag();
+            auto W_spec = -1.0 / M_PI * (W_fk[fp, q](a, a, b, b) - v_k[q](a, a, b, b)).imag();
             sigma_f[f](a, b) = sigma_f[f](a, b) 
                   + Ukq(a, l) * dagger(Ukq)(l, b) * (W_spec * num / den * fmesh.delta() / kmesh.size());            
           }
