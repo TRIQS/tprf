@@ -92,22 +92,22 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
   auto meshes_mpi = mpi_view(delta_wk.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-    auto &[w, k] = meshes_mpi(idx);
+    auto &[w, k] = meshes_mpi[idx];
 
     // This does not work due to problem in cppdlr
-    //auto g_Dck = dlr_coeffs_from_dlr_imfreq(g_wk[_,k]);
-    //auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_wk[_,-k]);
-    //auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_wk[_,k]);
+    //auto g_Dck = make_gf_dlr_coeffs(g_wk[_,k]);
+    //auto g_Dcmk = make_gf_dlr_coeffs(g_wk[_,-k]);
+    //auto delta_Dck = make_gf_dlr_coeffs(delta_wk[_,k]);
 
     g_Dw_t g_w({wmesh}, g_wk.target_shape());
     g_w() = g_wk[_,k];
-    auto g_Dck = dlr_coeffs_from_dlr_imfreq(g_w);
+    auto g_Dck = make_gf_dlr_coeffs(g_w);
     g_Dw_t g_w2({wmesh}, g_wk.target_shape());
     g_w2() = g_wk[_,-k];
-    auto g_Dcmk = dlr_coeffs_from_dlr_imfreq(g_w2);
+    auto g_Dcmk = make_gf_dlr_coeffs(g_w2);
     g_Dw_t delta_w({wmesh}, delta_wk.target_shape());
     delta_w() = delta_wk[_,k];
-    auto delta_Dck = dlr_coeffs_from_dlr_imfreq(delta_w);
+    auto delta_Dck = make_gf_dlr_coeffs(delta_w);
 
     for (auto [d, c] : F_wk.target_indices()) {
       for (auto [e, f] : delta_wk.target_indices()) {
@@ -202,10 +202,10 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_Dtr_t F_t
   auto delta_r_out = make_gf(std::get<1>(F_tr.mesh()), F_tr.target());
   delta_r_out *= 0.;
 
-  for (auto const &r : std::get<1>(F_tr.mesh())) {
+  for (auto r : std::get<1>(F_tr.mesh())) {
     g_Dt_t F_t({tmesh}, F_tr.target_shape());
     F_t() = F_tr[_, r];
-    auto F_Dc = dlr_coeffs_from_dlr_imtime(F_t);
+    auto F_Dc = make_gf_dlr_coeffs(F_t);
     for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices())
         delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_Dc(0)(d, c);
   }

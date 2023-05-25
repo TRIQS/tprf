@@ -48,14 +48,14 @@ auto fourier_Dwr_to_Dtr_general_target(Gf_type g_wr) {
   auto r_arr = mpi_view(rmesh);
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
-    auto &r = r_arr(idx);
+    auto &r = r_arr[idx];
         
     auto g_w = make_gf<dlr_imfreq>({wmesh}, g_wr.target());
  
     g_w = g_wr[_, r];
 
-    auto g_c = dlr_coeffs_from_dlr_imfreq(g_w);
-    auto g_t = dlr_imtime_from_dlr_coeffs(g_c);
+    auto g_c = make_gf_dlr_coeffs(g_w);
+    auto g_t = make_gf_dlr_imtime(g_c);
       
     g_tr[_, r] = g_t;
   }
@@ -79,14 +79,14 @@ auto fourier_Dtr_to_Dwr_general_target(Gf_type g_tr) {
   auto r_arr = mpi_view(rmesh);
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < r_arr.size(); idx++) {
-    auto &r = r_arr(idx);
+    auto &r = r_arr[idx];
 
     auto g_t = make_gf<dlr_imtime>({tmesh}, g_tr.target());
  
     g_t = g_tr[_, r];
 
-    auto g_c = dlr_coeffs_from_dlr_imtime(g_t);
-    auto g_w = dlr_imfreq_from_dlr_coeffs(g_c);
+    auto g_c = make_gf_dlr_coeffs(g_t);
+    auto g_w = make_gf_dlr_imfreq(g_c);
 
     g_wr[_, r] = g_w;
   }

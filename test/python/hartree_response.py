@@ -10,7 +10,7 @@ from triqs.operators import n, c, c_dag, Operator, dagger
 from triqs.stat.histograms import Histogram
 
 from triqs.operators.util.op_struct import set_operator_structure
-from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
+from triqs.operators.util.U_matrix import U_matrix_kanamori
 from triqs.operators.util.hamiltonians import h_int_kanamori
 
 # ----------------------------------------------------------------------

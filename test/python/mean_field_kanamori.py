@@ -105,7 +105,7 @@ print()
 U = 2.4
 J = 0.6
 
-from triqs.operators.util.U_matrix import U_matrix_kanamori, U_matrix
+from triqs.operators.util.U_matrix import U_matrix_kanamori
 from triqs.operators.util.hamiltonians import h_int_kanamori
 
 n_orb = 2

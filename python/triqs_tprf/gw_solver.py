@@ -61,7 +61,7 @@ from triqs_tprf.ase_timing import Timer, timer
 
 from triqs.gf.meshes import MeshDLRImFreq
 from triqs_tprf.lattice import dlr_on_imfreq
-from triqs.gf.gf_fnt import dlr_coeffs_from_dlr_imfreq
+from triqs.gf.gf_factories import make_gf_dlr_coeffs
 
 
 class GWSolver():
@@ -462,7 +462,7 @@ def pade_analytical_continuation(
             g_f = gf_tensor_to_matrix(g_f)
 
         if type(g_w.mesh) == MeshDLRImFreq:
-            g_c = dlr_coeffs_from_dlr_imfreq(g_w)
+            g_c = make_gf_dlr_coeffs(g_w)
             small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
             g_w = dlr_on_imfreq(g_c, small_mesh)
             

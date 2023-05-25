@@ -43,9 +43,9 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
   auto rmesh = std::get<1>(g_tr.mesh());
   
   int nb = g_tr.target().shape()[0];
-  double beta = tmesh.domain().beta;
+  double beta = tmesh.beta();
 
-  dlr_imtime btmesh{beta, Boson, tmesh.lambda(), tmesh.eps()};
+  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps()};
   chi_Dtr_t chi0_tr{{btmesh, rmesh}, {nb, nb, nb, nb}};
 
   auto g_target = g_tr.target();
@@ -55,7 +55,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
 
 #pragma omp parallel for 
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto & r = arr(idx);
+    auto & r = arr[idx];
 
     auto chi0_t = make_gf<dlr_imtime>(btmesh, chi_target);
     auto g_pr_t = make_gf<dlr_imtime>(tmesh, g_target);
@@ -64,13 +64,13 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr[_, -r];
+      g_mr_t = g_tr(_, -r);
     }
 
-    auto g_pr_c = dlr_coeffs_from_dlr_imtime(g_pr_t);
-    auto g_mr_c = dlr_coeffs_from_dlr_imtime(g_mr_t);
+    auto g_pr_c = make_gf_dlr_coeffs(g_pr_t);
+    auto g_mr_c = make_gf_dlr_coeffs(g_mr_t);
     
-    for (auto const &t : tmesh)
+    for (auto t : tmesh)
       chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
 
 #pragma omp critical

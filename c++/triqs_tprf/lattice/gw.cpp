@@ -66,10 +66,10 @@ namespace triqs_tprf {
     auto arr = mpi_view(kmesh);
 #pragma omp parallel for
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &k = arr(idx);
+      auto &k = arr[idx];
       auto g_w = make_gf<dlr_imfreq>({wmesh}, g_wk.target());
       g_w  = g_wk(_, k);
-      rho_k[k] = density(dlr_coeffs_from_dlr_imfreq(g_w));
+      rho_k[k] = density(make_gf_dlr_coeffs(g_w));
     }
   
     rho_k = mpi::all_reduce(rho_k);

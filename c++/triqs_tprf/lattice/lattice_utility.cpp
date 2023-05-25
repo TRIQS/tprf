@@ -32,7 +32,7 @@ namespace triqs_tprf {
   template<typename g_out_t, typename g_in_t, typename mesh_t>  
   g_out_t dlr_on_immesh_template(g_in_t g_c, mesh_t mesh) {
     g_out_t g_out(mesh, g_c.target_shape());
-    for (auto const &p : mesh) {
+    for (auto p : mesh) {
       g_out[p] = g_c(p);
     }
     return g_out;

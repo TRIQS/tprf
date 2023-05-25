@@ -11,7 +11,7 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
 
-from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone
+from triqs.gf import Gf, MeshImFreq, MeshBrZone
 from triqs.gf.meshes import MeshDLRImFreq, MeshDLRCoeffs
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
@@ -27,7 +27,7 @@ def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, decimal=7):
     g_ref_wk =Gf(mesh=g_wk.mesh, target_shape=g_wk.target_shape)
     for k in kmesh:
         g_Dw = Gf(mesh=DLRwmesh, target_shape=g_Dwk.target_shape)
-        g_Dw.data[:] = g_Dwk.data[:,k.linear_index,:]
+        g_Dw.data[:] = g_Dwk.data[:,k.data_index,:]
         g_Dc = dlr_coeffs_from_dlr_imfreq(g_Dw)
         g_ref_wk[:,k] = dlr_on_imfreq(g_Dc, wmesh)
     
@@ -40,7 +40,7 @@ def compare_g_Dtk_and_g_tk(g_Dtk, g_tk, decimal=7):
     g_ref_tk =Gf(mesh=g_tk.mesh, target_shape=g_tk.target_shape)
     for k in kmesh:
         g_Dt = Gf(mesh=DLRtmesh, target_shape=g_Dtk.target_shape)
-        g_Dt.data[:] = g_Dtk.data[:,k.linear_index,:]
+        g_Dt.data[:] = g_Dtk.data[:,k.data_index,:]
         g_Dc = dlr_coeffs_from_dlr_imtime(g_Dt)
         g_ref_tk[:,k] = dlr_on_imtime(g_Dc, tmesh)
     
@@ -69,7 +69,7 @@ def eliashberg_compare_dlr_and_direct():
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
+    kmesh = MeshBrZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
     
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
@@ -78,7 +78,7 @@ def eliashberg_compare_dlr_and_direct():
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
-        Enk.data[k.linear_index,:] = 0.1 * knorm**2.0
+        Enk.data[k.data_index,:] = 0.1 * knorm**2.0
 
     print(np.max(Enk.data[:].real))
     print(np.max(Enk.data[:].real) * beta)
@@ -90,12 +90,12 @@ def eliashberg_compare_dlr_and_direct():
     print('--> delta_wk')
     delta_wk = Gf(mesh=g0_wk.mesh, target_shape=g0_wk.target_shape)
     for w in wmesh:
-        wii = w.linear_index
+        wii = w.data_index
         delta_wk.data[wii,:] = 1.0 / (w.value + Enk.data[:])
 
     delta_Dwk = Gf(mesh=g0_Dwk.mesh, target_shape=g0_Dwk.target_shape)
     for w in DLRwmesh:
-        wii = w.linear_index
+        wii = w.data_index
         delta_Dwk.data[wii,:] = 1.0 / (w.value + Enk.data[:])
 
     compare_g_Dwk_and_g_wk(delta_Dwk, delta_wk)
@@ -114,12 +114,12 @@ def eliashberg_compare_dlr_and_direct():
 
     I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
     for nu in numesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         I_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
 
     I_Dwk = Gf(mesh=MeshProduct(DLRnumesh, kmesh), target_shape=[1]*4)
     for nu in DLRnumesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         I_Dwk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
 
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
