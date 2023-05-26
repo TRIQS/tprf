@@ -341,7 +341,7 @@ def test_gw_hubbard_dimer(verbose=False):
         from triqs.plot.mpl_interface import oplot, oploti, oplotr, plt
 
         def pp(g, style, label=None, filter=lambda x: x):
-            w = np.array([ w.value for w in g.mesh ])
+            w = np.array([ complex(w.value) for w in g.mesh ])
             x = w.imag
             y = filter( np.squeeze(g.data) )
 

@@ -67,8 +67,8 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
       g_mr_t = g_tr(_, -r);
     }
 
-    auto g_pr_c = make_gf_dlr_coeffs(g_pr_t);
-    auto g_mr_c = make_gf_dlr_coeffs(g_mr_t);
+    auto g_pr_c = make_gf_dlr(g_pr_t);
+    auto g_mr_c = make_gf_dlr(g_mr_t);
     
     for (auto t : tmesh)
       chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);

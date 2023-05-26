@@ -11,11 +11,11 @@ from triqs_tprf.lattice import fourier_wr_to_tr
 
 
 from triqs.gf import Gf, MeshImFreq, MeshBrZone
-from triqs.gf.meshes import MeshDLRImFreq, MeshDLRCoeffs
+from triqs.gf.meshes import MeshDLRImFreq, MeshDLR
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
-from triqs.gf.gf_fnt import dlr_coeffs_from_dlr_imfreq, dlr_coeffs_from_dlr_imtime
+from triqs.gf.gf_factoreis import make_gf_dlr
 
 # ----------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ def dlr_wk_on_imfreq_wk(g_Dwk, wmesh):
     for k in kmesh:
         g_Dw = Gf(mesh=DLRwmesh, target_shape=g_Dwk.target_shape)
         g_Dw.data[:] = g_Dwk.data[:,k.data_index,:]
-        g_Dc = dlr_coeffs_from_dlr_imfreq(g_Dw)
+        g_Dc = make_gf_dlr(g_Dw)
         g_wk[:,k] = dlr_on_imfreq(g_Dc, wmesh)
 
     return g_wk
@@ -49,7 +49,7 @@ def compare_g_Dtk_and_g_tk(g_Dtk, g_tk, decimal=7):
     for k in kmesh:
         g_Dt = Gf(mesh=DLRtmesh, target_shape=g_Dtk.target_shape)
         g_Dt.data[:] = g_Dtk.data[:,k.data_index,:]
-        g_Dc = dlr_coeffs_from_dlr_imtime(g_Dt)
+        g_Dc = make_gf_dlr(g_Dt)
         g_ref_tk[:,k] = dlr_on_imtime(g_Dc, tmesh)
     
     np.testing.assert_array_almost_equal(g_tk.data[:], g_ref_tk.data[:], decimal=decimal)

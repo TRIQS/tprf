@@ -132,7 +132,7 @@ typedef gf<dlr_imtime, matrix_valued> g_Dt_t;
 typedef g_Dt_t::const_view_type g_Dt_cvt;
 typedef g_Dt_t::view_type g_Dt_vt;
 
-typedef gf<dlr_coeffs, matrix_valued> g_Dc_t;
+typedef gf<dlr, matrix_valued> g_Dc_t;
 typedef g_Dc_t::const_view_type g_Dc_cvt;
 typedef g_Dc_t::view_type g_Dc_vt;
 
@@ -250,7 +250,7 @@ typedef gf<dlr_imfreq, tensor_valued<4>> chi_Dw_t;
 typedef chi_Dw_t::const_view_type chi_Dw_cvt;
 typedef chi_Dw_t::view_type chi_Dw_vt;
 
-typedef gf<dlr_coeffs, tensor_valued<4>> chi_Dc_t;
+typedef gf<dlr, tensor_valued<4>> chi_Dc_t;
 typedef chi_Dc_t::const_view_type chi_Dc_cvt;
 typedef chi_Dc_t::view_type chi_Dc_vt;
 

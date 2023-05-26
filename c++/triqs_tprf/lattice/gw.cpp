@@ -69,7 +69,7 @@ namespace triqs_tprf {
       auto &k = arr[idx];
       auto g_w = make_gf<dlr_imfreq>({wmesh}, g_wk.target());
       g_w  = g_wk(_, k);
-      rho_k[k] = density(make_gf_dlr_coeffs(g_w));
+      rho_k[k] = density(make_gf_dlr(g_w));
     }
   
     rho_k = mpi::all_reduce(rho_k);

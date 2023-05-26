@@ -54,7 +54,7 @@ auto fourier_Dwr_to_Dtr_general_target(Gf_type g_wr) {
  
     g_w = g_wr[_, r];
 
-    auto g_c = make_gf_dlr_coeffs(g_w);
+    auto g_c = make_gf_dlr(g_w);
     auto g_t = make_gf_dlr_imtime(g_c);
       
     g_tr[_, r] = g_t;
@@ -85,7 +85,7 @@ auto fourier_Dtr_to_Dwr_general_target(Gf_type g_tr) {
  
     g_t = g_tr[_, r];
 
-    auto g_c = make_gf_dlr_coeffs(g_t);
+    auto g_c = make_gf_dlr(g_t);
     auto g_w = make_gf_dlr_imfreq(g_c);
 
     g_wr[_, r] = g_w;
