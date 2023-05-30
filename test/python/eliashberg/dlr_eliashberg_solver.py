@@ -15,7 +15,7 @@ from triqs.gf.meshes import MeshDLRImFreq, MeshDLR
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
-from triqs.gf.gf_factoreis import make_gf_dlr
+from triqs.gf.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
 
