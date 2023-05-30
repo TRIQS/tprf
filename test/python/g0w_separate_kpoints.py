@@ -34,7 +34,7 @@ def test_gw_separate_kpoints():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
+    kmesh = MeshBrZone(bz, [nk, nk, nk])
     fmesh = MeshReFreq(wmin, wmax, nw)
 
     print('--> lattice_dyson_g0_wk')

@@ -11,12 +11,11 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_wk
 
-bz = BrillouinZone(BravaisLattice([[1,0],[0,1]]))
+bl = BravaisLattice([[1,0],[0,1]])
+bz = BrillouinZone(bl)
 
-periodization_matrix = np.diag(np.array([10, 10, 1], dtype=int))
-
-bzmesh = MeshBrZone(bz, periodization_matrix)
-lmesh = MeshCycLat(bz.lattice, periodization_matrix)
+lmesh = MeshCycLat(lattice=bl, dims=[10, 10, 1])
+bzmesh = MeshBrZone(bz=bz, dims=[10, 10, 1])
 
 e_k = Gf(mesh=bzmesh, target_shape=[1, 1])
 

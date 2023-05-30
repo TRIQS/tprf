@@ -153,11 +153,8 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
     ngb = nbytes / 1024.**3
     print(('Approx. Memory Utilization: %2.2f GB\n' % ngb))
     
-    periodization_matrix = np.diag(np.array(list(nk), dtype=int))
-    #print 'periodization_matrix =\n', periodization_matrix
-
     bz = BrillouinZone(tb_lattice.bl)
-    bzmesh = MeshBrZone(bz, periodization_matrix)
+    bzmesh = MeshBrZone(bz, nk)
 
     print('--> ek')
     e_k = ek_tb_dispersion_on_bzmesh(tb_lattice, bzmesh, bz)
@@ -438,7 +435,6 @@ def extend_data_on_boundary(values, nk):
 
     # -- extended cube
 
-    #nk = np.diag(periodization_matrix)
     nk = np.array(nk)
 
     # -- this adds points on the boundary

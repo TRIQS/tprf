@@ -45,8 +45,7 @@ def test_add_fake_bosonic_mesh_with_gf_k_with_beta(bzmesh):
 
 if __name__ == "__main__":
     bz = BrillouinZone(BravaisLattice([[1, 0], [0, 1]]))
-    periodization_matrix = np.diag(np.array([10, 10, 1], dtype=int))
-    bzmesh = MeshBrZone(bz, periodization_matrix)
+    bzmesh = MeshBrZone(bz, [10, 10, 1])
 
     test_add_fake_bosonic_mesh_with_gf_nk(bzmesh)
     test_add_fake_bosonic_mesh_with_gf_k_without_beta(bzmesh)

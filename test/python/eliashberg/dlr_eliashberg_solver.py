@@ -77,7 +77,7 @@ def test_dlr_eliashberg_solver():
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
+    kmesh = MeshBrZone(bz, [nk, nk, nk])
     
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)

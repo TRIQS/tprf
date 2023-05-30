@@ -113,8 +113,7 @@ def make_calc():
     # -- Setup dummy lattice Green's function equal to local Green's function
     
     bz = BrillouinZone(BravaisLattice(units=np.eye(3), orbital_positions=[(0,0,0)]))
-    periodization_matrix = np.diag(np.array(list([1]*3), dtype=np.int32))
-    kmesh = MeshBrZone(bz, periodization_matrix)    
+    kmesh = MeshBrZone(bz, [1,1,1])
     wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nwf_gf)
 
     lat_rpa.g_wk = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=p.G_iw.target_shape)

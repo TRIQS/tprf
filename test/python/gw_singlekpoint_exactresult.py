@@ -48,7 +48,7 @@ def test_gw_sigma_against_exact_Matsubara():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, [1, 1, 1])
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     numesh = MeshImFreq(beta, 'Boson', nw)
 
@@ -93,7 +93,7 @@ def test_gw_sigma_against_exact_realfreq():
     # Construct kmesh with only Gamma point
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, [1, 1, 1])
     fmesh = MeshReFreq(wmin, wmax, nw)
 
     print('--> lattice_dyson_g0_wk')
