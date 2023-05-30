@@ -178,7 +178,7 @@ namespace triqs_tprf {
     
     .. math::
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
-          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
+          U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           W^{(spec)}_{ab}(\omega', \mathbf{q})
           \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
           
@@ -214,7 +214,7 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{bl}(\mathbf{k}+\mathbf{q}) U^\dagger_{la}(\mathbf{k}+\mathbf{q})
+          U_{al}(\mathbf{k}+\mathbf{q}) U^\dagger_{lb}(\mathbf{k}+\mathbf{q})
           V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
 
     where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
@@ -253,10 +253,10 @@ namespace triqs_tprf {
     
     .. math::
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
-          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
+          U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l}) \\
         + \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
-          U_{bl}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{la}(\mathbf{k}+\mathbf{q})
+          U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           W^{(spec)}_{ab}(\omega', \mathbf{q})
           \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
           
