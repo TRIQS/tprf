@@ -18,6 +18,7 @@ set(all_tests
   gw_hubbard_atom_hf
   gw_hubbard_dimer_hf
   gw_singlekpoint_exactresult
+  gw_singlekpoint_twoband
   gw_compare_spectralRep_and_direct
   gw_fk
   g0w_separate_kpoints
