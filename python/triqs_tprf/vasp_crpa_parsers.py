@@ -23,7 +23,7 @@ def read_vasp_crpa_vq_to_ndarray(path, prefix, verbose=False, orbsub=[]):
             data = np.vstack((data, d))
 
     q = data[:, :3]
-    idxs = np.array(data[:, 3:7], dtype=np.int)
+    idxs = np.array(data[:, 3:7], dtype=np.int64)
     vals = data[:, 7] + 1.j * data[:, 8]
 
     norb = idxs.max()
@@ -88,7 +88,7 @@ def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
    
     # note: np.rint() absolutely imporant to have correct
     #       rounding behaviour
-    tmp = np.array(np.rint(Q * kpts[None, :]), dtype=np.int)
+    tmp = np.array(np.rint(Q * kpts[None, :]), dtype=np.int64)
     I = [tuple(tmp[i]) for i in range(Q.shape[0])]
 
     for qidx, i in enumerate(I):
@@ -109,7 +109,7 @@ def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
             q = get_relative_k_from_absolute(k.value, kunits)
             # note: np.rint() absolutely imporant to have correct
             #       rounding behaviour
-            j = tuple(np.array(np.rint(kpts * q), dtype=np.int))
+            j = tuple(np.array(np.rint(kpts * q), dtype=np.int64))
        
             if i == j: 
                 u_q.data[k.data_index,:] = U_Q[qidx]

@@ -332,7 +332,7 @@ def get_relative_k_from_absolute(k_vec, units):
 
 # ----------------------------------------------------------------------
 def get_kidx_from_k_vec_relative(k_vec_rel, nk):
-    kidx = np.array(np.round(k_vec_rel * np.array(nk)[None, :]), dtype=np.int)
+    kidx = np.array(np.round(k_vec_rel * np.array(nk)[None, :]), dtype=np.int64)
     return kidx
 
 # ----------------------------------------------------------------------
