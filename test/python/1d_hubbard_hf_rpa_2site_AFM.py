@@ -61,10 +61,10 @@ if __name__ == '__main__':
     
     P = np.array([[ 2 ]]) 
     
-    Units_prim = np.array(t_r_prim.Units)
-    print('Units_prim =\n', Units_prim)
-    Units = np.dot(P, Units_prim)
-    print('Units =\n', Units)
+    units_prim = np.array(t_r_prim.units)
+    print('units_prim =\n', units_prim)
+    units = np.dot(P, units_prim)
+    print('units =\n', units)
     
     t_r = TBSuperLattice(t_r_prim, P)
 
