@@ -4,7 +4,14 @@ Authors
 *******
 
 TPRF has been written by Hugo U.R. Strand with TRIQS-library support from N. Wentzell and O. Parcollet.
-The Eliashberg section was contributed by Stefan Käser with support from H. U.R. Strand, N. Wentzell, O. Parcollet and P. Dumitrescu.
+
+The Eliashberg routines was contributed by S. Käser with support from H. U.R. Strand, N. Wentzell, O. Parcollet and P. Dumitrescu.
+
+The GW routines has been developed by Y. t' Veld and M. Rösner with support from H. U.R. Strand and N. Wentzell.
+
+The extension of the Eliashberg routines to the DLR basis was done by Y. t' Veld and the DLR extension of GW was performed by H. U.R. Strand.
+
+Improvements to the documentation has been contributed by O. Gingras.
 
 License
 =======
