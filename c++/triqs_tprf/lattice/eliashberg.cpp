@@ -29,6 +29,8 @@
 #include "gf.hpp"
 #include "fourier.hpp"
 
+#include <triqs/utility/timer.hpp>
+
 namespace triqs_tprf {
 
 // Helper function computing F = GG \Delta
@@ -70,6 +72,10 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
+  triqs::utility::timer tmr_setup, tmr_dlr, tmr_interp, tmr_prod;
+
+  tmr_setup.start();
+
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
 
@@ -85,28 +91,43 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
   auto _ = all_t{};
 
+  tmr_setup.stop();
+
   auto meshes_mpi = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
     auto &k = meshes_mpi[idx];
 
+    tmr_dlr.start();
     // cppdlr can not handle non-contiguous gf-views
     //auto g_Dcmk = make_gf_dlr(g_wk[_,-k]);
 
     g_Dw_t g_w2({wmesh}, g_wk.target_shape());
     g_w2() = g_wk[_,-k];
     auto g_Dcmk = make_gf_dlr(g_w2);
+    tmr_dlr.stop();
 
     for(auto w : wmesh) {
+      tmr_interp.start();
       auto g_Dcmk_val = g_Dcmk(-w);
+
+      tmr_interp.stop();
+      tmr_prod.start();
       for (auto [d, c] : F_wk.target_indices()) {
         for (auto [e, f] : delta_wk.target_indices()) {
           F_wk[w, k](d, c) += g_wk[w, k](c, f) * g_Dcmk_val(d, e) * delta_wk[w, k](e, f);
         }
       }
+    
+      tmr_prod.stop();
     }
   }
 
+  std::cout << "setup  " << float(tmr_setup) << " sec\n";
+  std::cout << "dlr    " << float(tmr_dlr) << " sec\n";
+  std::cout << "interp " << float(tmr_interp) << " sec\n";
+  std::cout << "prod   " << float(tmr_prod) << " sec\n";
+  
   F_wk = mpi::all_reduce(F_wk);
 
   return F_wk;
