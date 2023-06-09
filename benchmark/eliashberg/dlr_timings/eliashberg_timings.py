@@ -11,7 +11,7 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
 from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone
-from triqs.gf.meshes import MeshDLRImFreq, MeshDLRCoeffs
+from triqs.gf.meshes import MeshDLRImFreq
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
@@ -32,17 +32,17 @@ def eliashberg_timings():
     beta = 10.0
     nk = 10
 
-    lamb = 1000
+    w_max = 100.
     eps = 1e-10
-    nw = int(lamb / (2.0 * np.pi) - 0.5) #50
+    nw = int(w_max * beta / (2.0 * np.pi) - 0.5) #50
 
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.diag(np.array([nk, nk, nk], dtype=int)))
+    kmesh = MeshBrillouinZone(bz, np.array([nk, nk, nk], dtype=int))
     
     wmesh = MeshImFreq(beta, 'Fermion', nw)
-    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', w_max, eps)
 
     print("  size linear mesh: %i"%len(wmesh))
     print("  size DLR mesh:    %i"%len(DLRwmesh))
@@ -53,7 +53,7 @@ def eliashberg_timings():
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
-        Enk.data[k.linear_index,:] = 0.1 * knorm**2.0
+        Enk.data[k.data_index,:] = 0.1 * knorm**2.0
 
     g0_wk = lattice_dyson_g0_wk(mu, Enk, wmesh)
     g0_Dwk = lattice_dyson_g0_wk(mu, Enk, DLRwmesh)
@@ -63,12 +63,12 @@ def eliashberg_timings():
     print('--> delta_wk')
     delta_wk = Gf(mesh=g0_wk.mesh, target_shape=g0_wk.target_shape)
     for w in wmesh:
-        wii = w.linear_index
+        wii = w.data_index
         delta_wk.data[wii,:] = 1.0 / (w.value + Enk.data[:])
 
     delta_Dwk = Gf(mesh=g0_Dwk.mesh, target_shape=g0_Dwk.target_shape)
     for w in DLRwmesh:
-        wii = w.linear_index
+        wii = w.data_index
         delta_Dwk.data[wii,:] = 1.0 / (w.value + Enk.data[:])
 
 
@@ -91,16 +91,16 @@ def eliashberg_timings():
 
     print('--> setup interaction vertex')
     numesh = MeshImFreq(beta, 'Boson', nw)
-    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
+    DLRnumesh = MeshDLRImFreq(beta, 'Boson', w_max, eps)
 
     I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
     for nu in numesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         I_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
 
     I_Dwk = Gf(mesh=MeshProduct(DLRnumesh, kmesh), target_shape=[1]*4)
     for nu in DLRnumesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         I_Dwk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
 
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)

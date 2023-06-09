@@ -70,14 +70,10 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
-  // Get rid of structured binding declarations in this file due to issue #11
-  //auto [wmesh, kmesh] = delta_wk.mesh();
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
 
   auto wmesh_gf = std::get<0>(g_wk.mesh());
-
-  //auto cmesh = triqs::mesh::dlr_coeffs(wmesh);
 
   if (wmesh.size() > wmesh_gf.size())
       TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
@@ -89,29 +85,24 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
   auto _ = all_t{};
 
-  auto meshes_mpi = mpi_view(delta_wk.mesh());
+  auto meshes_mpi = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-    auto &[w, k] = meshes_mpi[idx];
+    auto &k = meshes_mpi[idx];
 
-    // This does not work due to problem in cppdlr
-    //auto g_Dck = make_gf_dlr(g_wk[_,k]);
+    // cppdlr can not handle non-contiguous gf-views
     //auto g_Dcmk = make_gf_dlr(g_wk[_,-k]);
-    //auto delta_Dck = make_gf_dlr(delta_wk[_,k]);
 
-    g_Dw_t g_w({wmesh}, g_wk.target_shape());
-    g_w() = g_wk[_,k];
-    auto g_Dck = make_gf_dlr(g_w);
     g_Dw_t g_w2({wmesh}, g_wk.target_shape());
     g_w2() = g_wk[_,-k];
     auto g_Dcmk = make_gf_dlr(g_w2);
-    g_Dw_t delta_w({wmesh}, delta_wk.target_shape());
-    delta_w() = delta_wk[_,k];
-    auto delta_Dck = make_gf_dlr(delta_w);
 
-    for (auto [d, c] : F_wk.target_indices()) {
-      for (auto [e, f] : delta_wk.target_indices()) {
-        F_wk[w, k](d, c) += g_Dck(w)(c, f) * g_Dcmk(-w)(d, e) * delta_Dck(w)(e, f);
+    for(auto w : wmesh) {
+      auto g_Dcmk_val = g_Dcmk(-w);
+      for (auto [d, c] : F_wk.target_indices()) {
+        for (auto [e, f] : delta_wk.target_indices()) {
+          F_wk[w, k](d, c) += g_wk[w, k](c, f) * g_Dcmk_val(d, e) * delta_wk[w, k](e, f);
+        }
       }
     }
   }
