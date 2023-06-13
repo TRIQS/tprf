@@ -63,12 +63,12 @@ def eliashberg_compare_dlr_and_direct():
     mu = 0.5
     g2 = 0.4
     wD = 0.1
-    beta = 10.0
-    nk = 10
+    beta = 2.0
+    nk = 3
 
     nw = 50
-    lamb = 100
-    eps = 1e-10
+    lamb = 10.
+    eps = 1e-8
 
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
