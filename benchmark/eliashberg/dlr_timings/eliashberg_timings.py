@@ -49,16 +49,23 @@ def eliashberg_timings():
 
 
 
-    print('--> lattice_dyson_g0_wk')
+    print('--> Enk')
+    t = time.time()
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
         Enk.data[k.data_index,:] = 0.1 * knorm**2.0
+    print(f'done {time.time() - t} s')
 
+    print('--> lattice_dyson_g0_wk')
+    t = time.time()
     g0_wk = lattice_dyson_g0_wk(mu, Enk, wmesh)
+    print(f'done {time.time() - t} s')
+
+    print('--> lattice_dyson_g0_wk (DLR)')
+    t = time.time()
     g0_Dwk = lattice_dyson_g0_wk(mu, Enk, DLRwmesh)
-
-
+    print(f'done {time.time() - t} s')
 
     print('--> delta_wk')
     delta_wk = Gf(mesh=g0_wk.mesh, target_shape=g0_wk.target_shape)
