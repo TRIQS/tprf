@@ -67,8 +67,6 @@ namespace triqs_tprf {
 
     auto arr = mpi_view(kmesh);
 
-    //for (auto k : kmesh) {
-
 #pragma omp parallel for 
     for (unsigned int idx = 0; idx < arr.size(); idx++) {
       auto &k = arr[idx];
@@ -84,21 +82,64 @@ namespace triqs_tprf {
     return {chi_dyn_wk, chi_const_k};
   }
 
-  g_fk_t add_dynamic_fk_and_static_k(g_fk_t g_dyn_fk, e_k_t g_stat_k) {
+  template<typename g_out_t, typename g_dyn_t, typename g_stat_t>  
+  g_out_t add_dynamic_and_static_template(g_dyn_t g_dyn_wk, g_stat_t g_stat_k) {
   
-  g_fk_t g_fk(g_dyn_fk.mesh(), g_dyn_fk.target_shape());
-  g_fk() = 0.0;
+  g_out_t g_wk(g_dyn_wk.mesh(), g_dyn_wk.target_shape());
+  g_wk() = 0.0;
 
-  auto arr = mpi_view(g_fk.mesh());
+  auto arr = mpi_view(g_wk.mesh());
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
-      auto &[f, k] = arr[idx];
+      auto &[w, k] = arr[idx];
 
-      for (const auto &[a, b] : g_fk.target_indices()) { g_fk[f, k](a, b) = g_dyn_fk[f, k](a, b) + g_stat_k[k](a, b); }
+      //for (const auto &[a, b] : g_wk.target_indices()) { g_wk[w, k](a, b) = g_dyn_wk[w, k](a, b) + g_stat_k[k](a, b); }
+      g_wk[w, k] = g_dyn_wk[w, k] + g_stat_k[k];
   }
-  g_fk = mpi::all_reduce(g_fk);
-  return g_fk;
+  g_wk = mpi::all_reduce(g_wk);
+  return g_wk;
   }
+
+  g_fk_t add_dynamic_and_static(g_fk_t g_dyn_fk, e_k_t g_stat_k) {
+    return add_dynamic_and_static_template<g_fk_t, g_fk_t, e_k_t>(g_dyn_fk, g_stat_k);
+  }
+
+  chi_fk_t add_dynamic_and_static(chi_fk_t chi_dyn_fk, chi_k_t chi_stat_k) {
+    return add_dynamic_and_static_template<chi_fk_t, chi_fk_t, chi_k_t>(chi_dyn_fk, chi_stat_k);
+  }
+
+  g_wk_t add_dynamic_and_static(g_wk_t g_dyn_wk, e_k_t g_stat_k) {
+    return add_dynamic_and_static_template<g_wk_t, g_wk_t, e_k_t>(g_dyn_wk, g_stat_k);
+  }
+
+  chi_wk_t add_dynamic_and_static(chi_wk_t chi_dyn_wk, chi_k_t chi_stat_k) {
+    return add_dynamic_and_static_template<chi_wk_t, chi_wk_t, chi_k_t>(chi_dyn_wk, chi_stat_k);
+  }
+
+  g_Dwk_t add_dynamic_and_static(g_Dwk_t g_dyn_wk, e_k_t g_stat_k) {
+    return add_dynamic_and_static_template<g_Dwk_t, g_Dwk_t, e_k_t>(g_dyn_wk, g_stat_k);
+  }
+
+  chi_Dwk_t add_dynamic_and_static(chi_Dwk_t chi_dyn_wk, chi_k_t chi_stat_k) {
+    return add_dynamic_and_static_template<chi_Dwk_t, chi_Dwk_t, chi_k_t>(chi_dyn_wk, chi_stat_k);
+  }
+
+//  g_fk_t add_dynamic_fk_and_static_k(g_fk_t g_dyn_fk, e_k_t g_stat_k) {
+//  
+//  g_fk_t g_fk(g_dyn_fk.mesh(), g_dyn_fk.target_shape());
+//  g_fk() = 0.0;
+//
+//  auto arr = mpi_view(g_fk.mesh());
+//#pragma omp parallel for
+//  for (int idx = 0; idx < arr.size(); idx++) {
+//      auto &[f, k] = arr[idx];
+//
+//      //for (const auto &[a, b] : g_fk.target_indices()) { g_fk[f, k](a, b) = g_dyn_fk[f, k](a, b) + g_stat_k[k](a, b); }
+//      g_fk[f, k] = g_dyn_fk[f, k] + g_stat_k[k];
+//  }
+//  g_fk = mpi::all_reduce(g_fk);
+//  return g_fk;
+//  }
 
   double fermi(double e) {
     if( e < 0 ) {

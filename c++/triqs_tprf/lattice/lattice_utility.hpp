@@ -46,13 +46,25 @@ namespace triqs_tprf {
   */
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk);
 
-  /** Adds a dynamic and a static matrix-valued Green's function.
+  /** Adds a dynamic and a static Green's function.
 
-  @param g_dyn_fk : general matrix-valued Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
-  @param g_stat_k : general matrix-valued Green's function :math:`G_{ab}(\mathbf{k})`.
-  @return g_fk : matrix-valued Green's function :math:`G_{ab}(\omega, \mathbf{k}) + G_{ab}(\mathbf{k})`.
+  @param g_dyn_fk : general Green's function :math:`G_{ab}(\omega, \mathbf{k})`.
+  @param g_stat_k : general Green's function :math:`G_{ab}(\mathbf{k})`.
+  @return g_fk : Green's function :math:`G_{ab}(\omega, \mathbf{k}) + G_{ab}(\mathbf{k})`.
   */
-  g_fk_t add_dynamic_fk_and_static_k(g_fk_t g_dyn_fk, e_k_t g_stat_k);
+  g_fk_t add_dynamic_and_static(g_fk_t g_dyn_fk, e_k_t g_stat_k);
+  chi_fk_t add_dynamic_and_static(chi_fk_t chi_dyn_fk, chi_k_t chi_stat_k);
+
+  /** Adds a dynamic and a static Green's function.
+
+  @param g_dyn_wk : general Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`.
+  @param g_stat_k : general Green's function :math:`G_{ab}(\mathbf{k})`.
+  @return g_wk : Green's function :math:`G_{ab}(i\omega_n, \mathbf{k}) + G_{ab}(\mathbf{k})`.
+  */
+  g_wk_t add_dynamic_and_static(g_wk_t g_dyn_wk, e_k_t g_stat_k);
+  chi_wk_t add_dynamic_and_static(chi_wk_t chi_dyn_wk, chi_k_t chi_stat_k);
+  g_Dwk_t add_dynamic_and_static(g_Dwk_t g_dyn_wk, e_k_t g_stat_k);
+  chi_Dwk_t add_dynamic_and_static(chi_Dwk_t chi_dyn_wk, chi_k_t chi_stat_k);
 
   /** Helper function to evaluate the Fermi-Dirac distribution function
 

@@ -403,7 +403,7 @@ namespace triqs_tprf {
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone kmesh) {
   auto sigma_stat_k = g0w_sigma(mu, beta, e_k, v_k, kmesh);
   auto sigma_dyn_fk = g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kmesh);
-  auto sigma_fk = add_dynamic_fk_and_static_k(sigma_dyn_fk, sigma_stat_k);
+  auto sigma_fk = add_dynamic_and_static(sigma_dyn_fk, sigma_stat_k);
   return sigma_fk;
   }
 

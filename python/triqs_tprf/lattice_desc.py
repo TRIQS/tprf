@@ -605,7 +605,12 @@ out
      Tuple of chi_dyn_wk, the dynamic part of chi, which converges to zero for :math:`\omega_n \rightarrow \infty`, and chi_const_k, the part of chi that is constant in Matsubara frequency space :math:`\chi(\mathbf{k})`.""")
 
 
-module.add_function ("triqs_tprf::g_fk_t triqs_tprf::add_dynamic_fk_and_static_k(triqs_tprf::g_fk_t g_dyn_fk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::g_fk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::g_fk_t g_dyn_fk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::chi_fk_t chi_dyn_fk, triqs_tprf::chi_k_t chi_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::g_wk_t g_dyn_wk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_wk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::chi_wk_t chi_dyn_wk, triqs_tprf::chi_k_t chi_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::g_Dwk_t g_dyn_wk, triqs_tprf::e_k_t g_stat_k)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::add_dynamic_and_static(triqs_tprf::chi_Dwk_t chi_dyn_wk, triqs_tprf::chi_k_t chi_stat_k)", doc = r"""Add documentation!""")
 
 module.add_function ("double triqs_tprf::fermi(double e)", doc = r"""Add documentation!""")
 
