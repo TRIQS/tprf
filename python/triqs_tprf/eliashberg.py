@@ -224,7 +224,14 @@ def preprocess_gamma_for_fft(Gamma_pp_wk, Gamma_pp_const_k=None):
         if(Gamma_pp_const_k is None):
             Gamma_pp_const_k = Gf(mesh=Gamma_pp_wk.mesh.components[1], target_shape=Gamma_pp_wk.target_shape)
             Gamma_pp_const_k.data[:] = 0.0
-        return dynamic_and_constant_to_tr(Gamma_pp_wk, Gamma_pp_const_k)
+
+        Gamma_pp_dyn_wk = Gamma_pp_wk.copy()
+        Gamma_pp_dyn_wk.data[:] = Gamma_pp_wk.data - Gamma_pp_const_k.data
+        Gamma_pp_dyn_tr, Gamma_pp_const_r = dynamic_and_constant_to_tr(
+            Gamma_pp_dyn_wk, Gamma_pp_const_k
+        )
+
+        return Gamma_pp_dyn_tr, Gamma_pp_const_r
 
     # -- Determine the dynamic and constant part via a tail fit
     # -- (This is done even if the constant term is given to get the specific Gf types)

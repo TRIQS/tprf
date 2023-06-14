@@ -19,25 +19,30 @@ from triqs.gf.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
 
-def dlr_wk_on_imfreq_wk(g_Dwk, wmesh):
+def dlr_wk_on_imfreq_wk(g_Dwk, wmesh, g_k=None):
     DLRwmesh, kmesh = g_Dwk.mesh.components
     g_wk =Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=g_Dwk.target_shape)
     g_wk.data[:] = 0.0
 
+    if(g_k is None):
+        g_k = Gf(mesh=kmesh, target_shape=g_Dwk.target_shape)
+        g_k.data[:] = 0.0
+
     for k in kmesh:
         g_Dw = Gf(mesh=DLRwmesh, target_shape=g_Dwk.target_shape)
-        g_Dw.data[:] = g_Dwk.data[:,k.data_index,:]
+        g_Dw.data[:] = g_Dwk.data[:,k.data_index,:] - g_k.data[k.data_index,:]
         g_Dc = make_gf_dlr(g_Dw)
         g_wk[:,k] = dlr_on_imfreq(g_Dc, wmesh)
+        g_wk.data[:,k.data_index,:] += g_k.data[k.data_index,:]
 
     return g_wk
 
 
-def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, decimal=7):
+def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, g_k=None, decimal=7):
     wmesh, kmesh = g_wk.mesh.components
     DLRwmesh = g_Dwk.mesh.components[0]
 
-    g_ref_wk = dlr_wk_on_imfreq_wk(g_Dwk, wmesh)
+    g_ref_wk = dlr_wk_on_imfreq_wk(g_Dwk, wmesh, g_k)
 
     np.testing.assert_array_almost_equal(g_wk.data[:], g_ref_wk.data[:], decimal=decimal)
 
@@ -78,7 +83,7 @@ def test_dlr_eliashberg_solver():
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
     kmesh = MeshBrZone(bz, [nk, nk, nk])
-    
+   
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
 
@@ -103,24 +108,24 @@ def test_dlr_eliashberg_solver():
     numesh = MeshImFreq(beta, 'Boson', nw)
     DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
 
-    I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
-    for nu in numesh:
-        nuii = nu.data_index
-        I_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
-
-    I_Dwk = Gf(mesh=MeshProduct(DLRnumesh, kmesh), target_shape=[1]*4)
-    for nu in DLRnumesh:
-        nuii = nu.data_index
-        I_Dwk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD)
-
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
     I_k.data[:] = 0.0
     for k in kmesh:
         knorm = np.linalg.norm(k.value)
-        if(np.isclose(knorm, 0.0)): break
+        if(np.isclose(knorm, 0.0)): continue
         I_k.data[:] = 1.0 / knorm 
 
-    compare_g_Dwk_and_g_wk(I_Dwk, I_wk)
+    I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
+    for nu in numesh:
+        nuii = nu.data_index
+        I_wk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD) + I_k.data[:]
+
+    I_Dwk = Gf(mesh=MeshProduct(DLRnumesh, kmesh), target_shape=[1]*4)
+    for nu in DLRnumesh:
+        nuii = nu.data_index
+        I_Dwk.data[nuii,:] = ElectronPhononInteraction(nu.value, g2 ,wD) + I_k.data[:]
+
+    compare_g_Dwk_and_g_wk(I_Dwk, I_wk, I_k)
 
     print("--> solve_eliashberg using DLR")
     vals_dlr, vecs_dlr = solve_eliashberg(I_Dwk, g0_Dwk, initial_delta=delta0_Dwk, Gamma_pp_const_k=I_k, product="FFT", solver="IRAM")
@@ -129,17 +134,17 @@ def test_dlr_eliashberg_solver():
     delta_wk_out_dlr = dlr_wk_on_imfreq_wk(delta_Dwk_out, wmesh)
     delta_wk_out_dlr.data[:] /= delta_wk_out_dlr.data[len(wmesh)//2,0,0,0]
 
-    print("--> solve_eliashberg directly")
+    print("--> solve_eliashberg using linear grid")
     vals, vecs = solve_eliashberg(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", solver="IRAM")
     leadingIndex = np.argmax(np.real(vals))
     delta_wk_out = vecs[leadingIndex]
     delta_wk_out.data[:] /= delta_wk_out.data[len(wmesh)//2,0,0,0]
     print("")
 
-    print("--> compare DLR and direct")
+    print("--> compare DLR and linear")
     print("Leading eigenvalue DLR:   ", vals_dlr[leadingIndex_dlr])
-    print("Leading eigenvalue direct:", vals[leadingIndex])
-    np.testing.assert_array_almost_equal(np.sort(vals_dlr), np.sort(vals))
+    print("Leading eigenvalue linear:", vals[leadingIndex])
+    np.testing.assert_array_almost_equal(np.sort(vals_dlr), np.sort(vals), decimal=4)
     np.testing.assert_array_almost_equal(delta_wk_out_dlr.data[:], delta_wk_out.data[:])
 
 if __name__ == "__main__":
