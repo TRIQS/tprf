@@ -89,7 +89,7 @@ def test_gw_sigma_against_exact_Matsubara():
     print('--> construct mesh and Enk')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)]*norb)
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, np.array([1, 1, 1], dtype=int))
     fmesh = MeshReFreq(wmin, wmax, nw)
     
     Enk = Gf(mesh=kmesh, target_shape=[norb]*2)   
@@ -105,7 +105,7 @@ def test_gw_sigma_against_exact_Matsubara():
     I_phon_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[norb]*4)
     I_phon_wk.data[:] = 0.0
     for nu in numesh:
-        nuii = nu.linear_index
+        nuii = nu.data_index
         for a in range(norb):
             for b in range(norb):
                 I_phon_wk.data[nuii,0,a,a,b,b] =  ElectronPhononInteraction(nu.value, g2[a,b], wD[a,b])
@@ -118,7 +118,7 @@ def test_gw_sigma_against_exact_Matsubara():
 
     sigma_ref_wk = Gf(mesh=sigma_wk.mesh, target_shape=sigma_wk.target_shape)
     for f in wmesh:
-        fii = f.linear_index
+        fii = f.data_index
         sigma_ref_wk.data[fii,:] = ExactSigma0D_multiband(f.value, beta, g2, wD, Eorb)
 
     np.testing.assert_array_almost_equal(sigma_wk.data[:], sigma_ref_wk.data[:], decimal=1e-6)
@@ -147,7 +147,7 @@ def test_gw_sigma_against_exact_realfreq(verbose=False):
     print('--> construct mesh and Enk')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)]*norb)
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, np.diag(np.array([1, 1,1], dtype=int)))
+    kmesh = MeshBrZone(bz, np.array([1, 1, 1], dtype=int))
     fmesh = MeshReFreq(wmin, wmax, nw)
     
     Enk = Gf(mesh=kmesh, target_shape=[norb]*2)   
@@ -159,7 +159,7 @@ def test_gw_sigma_against_exact_realfreq(verbose=False):
     print('--> bare electron-phonon interaction')
     I_phon_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=[norb]*4)
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         for a in range(norb):
             for b in range(norb):
                 I_phon_fk.data[fii,0,a,a,b,b] =  ElectronPhononInteraction(f.value + 1.0j*eta, g2[a,b], wD[a,b])
@@ -220,7 +220,7 @@ def test_gw_sigma_against_exact_realfreq(verbose=False):
     print('--> reference sigma')
     sigma_ref_fk = Gf(mesh=sigma_fk.mesh, target_shape=sigma_fk.target_shape)
     for f in fmesh:
-        fii = f.linear_index
+        fii = f.data_index
         sigma_ref_fk.data[fii,0,:] = ExactSigma0D_multiband(f.value + 1.0j*eta, beta, g2, wD, Eorb)
 
     if verbose:
