@@ -29,18 +29,12 @@
 #include "gf.hpp"
 #include "fourier.hpp"
 
-#include <triqs/utility/timer.hpp>
-
 namespace triqs_tprf {
 
 // Helper function computing F = GG \Delta
 
 template<typename F_out_t, typename g_t>  
 F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
-
-  triqs::utility::timer tmr;
-
-  tmr.start();
 
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
@@ -71,9 +65,6 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
 
   F_wk = mpi::all_reduce(F_wk);
 
-  tmr.stop();
-  std::cout << "eliashberg_g_delta_g_product (DLR) " << float(tmr) << " sec\n";
-  
   return F_wk;
 }
 
@@ -222,24 +213,13 @@ template<typename delta_out_t, typename chi_t, typename g_t>
 delta_out_t eliashberg_product_fft_template(chi_t Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
                                    g_t g_wk, g_t delta_wk) {
 
-  triqs::utility::timer tmr_gdg, tmr_Fft, tmr_eli_dyn, tmr_eli_const, tmr_dft;
-
-  tmr_gdg.start();
   auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
-  tmr_gdg.stop();
-  tmr_Fft.start();
   auto F_wr = fourier_wk_to_wr(F_wk);
   auto F_tr = fourier_wr_to_tr(F_wr);
-  tmr_Fft.stop();
 
-  tmr_eli_dyn.start();
   auto delta_tr_out = eliashberg_dynamic_gamma_f_product(Gamma_pp_dyn_tr, F_tr);
-  tmr_eli_dyn.stop();
-  tmr_eli_const.start();
   auto delta_r_out = eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr);
-  tmr_eli_const.stop();
 
-  tmr_dft.start();
   // FIXME
   // This raises warnings when used with random delta input, e.g. eigenvalue finder
   auto delta_wr_out = fourier_tr_to_wr(delta_tr_out);
@@ -248,15 +228,6 @@ delta_out_t eliashberg_product_fft_template(chi_t Gamma_pp_dyn_tr, chi_r_vt Gamm
   for (auto w : std::get<0>(delta_wr_out.mesh())) delta_wr_out[w, _] += delta_r_out;
 
   auto delta_wk_out = fourier_wr_to_wk(delta_wr_out);
-  tmr_dft.stop();
-
-  std::cout << "eliashberg_product_fft_template \n";
-  std::cout << "gdg " << float(tmr_gdg) << " sec\n";
-  std::cout << "Fft " << float(tmr_Fft) << " sec\n";
-  std::cout << "edy " << float(tmr_eli_dyn) << " sec\n";
-  std::cout << "eco " << float(tmr_eli_const) << " sec\n";
-  std::cout << "dft " << float(tmr_dft) << " sec\n";
-  
   return delta_wk_out;
 }
 
