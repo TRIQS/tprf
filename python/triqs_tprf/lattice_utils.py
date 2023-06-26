@@ -487,6 +487,7 @@ def k_space_path(paths, num=100, bz=None):
 
     for path in paths:
         ki, kf = path
+        ki, kf = np.asarray(ki), np.asarray(kf)
         x = np.linspace(0., 1., num=num)[:, None]
         k_vec = (1. - x) * ki[None, :] + x * kf[None, :]
 
