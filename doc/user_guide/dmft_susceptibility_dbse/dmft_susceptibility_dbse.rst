@@ -3,21 +3,29 @@
 Spin susceptibility in Sr2RuO4
 ==============================
 
+In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of https://doi.org/10.1103/PhysRevB.100.125120. We will use the reformulation of the (DMFT) lattice susceptibility using dual propagators, for details see https://arxiv.org/abs/2306.05157.
+
+The calculation is based on a Wannier model for the three bands crossing the Fermi level in Sr2RuO4. These bands have Ru-4d t2g symmetry and a Wannier interpolation with Wannier90 converges in just a few iterations, giving the band structure
+
+.. image:: figure_sro_band_structure.svg
+    :align: center
+
+see :download:`tight_binding_model.py <tight_binding_model.py>`.
+
+The Wannier Hamiltonian is combined with a local Kanamori interaction with Hubbard :math:`U=2.4` eV and Hund's :math:`J=0.4` eV and the self-consistent DMFT solution is determined using TRIQS/cthyb as impurity solver. The scripts for the DMFT solution are :download:`common.py <common.py>` and :download:`calc_sc_dmft.py <calc_sc_dmft.py>`.
+
 
 Wannier bandstructure
 ---------------------
 
-
-
-
-Self consistent DMFT 
---------------------
-
-.. literalinclude:: calc_sc_dmft.py
+.. literalinclude:: tight_binding_model.py
    :lines: 23-
 
-.. literalinclude:: common.py
+.. literalinclude:: plot_band_structure.py
    :lines: 23-
+
+.. image:: figure_sro_band_structure.svg
+    :align: center
 
 Impurity correlators from W2Dynamics
 ------------------------------------

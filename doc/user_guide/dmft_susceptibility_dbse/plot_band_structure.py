@@ -21,7 +21,6 @@
 ################################################################################
 
 from tight_binding_model import tight_binding_model
-
 t_r = tight_binding_model()
 
 G, M, X = [0., 0., 0.], [-0.25, 0.25, 0.25], [0., 0., 0.5]
@@ -29,23 +28,22 @@ labels = [r'$\Gamma$', r'$X$', r'$M$', r'$\Gamma$', ]
 paths = [(G, X), (X, M), (M, G),]
 
 from triqs_tprf.lattice_utils import k_space_path
-
 k_vecs, k_plot, K_plot = k_space_path(paths, bz=t_r.bz, num=32)
 
-from numpy.linalg import eigvalsh as eigv
-
-e_k_interp = [ eigv(t_r.tb.fourier(k)) for k in k_vecs ]
-
-n_k = 16
-e_k = t_r.fourier(t_r.get_kmesh(n_k=[n_k]*3))
-e_k_interp_ref = [ eigv(e_k(tuple(k))) for k in k_vecs @ t_r.bz.units ]
-
 import matplotlib.pyplot as plt
-
 plt.figure(figsize=(3.25*2, 3))
+
+from numpy.linalg import eigvalsh as eigv
+e_k_interp = [ eigv(t_r.tb.fourier(k)) for k in k_vecs ]
 plt.plot(k_plot, e_k_interp, '-k')
-plt.plot(k_plot, e_k_interp_ref, '-g', lw=3.5, alpha=0.25)
+
+e_k = t_r.fourier(t_r.get_kmesh(n_k=[16]*3))
+e_k_interp_ref = [ eigv(e_k(tuple(k))) for k in k_vecs @ t_r.bz.units ]
+plt.plot(k_plot, e_k_interp_ref, '-r', lw=0.5)
+
 plt.xticks(ticks=K_plot, labels=labels)
 plt.ylabel(r'$\epsilon(\mathbf{k})$')
-plt.grid(True); plt.tight_layout(); plt.show()
+plt.grid(True); plt.tight_layout();
+plt.savefig('figure_sro_band_structure.svg')
+plt.show()
 
