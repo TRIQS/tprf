@@ -262,7 +262,7 @@ def plot(filename, style='-', color=None, static_response=False, label=False, sk
         plt.text(p.K_plot[6], -0.1, r'$Y_0$', ha='left', va='bottom')
         plt.text(p.K_plot[9], -0.1, r'$M$', ha='left', va='bottom')
     
-    plt.legend(fontsize=8, loc='upper right', ncol=3)
+    plt.legend(loc='upper right', ncol=3)
     
     #plt.ylim([-0.1, 2])
     #plt.ylim([-0.1, p.SzSz.chi_interp.max() * 1.4])
@@ -287,7 +287,7 @@ if __name__ == '__main__':
             filename = f'./data/data_bse_nwf_{nwf}_nk_{nk}.h5'
             read_postprocess_and_write_depr(filename)
 
-    plt.figure(figsize=(3.25, 3.75))
+    plt.figure(figsize=(3.25*2, 3.75*1.5))
 
     from matplotlib.gridspec import GridSpec
     gs = GridSpec(
@@ -295,8 +295,8 @@ if __name__ == '__main__':
         width_ratios=[1],
         height_ratios=[1, 0.5],
         wspace=0.0, hspace=0.2,
-        bottom=0.13, top=0.98,
-        left=0.15, right=0.98,
+        bottom=0.10, top=0.98,
+        left=0.08, right=0.98,
         )
     
     plt.subplot(gs[0, 0])

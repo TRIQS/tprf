@@ -3,155 +3,53 @@
 Spin susceptibility in Sr2RuO4
 ==============================
 
-In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of https://doi.org/10.1103/PhysRevB.100.125120. We will use the reformulation of the (DMFT) lattice susceptibility using dual propagators, for details see https://arxiv.org/abs/2306.05157.
+In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of `PRB 100, 125120 (2019) <https://doi.org/10.1103/PhysRevB.100.125120>`_. We will use the reformulation of the (DMFT) lattice susceptibility using dual propagators, for details see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
 
 The calculation is based on a Wannier model for the three bands crossing the Fermi level in Sr2RuO4. These bands have Ru-4d t2g symmetry and a Wannier interpolation with Wannier90 converges in just a few iterations, giving the band structure
 
 .. image:: figure_sro_band_structure.svg
-    :align: center
+   :align: center
 
-see :download:`tight_binding_model.py <tight_binding_model.py>`.
+see :download:`tight_binding_model.py <tight_binding_model.py>` using the Wannier90 output :download:`sro_hr.dat <sro_hr.dat>`, :download:`sro.wout <sro.wout>`.
 
 The Wannier Hamiltonian is combined with a local Kanamori interaction with Hubbard :math:`U=2.4` eV and Hund's :math:`J=0.4` eV and the self-consistent DMFT solution is determined using TRIQS/cthyb as impurity solver. The scripts for the DMFT solution are :download:`common.py <common.py>` and :download:`calc_sc_dmft.py <calc_sc_dmft.py>`.
-
-
-Wannier bandstructure
----------------------
-
-.. literalinclude:: tight_binding_model.py
-   :lines: 23-
-
-.. literalinclude:: plot_band_structure.py
-   :lines: 23-
-
-.. image:: figure_sro_band_structure.svg
-    :align: center
-
-Impurity correlators from W2Dynamics
-------------------------------------
-
-.. literalinclude:: calc_g2.py
-   :lines: 23-
-
-.. literalinclude:: calc_tri.py
-   :lines: 23-
-
-.. literalinclude:: calc_chi.py
-   :lines: 23-
 
 Dual Bethe-Salpeter equation
 ----------------------------
 
+In order to use the dual Bethe-Salpeter equation for computing the lattice susceptiblity we need to sample not one but three different kinds of two-particle correlators of the DMFT impurity problem.
+
+1. The three frequency two particle Green's function :math:`g^{(4)}_{abcd}(\omega, \nu, \nu')`
+2. The two frequency two particle Green's function :math:`g^{(3)}_{abcd}(\omega, \nu)`
+3. The one frequency two particle Green's function, a.k.a. the susceptiblity :math:`g^{(2)}_{abcd}(\omega) = X_{abcd}(\omega)`
+
+Since the hybridization function of the Sr2RuO4 impurity problem is diagonal due to symmetry, it is not possible to sample all spin-orbital components :math:`abcd` of these correlators using partition function sampling Monte Carlo. Therefore we use the hybridization expansion with worm sampling as implemented in `W2Dynamics <https://github.com/w2dynamics/w2dynamics>`_ to sample these correlators, using the `TRIQS/w2dynamics_interface <https://github.com/triqs/w2dynamics_interface>`_. The example scripts for the sampling are :download:`calc_g2.py <calc_g2.py>`, :download:`calc_tri.py <calc_tri.py>`, and :download:`calc_chi.py <calc_chi.py>`.
+
+From :math:`g^{(4)}_{abcd}(\omega, \nu, \nu')` we compute the impurity reducible vertex function :math:`F_{abcd}(\omega, \nu, \nu')` and from :math:`g^{(3)}_{abcd}(\omega, \nu)` the three point vertex function :math:`L_{abcd}(\omega, \nu)` is obtained, see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_. Using the impurity susceptibility :math:`X_{abcd}(\omega)`, :math:`F`, and :math:`L` the lattice susceptibility :math:`\chi` is given by
+
+.. math::
+   \chi = X + L \frac{\tilde{\chi}^0}{1 - \tilde{\chi}^0 F} L
+
+where :math:`\tilde{\chi}^0` is the dual bubble propagator constructed from the non-local part of the single particle Green's function. Here is an example scirpt that performs these steps starting from the sampled propagators from W2Dynamics:
+
 .. literalinclude:: calc_dbse.py
    :lines: 23-
-   
+
+and also solves the traditional Bethe-Salpeter equation using the irreducible vertex :math:`\Gamma` for comparison.
+	   
+Solving both the dual Bethe-Salpeter equation (DBSE) and the Bethe-Salpeter equation (BSE) for a range of the Fermionic cut-off frequencies :math:`N_\nu` (the number of frequencies :math:`\nu` and :math:`\nu'` used) shows the superior convergence property of the dual Bethe-Salpeter equation
+
 .. image:: figure_sro_chi_bandpath.svg
    :align: center
-   :width: 400
-
-Plot script :download:`plot_dbse.py <plot_dbse.py>`
-
 	   
-Old
--------------------------------------------------------
+see  :download:`plot_dbse.py <plot_dbse.py>` for the plot script.
 
-In this guide we will compute the uniform magnetic susceptibility :math:`\chi = \chi(\mathbf{Q} = \mathbf{0})` of the single band Hubbard model on the square lattice with nearest neighbour hopping using dynamical mean-field theory (DMFT).
+Since the standard Bethe-Salpeter equation (BSE) only converges as :math:`1/N_\nu` the calculations at :math:`N_\nu = 4, 8, 16` are far from the :math:`N_\nu \rightarrow \infty` limit and requires extrapolation in order to obtain a quantiative correct result. However, using the dual Bethe-Salpeter equation (DBSE) implementation we observe a drastically improved convergence rate and already at :math:`N_\nu=4` the result is within 5% of the converged solution.
 
-We will do this in two very different ways from
+If you use the dual Bethe-Salpeter equation formulation in your work please cite `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
 
-1. self consistent DMFT calculations in applied fields, and from
-2. the lattice Bethe-Salpeter Equation using the DMFT local vertex.
+To do
+-----
 
-Since DMFT is thermodynamically consistent *[Hafermann et al., PRB 90, 235105 (2014)]* these two approaches gives the same susceptibility within error-bars.
-
-Lattice susceptibility from the Bethe-Salpeter Equation
--------------------------------------------------------
-
-Instead of multiple calculations in applied field the susceptibility :math:`\chi` can be obtained from a direct calculation of the two-particle susceptbility using the DMFT local vertex and the lattice Bethe-Salpeter equation.
-
-To this end one has to perform the steps
-
-1. compute the DMFT impurity two-particle Green's function :math:`G^{(2)}`,
-2. compute the DMFT impurity two-particle vertex :math:`\Gamma`, and
-3. solve the lattice Beht-Salpeter Equation for the lattice susceptibility :math:`\chi(\mathbf{Q})`.
-
-DMFT local vertex
-^^^^^^^^^^^^^^^^^
-
-To obtain the DMFT impurity magnetic vertex :math:`\Gamma_m` one first computes the DMFT impurity two-particle Green's function in the particle-hole channel :math:`G^{(2,PH)}_{abcd}(i\omega, i\nu, i\nu')`, where :math:`a,b,c,d` are spin-orbital indices. The two-particle Green's function can be sampled using `triqs_cthyb` and to compute the static susceptibility it is sufficient to only keep the zero Bosonic frequency :math:`\omega = 0`.
-
-For the single band model the magnetic susceptbility :math:`\chi_m` is directly related to :math:`G^{(2,PH)}` as
-
-.. math::
-   \chi_m(i\omega, i\nu, i\nu') =
-   G^{(2,PH)}_{\uparrow\uparrow\uparrow\uparrow}(i\omega, i\nu, i\nu')
-   -
-   G^{(2,PH)}_{\uparrow\uparrow\downarrow\downarrow}(i\omega, i\nu, i\nu')
-   \, ,
-
-and the magnetic bubble susceptibility :math:`\chi^{(0)}_m` is given by :math:`\chi^{(0)}_m(i\omega. i\nu, i\nu') = - \beta \delta_{\nu, \nu'} G(i\nu) G(i\omega + i\nu)`. The two susceptibilities are related by the impurity Bethe-Salpeter Equation giving the corresponding magetic vertex function :math:`\Gamma_m` as
-
-.. math::
-   \Gamma_m = [\chi^{(0)}_m]^{-1} - [\chi_m]^{-1}
-
-Starting from the self consistent DMFT solution at zero-field we run `triqs_cthyb` to sample the two-particle Green's function and then compute :math:`\chi_m`, :math:`\chi_m^{(0)}`, and :math:`\Gamma_m` see below
-   
-.. literalinclude:: calc_g2.py
-   :lines: 23-
-
-The resulting response functions are plotted below	   
-
-.. image:: figure_g2.svg
-    :align: center
-
-The visualization script is available here: :download:`plot_g2.py <plot_g2.py>`.
-
-Lattice Bethe-Salpeter Equation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Equipped with the DMFT local vertex :math:`\Gamma_m` it is possible to compute the DMFT lattice susceptibility :math:`\chi(\mathbf{Q})` from the lattice Bethe-Salpeter Equation (BSE)
-
-.. math::
-   \chi(\mathbf{Q}) = \chi_0(\mathbf{Q}) - \chi_0(\mathbf{Q}) \Gamma \chi(\mathbf{Q})
-   \, .
-
-TPRF comes with an OpenMP amd MPI parallelized BSE solver `triqs_tprf.bse.solve_lattice_bse`. However, the calculation is done with a fixed number of frequencies :math:`n_\nu` in the fermionic frequencies :math:`\nu` and :math:`\nu'`, and the solution converges only linearly with the size of the frequency window. Therefore we solve the BSE for a range of window sizes to enable extrapolation :math:`N_\nu \rightarrow \infty`.
-   
-.. literalinclude:: calc_bse.py
-   :lines: 23-
-
-The resuls along the high symmetry path of the Brillouin zone is shown below for fixed :math:`N_\nu` (left panel) and the extrapolation for the :math:`\Gamma`-point is also shown (right panel).
-	   
-.. image:: figure_bse.svg
-    :align: center
-
-The visulaization script is available here: :download:`plot_bse.py <plot_bse.py>`.
-
-The result for the homogeneous magnetic susceptbilitiy :math:`\chi(\mathbf{0})` from the BSE is
-
-.. math::
-   \chi_{\textrm{BSE}} = \lim_{N_\nu \rightarrow \infty} \chi(\mathbf{0}) \approx 0.3472
-
-in quantitative agreement with the applied field value.
-   
-Summary
--------
-
-Now we can compare the two results for the homogeneous static magnetic susceptibility, from
-
-1. the applied field calculation, and
-2. the BSE calculation.
-
-The results are in quantitative agreement
-
-.. math::
-   \chi_{\textrm{Field}} \approx 0.3479
-   \, ,
-
-.. math::
-   \chi_{\textrm{BSE}} \approx 0.3472
-   \, ,
-
-and the accuracy is limited by the stochastic Monte Carlo noise in the vertex. This can be improved further by increasing the number of samples in the `triqs_cthyb` two-particle Green's function calculation.
-
-Note, that the BSE approach is much more general than the applied field approach. The BSE calculation gives the whole momentum dependent lattice susceptibility :math:`\chi(\mathbf{Q})` and provides dynamical information when using finite Bosonic freqiencies :math:`|\omega| > 0`.
+- Either provide Quantum Espresso and Wannier90 input files to generate the wannier model, or provide the final hoppings as data files.
+- Resolve pydlr dependency in the self-consistent DMFT scripts.
