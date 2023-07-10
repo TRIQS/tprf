@@ -145,11 +145,19 @@ namespace triqs_tprf {
     return screened_interaction_from_generic_susceptibility<bubble>(PI_wk, V_wk);
   }
 
+  chi_Dwk_t dynamical_screened_interaction_W(chi_Dwk_cvt PI_wk, chi_Dwk_cvt V_wk) {
+    return screened_interaction_from_generic_susceptibility<bubble>(PI_wk, V_wk);
+  }
+
   chi_fk_t dynamical_screened_interaction_W(chi_fk_cvt PI_fk, chi_fk_cvt V_fk) {
     return screened_interaction_from_generic_susceptibility<bubble>(PI_fk, V_fk);
   }
 
   chi_wk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_wk_cvt chi_wk, chi_k_cvt V_k) {
+    return screened_interaction_from_generic_susceptibility<generalized>(chi_wk, V_k);
+  }
+
+  chi_Dwk_t dynamical_screened_interaction_W_from_generalized_susceptibility(chi_Dwk_cvt chi_wk, chi_k_cvt V_k) {
     return screened_interaction_from_generic_susceptibility<generalized>(chi_wk, V_k);
   }
 
