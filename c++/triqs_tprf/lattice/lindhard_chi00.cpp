@@ -31,7 +31,8 @@ namespace triqs_tprf {
   // ----------------------------------------------------
   // chi00 bubble in analytic form
 
-  chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu) {
+  template<typename chi_t, typename mesh_t>
+  chi_t lindhard_chi00_template(e_k_cvt e_k, mesh_t mesh, double mu) {
 
     if (mesh.statistic() != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
 
@@ -40,7 +41,7 @@ namespace triqs_tprf {
     auto kmesh = e_k.mesh();
     int nb     = e_k.target().shape()[0];
 
-    chi_wk_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
+    chi_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
     for (auto [w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
 
     for (auto k : mpi_view(kmesh)) {
@@ -91,6 +92,14 @@ namespace triqs_tprf {
     return chi_wk;
   }
 
+  chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu) {
+    return lindhard_chi00_template<chi_wk_t, mesh::imfreq>(e_k, mesh, mu);
+  }
+
+  chi_Dwk_t lindhard_chi00(e_k_cvt e_k, mesh::dlr_imfreq mesh, double mu) {
+    return lindhard_chi00_template<chi_Dwk_t, mesh::dlr_imfreq>(e_k, mesh, mu);
+  }
+  
   // ----------------------------------------------------
   // chi00 bubble in analytic form in real frequencies
 

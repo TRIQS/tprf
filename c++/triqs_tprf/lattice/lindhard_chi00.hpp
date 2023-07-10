@@ -95,6 +95,7 @@ namespace triqs_tprf {
        contribution (the last term on the last row).
 */
   chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu);
+  chi_Dwk_t lindhard_chi00(e_k_cvt e_k, mesh::dlr_imfreq mesh, double mu);
 
   /** Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
     

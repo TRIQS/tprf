@@ -489,6 +489,9 @@ out
      poles are non-degenerate. The degenerate case produces an additional frequency independent
      contribution (the last term on the last row).""")
 
+
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, triqs::mesh::dlr_imfreq mesh, double mu)")
+
 module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::lindhard_chi00 (triqs_tprf::e_k_cvt e_k, triqs::mesh::refreq mesh, double beta, double mu, double delta)", doc = r"""Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
 
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility
