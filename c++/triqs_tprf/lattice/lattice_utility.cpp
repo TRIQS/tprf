@@ -79,6 +79,8 @@ namespace triqs_tprf {
       for (auto w : wmesh) chi_dyn_wk[w, k] = chi_wk[w, k] - chi_const_k[k];
     }
 
+    chi_dyn_wk = mpi::all_reduce(chi_dyn_wk);
+    chi_const_k = mpi::all_reduce(chi_const_k);
     return {chi_dyn_wk, chi_const_k};
   }
 
