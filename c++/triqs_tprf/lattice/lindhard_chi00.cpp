@@ -44,11 +44,13 @@ namespace triqs_tprf {
     chi_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
     for (auto [w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
 
-    for (auto k : mpi_view(kmesh)) {
+    auto arr = mpi_view(kmesh);
 
 #pragma omp parallel for
-      for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
-        auto q = *std::next(kmesh.begin(), qidx);
+    for (unsigned int qidx = 0; qidx < kmesh.size(); qidx++) {
+      auto q = *std::next(kmesh.begin(), qidx);
+
+      for (auto k : arr) {
 
         // -- If this is moved out to the k-loop the threading breaks?!?
         matrix<std::complex<double>> e_k_mat(e_k[k] - mu);
