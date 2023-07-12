@@ -32,14 +32,12 @@ namespace triqs_tprf {
   // chi00 bubble in analytic form
 
   template<typename chi_t, typename mesh_t>
-  chi_t lindhard_chi00_template(e_k_cvt e_k, mesh_t mesh, double mu) {
-
-    if (mesh.statistic() != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
+  chi_t lindhard_chi00_template(e_k_cvt e_k, mesh_t mesh, double beta, double mu, double delta=0.) {
 
     auto wmesh = mesh;
-    auto beta  = wmesh.beta();
     auto kmesh = e_k.mesh();
     int nb     = e_k.target().shape()[0];
+    std::complex<double> idelta(0.0, delta);
 
     chi_t chi_wk{{wmesh, kmesh}, {nb, nb, nb, nb}};
     for (auto [w, k] : chi_wk.mesh()) chi_wk[w, k] = 0.;
@@ -70,7 +68,8 @@ namespace triqs_tprf {
               std::complex<double> total_factor;
 
               double tol = 1e-10;
-              if (abs(std::complex<double>(w)) < tol && abs(de) < tol) { // w=0, de=0, 2nd order pole
+              if (abs(std::complex<double>(w) + idelta) < tol && abs(de) < tol) {
+                // w=0, de=0, 2nd order pole
 
                 // -- analytic first derivative of the fermi distribution function
                 // -- evaluated at ek(i)
@@ -78,7 +77,7 @@ namespace triqs_tprf {
                 double cosh_be = cosh(0.5 * beta * ek(i));
                 total_factor   = beta / (4. * cosh_be * cosh_be);
               } else {
-                total_factor = dn / (w + de);
+                total_factor = dn / (w + idelta + de);
               }
 
               chi_wk[w, q](a, b, c, d) << chi_wk[w, q](a, b, c, d) + Uk(a, i) * dagger(Uk)(i, d) * Ukq(c, j) * dagger(Ukq)(j, b) * total_factor;
@@ -95,70 +94,17 @@ namespace triqs_tprf {
   }
 
   chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu) {
-    return lindhard_chi00_template<chi_wk_t, mesh::imfreq>(e_k, mesh, mu);
+    if (mesh.statistic() != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
+    return lindhard_chi00_template<chi_wk_t, mesh::imfreq>(e_k, mesh, mesh.beta(), mu);
   }
 
   chi_Dwk_t lindhard_chi00(e_k_cvt e_k, mesh::dlr_imfreq mesh, double mu) {
-    return lindhard_chi00_template<chi_Dwk_t, mesh::dlr_imfreq>(e_k, mesh, mu);
+    if (mesh.statistic() != Boson) TRIQS_RUNTIME_ERROR << "lindhard_chi00: statistic is incorrect.\n";
+    return lindhard_chi00_template<chi_Dwk_t, mesh::dlr_imfreq>(e_k, mesh, mesh.beta(), mu);
   }
-  
-  // ----------------------------------------------------
-  // chi00 bubble in analytic form in real frequencies
 
   chi_fk_t lindhard_chi00(e_k_cvt e_k, mesh::refreq mesh, double beta, double mu, double delta) {
-
-    auto fmesh = mesh;
-    auto kmesh = e_k.mesh();
-    int nb     = e_k.target().shape()[0];
-
-    chi_fk_t chi_fk{{mesh, kmesh}, {nb, nb, nb, nb}};
-
-    for (auto [f, k] : chi_fk.mesh()) chi_fk[f, k] = 0.;
-
-    std::complex<double> idelta(0.0, delta);
-
-    auto arr = mpi_view(kmesh);
-
-#pragma omp parallel for
-    for (int qidx = 0; qidx < kmesh.size(); qidx++) {
-      auto q = *std::next(kmesh.begin(), qidx);
-
-      for (auto k : arr) {
-
-        matrix<std::complex<double>> e_k_mat(e_k(k));
-        auto eig_k = linalg::eigenelements(e_k_mat);
-        auto ek    = eig_k.first;
-        auto Uk    = eig_k.second;
-
-        matrix<std::complex<double>> e_kq_mat(e_k(k + q));
-        auto eig_kq = linalg::eigenelements(e_kq_mat);
-        auto ekq    = eig_kq.first;
-        auto Ukq    = eig_kq.second;
-
-        for (int i : range(nb)) {
-          for (int j : range(nb)) {
-
-            double dn = fermi((ek(i) - mu) * beta) - fermi((ekq(j) - mu) * beta);
-            double de = ekq(j) - ek(i);
-
-            for (auto f : fmesh) {
-
-              chi_fk[f, q](a, b, c, d) << chi_fk[f, q](a, b, c, d)
-                    + Uk(a, i) * dagger(Uk)(i, d) * Ukq(c, j) * dagger(Ukq)(j, b) * dn / (f + idelta + de);
-
-            } // f
-
-          } // i
-        }   // j
-
-      }     // k (mpi)
-
-    } // q (omp)
-
-    chi_fk = mpi::all_reduce(chi_fk);
-    chi_fk /= kmesh.size();
-
-    return chi_fk;
+    return lindhard_chi00_template<chi_fk_t, mesh::refreq>(e_k, mesh, beta, mu, delta);
   }
-
+  
 } // namespace triqs_tprf
