@@ -1,7 +1,6 @@
 # ----------------------------------------------------------------------
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 #from triqs_tprf.lattice import lattice_dyson_g_wk
@@ -168,6 +167,8 @@ def test_gw_sigma_against_exact_realfreq(verbose=False):
     I_phon_k.data[:] = 0.0 
 
     if verbose:
+        import matplotlib.pyplot as plt
+
         print('--> plotting I_fk')
         fig = plt.figure(figsize=(12.0,3.0),dpi=300)
         
