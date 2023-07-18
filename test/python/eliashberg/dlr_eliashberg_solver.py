@@ -2,6 +2,8 @@
 
 import numpy as np
 
+import triqs.utility.mpi as mpi
+
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import dlr_on_imfreq, dlr_on_imtime
 from triqs_tprf.eliashberg import solve_eliashberg, semi_random_initial_delta

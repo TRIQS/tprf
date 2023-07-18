@@ -2,11 +2,13 @@
 
 import numpy as np
 
-from triqs_tprf.lattice import g0w_sigma, g0w_dynamic_sigma
+import triqs.utility.mpi as mpi
 
 from triqs.gf import Gf, MeshReFreq, MeshBrZone
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
+
+from triqs_tprf.lattice import g0w_sigma, g0w_dynamic_sigma
 
 # ----------------------------------------------------------------------
 

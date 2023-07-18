@@ -2,6 +2,8 @@
 
 import numpy as np
 
+import triqs.utility.mpi as mpi
+
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import eliashberg_g_delta_g_product, dynamic_and_constant_to_tr
 from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_constant
