@@ -151,16 +151,38 @@ g_fk_t lattice_dyson_g_fk(double mu, e_k_cvt e_k, g_f_cvt sigma_f, double delta)
 
 template<typename g_t, typename g_kt, typename sigma_t>
 g_t lattice_dyson_g_X(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
-  auto g_wk = lattice_dyson_g_Xk<g_kt, sigma_t>(mu, e_k, sigma, delta);
-  auto &[wmesh, kmesh] = g_wk.mesh();
 
-  g_t g_w(wmesh, e_k.target_shape());
+  auto const &freqmesh = [&sigma]() -> auto & {
+    if constexpr (sigma_t::arity == 1)
+      return sigma.mesh();
+    else
+      return std::get<0>(sigma.mesh());
+  }();
+
+  using scalar_t = e_k_cvt::scalar_t;
+  auto I = nda::eye<scalar_t>(e_k.target_shape()[0]);
+
+  std::complex<double> idelta(0.0, delta);  
+
+  g_t g_w(freqmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  for (auto [w, k] : mpi_view(g_wk.mesh())) g_w[w] += g_wk[w, k];
+  auto pmesh = mesh::prod(freqmesh, e_k.mesh());
 
+  auto arr = mpi_view(pmesh);
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &[w, k] = arr[idx];
+
+    array<scalar_t, 2> sigmaterm;
+    if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
+    else sigmaterm = sigma[w, k];
+
+    g_w[w] += inverse((w + idelta + mu)*I - e_k(k) - sigmaterm);
+  }
+  
   g_w = mpi::all_reduce(g_w);
-  g_w /= kmesh.size();
+  g_w /= e_k.mesh().size();
   return g_w;
 }
 
