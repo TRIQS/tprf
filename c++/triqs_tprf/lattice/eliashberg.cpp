@@ -49,8 +49,6 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
-  auto _ = all_t{};
-
   auto meshes_mpi = mpi_view(delta_wk.mesh());
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
@@ -73,7 +71,62 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
 }
 
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
-  return eliashberg_g_delta_g_product_template<g_Dwk_t, g_Dwk_vt>(g_wk, delta_wk);
+
+  // Performing the product of (G*G) * delta in DLR coefficient space
+  // removes spurious eigenvectors in the linearized Eliashberg equation.
+  // (H. U.R. Strand July 2023)
+
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
+  auto wmesh_gf = std::get<0>(g_wk.mesh());
+
+  if (wmesh.size() > wmesh_gf.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
+
+  auto F_wk = make_gf(delta_wk);
+  F_wk *= 0.;
+
+  auto mesh_mpi = mpi_view(kmesh);
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < mesh_mpi.size(); idx++){
+    auto & k = mesh_mpi[idx];
+
+    for (auto [d, c] : g_wk.target_indices()) {
+      for (auto [e, f] : delta_wk.target_indices()) {
+
+	auto gg_w = gf(wmesh);
+	auto d_w = gf(wmesh);
+	
+	for( auto w : wmesh ) {
+	  gg_w[w] = g_wk[w, k](c, f) * nda::conj(g_wk[w, -k](e, d));
+	  d_w[w] = delta_wk[w, k](e, f);
+	}
+
+	auto gg_c = make_gf_dlr(gg_w);
+	auto d_c = make_gf_dlr(d_w);
+
+	auto f_t = make_gf_dlr_imtime(d_c);
+
+	auto m = f_t.mesh();
+	f_t.data() = m.dlr_it().convolve(m.beta(), static_cast<cppdlr::statistic_t>(m.statistic()),
+					 gg_c.data(), d_c.data());
+
+	auto f_c = make_gf_dlr(f_t);
+	auto f_w = make_gf_dlr_imfreq(f_c);
+	  
+	for( auto w : wmesh ) {
+	  F_wk[w, k](d, c) += f_w[w];
+	}
+      }
+    }
+  }
+
+  F_wk = mpi::all_reduce(F_wk);
+
+  return F_wk;  
 }
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
