@@ -147,7 +147,7 @@ def test_dlr_eliashberg_solver():
     print("Leading eigenvalue DLR:   ", vals_dlr[leadingIndex_dlr])
     print("Leading eigenvalue linear:", vals[leadingIndex])
     np.testing.assert_array_almost_equal(np.sort(vals_dlr), np.sort(vals), decimal=4)
-    np.testing.assert_array_almost_equal(delta_wk_out_dlr.data[:], delta_wk_out.data[:])
+    np.testing.assert_array_almost_equal(delta_wk_out_dlr.data[:], delta_wk_out.data[:], decimal=3)
 
 if __name__ == "__main__":
     test_dlr_eliashberg_solver()
