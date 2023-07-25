@@ -126,11 +126,10 @@ class triqs_driver:
 
         self.m = cmesh
 
-    def initial_guess_from_tau(self, tau_i, G_iaa, beta):
-        
+    def initial_guess_from_tau_interp1d(self, tau_i, G_iaa, beta):
+
         from triqs.gf import Gf
-        from triqs.gf.meshes import MeshImTime
-        from triqs.gf.gf_factories import fit_gf_dlr, make_gf_dlr_imtime, make_gf_dlr
+        from triqs.gf.gf_factories import make_gf_dlr
 
         G_c = Gf(mesh=self.m, target_shape=G_iaa.shape[1:])
         G_t = make_gf_dlr_imtime(G_c)
@@ -141,10 +140,29 @@ class triqs_driver:
         
         G_x = make_gf_dlr(G_t)
         g0_xaa = np.copy(G_x.data)
+
+        return g0_xaa
+        
+    def initial_guess_from_tau_lstsq(self, tau_i, G_iaa, beta):
+        n, a, b = G_iaa.shape
+        T_ix = self.__eval_T(tau_i)
+        b_iA = G_iaa.reshape((n, a*b))
+        x_xA = np.linalg.lstsq(T_ix, b_iA, rcond=None)[0]
+        g0_xaa = x_xA.reshape((T_ix.shape[-1], a, b))
         return g0_xaa
 
-    def eval_dlr_tau(self, g_xaa, tau_i, beta):
+    def initial_guess_from_tau(self, tau_i, G_iaa, beta):
+        return self.initial_guess_from_tau_lstsq(tau_i, G_iaa, beta)
 
+    def eval_dlr_tau(self, g_xaa, tau_i, beta):
+        eval_T = self.__eval_T(tau_i)
+        g_iaa = np.tensordot(eval_T, g_xaa, axes=(-1, 0))
+        return g_iaa
+
+    def __len__(self): return len(self.m)
+
+    def __eval_T(self, tau_i):
+        
         if not hasattr(self, 'eval_T'):
             cmesh = self.m
             from triqs.gf import Gf
@@ -157,12 +175,8 @@ class triqs_driver:
         else:
             np.testing.assert_array_almost_equal(tau_i, self.tau_i)
                     
-        g_iaa = np.tensordot(self.eval_T, g_xaa, axes=(-1, 0))
-            
-        return g_iaa
-
-    def __len__(self): return len(self.m)
-
+        return self.eval_T
+    
     
 class pydlr_driver:
 
@@ -376,7 +390,7 @@ def constrained_lstsq_dlr_from_tau(
     sol.res = np.max(np.abs(greens_function_difference(sol.x)))
     sol.g_xaa = g_from_x(sol.x)
     sol.norm = -np.sum(sol.g_xaa, axis=0)
-    sol.norm_res = np.max(np.abs(sol.norm - np.eye(no)))
+    sol.norm_res = np.max(np.abs(sol.norm + dlr.bound * np.eye(no)))
 
     sol.density_res = float('nan')
     if density: sol.density_res = np.max(np.abs(density_bound - density_constraint_function(sol.x)))
