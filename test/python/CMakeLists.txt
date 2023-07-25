@@ -22,6 +22,7 @@ set(all_tests
   gw_compare_spectralRep_and_direct
   gw_fk
   g0w_separate_kpoints
+  fitdlr_hubbard_atom
   chi00_square_lattice
   chi00_square_lattice_fk
   chi00_square_lattice_dlr
