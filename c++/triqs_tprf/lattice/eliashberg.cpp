@@ -89,6 +89,17 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
   auto F_wk = make_gf(delta_wk);
   F_wk *= 0.;
 
+  auto tmesh = dlr_imtime(wmesh);
+  auto statistics = static_cast<cppdlr::statistic_t>(tmesh.statistic());
+  
+  {
+    // The dir_it().convolve has a hidden initialization that is not thread safe.
+    // Trigger initialization once before entering the threaded OpenMP region below
+    auto cmesh = dlr(wmesh);
+    auto tmp = gf(cmesh);
+    tmesh.dlr_it().convolve(tmesh.beta(), statistics, tmp.data(), tmp.data());
+  }
+  
   auto mesh_mpi = mpi_view(kmesh);
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < mesh_mpi.size(); idx++){
@@ -108,11 +119,8 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 	auto gg_c = make_gf_dlr(gg_w);
 	auto d_c = make_gf_dlr(d_w);
 
-	auto f_t = make_gf_dlr_imtime(d_c);
-
-	auto m = f_t.mesh();
-	f_t.data() = m.dlr_it().convolve(m.beta(), static_cast<cppdlr::statistic_t>(m.statistic()),
-					 gg_c.data(), d_c.data());
+	auto f_t = gf(tmesh);
+	f_t.data() = tmesh.dlr_it().convolve(tmesh.beta(), statistics, gg_c.data(), d_c.data());
 
 	auto f_c = make_gf_dlr(f_t);
 	auto f_w = make_gf_dlr_imfreq(f_c);

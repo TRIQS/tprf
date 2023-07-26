@@ -33,6 +33,7 @@ import triqs.utility.mpi as mpi
 from triqs.gf import Gf, MeshImFreq, Fourier, BlockGf, inverse
 
 from triqs.operators import c as c_operator
+from triqs.operators import Operator, dagger
 from triqs.operators.util.hamiltonians import h_int_kanamori
 from triqs.operators.util.U_matrix import U_matrix_kanamori
 from triqs.operators.util.op_struct import set_operator_structure
@@ -43,6 +44,10 @@ from triqs_tprf.lattice import lattice_dyson_g_w
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.ParameterCollection import ParameterCollections
 from triqs_tprf.utilities import BlockGf_data
+
+from triqs.gf.meshes import MeshDLR
+from triqs_tprf.fitdlr import fitdlr
+from triqs_tprf.fitdlr import BlockSymmetrizer
 
 
 def setup_dmft_calculation(p):
@@ -72,8 +77,8 @@ def setup_dmft_calculation(p):
     # -- Sr2RuO4 Wannier90 model from GPAW
     
     from tight_binding_model import tight_binding_model
-    H = tight_binding_model(lambda_soc=0.0, mu=7.8321648385322753, seed='sro')
-    
+    H = tight_binding_model()
+
     p.kmesh = H.get_kmesh(n_k = (p.n_k, p.n_k, p.n_k))
     p.e_k = H.fourier(p.kmesh)
     
@@ -156,7 +161,7 @@ def dmft_self_consistent_step(p, verbose=False):
 
     p = copy.deepcopy(p)
     p.iter += 1
-    
+
     p.g_w = lattice_dyson_g_w(p.mu, p.e_k, p.sigma_w)
     
     p.rho = p.g_w.density()
@@ -202,61 +207,38 @@ def fit_dlr(G_tau, p):
 
     mpi.report(f'--> Fit DLR')
 
-    from fitdlr import BlockSymmetrizer
-    from fitdlr import constrained_lstsq_dlr_from_tau
-
-    from triqs_tprf.rpa_tensor import get_rpa_tensor
-    from triqs_tprf.OperatorUtils import quadratic_matrix_from_operator
-
     G_tau = G_tau.copy()
-    
-    H = p.solve.h_int
-        
-    # -- Fit G_tau with dlr
-    from pydlr import dlr
-    d = dlr(lamb=p.lamb, eps=p.eps)
-    mpi.report(f'--> DLR eps={p.eps}, lamb={p.lamb}, rank={len(d)}')
+    cmesh = MeshDLR(p.init.beta, 'Fermion', w_max=p.w_max, eps=p.eps)
+    print(cmesh)
 
-    beta = p.init.beta
+    block_mat = np.diag([1, 1, 2, 1, 1, 2])
+    sym = BlockSymmetrizer(len(cmesh), block_mat)
 
-    h_ab = quadratic_matrix_from_operator(H, p.fundamental_operators)
-
-    for i in range(6):
-        h_ab[i, i] += p.Delta_infty[i]
-
-    #print(f'h_ab.real =\n{h_ab.real}')
-    #print(f'h_ab.imag =\n{h_ab.imag}')
-
-    U_abcd = get_rpa_tensor(H, p.fundamental_operators)
-
-    G_mat = Gf(mesh=G_tau.mesh, target_shape=[6, 6])
-    Gf_matrix_valued_from_BlockGf(G_mat, G_tau)
-    
-    G_iaa = G_mat.data
-    tau_i = np.array([float(t) for t in G_tau.mesh])
-
-    block_mat = np.diag([1, 2, 2, 1, 2, 2])
-    sym = BlockSymmetrizer(len(d), block_mat)
-    
-    G_xaa_sym, sol = constrained_lstsq_dlr_from_tau(
-        d, h_ab, U_abcd, tau_i, G_iaa, beta,
-        positivity=True,
+    opt = dict(
         discontinuity=True,
         density=True,
         realvalued=True,
         ftol=1e-6,
         symmetrizer=sym,
+        verbose=True,
         )
 
-    mpi.report(f'tau-fit: {sol.message}')
-    mpi.report(f'tau-fit: nfev {sol.nfev} nit {sol.nit} njev {sol.njev} success {sol.success}')
-    mpi.report(f'tau-fit: res (g, rho, norm) = ({sol.res:1.1E}, {sol.density_res:1.1E}, {sol.norm_res:1.1E})')
+    G_tau_mat = Gf(mesh=G_tau.mesh, target_shape=[6, 6])
+    Gf_matrix_valued_from_BlockGf(G_tau_mat, G_tau)
 
-    tau = np.array(list(G_mat.mesh), dtype=float)
-    G_mat.data[:] = d.eval_dlr_tau(G_xaa_sym, tau, beta)
+    H_delta = Operator()
+    for i in range(6):
+        op = p.fundamental_operators[i]
+        H_delta += p.Delta_infty[i][0,0].real * dagger(op) * op 
 
-    BlockGf_from_Gf_matrix_valued(G_tau, G_mat)
-    
+    H = p.solve.h_int + H_delta
+
+    G_c_mat, sol = fitdlr(cmesh, G_tau_mat, H, p.fundamental_operators, **opt)
+
+    from triqs.gf.gf_factories import make_gf_imtime
+    G_mat_fit = make_gf_imtime(G_c_mat, len(G_tau_mat.mesh))
+
+    BlockGf_from_Gf_matrix_valued(G_tau, G_mat_fit)
     return G_tau
 
 
