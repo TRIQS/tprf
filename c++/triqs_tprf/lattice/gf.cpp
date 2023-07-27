@@ -167,18 +167,23 @@ g_t lattice_dyson_g_X(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
   g_t g_w(freqmesh, e_k.target_shape());
   g_w() = 0.0;
 
-  auto pmesh = mesh::prod(freqmesh, e_k.mesh());
-
-  auto arr = mpi_view(pmesh);
-#pragma omp parallel for
+  // No threading over momentum (k) in order avoid a
+  // race condition in the accumulation to g_w[w] += ...
+  
+  auto arr = mpi_view(e_k.mesh());
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &[w, k] = arr[idx];
+    auto &k = arr[idx];
 
-    array<scalar_t, 2> sigmaterm;
-    if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
-    else sigmaterm = sigma[w, k];
+#pragma omp parallel for
+    for (unsigned int widx = 0; widx < freqmesh.size(); widx++) {
+      auto w = *std::next(freqmesh.begin(), widx);
 
-    g_w[w] += inverse((w + idelta + mu)*I - e_k(k) - sigmaterm);
+      array<scalar_t, 2> sigmaterm;
+      if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
+      else sigmaterm = sigma[w, k];
+
+      g_w[w] += inverse((w + idelta + mu)*I - e_k(k) - sigmaterm);
+    }
   }
   
   g_w = mpi::all_reduce(g_w);
