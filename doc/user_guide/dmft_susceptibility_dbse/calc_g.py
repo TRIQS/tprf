@@ -2,7 +2,7 @@
 #
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
-# Copyright (C) 2023 by H. U.R. Strand
+# Copyright (C) 2019 by The Simons Foundation
 # Author: H. U.R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
@@ -25,7 +25,6 @@ from common import *
 filename = './data/data_sc.h5'
 
 if mpi.is_master_node():
-    print(f'--> Loading: {filename}')
     with HDFArchive(filename, 'r') as a:
         p = a['ps'][-1]
 else: p = None
@@ -33,29 +32,19 @@ p = mpi.bcast(p)
 
 p.solve.worm = True
 p.solve.measure_G_l = False
-p.solve.length_cycle = 100 # auto-correlation estimate
-p.solve.n_warmup_cycles = int(1e5)
-p.solve.n_cycles = int(1e6)
+p.solve.n_cycles = int(1e7)
+p.solve.n_warmup_cycles = int(1e6)
 p.solve.cfg_qmc = dict(
-    PercentageWormInsert=0.3,
-    PercentageWormReplace=0.1,
-    #
-    WormEta=1,
-    WormSearchEta=1,
-    Nwarmups2Plus=int(1e5),
-    #
-    WormMeasP2iwPH=1,
-    N2iwb=30,
-    WormPHConvention=0, # Important to get correct frequency structure
-    WormComponents=
-        [ list(x) for x in itertools.product(range(2*p.num_orbitals), repeat=4) ],
+    WormEta=1, WormSearchEta=1, WormMeasGtau=1,
+    PercentageWormInsert=0.3, PercentageWormReplace=0.1,
+    Nwarmups2Plus=int(1e6),
     )
 
 from w2dyn_cthyb import Solver
 cthyb = Solver(**p.init.dict())
 for bidx, g0 in cthyb.G0_iw: g0 << p.G0_w[bidx]
 cthyb.solve(**p.solve.dict())
-p.GF_worm_components = cthyb.GF_worm_components
+p.G_tau = cthyb.G_tau
 
 if mpi.is_master_node():
-    with HDFArchive(f'./data/data_chi.h5', 'w') as a: a['p'] = p
+    with HDFArchive(f'./data/data_g.h5', 'w') as a: a['p'] = p

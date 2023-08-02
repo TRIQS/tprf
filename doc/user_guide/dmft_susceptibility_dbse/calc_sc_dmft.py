@@ -32,9 +32,9 @@ p = ParameterCollection(
     mu = +5.4,
     mu_min = +5.2,
     mu_max = +5.8,
-    sc_iter_max = 5,
+    sc_iter_max = 10,
     mu_iter_max = 0,
-    G_tol = 5e-3,
+    G_tol = 1e-4,
     N_tol = 5e-2,
     # DLR
     w_max = 4.,
@@ -43,8 +43,8 @@ p = ParameterCollection(
 
 p.solve = ParameterCollection(
     length_cycle = 100,
-    n_warmup_cycles = int(1e5),
-    n_cycles = int(1e6),
+    n_warmup_cycles = int(1e6),
+    n_cycles = int(1e9),
     )
 
 p.init = ParameterCollection(
@@ -53,7 +53,7 @@ p.init = ParameterCollection(
     n_tau = 4000,
     )
 
-filename = f'data_sc.h5' 
+filename = f'./data/data_sc.h5' 
 p0 = setup_dmft_calculation(p)
 ps = solve_self_consistent_dmft(p0, verbose=False)
 #ps = solve_self_consistent_dmft_fix_N(p0, verbose=False, filename=filename)

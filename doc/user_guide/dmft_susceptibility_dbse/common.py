@@ -220,7 +220,7 @@ def fit_dlr(G_tau, p):
         realvalued=True,
         ftol=1e-6,
         symmetrizer=sym,
-        verbose=True,
+        verbose=mpi.is_master_node(),
         )
 
     G_tau_mat = Gf(mesh=G_tau.mesh, target_shape=[6, 6])

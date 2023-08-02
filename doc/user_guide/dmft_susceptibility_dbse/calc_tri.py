@@ -22,7 +22,7 @@
 
 from common import *
 
-filename = 'data_sc.h5'
+filename = './data/data_sc.h5'
 
 if mpi.is_master_node():
     print(f'--> Loading: {filename}')
@@ -48,23 +48,17 @@ p.solve.cfg_qmc = dict(
     #
     WormMeasP3iwPH=1,
     N3iwb=0,
-    N3iwf=30,
+    N3iwf=40,
     WormPHConvention=0, # Important to get correct frequency structure
     WormComponents=
         [ list(x) for x in itertools.product(range(2*p.num_orbitals), repeat=4) ],
-        [[0,0,0,0]],
     )
 
 from w2dyn_cthyb import Solver
-
 cthyb = Solver(**p.init.dict())
-
-for bidx, g0 in cthyb.G0_iw:
-    g0 << p.G0_w[bidx]
-
+for bidx, g0 in cthyb.G0_iw: g0 << p.G0_w[bidx]
 cthyb.solve(**p.solve.dict())
-
 p.GF_worm_components = cthyb.GF_worm_components
 
 if mpi.is_master_node():
-    with HDFArchive(f'data_tri.h5', 'w') as a: a['p'] = p
+    with HDFArchive(f'./data/data_tri.h5', 'w') as a: a['p'] = p

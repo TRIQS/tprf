@@ -49,22 +49,16 @@ p.solve.cfg_qmc = dict(
     WormMeasG4iw=1,
     FourPnt=8,
     N4iwb=0,
-    N4iwf=30,
+    N4iwf=40,
     WormPHConvention=0, # Important to get correct frequency structure
     WormComponents=
         [ list(x) for x in itertools.product(range(2*p.num_orbitals), repeat=4) ],
-        #[[0,0,0,0]],
     )
 
 from w2dyn_cthyb import Solver
-
 cthyb = Solver(**p.init.dict())
-
-for bidx, g0 in cthyb.G0_iw:
-    g0 << p.G0_w[bidx]
-
+for bidx, g0 in cthyb.G0_iw: g0 << p.G0_w[bidx]
 cthyb.solve(**p.solve.dict())
-
 p.G2_worm_components = cthyb.G2_worm_components
 
 if mpi.is_master_node():
