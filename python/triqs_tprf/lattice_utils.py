@@ -464,18 +464,26 @@ def extend_data_on_boundary(values, nk):
 # ----------------------------------------------------------------------
 def k_space_path(paths, num=100, bz=None):
 
-    """ High symmetry path k-vector generator.
+    """ Construct a high-symmetry path in momentum space for visualization.
 
-    Input:
-    paths : list of tuples of pairs of 3-vectors of k-points to
-    make the path in between 
-    num (optional) : number of k-vectors along each segment of the path
-    bz (optional) : Brillouin zone, used to rescale from reative to absolute k-space lengths
+    Parameters
+    ----------
+    paths : list of tuple-pairs of k-vectors with three components
+        Specification of the k-space path in terms of pair segments of k-vectors.
+    num : int, optional
+        Number of k-vectors along each segment of the path. (Default `100`)
+    bz : triqs.lattice_tools.BrillouinZone, optional
+        Brillouin zone, used to rescale from reative to absolute k-space lengths
+        (Default `None`)
 
-    Returns:
-    k_vecs: ndarray.shape = (n_k, 3) with all k-vectors. 
-    k_plot: ndarray.shape = (n_k) one dimensional vector for plotting
-    K_plot: ndarray.shape = (n_paths) positions of the start and end of each path 
+    Returns
+    -------
+    k_vecs: (n_k, 3) ndarray
+        Array with all k-vectors in the k-space path
+    k_plot: (n_k) ndarray
+        One-dimensional vector to be used for the x-axis when plotting
+    K_plot: (n_paths) ndarray
+        One-dimensional vector with the tick mark positions of the start and end of each sub-path.
     """
 
     if bz is None:

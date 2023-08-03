@@ -12,9 +12,10 @@ Lattice Green's functions
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_f
 .. autofunction:: triqs_tprf.lattice.lattice_dyson_g_w
 		  
-Lindhard non-interacting generalized susceptibility
-===================================================
+Non-interacting generalized susceptibility
+==========================================
 
+.. autofunction:: triqs_tprf.lattice_utils.imtime_bubble_chi0_wk
 .. autofunction:: triqs_tprf.lattice.lindhard_chi00
 
 Random Phase Approximation
@@ -40,9 +41,18 @@ Lattice Bethe-Salpeter Equation
 .. autofunction:: triqs_tprf.bse.solve_lattice_bse_at_specific_w
 .. autofunction:: triqs_tprf.bse.get_chi0_wnk
 .. autofunction:: triqs_tprf.bse.get_chi0_nk_at_specific_w
+
+Dual Bethe-Salpeter Equation
+============================
+
+.. autofunction:: triqs_tprf.dbse.solve_lattice_dbse
+.. autofunction:: triqs_tprf.dbse.impurity_reducible_vertex_F
 		  
 GW approximation
 ================
+
+.. autoclass:: triqs_tprf.gw_solver.GWSolver
+   :members:
 
 .. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W
 .. autofunction:: triqs_tprf.lattice.dynamical_screened_interaction_W_from_generalized_susceptibility
@@ -115,6 +125,13 @@ Hartree-Fock and Hartree solvers
 .. autoclass:: triqs_tprf.hf_response.HartreeResponse
    :members:
 
+Utility functions
+=================
+
+.. autofunction:: triqs_tprf.lattice_utils.k_space_path
+.. autofunction:: triqs_tprf.lattice_utils.chi_contraction
+		  
+      
 Parameter collections
 =====================
 
