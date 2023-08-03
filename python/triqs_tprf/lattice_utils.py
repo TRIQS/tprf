@@ -462,67 +462,9 @@ def extend_data_on_boundary(values, nk):
     return values_ext, k_vec_rel_ext, (kxe, kye, kze)
 
 # ----------------------------------------------------------------------
-def k_space_path(paths, num=100, bz=None, relative_coordinates=True):
-
-    """ Construct a high-symmetry path in momentum space for visualization.
-
-    Parameters
-    ----------
-    paths : list of tuple-pairs of k-vectors with three components
-        Specification of the k-space path in terms of pair segments of k-vectors.
-        The k-vectors are given in **relative coordinates** of the Brillouin zone basis vectors.
-    num : int, optional
-        Number of k-vectors along each segment of the path. (Default `100`)
-    bz : triqs.lattice_tools.BrillouinZone, optional
-        Brillouin zone, used to rescale from reative to absolute k-space lengths
-        (Default `None`)
-    relative_coordinates : bool, optional
-        Return k-vectors in relative coordinates of the Brillouin zone. (Default `True`)
-
-    Returns
-    -------
-    k_vecs: (n_k, 3) ndarray
-        Array with all k-vectors in the k-space path (in relative or absolute coordinates).
-    k_plot: (n_k) ndarray
-        One-dimensional vector to be used for the x-axis when plotting
-    K_plot: (n_paths) ndarray
-        One-dimensional vector with the tick mark positions of the start and end of each sub-path.
-    """
-
-    if bz is None:
-        cell = np.eye(3)
-    else:
-        cell = bz.units
+def k_space_path(paths, num=100, bz=None, relative_coordinates=True, return_ticks=True):
     
-    k_vecs = []
+    print("WARNING: triqs_tprf.lattice_utils.k_space_path has moved to triqs.lattice.utils.k_space_path")
 
-    for path in paths:
-        ki, kf = path
-        ki, kf = np.asarray(ki), np.asarray(kf)
-        x = np.linspace(0., 1., num=num)[:, None]
-        k_vec = (1. - x) * ki[None, :] + x * kf[None, :]
-
-        k_vecs.append(k_vec)
-
-    def rel_to_abs(k_vec, cell):
-        return np.einsum('ba,ib->ia', cell, k_vec)
-
-    k_vec = k_vecs[0]
-    k_vec_abs = rel_to_abs(k_vec, cell)
-    k_plot = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1)
-
-    K_plot = [0.]
-    for kidx, k_vec in enumerate(k_vecs[1:]):
-        k_vec_abs = rel_to_abs(k_vec, cell)
-        k_plot_new = np.linalg.norm(k_vec_abs - k_vec_abs[0][None, :], axis=1) + k_plot[-1]
-        K_plot.append(k_plot[-1])
-        k_plot = np.concatenate((k_plot, k_plot_new))
-
-    K_plot.append(k_plot[-1])
-    K_plot = np.array(K_plot)
-    k_vecs = np.vstack(k_vecs)
-
-    if not relative_coordinates:
-        k_vecs = k_vecs @ cell
-    
-    return k_vecs, k_plot, K_plot
+    from triqs.lattice.utils import k_space_path    
+    return k_space_path(paths, num=num, bz=bz, relative_coordinates=relative_coordinates, return_ticks=return_ticks)
