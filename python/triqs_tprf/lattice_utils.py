@@ -462,7 +462,7 @@ def extend_data_on_boundary(values, nk):
     return values_ext, k_vec_rel_ext, (kxe, kye, kze)
 
 # ----------------------------------------------------------------------
-def k_space_path(paths, num=100, bz=None):
+def k_space_path(paths, num=100, bz=None, relative_coordinates=True):
 
     """ Construct a high-symmetry path in momentum space for visualization.
 
@@ -470,16 +470,19 @@ def k_space_path(paths, num=100, bz=None):
     ----------
     paths : list of tuple-pairs of k-vectors with three components
         Specification of the k-space path in terms of pair segments of k-vectors.
+        The k-vectors are given in **relative coordinates** of the Brillouin zone basis vectors.
     num : int, optional
         Number of k-vectors along each segment of the path. (Default `100`)
     bz : triqs.lattice_tools.BrillouinZone, optional
         Brillouin zone, used to rescale from reative to absolute k-space lengths
         (Default `None`)
+    relative_coordinates : bool, optional
+        Return k-vectors in relative coordinates of the Brillouin zone. (Default `True`)
 
     Returns
     -------
     k_vecs: (n_k, 3) ndarray
-        Array with all k-vectors in the k-space path
+        Array with all k-vectors in the k-space path (in relative or absolute coordinates).
     k_plot: (n_k) ndarray
         One-dimensional vector to be used for the x-axis when plotting
     K_plot: (n_paths) ndarray
@@ -518,5 +521,8 @@ def k_space_path(paths, num=100, bz=None):
     K_plot.append(k_plot[-1])
     K_plot = np.array(K_plot)
     k_vecs = np.vstack(k_vecs)
+
+    if not relative_coordinates:
+        k_vecs = k_vecs @ cell
     
     return k_vecs, k_plot, K_plot
