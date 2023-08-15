@@ -50,7 +50,7 @@ g_t lattice_dyson_g0_Xk(double mu, e_k_cvt e_k, mesh_t mesh) {
 #pragma omp parallel for
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[w, k] = arr[idx];
-    g0_wk[w, k] = inverse((w + mu)*I - e_k(k));      
+    g0_wk[w, k] = inverse((w + mu)*I - e_k[k]);      
   }
 
   g0_wk = mpi::all_reduce(g0_wk);
@@ -79,7 +79,7 @@ g_fk_t lattice_dyson_g0_fk(double mu, e_k_cvt e_k, mesh::refreq mesh, double del
 #pragma omp parallel for
   for (int idx = 0; idx < arr.size(); idx++) {
     auto &[f, k] = arr[idx];
-    g0_fk[f, k]  = inverse((f + idelta + mu) * I - e_k(k));
+    g0_fk[f, k]  = inverse((f + idelta + mu) * I - e_k[k]);
   }
 
   g0_fk = mpi::all_reduce(g0_fk);
@@ -115,7 +115,7 @@ g_t lattice_dyson_g_Xk(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
     if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
     else sigmaterm = sigma[w, k];
 
-    g_wk[w, k] = inverse((w + idelta + mu)*I - e_k(k) - sigmaterm);
+    g_wk[w, k] = inverse((w + idelta + mu)*I - e_k[k] - sigmaterm);
   }
 
   g_wk = mpi::all_reduce(g_wk);
@@ -182,7 +182,7 @@ g_t lattice_dyson_g_X(double mu, e_k_cvt e_k, sigma_t sigma, double delta=0.){
       if constexpr (sigma_t::arity == 1) sigmaterm = sigma[w];
       else sigmaterm = sigma[w, k];
 
-      g_w[w] += inverse((w + idelta + mu)*I - e_k(k) - sigmaterm);
+      g_w[w] += inverse((w + idelta + mu)*I - e_k[k] - sigmaterm);
     }
   }
   
