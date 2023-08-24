@@ -462,9 +462,49 @@ def extend_data_on_boundary(values, nk):
     return values_ext, k_vec_rel_ext, (kxe, kye, kze)
 
 # ----------------------------------------------------------------------
-def k_space_path(paths, num=100, bz=None, relative_coordinates=True, return_ticks=True):
-    
-    print("WARNING: triqs_tprf.lattice_utils.k_space_path has moved to triqs.lattice.utils.k_space_path")
+def k_space_path(paths, num=100, bz=None, relative_coordinates=False, return_ticks=True):
 
-    from triqs.lattice.utils import k_space_path    
-    return k_space_path(paths, num=num, bz=bz, relative_coordinates=relative_coordinates, return_ticks=return_ticks)
+    """ Generate an array of k-vectors along a path defined by a list of pairs of k-vectors
+
+    Parameters
+    ----------
+    paths : list of pairs of three-vectors of floats
+       List of pairs of k-vectors in reciprocal units to create a path in-between.
+    num : int, default=100
+       Number of k-vectors along each segment of the overall path
+    bz : brillouin_zone, optional
+       When a Brillouin Zone is passed, calculate distance in absolute units
+    relative_coordinates : bool, optional
+        Return k-vectors in reciprocal units. (Default `True`)
+    return_ticks : bool, optional
+        Return the vector with tick marks. (Default `False`)
+
+    Returns
+    -------
+    kvecs: numpy.ndarray [shape=(len(paths)*num,3)]
+        Two-dimensional numpy array containing the path vectors (in reciprocal units) as rows
+    dist: numpy.ndarray  [shape=(kvecs.shape[0])]
+        One-dimensional numpy array containing, for each element in kvecs,
+        the distance travelled along the path. Useful for plotting.
+        If bz is provided, calculate the distance in absolute units.
+        The distances for the relevant k-points in paths can be obtained with dist[num::num].
+    ticks : numpy.ndarray [shape=(len(paths)+1)], optional
+        Array with tick points, i.e. distances at the interfaces of path segments.
+        Only returned if `return_ticks` is `True`.
+    """
+    
+    # Put this back only once TPRF and TRIQS agree on k_ticks behaviour
+    #print("WARNING: triqs_tprf.lattice_utils.k_space_path has moved to triqs.lattice.utils.k_space_path")
+
+    from triqs.lattice.utils import k_space_path
+    ret = k_space_path(paths, num=num, bz=bz, relative_coordinates=relative_coordinates, return_ticks=return_ticks)
+
+    if return_ticks:
+        # Fixup return ticks to include all high-symmetry points
+        # TPRF and TRIQS does things differently, see
+        # https://github.com/TRIQS/triqs/pull/904
+        k_vecs, k_plot, k_ticks_old = ret
+        k_ticks = np.concatenate(([k_plot[0]], k_plot[num::num], [k_plot[-1]]))
+        ret = (k_vecs, k_plot, k_ticks)
+
+    return ret
