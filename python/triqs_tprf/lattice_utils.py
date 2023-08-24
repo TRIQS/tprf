@@ -34,6 +34,7 @@ import triqs.utility.mpi as mpi
 from triqs.gf import Gf
 from triqs.gf import Idx
 from triqs.gf import MeshImFreq
+from triqs.gf import MeshDLRImFreq
 from triqs.gf import MeshProduct
 from triqs.gf import MeshBrZone
 
@@ -508,3 +509,76 @@ def k_space_path(paths, num=100, bz=None, relative_coordinates=False, return_tic
         ret = (k_vecs, k_plot, k_ticks)
 
     return ret
+
+# ----------------------------------------------------------------------
+def gf_tensor_to_matrix(g):
+    
+    N = g.target_shape[0] * g.target_shape[1] 
+    M = g.target_shape[2] * g.target_shape[3] 
+    g_mat = Gf(mesh=g.mesh, target_shape=[N, M])
+    
+    g_mat.data[:] = np.reshape(
+        g.data, (g.data.shape[0], N, M))
+    return g_mat
+
+
+# ----------------------------------------------------------------------
+def gf_matrix_to_tensor(g_mat, target_shape):
+    
+    g = Gf(mesh=g_mat.mesh, target_shape=target_shape)
+    shape = [g_mat.data.shape[0]] + list(target_shape)
+    g.data[:] = np.reshape(g_mat.data, shape)
+    return g
+
+
+# ----------------------------------------------------------------------
+def pade_analytical_continuation_wk(
+    g_wk, fmesh, n_points=32, freq_offset=0.05):
+
+    """ Perform Pade analytical continuation of a lattice Green's function
+
+    Parameters
+    ----------
+
+    g_wk : triqs.gf.Gf with mesh (MeshImFreq or MeshDLRImFreq, MeshBrZone)
+        Lattice Green's function in Matsubara frequency and momentum space :math:`G(i\omega_n, \mathbf{k})`.
+    fmesh : MeshReFreq
+        Real frequency mesh to perform the analytical continuation to.
+    n_points : int
+        Number of Matsubara frequencies to use in the Pade fit.
+    freq_offset : float
+        Distance from the real axis used in the fit.
+
+    Returns
+    -------
+
+    g_fk : triqs.gf.Gf with mesh (MeshReFreq, MeshBrZone)
+        Analytically continued real-frequency lattice Green's function
+    
+    """
+    
+    wmesh = g_wk.mesh[0]
+    kmesh = g_wk.mesh[1]
+
+    g_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=g_wk.target_shape)
+
+    for k in kmesh:
+        g_f = g_fk[:, k]
+        g_w = g_wk[:, k]
+
+        if len(g_wk.target_shape) == 4:
+            g_w = gf_tensor_to_matrix(g_w)
+            g_f = gf_tensor_to_matrix(g_f)
+
+        if type(g_w.mesh) == MeshDLRImFreq:
+            g_c = make_gf_dlr(g_w)
+            small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
+            g_w = dlr_on_imfreq(g_c, small_mesh)
+            
+        g_f.set_from_pade(g_w, n_points=n_points, freq_offset=freq_offset)
+
+        if len(g_wk.target_shape) == 4:
+            g_f = gf_matrix_to_tensor(g_f, g_wk.target_shape)
+            g_fk[:, k] = g_f
+        
+    return g_fk

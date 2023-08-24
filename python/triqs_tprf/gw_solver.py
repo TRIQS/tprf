@@ -53,6 +53,7 @@ from triqs_tprf.lattice import fourier_tr_to_wr
 from triqs_tprf.lattice import fourier_wr_to_wk
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk
+from triqs_tprf.lattice_utils import pade_analytical_continuation_wk
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 
@@ -135,9 +136,9 @@ class GWSolver():
         if mpi.is_master_node():
             print(f'--> GWSolver.calc_real_freq')
 
-        self.g0_fk = pade_analytical_continuation(self.g0_wk, fmesh, **opts)
-        self.g_fk = pade_analytical_continuation(self.g_wk, fmesh, **opts)
-        self.sigma_fk = pade_analytical_continuation(self.sigma_wk, fmesh, **opts)
+        self.g0_fk = pade_analytical_continuation_wk(self.g0_wk, fmesh, **opts)
+        self.g_fk = pade_analytical_continuation_wk(self.g_wk, fmesh, **opts)
+        self.sigma_fk = pade_analytical_continuation_wk(self.sigma_wk, fmesh, **opts)
 
         gw_rf = ParameterCollection(
             mu = self.mu,
@@ -154,16 +155,16 @@ class GWSolver():
             fbmesh = fmesh
         
         if hasattr(self, 'P_wk'):
-            self.P_fk = pade_analytical_continuation(self.P_wk, fbmesh, **opts)
+            self.P_fk = pade_analytical_continuation_wk(self.P_wk, fbmesh, **opts)
             gw_rf.P_fk = self.P_fk
         if hasattr(self, 'W_wk'):
-            self.W_fk = pade_analytical_continuation(self.W_wk, fbmesh, **opts)
+            self.W_fk = pade_analytical_continuation_wk(self.W_wk, fbmesh, **opts)
             gw_rf.W_fk = self.W_fk
         if hasattr(self, 'chi_wk'):
-            self.chi_fk = pade_analytical_continuation(self.chi_wk, fbmesh, **opts)
+            self.chi_fk = pade_analytical_continuation_wk(self.chi_wk, fbmesh, **opts)
             gw_rf.chi_fk = self.chi_fk
         if hasattr(self, 'W_dyn_wk'):
-            self.W_dyn_fk = pade_analytical_continuation(self.W_dyn_wk, fbmesh, **opts)
+            self.W_dyn_fk = pade_analytical_continuation_wk(self.W_dyn_wk, fbmesh, **opts)
             gw_rf.W_dyn_fk = self.W_dyn_fk
 
         return gw_rf
@@ -424,52 +425,3 @@ TRIQS: GW solver
 
 # -- Register ParameterCollection in Triqs formats
 register_class(GWSolver)
-
-    
-def gf_tensor_to_matrix(g):
-    
-    N = g.target_shape[0] * g.target_shape[1] 
-    M = g.target_shape[2] * g.target_shape[3] 
-    g_mat = Gf(mesh=g.mesh, target_shape=[N, M])
-    
-    g_mat.data[:] = np.reshape(
-        g.data, (g.data.shape[0], N, M))
-    return g_mat
-
-
-def gf_matrix_to_tensor(g_mat, target_shape):
-    
-    g = Gf(mesh=g_mat.mesh, target_shape=target_shape)
-    shape = [g_mat.data.shape[0]] + list(target_shape)
-    g.data[:] = np.reshape(g_mat.data, shape)
-    return g
-
-
-def pade_analytical_continuation(
-    g_wk, fmesh, n_points=32, freq_offset=0.05):
-    
-    wmesh = g_wk.mesh[0]
-    kmesh = g_wk.mesh[1]
-
-    g_fk = Gf(mesh=MeshProduct(fmesh, kmesh), target_shape=g_wk.target_shape)
-
-    for k in kmesh:
-        g_f = g_fk[:, k]
-        g_w = g_wk[:, k]
-
-        if len(g_wk.target_shape) == 4:
-            g_w = gf_tensor_to_matrix(g_w)
-            g_f = gf_tensor_to_matrix(g_f)
-
-        if type(g_w.mesh) == MeshDLRImFreq:
-            g_c = make_gf_dlr(g_w)
-            small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
-            g_w = dlr_on_imfreq(g_c, small_mesh)
-            
-        g_f.set_from_pade(g_w, n_points=n_points, freq_offset=freq_offset)
-
-        if len(g_wk.target_shape) == 4:
-            g_f = gf_matrix_to_tensor(g_f, g_wk.target_shape)
-            g_fk[:, k] = g_f
-        
-    return g_fk
