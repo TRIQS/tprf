@@ -1,0 +1,5 @@
+&BANDS
+  prefix = 'sro'
+  filband = 'sro_bands.dat'
+/
+

@@ -22,7 +22,7 @@
 
 from common import *
 
-filename = 'data_sc.h5'
+filename = './data/data_sc.h5'
 
 if mpi.is_master_node():
     print(f'--> Loading: {filename}')
@@ -62,5 +62,5 @@ cthyb.solve(**p.solve.dict())
 p.G2_worm_components = cthyb.G2_worm_components
 
 if mpi.is_master_node():
-    with HDFArchive(f'data_g2.h5', 'w') as a:
+    with HDFArchive(f'./data/data_g2_n_cycles_{p.solve.n_cycles:2.2E}.h5', 'w') as a:
         a['p'] = p

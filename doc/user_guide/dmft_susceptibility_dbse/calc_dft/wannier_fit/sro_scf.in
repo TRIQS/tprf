@@ -1,0 +1,39 @@
+&CONTROL
+   prefix           = 'sro'
+   disk_io          = 'low'
+   pseudo_dir       = '../pseudo/'
+/
+&SYSTEM
+   ibrav            = 0
+   nbnd             = 34
+   ecutwfc          = 70
+   ecutrho          = 840
+   occupations      = 'tetrahedra_opt'
+   ntyp             = 3
+   nat              = 7
+/
+&ELECTRONS
+   conv_thr         = 1e-12
+/
+
+ATOMIC_SPECIES
+Sr 87.62 Sr.pbe-spn-kjpaw_psl.1.0.0.UPF
+Ru 101.07 Ru.pbe-spn-kjpaw_psl.1.0.0.UPF
+O 15.999 O.pbe-n-kjpaw_psl.1.0.0.UPF
+
+K_POINTS automatic
+20 20 20  0 0 0
+
+CELL_PARAMETERS angstrom
+-1.93150000000000 1.93150000000000 6.36200000000000
+1.93150000000000 -1.93150000000000 6.36200000000000
+1.93150000000000 1.93150000000000 -6.36200000000000
+
+ATOMIC_POSITIONS angstrom
+Sr 0.0000000000 0.0000000000 4.4839376000 
+Sr 0.0000000000 0.0000000000 8.2400624000 
+Ru 0.0000000000 0.0000000000 0.0000000000 
+O 1.9315000000 0.0000000000 0.0000000000 
+O 0.0000000000 1.9315000000 0.0000000000 
+O 0.0000000000 0.0000000000 2.0803740000 
+O 0.0000000000 0.0000000000 10.6436260000 

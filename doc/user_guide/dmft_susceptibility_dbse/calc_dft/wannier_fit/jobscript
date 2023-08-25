@@ -1,0 +1,18 @@
+#!/bin/bash -l
+#SBATCH --job-name=QEsroW90
+#SBATCH --account=project_465000353
+#SBATCH --time=02:00:00
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=128
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=small
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+
+srun pw.x -nk 512 -in sro_scf.in | tee sro_scf.out
+srun pw.x -nk 512 -in sro_nscf.in | tee sro_nscf.out
+
+wannier90.x -pp sro | tee sro_w90_pp.out
+srun pw2wannier90.x -pd .true. < sro_pw2wan.in | tee sro_pw2wan.out
+wannier90.x sro | tee sro_w90.out

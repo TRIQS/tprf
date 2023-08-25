@@ -1,0 +1,10 @@
+&inputpp 
+   outdir = './'
+   prefix = 'sro'
+   seedname = 'sro'
+   write_mmn = .true.
+   write_amn = .true.
+   write_unk = .false.
+   write_dmn = .true.
+/
+

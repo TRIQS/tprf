@@ -54,10 +54,10 @@ def load_h5(filename):
         p = a['p']
     return p
 
-filename_sc  = 'data_sc.h5'
-filename_chi = 'data_chi.h5'
-filename_tri = 'data_tri.h5'
-filename_g2  = 'data_g2.h5'
+filename_sc  = './data/data_sc.h5'
+filename_chi = './data/data_chi.h5'
+filename_tri = './data/data_tri.h5'
+filename_g2  = './data/data_g2.h5'
 
 print(f'--> Loading: {filename_sc}')
 with HDFArchive(filename_sc, 'r') as a:
@@ -96,15 +96,15 @@ p.g2_wnn = g2_from_w2dyn_G2_worm_components(
 
 # -- Lattice dispersion and Green's function
 
-p.n_k = 2 # Set k-point resolution
-H = tight_binding_model(lambda_soc=0.0, mu=7.8321648385322753, seed='sro')
+p.n_k = 16 # Set k-point resolution
+H = tight_binding_model()
 p.kmesh = H.get_kmesh(n_k = (p.n_k, p.n_k, p.n_k))
 p.e_k = H.fourier(p.kmesh)
 g_wk = lattice_dyson_g_wk(mu=p.mu, e_k=p.e_k, sigma_w=p.sigma_w)
 
 # -- DBSE, BSE calculations for varying frequency window
 
-for nwf in [4]:
+for nwf in [40, 30, 20, 10]:
     print('='*72)
     print(f'nwf = {nwf}', flush=True)
     p.nwf = nwf
@@ -118,7 +118,8 @@ for nwf in [4]:
     Gamma_wnn = impurity_irreducible_vertex_Gamma(p.g_w, g2_wnn)
     p.chi_kw_bse, p.chi0_kw = solve_lattice_bse(g_wk, Gamma_wnn)
         
-    filename_out = f'data_bse_nwf_{nwf:03d}_nk_{p.n_k:03d}.h5'
+    filename_out = f'./data/data_bse_nwf_{nwf:03d}_nk_{p.n_k:03d}.h5'
+    print(f'--> Saving: {filename_out}')
     with HDFArchive(filename_out, 'w') as a:
         a['p'] = p
    

@@ -1,0 +1,16 @@
+#!/bin/bash -l
+#SBATCH --job-name=QEsroBS
+#SBATCH --account=project_465000353
+#SBATCH --time=01:00:00
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=128
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=small
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+
+srun pw.x -nk 512 -in sro_scf.in | tee sro_scf.out
+srun pw.x -nk 512 -in sro_bands.in | tee sro_bands.out
+srun bands.x -nk 512 < sro_bands_pp.in | tee sro_bands_pp.out
+
