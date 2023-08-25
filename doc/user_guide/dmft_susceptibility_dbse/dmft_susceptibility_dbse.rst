@@ -3,14 +3,14 @@
 Spin susceptibility in Sr2RuO4
 ==============================
 
-In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of `PRB 100, 125120 (2019) <https://doi.org/10.1103/PhysRevB.100.125120>`_. We will use the reformulation of the (DMFT) lattice susceptibility using dual propagators, for details see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
+In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of `PRB 100, 125120 (2019) <https://doi.org/10.1103/PhysRevB.100.125120>`_. We will use the reformulation of the (DMFT) lattice susceptibility in terms of the dual Bethe-Salpeter equation (DBSE) with :math:`1/N_\nu^3` convergence with respect to the number of fermionic Matsubara frequencies :math:`N_\nu`, for details see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
 
 The calculation is based on a Wannier model for the three bands crossing the Fermi level in Sr2RuO4. These bands have Ru-4d t2g symmetry and a Wannier interpolation with Wannier90 converges in just a few iterations, giving the band structure
 
 .. image:: figure_sro_band_structure.svg
    :align: center
 
-see :download:`tight_binding_model.py <tight_binding_model.py>` using the Wannier90 output :download:`sro_hr.dat <sro_hr.dat>`, :download:`sro.wout <sro.wout>`.
+see :download:`tight_binding_model.py <tight_binding_model.py>` using the Wannier90 output :download:`sro_hr.dat <./calc_dft/wannier_fit/sro_hr.dat>`, :download:`sro.wout <./calc_dft/wannier_fit/sro.wout>`. The setup for producing these files using Quantum Espresso and Wannier90 is available in `the TPRF repository <https://github.com/TRIQS/tprf>`_ under `./doc/user_guide/dmft_susceptibility_dbse/calc_dft`.
 
 The Wannier Hamiltonian is combined with a local Kanamori interaction with Hubbard :math:`U=2.4` eV and Hund's :math:`J=0.4` eV and the self-consistent DMFT solution is determined using TRIQS/cthyb as impurity solver. The scripts for the DMFT solution are :download:`common.py <common.py>` and :download:`calc_sc_dmft.py <calc_sc_dmft.py>`.
 
@@ -47,9 +47,3 @@ see  :download:`plot_dbse.py <plot_dbse.py>` for the plot script.
 Since the standard Bethe-Salpeter equation (BSE) only converges as :math:`1/N_\nu` the calculations at :math:`N_\nu = 4, 8, 16` are far from the :math:`N_\nu \rightarrow \infty` limit and requires extrapolation in order to obtain a quantiative correct result. However, using the dual Bethe-Salpeter equation (DBSE) implementation we observe a drastically improved convergence rate and already at :math:`N_\nu=4` the result is within 5% of the converged solution.
 
 If you use the dual Bethe-Salpeter equation formulation in your work please cite `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
-
-To do
------
-
-- Either provide Quantum Espresso and Wannier90 input files to generate the wannier model, or provide the final hoppings as data files.
-- Resolve pydlr dependency in the self-consistent DMFT scripts.

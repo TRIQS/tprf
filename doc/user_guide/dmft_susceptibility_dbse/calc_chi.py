@@ -2,8 +2,8 @@
 #
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
-# Copyright (C) 2023 by H. U.R. Strand
-# Author: H. U.R. Strand
+# Copyright (C) 2023 by Hugo U. R. Strand
+# Author: Hugo U. R. Strand
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
