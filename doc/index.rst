@@ -3,9 +3,9 @@
 The Two-Particle Response Function tool box (TPRF)
 ==================================================
 
-.. sidebar:: tprf 3.0.0
+.. sidebar:: tprf |PROJECT_VERSION|
 
-   This is the homepage of tprf v3.0.0
+   This is the homepage of tprf |PROJECT_VERSION|
    For changes see, Cf :ref:`changelog page <changelog>`
       
       .. image:: _static/logo_github.png
