@@ -157,7 +157,7 @@ if __name__ == '__main__':
         
         hs_fm = HartreeFockSolver(
             e_k, beta, H_int=H_int, gf_struct=gf_struct,
-            mu_min=-40., mu_max=+40.)
+            mu_min=-3., mu_max=+3.)
         
         hs_fm.solve_newton(N_target=N_tot, M0=M_FM, mu0=mu_fm)
         hs_fm.m_FM = hs_fm.expectation_value(Sz)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
         hs_af = HartreeFockSolver(
             e_k, beta, H_int=H_int, gf_struct=gf_struct,
-            mu_min=-20., mu_max=+20.)
+            mu_min=-3., mu_max=+3.)
 
         hs_af.solve_newton(N_target=N_tot, M0=M_AF, mu0=mu_af)
         hs_af.m_FM = hs_af.expectation_value(Sz)
