@@ -622,7 +622,7 @@ def _get_Coulomb_element_2D(qvec, orb_pos1, orb_pos2, eps, UC):
     qvecnorm = np.linalg.norm(qvec)
     pos_diff = orb_pos2 - orb_pos1
     tau = pos_diff[0:2]
-    dist = pos_diff[2]
+    dist = np.abs(pos_diff[2])
 
     if np.isclose(qvecnorm, 0.0): return 0.0
 
@@ -645,8 +645,8 @@ def _get_Coulomb_element(dim, qvec, orb_pos1, orb_pos2, eps, UC):
     if(dim == 3):
         return _get_Coulomb_element_3D(qvec, orb_pos1, orb_pos2, eps, UC)
 
-    raise NotImplementedError("Constructing %i dimensional bare Coulomb\
-        interaction is not implemented"%dim)
+    raise NotImplementedError(\
+    "Constructing %i dimensional bare Coulomb interaction is not implemented"%dim)
 
 def construct_densdens_V(kmesh, eps=1, orb_pos=None, UC=None, dim=None):
     """ Construct the density-density bare Coulomb tensor V_q.
