@@ -10,6 +10,7 @@ set(all_tests
   g_wk_to_from_g_wr_py
   lattice_utility
   V_orb_to_band
+  gaussian_dos
   gf
   gw
   gw_hubbard_dimer

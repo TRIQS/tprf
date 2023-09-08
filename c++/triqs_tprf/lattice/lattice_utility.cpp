@@ -179,4 +179,28 @@ namespace triqs_tprf {
     Vb_kkp = mpi::all_reduce(Vb_kkp);
     return Vb_kkp;
   }
+
+  std::complex<double> gaussian(std::complex<double> E, double sigma) {
+    return 1.0 / (sigma * sqrt(2.0*M_PI)) * exp(-0.5*E*E / (sigma*sigma));
+  }
+
+  std::complex<double> gaussian_dos(eps_k_cvt eps_k, double E, double sigma) {
+    auto kmesh = eps_k.mesh();
+    int nb     = eps_k.target().shape()[0];
+
+    std::complex<double> DOS = 0.0;
+
+    auto arr = mpi_view(kmesh);
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &k = arr[idx];
+
+      for (int i : range(nb)) {
+        DOS += gaussian(eps_k[k](i) - E, sigma);
+      }
+    }
+
+    DOS = mpi::all_reduce(DOS);
+    DOS /= kmesh.size();
+    return DOS;
+  }
 } // namespace triqs_tprf

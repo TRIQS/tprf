@@ -114,6 +114,10 @@ typedef gf<cyclat, matrix_valued> e_r_t;
 typedef e_r_t::const_view_type e_r_cvt;
 typedef e_r_t::view_type e_r_vt;
 
+typedef gf<brzone, tensor_valued<1>> eps_k_t;
+typedef eps_k_t::const_view_type eps_k_cvt;
+typedef eps_k_t::view_type eps_k_vt;
+
 typedef gf<imfreq, matrix_valued> g_w_t;
 typedef g_w_t::const_view_type g_w_cvt;
 typedef g_w_t::view_type g_w_vt;
