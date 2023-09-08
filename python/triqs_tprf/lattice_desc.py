@@ -623,6 +623,8 @@ module.add_function ("triqs_tprf::g_kk_t densdens_V_orb_to_band_basis(triqs_tprf
 
 module.add_function ("std::complex<double> gaussian_dos(eps_k_cvt eps_k, double mu, double sigma)", doc = r"""Add documentation!""")
 
+module.add_function ("std::complex<double> densdens_V_pseudopotential(eps_k_cvt eps_k, double mu, double sigma, g_kk_t Vb_kkp)", doc = r"""Add documentation!""")
+
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Density matrix from lattic Green's function
       
 Parameters

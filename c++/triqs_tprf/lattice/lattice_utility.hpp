@@ -119,4 +119,24 @@ namespace triqs_tprf {
   */
   std::complex<double> gaussian_dos(eps_k_cvt eps_k, double E, double sigma);
 
+  /** Calculates the Coulomb pseudo-potential from a static density-density Coulomb interaction
+  in the band basis, using Gaussian broadening.
+  The function evaluates
+    
+  .. math ::
+      \mu_{pot} = \frac{1}{N(0)} \frac{1}{N_k^2} \sum_{k,k'}
+         \sum_{i,j} \delta(\epsilon_{\mathbf{k}, i} - \mu)
+                    \delta(\epsilon_{\mathbf{k'}, j} - \mu)
+                    V_{ij}(\mathbf{k}, \mathbf{k'})
+
+  where the delta function is approximated by a Gaussian function and $\epsilon_{\mathbf{k}, i}$
+  is the diagonalized matrix-valued dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$.
+
+  @param eps_k diagonalized lattice dispersion :math:`\epsilon_(\mathbf{k},i)`
+  @param mu the chemical potential :math:`\mu`
+  @param sigma broadening used for the Gaussian function
+  @param Vb_kkp Density-density Coulomb interaction in the band basis :math:`V_{ij}(\mathbf{k}, \mathbf{k}')`
+  @return the Coulomb pseudo-potential :math:`\mu_{pot}`
+  */
+  std::complex<double> densdens_V_pseudopotential(eps_k_cvt eps_k, double mu, double sigma, g_kk_t Vb_kkp);
 } // namespace triqs_tprf
