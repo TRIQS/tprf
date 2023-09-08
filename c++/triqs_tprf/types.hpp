@@ -176,6 +176,10 @@ typedef gf<prod<imtime, brzone>, matrix_valued> g_tk_t;
 typedef g_tk_t::const_view_type g_tk_cvt;
 typedef g_tk_t::view_type g_tk_vt;
 
+typedef gf<prod<brzone, brzone>, matrix_valued> g_kk_t;
+typedef g_kk_t::const_view_type g_kk_cvt;
+typedef g_kk_t::view_type g_kk_vt;
+
 // DLR
 
 typedef gf<prod<dlr_imfreq, brzone>, matrix_valued> g_Dwk_t;

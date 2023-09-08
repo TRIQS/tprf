@@ -619,6 +619,8 @@ module.add_function ("double triqs_tprf::fermi(double e)", doc = r"""Add documen
 
 module.add_function ("double triqs_tprf::bose(double e)", doc = r"""Add documentation!""")
 
+module.add_function ("triqs_tprf::g_kk_t densdens_V_orb_to_band_basis(triqs_tprf::chi_k_cvt V_k, triqs_tprf::e_k_cvt psi_k)", doc = r"""Add documentation!""")
+
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::rho_k_from_g_wk (triqs_tprf::g_wk_cvt g_wk)", doc = r"""Density matrix from lattic Green's function
       
 Parameters

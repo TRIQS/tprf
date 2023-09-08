@@ -9,6 +9,7 @@ set(all_tests
   chi4_iw_from_tau
   g_wk_to_from_g_wr_py
   lattice_utility
+  V_orb_to_band
   gf
   gw
   gw_hubbard_dimer

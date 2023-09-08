@@ -155,4 +155,28 @@ namespace triqs_tprf {
   double bose(double e) {
     return 1. / (exp(e) - 1.);
   }
+
+  g_kk_t densdens_V_orb_to_band_basis(chi_k_cvt V_k, e_k_cvt psi_k) {
+    auto kmesh = V_k.mesh();
+    g_kk_t Vb_kkp({kmesh, kmesh}, psi_k.target_shape());
+    Vb_kkp() = 0.0;
+
+    auto arr = mpi_view(Vb_kkp.mesh());
+#pragma omp parallel for
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &[k, kp] = arr[idx];
+
+      auto Wq = V_k(k-kp);
+      for (const auto &[i,j] : Vb_kkp.target_indices()) {
+        for (const auto &[a,b] : Vb_kkp.target_indices()) {
+          Vb_kkp[k,kp](i,j) += nda::conj(psi_k[k](a,i)) * nda::conj(psi_k[kp](b,j))
+                             * psi_k[k](b,j) * psi_k[kp](a,i)
+                             * Wq(a,a,b,b);
+        }
+      }
+    }
+
+    Vb_kkp = mpi::all_reduce(Vb_kkp);
+    return Vb_kkp;
+  }
 } // namespace triqs_tprf

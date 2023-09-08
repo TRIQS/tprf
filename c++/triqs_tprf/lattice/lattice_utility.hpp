@@ -85,4 +85,22 @@ namespace triqs_tprf {
   @return The value of :math:`n_B(\epsilon)`.
   */
   double bose(double e);
+
+  /** Calculates the density-density terms of a static Coulomb interaction
+  in the band basis from the full Coulomb tensor in the orbital basis.
+  
+  .. math ::
+      V_{ij}(\mathbf{k}, \mathbf{k}') = 
+          \sum_{ab} \psi^\dagger_{ai}(\mathbf{k})
+                    \psi^\dagger_{bj}(\mathbf{k}')
+                    \psi_{bj}(\mathbf{k})
+                    \psi_{ai}(\mathbf{k}')
+                    V_{aabb}(\mathbf{k} - \mathbf{k})
+ 
+  @param Coulomb tensor V_k in the orbital basis :math:`V_{abcd}(\mathbf{q})`
+  @param Eigenvector :math:`\psi_{ai}(\mathbf{k})`
+  @return Density-density Coulomb interaction Vb_kkp in the band basis :math:`V_{ij}(\mathbf{k}, \mathbf{k}')`
+  */
+  g_kk_t densdens_V_orb_to_band_basis(chi_k_cvt V_k, e_k_cvt psi_k);
+
 } // namespace triqs_tprf
