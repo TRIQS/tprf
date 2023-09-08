@@ -613,3 +613,90 @@ def pade_analytical_continuation_wk(
             g_fk[:, k] = g_f
         
     return g_fk
+
+# ----------------------------------------------------------------------
+
+e2 = 14.399 # The electron charge squared
+
+def _get_Coulomb_element_2D(qvec, orb_pos1, orb_pos2, eps, UC):
+    qvecnorm = np.linalg.norm(qvec)
+    pos_diff = orb_pos2 - orb_pos1
+    tau = pos_diff[0:2]
+    dist = pos_diff[2]
+
+    if np.isclose(qvecnorm, 0.0): return 0.0
+
+    return 2.0 * np.pi * e2 / (UC * eps * qvecnorm)\
+         * np.exp(-1.0j*qvec[0:2]@tau)\
+         * np.exp(-qvec[2]*dist)
+
+def _get_Coulomb_element_3D(qvec, orb_pos1, orb_pos2, eps, UC):
+    qvecnorm = np.linalg.norm(qvec)
+    tau = orb_pos2 - orb_pos1
+
+    if np.isclose(qvecnorm, 0.0): return 0.0
+
+    return 4.0 * np.pi * e2 / (UC * eps * qvecnorm**2.0)\
+         * np.exp(-1.0j*qvec@tau)\
+
+def _get_Coulomb_element(dim, qvec, orb_pos1, orb_pos2, eps, UC):
+    if(dim == 2):
+        return _get_Coulomb_element_2D(qvec, orb_pos1, orb_pos2, eps, UC)
+    if(dim == 3):
+        return _get_Coulomb_element_3D(qvec, orb_pos1, orb_pos2, eps, UC)
+
+    raise NotImplementedError("Constructing %i dimensional bare Coulomb\
+        interaction is not implemented"%dim)
+
+def construct_densdens_V(kmesh, eps=1, orb_pos=None, UC=None, dim=None):
+    """ Construct the density-density bare Coulomb tensor V_q.
+    The q=0 term is set to 0, i.e. V(q=0)=0.    
+
+    Parameters
+    ----------
+
+    kmesh : MeshBrZone
+        The Brillouin Zone mesh on which to construct the Coulomb tensor
+    eps : float, optional
+        Dielectric constant which scales the Coulomb tensor (Default: 1)
+    orb_pos : List of numpy.ndarray [shape=(3)], optional
+        A list of orbital positions
+        (Default: orbital positions stores in the kmesh)
+    UC : float, optional
+        The area or volume of the unit cell.
+        (Default: Brillouin Zone area/volume corresponding to the kmesh)
+    dim : int, optional
+        Spacial dimension (Default: dimension of periodicity of kmesh)
+
+    Returns
+    -------
+
+    V_q : triqs.gf.Gf with mesh MeshBrZone
+        The 2D bare Coulomb tensor in the density-density approximation
+    """
+
+    if orb_pos is None: orb_pos = kmesh.bz.lattice.orbital_positions
+    if dim is None: dim = kmesh.bz.ndim
+    if UC is None:
+        a0 = kmesh.bz.lattice.units[0,:]
+        a1 = kmesh.bz.lattice.units[1,:]
+        a2 = kmesh.bz.lattice.units[2,:]
+        UC = np.abs(np.cross(a0, a1) @ a2)
+
+    nb = len(orb_pos)
+
+    V_q = Gf(mesh=kmesh, target_shape=[nb]*4)
+    V_q.data[:] = 0.0
+
+    for k in kmesh:
+        ki = k.data_index
+        kvec = k.value
+        qvec = backfold_k(kvec, kmesh)
+
+        for a in range(nb):
+            for b in range(nb):
+                V_q.data[ki,a,a,b,b] = _get_Coulomb_element(dim, qvec,\
+                                        orb_pos[a], orb_pos[b], eps, UC)
+
+    return V_q
+

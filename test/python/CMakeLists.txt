@@ -11,6 +11,7 @@ set(all_tests
   lattice_utility
   V_orb_to_band
   gaussian_dos
+  construct_densdens_V
   gf
   gw
   gw_hubbard_dimer
