@@ -364,6 +364,35 @@ def get_k_components_from_k_vec(k_vec, nk):
     return tuple(k_out)
 
 # ----------------------------------------------------------------------
+def backfold_k(kvec, kmesh):
+    """Backfold a k-vector into the first Brillouin Zone
+    
+    Parameters
+    ----------
+    kvec : numpy.ndarray [shape=(3)]
+       The k-vector to backfold into the first Brillouin Zone
+    kmesh: MeshBrZone
+       The Brillouin Zone mesh on which to backfold
+
+    Returns
+    -------
+    kvecsFolded: numpy.ndarray [shape=(3)]
+        The folded k-vector within the first Brillouin Zone
+    """
+
+    # get the k-vector in internal units
+    kvecInt = kvec @ np.linalg.inv(kmesh.bz.units)
+
+    # backfold the k-vector in internal units
+    # to [-0.5, 0.5] for each dimension
+    for ii in range(len(kvecInt)):
+        kvecInt[ii] = (kvecInt[ii] + 0.5)%1.0 - 0.5
+
+    # get backfolded k-vector in physical units 1/ang
+    kvecFolded = kvecInt @ kmesh.bz.units
+    return kvecFolded
+
+# ----------------------------------------------------------------------
 def cluster_mesh_fourier_interpolation(k, chiwr):
 
     assert( len(k.shape) == 2 )

@@ -12,22 +12,9 @@ from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import gaussian_dos
 
+from triqs_tprf.lattice_utils import backfold_k
+
 # ----------------------------------------------------------------------
-
-def backfold(kvec, kmesh):
-    # get the q vector in internal units
-    kvecInt = kvec @ np.linalg.inv(kmesh.bz.units)
-
-    # back-fold if nececcary
-    for ii in range(len(kvecInt)):
-        if(kvecInt[ii] >= 0.5):
-            kvecInt[ii] -= 1.0
-        if(kvecInt[ii] < -0.5):
-            kvecInt[ii] += 1.0
-
-    # get back-folded vector in 1/ang
-    kvecFolded = kvecInt @ kmesh.bz.units
-    return kvecFolded
 
 def test_flat_dos():
     print("Single band")
@@ -43,7 +30,7 @@ def test_flat_dos():
     kmesh = MeshBrZone(bz, [nk, nk, 1])
     eps_k = Gf(mesh=kmesh, target_shape=[1])
     for k in kmesh:
-        kfolded = backfold(k.value, kmesh)
+        kfolded = backfold_k(k.value, kmesh)
         knorm = np.linalg.norm(kfolded)
         eps_k[k] = knorm**2.0 / (2.0 * mstar)
 
@@ -79,7 +66,7 @@ def test_multiband():
     eps_k.data[:] = 0.0
     for k in kmesh:
         ki = k.data_index
-        kfolded = backfold(k.value, kmesh)
+        kfolded = backfold_k(k.value, kmesh)
         knorm = np.linalg.norm(kfolded)
         eps_k.data[ki,0] = knorm**2.0 / (2.0 * mstar1)
         eps_k.data[ki,1] = knorm**2.0 / (2.0 * mstar2) + shift
