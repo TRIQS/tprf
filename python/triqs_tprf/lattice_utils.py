@@ -559,14 +559,20 @@ def pade_analytical_continuation_wk(
 
     for k in kmesh:
         g_f = g_fk[:, k]
-        g_w = g_wk[:, k]
+
+        # Make_gf_dlr is broken on gf views (issue #913),
+        # so make a copy of the data instead
+        if type(wmesh) == MeshDLRImFreq:
+            g_w = Gf(mesh=wmesh, target_shape=g_wk.target_shape)
+            g_w.data[:] = g_wk[:, k].data[:]
+        else:
+            g_w = g_wk[:, k]
 
         if len(g_wk.target_shape) == 4:
             g_w = gf_tensor_to_matrix(g_w)
             g_f = gf_tensor_to_matrix(g_f)
 
         if type(g_w.mesh) == MeshDLRImFreq:
-
             g_c = make_gf_dlr(g_w)
             small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
             g_w = dlr_on_imfreq(g_c, small_mesh)
