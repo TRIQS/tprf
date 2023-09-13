@@ -39,6 +39,8 @@ from triqs.gf import MeshDLRImFreq
 from triqs.gf import MeshProduct
 from triqs.gf import MeshBrZone
 
+from triqs.gf import make_gf_dlr
+
 from triqs.lattice import BrillouinZone
 
 # ----------------------------------------------------------------------
@@ -57,6 +59,8 @@ from triqs_tprf.lattice import chi0_w0r_from_grt_PH
 from triqs_tprf.lattice import chi_wr_from_chi_tr
 from triqs_tprf.lattice import chi_w0r_from_chi_tr
 from triqs_tprf.lattice import chi_wk_from_chi_wr
+
+from triqs_tprf.lattice import dlr_on_imfreq
 
 # ----------------------------------------------------------------------
 def add_fake_bosonic_mesh(gf, beta=None):
@@ -562,6 +566,7 @@ def pade_analytical_continuation_wk(
             g_f = gf_tensor_to_matrix(g_f)
 
         if type(g_w.mesh) == MeshDLRImFreq:
+
             g_c = make_gf_dlr(g_w)
             small_mesh = MeshImFreq(g_w.mesh.beta, g_w.mesh.statistic, n_points)
             g_w = dlr_on_imfreq(g_c, small_mesh)
