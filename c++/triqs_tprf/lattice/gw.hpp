@@ -59,7 +59,7 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
-          - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{dc}(\tau, \mathbf{r})
+          - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
