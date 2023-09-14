@@ -132,8 +132,7 @@ if __name__ == '__main__':
         H_int = U * docc
 
         hs = HartreeFockSolver(
-            e_k, beta, H_int=H_int, gf_struct=gf_struct,
-            mu_min=-20., mu_max=+20.)
+            e_k, beta, H_int=H_int, gf_struct=gf_struct)
 
         # -- Solve without seeding FM symmetry breaking
         print('-'*72)
@@ -156,8 +155,7 @@ if __name__ == '__main__':
         print('M_FM =\n', M_FM)
         
         hs_fm = HartreeFockSolver(
-            e_k, beta, H_int=H_int, gf_struct=gf_struct,
-            mu_min=-3., mu_max=+3.)
+            e_k, beta, H_int=H_int, gf_struct=gf_struct)
         
         hs_fm.solve_newton(N_target=N_tot, M0=M_FM, mu0=mu_fm)
         hs_fm.m_FM = hs_fm.expectation_value(Sz)
@@ -174,8 +172,7 @@ if __name__ == '__main__':
         print('M_AF =\n', M_AF)
 
         hs_af = HartreeFockSolver(
-            e_k, beta, H_int=H_int, gf_struct=gf_struct,
-            mu_min=-3., mu_max=+3.)
+            e_k, beta, H_int=H_int, gf_struct=gf_struct)
 
         hs_af.solve_newton(N_target=N_tot, M0=M_AF, mu0=mu_af)
         hs_af.m_FM = hs_af.expectation_value(Sz)

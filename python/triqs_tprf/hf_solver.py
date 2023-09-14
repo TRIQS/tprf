@@ -82,7 +82,7 @@ class HartreeFockSolver(object):
         
     # ------------------------------------------------------------------
     def __init__(self, e_k, beta, H_int=None, gf_struct=None,
-                 mu0=0., mu_max=10, mu_min=-10.):
+                 mu0=0., mu_max=None, mu_min=None):
 
         if mpi.is_master_node():
             print(self.logo())
@@ -108,7 +108,7 @@ class HartreeFockSolver(object):
 
         if mpi.is_master_node():
             print('beta =', self.beta)
-            print('mu =', self.mu)
+            print(f'mu = {self.mu} -- (min/max = {self.mu_min}/{self.mu_max})')
             print('bands =', self.norb)
             print('n_k =', len(self.e_k.mesh))
             print('H_int =', H_int)
@@ -163,7 +163,10 @@ class HartreeFockSolver(object):
             n = np.sum(fermi(e - mu)) / self.n_k
             return n - N_target
 
-        mu = brentq(target_function, self.mu_min, self.mu_max)
+        mu_min = self.mu_min if self.mu_min is not None else e.min()
+        mu_max = self.mu_max if self.mu_max is not None else e.max()
+
+        mu = brentq(target_function, mu_min, mu_max)
 
         self.mu = mu        
 
