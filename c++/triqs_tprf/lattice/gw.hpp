@@ -59,7 +59,7 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
-          - \sum_{cd} W^{(dyn)}_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+          - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{dc}(\tau, \mathbf{r})
 
     and transforms back to frequency and momentum
 
@@ -72,9 +72,9 @@ namespace triqs_tprf {
 
     .. math::
         \Sigma^{(stat)}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
-          \sum_{\mathbf{q}} V_{abab}(\mathbf{k}) \rho(G(i\omega_n, \mathbf{k+q}))_{ab}
+          \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{k}) \rho_{dc}(\mathbf{k} + \mathbf{q})
 
-    where :math:`\rho(G(i\omega_n, \mathbf{k+q}))` is the density matrix of the
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
     single particle Green's function.
 
     The total GW self-energy is given by
@@ -133,7 +133,7 @@ namespace triqs_tprf {
 
   /** Static GW self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
-    Computes the statick GW self-energy (equivalent to the Fock self-energy)
+    Computes the static GW self-energy (equivalent to the Fock self-energy)
  
     @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
     @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
