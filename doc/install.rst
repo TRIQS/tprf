@@ -10,7 +10,7 @@ Packaged Versions of TPRF
 Ubuntu Debian packages
 ----------------------
 
-We provide a Debian package for the Ubuntu LTS Versions 16.04 (xenial) and 18.04 (bionic), see :ref:`Triqs Debian package install instructions <triqslibs:ubuntu_debian>`. After installing Triqs the command::
+We provide a Debian package for the Ubuntu LTS Version 22.04 (jammy), see :ref:`Triqs Debian package install instructions <triqslibs:ubuntu_debian>`. After installing Triqs the command::
 
   sudo apt-get install -y triqs_tprf
 
