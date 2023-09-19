@@ -56,7 +56,7 @@ def setup_dmft_calculation(p):
     p.iter = 0
 
     # -- Block structure of GF
-    
+
     p.num_orbitals = 3
     p.spin_names = ('up','do')
     p.orb_names = list(range(p.num_orbitals))
@@ -67,27 +67,38 @@ def setup_dmft_calculation(p):
     p.fundamental_operators = [
         c_operator(f'{s}_{o}', 0) for s, o in
         itertools.product(p.spin_names, p.orb_names)]
-    
+
     # -- Local Hamiltonian
 
     p.J = p.U * p.J_over_U
-    KanMat1, KanMat2 = U_matrix_kanamori(p.num_orbitals, p.U, p.J)
-    p.solve.h_int = h_int_kanamori(p.spin_names, p.num_orbitals, KanMat1, KanMat2, p.J, False)
+    KanMat1, KanMat2 = U_matrix_kanamori(
+        n_orb=p.num_orbitals,
+        U_int=p.U,
+        J_hund=p.J,
+    )
+    p.solve.h_int = h_int_kanamori(
+        spin_names=p.spin_names,
+        n_orb=p.num_orbitals,
+        U=KanMat1,
+        Uprime=KanMat2,
+        J_hund=p.J,
+        off_diag=False,
+    )
 
     # -- Sr2RuO4 Wannier90 model from GPAW
-    
+
     from tight_binding_model import tight_binding_model
     H = tight_binding_model()
 
     p.kmesh = H.get_kmesh(n_k = (p.n_k, p.n_k, p.n_k))
     p.e_k = H.fourier(p.kmesh)
-    
+
     # -- Initial zero guess for the self-energy
-    
-    p.sigma_w = Gf(mesh=MeshImFreq(p.init.beta, 'Fermion', p.init.n_iw), target_shape=[6, 6])
+
+    p.sigma_w = Gf(mesh=MeshImFreq(p.init.beta, 'Fermion', p.init.n_iw), target_shape=[2 * p.num_orbitals, 2 * p.num_orbitals])
     p.sigma_w.zero()
     p.sigma_w << +p.mu * np.eye(2*p.num_orbitals)
-    
+
     return p
 
 
@@ -101,7 +112,7 @@ def solve_self_consistent_dmft_fix_N(p, verbose=False, filename=None):
 
         if len(ps) != 0: p0 = copy.deepcopy(ps[-1])
         p0.mu = mu
-        
+
         ps += solve_self_consistent_dmft(p0, verbose=False)
 
         if filename:
@@ -112,7 +123,7 @@ def solve_self_consistent_dmft_fix_N(p, verbose=False, filename=None):
                 with HDFArchive(tmp_filename, 'w') as a:
                     #a['ps'] = ParameterCollections(ps)
                     a['ps'] = ps
-            
+
         p = ps[-1]
         mpi.report(f'--> solve_self_consistent_dmft_fix_N: target_function ' + \
                    f'iter = {p.iter} mu = {p.mu}')
@@ -148,8 +159,8 @@ def solve_self_consistent_dmft(p, verbose=False):
         mpi.report(f'--> DMFT Convergence: dG = {p.dG:2.2E}')
         mpi.report(f'--> Density: N = {p.N:2.2E}')
         mpi.report(f'--> Chempot: mu = {p.mu:2.2E}')
-        mpi.report(f'--> Densmat: rho_up = \n{p.rho.real[:3,:3]}')
-        mpi.report(f'--> Densmat: rho_do = \n{p.rho.real[3:,3:]}')
+        mpi.report(f'--> Densmat: rho_up = \n{p.rho.real[:p.num_orbitals,:p.num_orbitals]}')
+        mpi.report(f'--> Densmat: rho_do = \n{p.rho.real[p.num_orbitals:,p.num_orbitals:]}')
         if p.dG < p.G_tol: break
 
     if p.dG > p.G_tol: mpi.report('--> Warning: DMFT Not converged!')
@@ -163,7 +174,7 @@ def dmft_self_consistent_step(p, verbose=False):
     p.iter += 1
 
     p.g_w = lattice_dyson_g_w(p.mu, p.e_k, p.sigma_w)
-    
+
     p.rho = p.g_w.density()
     p.N = np.sum(np.diagonal(p.rho)).real
 
@@ -171,10 +182,10 @@ def dmft_self_consistent_step(p, verbose=False):
 
     p.g0_w = p.g_w.copy()
     p.g0_w << inverse(inverse(p.g_w) + p.sigma_w)
-    
+
     cthyb = triqs_cthyb.Solver(**p.init.dict())
 
-    BlockGf_from_Gf_matrix_valued(cthyb.G0_iw, p.g0_w)
+    BlockGf_from_Gf_matrix_valued(cthyb.G0_iw, p.g0_w, p)
 
     solve = copy.deepcopy(p.solve)
     solve.n_cycles = int(np.round(solve.n_cycles / mpi.size))
@@ -184,7 +195,7 @@ def dmft_self_consistent_step(p, verbose=False):
     p.G0_w = cthyb.G0_iw.copy()
     p.G_tau_raw = cthyb.G_tau
     p.Delta_infty = cthyb.Delta_infty
-    
+
     G_tau = fit_dlr(p.G_tau_raw, p)
 
     p.dG = np.max(np.abs(BlockGf_data(p.G_tau - G_tau))) \
@@ -195,11 +206,11 @@ def dmft_self_consistent_step(p, verbose=False):
     p.G_w = p.G0_w.copy()
     p.G_w << Fourier(p.G_tau)
 
-    p.Sigma_w = p.G0_w.copy()    
+    p.Sigma_w = p.G0_w.copy()
     p.Sigma_w << inverse(p.G0_w) - inverse(p.G_w)
-    
-    Gf_matrix_valued_from_BlockGf(p.sigma_w, p.Sigma_w)
-    
+
+    Gf_matrix_valued_from_BlockGf(p.sigma_w, p.Sigma_w, p)
+
     return p
 
 
@@ -209,7 +220,7 @@ def fit_dlr(G_tau, p):
 
     G_tau = G_tau.copy()
     cmesh = MeshDLR(p.init.beta, 'Fermion', w_max=p.w_max, eps=p.eps)
-    print(cmesh)
+    mpi.report(cmesh)
 
     block_mat = np.diag([1, 1, 2, 1, 1, 2])
     sym = BlockSymmetrizer(len(cmesh), block_mat)
@@ -223,13 +234,13 @@ def fit_dlr(G_tau, p):
         verbose=mpi.is_master_node(),
         )
 
-    G_tau_mat = Gf(mesh=G_tau.mesh, target_shape=[6, 6])
-    Gf_matrix_valued_from_BlockGf(G_tau_mat, G_tau)
+    G_tau_mat = Gf(mesh=G_tau.mesh, target_shape=[2 * p.num_orbitals, 2 * p.num_orbitals])
+    Gf_matrix_valued_from_BlockGf(G_tau_mat, G_tau, p)
 
     H_delta = Operator()
-    for i in range(6):
+    for i in range(2 * p.num_orbitals):
         op = p.fundamental_operators[i]
-        H_delta += p.Delta_infty[i][0,0].real * dagger(op) * op 
+        H_delta += p.Delta_infty[i][0,0].real * dagger(op) * op
 
     H = p.solve.h_int + H_delta
 
@@ -238,25 +249,23 @@ def fit_dlr(G_tau, p):
     from triqs.gf.gf_factories import make_gf_imtime
     G_mat_fit = make_gf_imtime(G_c_mat, len(G_tau_mat.mesh))
 
-    BlockGf_from_Gf_matrix_valued(G_tau, G_mat_fit)
+    BlockGf_from_Gf_matrix_valued(G_tau, G_mat_fit, p)
     return G_tau
 
 
-def get_matrix_block_pairs():
-    blocks = [ f'{s}_{o}' for s, o in itertools.product( ['up', 'do'], range(3) ) ]
+def get_matrix_block_pairs(p):
+    blocks = [ f'{s}_{o}' for s, o in itertools.product(p.spin_names, p.orb_names) ]
     matrix_block_pairs = [ (idx, bidx) for idx, bidx in enumerate(blocks) ]
     return matrix_block_pairs
 
 
-def Gf_matrix_valued_from_BlockGf(G_mat, G_block):
-    for idx, bidx in get_matrix_block_pairs():
+def Gf_matrix_valued_from_BlockGf(G_mat, G_block, p):
+    for idx, bidx in get_matrix_block_pairs(p):
         G_mat[idx, idx] << G_block[bidx][0, 0]
     return G_mat
 
 
-def BlockGf_from_Gf_matrix_valued(G_block, G_mat):
-    for idx, bidx in get_matrix_block_pairs():
+def BlockGf_from_Gf_matrix_valued(G_block, G_mat, p):
+    for idx, bidx in get_matrix_block_pairs(p):
         G_block[bidx][0,0] << G_mat[idx, idx]
     return G_block
-
-    
