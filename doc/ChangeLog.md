@@ -3,6 +3,25 @@
 # Changelog
 
 
+## Version 3.2.1
+
+TPRF version 3.2.1  is a patch release that fixes an issue with the conda package building pipeline.
+
+We thank all contributors: Hugo U. R. Strand, Yann in 't Veld, Nils Wentzell
+
+Find below an itemized list of changes in this release.
+
+### Documentation
+* Correct Ubuntu Version in install instructions
+* Fixed typos in GW indices in documentation
+
+### Hartree-Fock
+* Stablizie chemical potential finder that broke the conda package pipeline.
+
+### Discrete Lehmann Representation (DLR) support
+* Fix helper function for Pade analytical contiuation on momentum dependent DLR Green's functions
+
+
 ## Version 3.2.0
 
 TPRF version 3.2.0 is a compatibility release for TRIQS version 3.2.0.
