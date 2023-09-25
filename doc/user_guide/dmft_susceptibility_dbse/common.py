@@ -149,6 +149,43 @@ def solve_self_consistent_dmft_fix_N(p, verbose=False, filename=None):
     return ps
 
 
+def set_chemical_potential(p0):
+    step = 0
+    p = copy.deepcopy(p0)
+    def f(mu):
+        nonlocal p, step
+        step += 1
+        p.g_w = lattice_dyson_g_w(mu, p.e_k, p.sigma_w)
+        p.N = p.g_w.total_density().real
+        mpi.report(f"--> Step: {step:3d} || mu = {mu} || Density: {p.N}")
+        return p.N - p.N_target
+
+    from scipy.optimize import toms748
+    p.mu = toms748(f, p.mu_min, p.mu_max, xtol=1e-5, maxiter=100)
+    mpi.report(f"--> Result:   || mu = {p.mu} || Density: {p.N}")
+    return p
+
+
+def solve_self_consistent_dmft_fix_mu(p, verbose=False):
+
+    ps = []
+    for dmft_iter in range(p.sc_iter_max):
+        mpi.report(f'--> DMFT Iteration: {p.iter}')
+        p = set_chemical_potential(p)
+        p = dmft_self_consistent_step(p, verbose=verbose)
+        ps.append(p)
+        mpi.report(f'--> DMFT Convergence: dG = {p.dG:2.2E}')
+        mpi.report(f'--> Density: N = {p.N:2.2E}')
+        mpi.report(f'--> Chempot: mu = {p.mu:2.2E}')
+        mpi.report(f'--> Densmat: rho_up = \n{p.rho.real[:p.num_orbitals,:p.num_orbitals]}')
+        mpi.report(f'--> Densmat: rho_do = \n{p.rho.real[p.num_orbitals:,p.num_orbitals:]}')
+        if p.dG < p.G_tol: break
+
+    if p.dG > p.G_tol: mpi.report('--> Warning: DMFT Not converged!')
+    else: mpi.report(f'--> DMFT Converged: dG = {p.dG:2.2E}')
+    return ps
+
+
 def solve_self_consistent_dmft(p, verbose=False):
 
     ps = []
