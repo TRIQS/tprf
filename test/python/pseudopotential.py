@@ -20,47 +20,27 @@ import scipy.integrate as integrate
 # ----------------------------------------------------------------------
 
 def get_analytical_pseudopotential_TF(a0, mstar, mu, eps):
+    """Analytical expression for the Coulomb pseudo-potential for a Thomas-Fermi screened interaction.
+    The derivation can be found in appendix A of the master thesis of Yann in 't Veld
+
+    Note: There is a mistake in the expression in this source. The correct expression is:
+    mu = N0 e^2 / (A epsilon k_F) I(2 pi e^2 / (A epsilon k_F) N0)"""
+
     A = a0*a0
     N0 = A*mstar / (2.0*np.pi)
     e2 = 14.399
     kF = np.sqrt(2.0 * mstar * mu)
 
     I = lambda x : integrate.quad(lambda theta:1.0/(np.sin(theta) + x), 0.0, np.pi)[0]
-    mu_pseudo = N0 * e2 / (A * eps * kF) * I(2.0 * np.pi**2.0 * e2 * N0 / (A * eps * kF))
+    mu_pseudo = N0 * e2 / (A * eps * kF) * I(2.0 * np.pi * e2 * N0 / (A * eps * kF))
     return mu_pseudo
-
-#def getDelta(EE, sigma):
-#    # sigma is broadening of delta fct
-#    return 1.0 / (sigma * np.sqrt(2.0 * np.pi)) \
-#    * np.exp(-0.5 * EE**2.0 / sigma**2.0)
-#
-#def get_python_pseudopotential(E_k, mu, sigma, W_bands, N0):
-#    kmesh, _ = W_bands.mesh.components
-#    nb = W_bands.target_shape[0]
-#
-#    EBMuVal = 0.0
-#
-#    for k in kmesh:
-#        ki = k.data_index
-#        for kp in kmesh:
-#            kpi = kp.data_index
-#            for i in range(nb):
-#                for j in range(nb):
-#                    Ekk = E_k.data[ki, i]-mu
-#                    Ekp = E_k.data[kpi, j]-mu
-#                    d1 = getDelta(Ekk,sigma)
-#                    d2 = getDelta(Ekp,sigma)
-#                    EBMuVal += np.real(d1 * d2 * W_bands.data[ki,kpi,i,j])
-#    
-#    EBMuVal = EBMuVal / (N0*len(kmesh)**2.0)
-#    return EBMuVal
 
 
 def test_singleband():
     print("Single band")
     a0 = 2.0
-    nk = 50
-    sigma = 0.2
+    nk = 20
+    sigma = 0.5
     mstar = 0.4 * 0.1314
     mu = 1.0
 
@@ -98,13 +78,10 @@ def test_singleband():
     print("--> densdens_V_pseudopotential")
     Vb_kkp = densdens_V_orb_to_band_basis(W_q, psi_k)
     mu_pseudo = densdens_V_pseudopotential(eps_k, mu, sigma, Vb_kkp)
-    print("num:", mu_pseudo)
+    print("num:", mu_pseudo.real)
 
     mu_pseudo_ref = get_analytical_pseudopotential_TF(a0, mstar, mu, eps)
     print("ana:", mu_pseudo_ref)
-
-    #mu_pseudo_ref2 = get_python_pseudopotential(eps_k, mu, sigma, Vb_kkp, dos)
-    #print("python:", mu_pseudo_ref2)
 
     assert np.isclose(mu_pseudo, mu_pseudo_ref, rtol=1e-2)
 
