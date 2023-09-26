@@ -209,14 +209,25 @@ namespace triqs_tprf {
     auto kmesh = eps_k.mesh();
 
     std::complex<double> pseudo_mu = 0.0;
+    std::complex<double> local_pseudo_mu = 0.0;
 
     auto arr = mpi_view(Vb_kkp.mesh());
-    for (unsigned int idx = 0; idx < arr.size(); idx++) {
-      auto &[k, kp] = arr[idx];
-      for (const auto &[i,j] : Vb_kkp.target_indices()) {
-        pseudo_mu += gaussian(eps_k[k](i) - mu, sigma)
-                   * gaussian(eps_k[kp](j) - mu, sigma)
-                   * Vb_kkp[k,kp](i,j);
+
+    #pragma omp parallel private(local_pseudo_mu)
+    {
+      #pragma omp for
+      for (unsigned int idx = 0; idx < arr.size(); idx++) {
+        auto &[k, kp] = arr[idx];
+        for (const auto &[i,j] : Vb_kkp.target_indices()) {
+          local_pseudo_mu += gaussian(eps_k[k](i) - mu, sigma)
+                           * gaussian(eps_k[kp](j) - mu, sigma)
+                           * Vb_kkp[k,kp](i,j);
+        }
+      }
+
+      #pragma omp critical
+      {
+        pseudo_mu += local_pseudo_mu;
       }
     }
 
