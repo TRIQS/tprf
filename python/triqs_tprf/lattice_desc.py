@@ -621,7 +621,7 @@ module.add_function ("double triqs_tprf::bose(double e)", doc = r"""Add document
 
 module.add_function ("triqs_tprf::g_kk_t densdens_V_orb_to_band_basis(triqs_tprf::chi_k_cvt V_k, triqs_tprf::e_k_cvt psi_k)", doc = r"""Add documentation!""")
 
-module.add_function ("std::complex<double> gaussian_dos(eps_k_cvt eps_k, double mu, double sigma)", doc = r"""Add documentation!""")
+module.add_function ("std::complex<double> gaussian_dos(eps_k_cvt eps_k, double E, double sigma)", doc = r"""Add documentation!""")
 
 module.add_function ("std::complex<double> densdens_V_pseudopotential(eps_k_cvt eps_k, double mu, double sigma, g_kk_t Vb_kkp)", doc = r"""Add documentation!""")
 
