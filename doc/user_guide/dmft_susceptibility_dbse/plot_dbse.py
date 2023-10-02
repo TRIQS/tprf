@@ -16,7 +16,7 @@ from triqs.lattice import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------
 
-from triqs_tprf.lattice_utils import k_space_path
+from triqs.lattice.utils import k_space_path
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.ParameterCollection import ParameterCollections
@@ -40,10 +40,8 @@ def do_post_processing(p):
     paths = [(Gamma, X), (X, M), (M, Gamma),]
     labels = [r'$\Gamma$', r'$X$', r'$M$', r'$\Gamma$', ]
 
-    paths = [ (2*np.pi*np.array(a), 2*np.pi*np.array(b)) for a, b in paths ]
-
-    k_vecs, k_plot, K_plot = k_space_path(paths, bz=bzmesh.bz, num=10000)
-    k_vecs_abs = (k_vecs @ bzmesh.bz.units) / (2 * np.pi)
+    k_vecs, k_plot, K_plot = k_space_path(paths, bz=bzmesh.bz, num=10000, relative_coordinates=False)
+    k_vecs_abs = k_vecs
     
     # ------------------------------------------------------------------
     # -- Spin-spin response
@@ -278,11 +276,10 @@ if __name__ == '__main__':
 
     nk = '048'
 
-    nwfs = [f'{i:03d}' for i in np.arange(4, 32, 2)]
-    skip_list = [6, 10, 12, 14, 18, 20, 22, 24, 26, 28, 30]
-    
+    nwfs = [f'{i:03d}' for i in np.arange(5, 45, 5)]
+    skip_list = []
+        
     if False:
-        #for nwf in nwfs:
         for nwf in ['004']:
             filename = f'./data/data_bse_nwf_{nwf}_nk_{nk}.h5'
             read_postprocess_and_write_depr(filename)

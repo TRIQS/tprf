@@ -39,7 +39,33 @@ with HDFArchive(filename_ref, 'r') as a:
 from triqs.plot.mpl_interface import oplot, oplotr, oploti, plt
 
 plt.figure(figsize=(3.25*4, 10))
-subp = [4, 2, 1]
+subp = [5, 2, 1]
+
+if True:
+    plt.subplot(*subp); subp[-1] += 1
+
+    #G = np.array([0.0, 0.0, 0.0])
+    #M = np.array([0.5, 0.0, 0.0])
+    #K = np.array([1.0/3, 1.0/3, 0.0])
+
+    #path = [(G,M), (M,K), (K,G)]
+    #labels = [r'$\Gamma$', '$M$', '$K$', r'$\Gamma$']
+
+    Gamma, X, M = [0.00, 0.00, 0.00], [ 0.00, 0.00, 0.50], [-0.25, 0.25, 0.25]
+    path = [(Gamma, X), (X, M), (M, Gamma),]
+    labels = [r'$\Gamma$', r'$X$', r'$M$', r'$\Gamma$', ]
+    
+    from triqs.lattice.utils import k_space_path
+
+    k_vecs, k_plot, k_ticks = k_space_path(
+        path, num=32, bz=p.e_k.mesh.bz, relative_coordinates=False)
+
+    e_k_interp = np.vectorize(lambda k : np.linalg.eigvalsh(p.e_k(k)).real, signature='(n)->(m)')
+
+    plt.plot(k_plot, e_k_interp(k_vecs))
+    plt.xticks(k_ticks, labels=labels)
+    plt.ylabel(r'$\epsilon(\mathbf{k})$')
+    plt.grid(True)
 
 plt.subplot(*subp); subp[-1] += 1
 plt.plot(ps.iter, ps.dG, 's-')
