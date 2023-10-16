@@ -32,7 +32,6 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 import sys
 import itertools
 import numpy as np
-from .numpy_compat import np_eigh
 
 # ----------------------------------------------------------------------
 class BaseResponse(object):
@@ -80,8 +79,8 @@ class BaseResponse(object):
         E_p = self.e_k.data.copy() + eps*op[None, ...]
         E_m = self.e_k.data.copy() - eps*op[None, ...]
 
-        e_p, U_p = np_eigh(E_p)
-        e_m, U_m = np_eigh(E_m)
+        e_p, U_p = np.linalg.eigh(E_p)
+        e_m, U_m = np.linalg.eigh(E_m)
 
         fermi = lambda e, beta: 1./(np.exp(beta * e) + 1)
 

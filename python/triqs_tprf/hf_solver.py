@@ -34,7 +34,6 @@ Author: Hugo U. R. Strand, hugo.strand@gmail.com (2018)
 import sys
 import itertools
 import numpy as np
-from .numpy_compat import np_eigvalsh, np_eigh
 
 # ----------------------------------------------------------------------
 
@@ -155,7 +154,7 @@ class HartreeFockSolver(object):
         if mu0 is None:
             mu0 = self.mu
             
-        e = np_eigvalsh(self.e_k_MF.data)
+        e = np.linalg.eigvalsh(self.e_k_MF.data)
 
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
 
@@ -173,7 +172,7 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def update_momentum_density_matrix(self):
 
-        e, V = np_eigh(self.e_k_MF.data)
+        e, V = np.linalg.eigh(self.e_k_MF.data)
         e -= self.mu
         
         fermi = lambda e : 1./(np.exp(self.beta * e) + 1)
@@ -193,7 +192,7 @@ class HartreeFockSolver(object):
     # ------------------------------------------------------------------
     def update_non_int_free_energy(self):
 
-        e = np_eigvalsh(self.e_k_MF.data)
+        e = np.linalg.eigvalsh(self.e_k_MF.data)
         e -= self.mu
         
         self.Omega0 = -1./self.beta * np.sum( np.log(1. + np.exp(-self.beta*e)) )
