@@ -13,8 +13,7 @@ Author: H. U.R. Strand (2019)
 
 import itertools
 import numpy as np
-#from packaging.version import parse
-from distutils.version import StrictVersion as parse
+from packaging.version import parse
 
 def is_numpy_newer_than(version):
     return parse(np.__version__) > parse(version)
