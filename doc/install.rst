@@ -46,6 +46,8 @@ Prerequisites
 #. The :ref:`TRIQS <triqslibs:welcome>` library, see `TRIQS installation instruction <https://triqs.github.io/triqs/latest/install.html>`_.
    In the following, we assume that TRIQS is installed in the directory ``path_to_triqs``.
 
+#. For Python 3.12 and higher, `setuptools <https://pypi.org/project/setuptools/>`_ is required. 
+
 Installation steps
 ------------------
 
