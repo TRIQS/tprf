@@ -2,3 +2,4 @@
 mako
 numpy
 scipy
+setuptools
