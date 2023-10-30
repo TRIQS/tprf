@@ -350,7 +350,7 @@ def test_chi0(verbose=True):
 
     def backfold(kvec, kmesh):
         # get the q vector in internal units
-        kvecInt = kvec @ np.linalg.inv(kmesh.domain.units)
+        kvecInt = kvec @ np.linalg.inv(kmesh.units)
 
         # back-fold if nececcary
         for ii in range(len(kvecInt)):
@@ -360,12 +360,12 @@ def test_chi0(verbose=True):
                 kvecInt[ii] += 1.0 
 
         # get back-folded vector in 1/ang
-        kvecFolded = kvecInt @ kmesh.domain.units
+        kvecFolded = kvecInt @ kmesh.units
         return kvecFolded
 
     V_k = Gf(mesh=kmesh, target_shape=[1]*4)
     for k in kmesh:
-        kind = k.linear_index
+        kind = k.data_index
         kfolded = backfold(k.value, kmesh)
         knorm = np.linalg.norm(kfolded)
 
