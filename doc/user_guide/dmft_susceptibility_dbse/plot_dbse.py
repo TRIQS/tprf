@@ -278,10 +278,14 @@ if __name__ == '__main__':
 
     nwfs = [f'{i:03d}' for i in np.arange(5, 45, 5)]
     skip_list = []
-        
+    
+    nwfs = ['003', '004', '005', '006', '007', '008', '009',
+            '010', '011', '012', '015', '017', '020', '022', '025', '030', '035', '040']
+    skip_list = [3, 4, 6, 7, 8, 9, 11, 12, 15, 17, 22, 25, 30, 35]        
+
     if False:
         for nwf in ['004']:
-            filename = f'./data/data_bse_nwf_{nwf}_nk_{nk}.h5'
+            filename = f'./data/data_bse/data_bse_nwf_{nwf}_nk_{nk}.h5'
             read_postprocess_and_write_depr(filename)
 
     plt.figure(figsize=(3.25*2, 3.75*1.5))
@@ -308,7 +312,7 @@ if __name__ == '__main__':
     psd = []
     for nwf in nwfs:
         c, n, p = plot(
-            f'./data/data_bse_nwf_{nwf}_nk_{nk}_{kind}_interp.h5',
+            f'./data/data_bse_interp/data_bse_nwf_{nwf}_nk_{nk}_{kind}_interp.h5',
             style=style, static_response=False, label=True, skip_list=skip_list)
         colors[n] = c
         psd.append(p)
@@ -319,7 +323,7 @@ if __name__ == '__main__':
     for nwf in nwfs:
         n = int(nwf.split('_')[0])
         _, _, p = plot(
-            f'./data/data_bse_nwf_{nwf}_nk_{nk}_{kind}_interp.h5',
+            f'./data/data_bse_interp/data_bse_nwf_{nwf}_nk_{nk}_{kind}_interp.h5',
             style=style, static_response=False, color=colors[n], skip_list=skip_list, marker='s')
         ps.append(p)
 
@@ -339,6 +343,8 @@ if __name__ == '__main__':
     n_bse_2 = 10 # number of points to use for extrapolation fit
     n_dbse = 3 # number of points to use for extrapolation fit
 
+    interp_idx = 10
+    
     # -- Fit DBSE
     
     nw = np.array([ float(p.nwf) for p in psd ])
@@ -351,7 +357,7 @@ if __name__ == '__main__':
     x, y = x[sidx], y[sidx]
         
     poly = np.polyfit(x[-n_dbse:]**alpha_dbse, y[-n_dbse:], 1)
-    z_f = np.linspace(0, x[3]**alpha_dbse, num=1000)
+    z_f = np.linspace(0, x[interp_idx]**alpha_dbse, num=1000)
     y_f = np.polyval(poly, z_f)
     
     plt.plot(z_f**(alpha/alpha_dbse), y_f, '-', color='gray', alpha=0.75, lw=1.0)
@@ -376,12 +382,12 @@ if __name__ == '__main__':
     x, y = x[sidx], y[sidx]
 
     poly = np.polyfit(x[-n_bse_1:]**alpha_bse, y[-n_bse_1:], 1)
-    z_f = np.linspace(0, x[3]**alpha_bse, num=1000)
+    z_f = np.linspace(0, x[interp_idx]**alpha_bse, num=1000)
     y_f = np.polyval(poly, z_f)
     plt.plot(z_f**(alpha/alpha_bse), y_f, '--', color='gray', alpha=0.75, lw=1.0)
 
     poly = np.polyfit(x[-n_bse_2:]**alpha_bse, y[-n_bse_2:], 2)
-    z_f = np.linspace(0, x[3]**alpha_bse, num=1000)
+    z_f = np.linspace(0, x[interp_idx]**alpha_bse, num=1000)
     y_f = np.polyval(poly, z_f)
     plt.plot(z_f**(alpha/alpha_bse), y_f, ':', color='gray', alpha=0.75, lw=1.0)
     

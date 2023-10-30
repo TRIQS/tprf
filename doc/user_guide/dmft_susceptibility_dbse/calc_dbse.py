@@ -118,7 +118,7 @@ for nwf in [40, 30, 20, 10]:
     Gamma_wnn = impurity_irreducible_vertex_Gamma(p.g_w, g2_wnn)
     p.chi_kw_bse, p.chi0_kw = solve_lattice_bse(g_wk, Gamma_wnn)
         
-    filename_out = f'./data/data_bse_nwf_{nwf:03d}_nk_{p.n_k:03d}.h5'
+    filename_out = f'./data/data_bse/data_bse_nwf_{nwf:03d}_nk_{p.n_k:03d}.h5'
     print(f'--> Saving: {filename_out}')
     with HDFArchive(filename_out, 'w') as a:
         a['p'] = p
