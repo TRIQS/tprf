@@ -102,7 +102,7 @@ def fmesh_from_tmesh(tmesh, zero_padding=0):
 
     fmax = -f[0]
     df = f[1] - f[0]
-    fmesh = MeshReFreq(omega_min=-fmax, omega_max=fmax-df, n_max=Nf)
+    fmesh = MeshReFreq(w_min=-fmax, w_max=fmax-df, n_max=Nf)
 
     f_ref = np.array(list(fmesh))
     np.testing.assert_array_almost_equal(f, f_ref)
@@ -163,13 +163,13 @@ def chi0_tr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
             value[i] = np.mod(value[i], d)
         return tuple(value)
 
-    r_value_vec = [ tuple(r.value) for r in rmesh ]
-    r_value_m_vec = [ minus_r_value(r.value, rmesh) for r in rmesh]
+    r_value_vec = [ tuple(r.value.value) for r in rmesh ]
+    r_value_m_vec = [ minus_r_value(r.value.value, rmesh) for r in rmesh]
     r_m_idx = [ r_value_vec.index(r_m) for r_m in r_value_m_vec ]
     rmesh_list = list(rmesh)
 
     for r_p in rmesh:
-        r_m = rmesh_list[r_m_idx[r_p.linear_index]] # look up mesh point corresponding to -r
+        r_m = rmesh_list[r_m_idx[r_p.data_index]] # look up mesh point corresponding to -r
         chi0_tr[:, r_p].data[:] = \
            1j * np.einsum('tda,tbc->tabcd', g_tr_les[:, r_p].data, np.conj(g_tr_gtr[:, r_m].data)) - \
            1j * np.einsum('tda,tbc->tabcd', g_tr_gtr[:, r_p].data, np.conj(g_tr_les[:, r_m].data))
@@ -193,15 +193,15 @@ def chi0_tr_les_gtr_from_g_tr_les_gtr(g_tr_les, g_tr_gtr):
             value[i] = np.mod(value[i], d)
         return tuple(value)
 
-    r_value_vec = [ tuple(r.value) for r in rmesh ]
-    r_value_m_vec = [ minus_r_value(r.value, rmesh) for r in rmesh]
+    r_value_vec = [ tuple(r.value.value) for r in rmesh ]
+    r_value_m_vec = [ minus_r_value(r.value.value, rmesh) for r in rmesh]
     r_m_idx = [ r_value_vec.index(r_m) for r_m in r_value_m_vec ]
     rmesh_list = list(rmesh)
 
     for r_p in rmesh:
 
         # look up mesh point corresponding to -r
-        r_m = rmesh_list[r_m_idx[r_p.linear_index]] 
+        r_m = rmesh_list[r_m_idx[r_p.data_index]] 
 
         chi0_tr_les[:, r_p].data[:] = 1j * np.einsum(
             'tda,tbc->tabcd', g_tr_les[:, r_p].data, np.conj(g_tr_gtr[:, r_m].data))
