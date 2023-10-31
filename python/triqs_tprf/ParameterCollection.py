@@ -221,6 +221,8 @@ class ParameterCollections(object):
         return np.array([getattr(o, attr, None) for o in self.objects ])
     
     def __getattr__(self, attr):
+        if attr not in self.objects[0].keys():
+            raise AttributeError
         return self.getattr_from_objects(attr)
 
     def __reduce_to_dict__(self):
