@@ -40,6 +40,22 @@ using fourier::_fourier_with_plan;
 placeholder<1> inu;
 } // namespace
 
+chi_nn_t left_hand_side_L_conjugate_relation(chi_nn_cvt L_wn) {
+
+  // Conjugate symmetry Eq. (24) [https://arxiv.org/abs/2306.05157]
+  // for the triangular vertex in the Dual Bethe-Salpeter Equation
+  
+  std::cout << "--> conjugate_L_relation\n";
+  auto &mesh_w = std::get<0>(L_wn.mesh());
+  auto &mesh_n = std::get<1>(L_wn.mesh());
+
+  auto LC_wn = make_gf<prod<imfreq, imfreq>>({mesh_w, mesh_n}, L_wn.target());
+
+  for (auto [w, n] : L_wn.mesh()) LC_wn[w, n] = conj(L_wn(-w, -n)); 
+  
+  return LC_wn;
+}
+
 // ----------------------------------------------------
 // chi0 bubble in Matsubara frequency
 
@@ -674,6 +690,8 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
 
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
+  auto LC_wn = left_hand_side_L_conjugate_relation(L_wn);
+  
   auto arr = mpi_view(chi_kw.mesh()); // FIXME Use library implementation
   std::cout << "BSE rank " << comm.rank() << " of " << comm.size() << " has "
 	    << arr.size() << " jobs." << std::endl;
@@ -730,7 +748,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
 
     // trace out fermionic frequencies
     array<std::complex<double>, 4> tr_chi(target_shape);
-    tr_chi = scalar_product_PH(L_wn[w, _], chi, L_wn[w, _]);
+    tr_chi = scalar_product_PH(LC_wn[w, _], chi, L_wn[w, _]);
 
     /*
     tr_chi() = 0;
@@ -1211,6 +1229,8 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
 
   auto chi_wk = make_gf<prod<imfreq, brzone>>({mesh_b, mesh_k}, chi_kwnn.target());
 
+  auto LC_wn = left_hand_side_L_conjugate_relation(L_wn);
+  
   std::cout << "--> attatch_tri_vert: Hybrid parallell OpenMP+MPI\n";
 
   auto arr = mpi_view(chi_wk.mesh());
@@ -1226,7 +1246,7 @@ chi_wk_t attatch_tri_vert(chi_nn_cvt L_wn, chi_kwnn_cvt chi_kwnn) {
 	  L_wn[w, n1](a, b, c, d) * chi_kwnn[k, w, n1, n2](c, d, e, f) * L_wn[w, n2](e, f, g, h);
     */
 
-    chi_wk[w, k] = scalar_product_PH(L_wn[w, _], chi_kwnn[k, w, _, _], L_wn[w, _]);
+    chi_wk[w, k] = scalar_product_PH(LC_wn[w, _], chi_kwnn[k, w, _, _], L_wn[w, _]);
   }
 
   chi_wk = mpi::all_reduce(chi_wk);
