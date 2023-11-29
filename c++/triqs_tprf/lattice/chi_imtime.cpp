@@ -71,7 +71,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
     auto g_mr_c = make_gf_dlr(g_mr_t);
     
     for (auto t : tmesh)
-      chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
+      chi0_t[t](a, b, c, d) << g_pr_c(beta - t)(d, a) * g_mr_c(t)(b, c);
 
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
@@ -124,7 +124,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
       g_mr_t = g_tr(_, -r);
     }
 
-    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(beta - t)(d, a) * g_mr_t(t)(b, c);
 
 #pragma omp critical
     chi0_tr[_, r] = chi0_t;
@@ -168,7 +168,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
       g_mr_t = g_tr(_, -r);
     }
 
-    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(beta - t)(d, a) * g_mr_t(t)(b, c);
 
 #pragma omp critical
     {
@@ -215,7 +215,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
       g_mr_t = g_tr(_, -r);
     }
 
-    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(beta - t)(d, a) * g_mr_t(t)(b, c);
 
     auto int_chi0 = chi_trapz_tau(chi0_t);
     
