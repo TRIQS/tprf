@@ -147,10 +147,13 @@ class GWSolver():
             V_k = self.V_k,
             g0_fk = self.g0_fk,
             g_fk = self.g_fk,
-            sigma_hartree_k = self.sigma_hartree_k,
-            sigma_fock_k = self.sigma_fock_k,
             )
 
+        if hasattr(self, 'sigma_hartree_k'):
+            gw_rf.sigma_hartree_k = self.sigma_hartree_k
+        if hasattr(self, 'sigma_fock_k'):
+            gw_rf.sigma_fock_k = self.sigma_fock_k
+        
         if fbmesh is None:
             fbmesh = fmesh
         
