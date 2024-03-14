@@ -9,6 +9,7 @@ from triqs_tprf.tight_binding import TBLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k, add_dynamic_and_static
+from triqs_tprf.lattice import g_wk_to_g_mwk
 
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
@@ -17,8 +18,42 @@ from triqs.gf import Gf, MeshImFreq, Idx, MeshImTime, MeshBrZone
 from triqs.gf.meshes import MeshDLRImFreq, MeshReFreq
 from triqs.gf.mesh_product import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
+from triqs.gf.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
+
+def test_g_wk_to_g_mwk():
+    print("== DLR G(w,k) to G(-w,k) ==")
+    beta = 10.0
+    nk = 5
+
+    lamb = 10.
+    eps = 1e-8
+
+    print('--> construct meshes')
+    bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
+    bz = BrillouinZone(bl)
+    kmesh = MeshBrZone(bz, [nk, nk, nk])
+    wmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+
+    print('--> lattice_dyson_g0_wk')
+    Enk = Gf(mesh=kmesh, target_shape=[1]*2)
+    for k in kmesh:
+        knorm = np.linalg.norm(k.value)
+        Enk.data[k.data_index,:] = 0.1 * knorm**2.0
+
+    print("--> g_wk_to_g_mwk")
+    g_wk = lattice_dyson_g0_wk(0.2, Enk, wmesh)
+    g_mwk = g_wk_to_g_mwk(g_wk)
+
+    print("--> check")
+    for k in kmesh:
+        g_c = make_gf_dlr(g_wk[:,k])
+        g_mc = make_gf_dlr(g_mwk[:,k])
+
+        for w in wmesh:
+            assert np.allclose(g_c(w), g_mc(-w))
+
 
 def test_split_into_dynamic_and_constant():
     print("== Split in to dynamic and constant ==")
@@ -128,3 +163,4 @@ def test_add_dynamic_and_static():
 if __name__ == "__main__":
     test_split_into_dynamic_and_constant()
     test_add_dynamic_and_static()
+    test_g_wk_to_g_mwk()

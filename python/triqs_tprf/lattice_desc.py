@@ -594,6 +594,8 @@ module.add_function ("g_w_t triqs_tprf::dlr_on_imfreq (triqs_tprf::g_Dc_cvt g_c,
 module.add_function ("g_t_t triqs_tprf::dlr_on_imtime (triqs_tprf::g_Dc_cvt g_c, triqs::mesh::imtime tmesh)")
 module.add_function ("chi_w_t triqs_tprf::dlr_on_imfreq (triqs_tprf::chi_Dc_cvt chi_c, triqs::mesh::imfreq wmesh)")
 module.add_function ("chi_t_t triqs_tprf::dlr_on_imtime (triqs_tprf::chi_Dc_cvt chi_c, triqs::mesh::imtime tmesh)")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::g_wk_to_g_mwk(triqs_tprf::g_Dwk_cvt g_wk)")
+
 
 module.add_function ("std::tuple<chi_wk_t, chi_k_t> triqs_tprf::split_into_dynamic_wk_and_constant_k (triqs_tprf::chi_wk_cvt chi_wk)", doc = r"""Split mtrix-valued Green's function into dynamic and constant parts by tail fitting
 

@@ -54,6 +54,32 @@ namespace triqs_tprf {
     return dlr_on_immesh_template<chi_t_t, chi_Dc_cvt, mesh::imtime>(chi_c, tmesh);
   }
 
+
+  g_Dwk_t g_wk_to_g_mwk(g_Dwk_cvt g_wk) {
+
+    auto _               = all_t{};
+    auto wmesh = std::get<0>(g_wk.mesh());
+    auto kmesh = std::get<1>(g_wk.mesh());
+
+    g_Dwk_t g_mwk({wmesh, kmesh}, g_wk.target_shape());
+    auto arr = mpi_view(kmesh);
+
+#pragma omp parallel for 
+    for (unsigned int idx = 0; idx < arr.size(); idx++) {
+      auto &k = arr[idx];
+      
+      auto g_w = g_wk[_, k];
+      auto g_c = make_gf_dlr(g_w);
+
+      for (auto w : wmesh) {
+        g_mwk[w,k] = g_c(-w);
+      }
+    }
+
+    g_mwk = mpi::all_reduce(g_mwk);
+    return g_mwk;
+  }
+
   std::tuple<chi_wk_t, chi_k_t> split_into_dynamic_wk_and_constant_k(chi_wk_cvt chi_wk) {
 
     auto _               = all_t{};
