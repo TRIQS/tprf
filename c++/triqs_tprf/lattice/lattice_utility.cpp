@@ -57,11 +57,13 @@ namespace triqs_tprf {
 
   g_Dwk_t g_wk_to_g_mwk(g_Dwk_cvt g_wk) {
 
-    auto _               = all_t{};
+    auto _ = all_t{};
     auto wmesh = std::get<0>(g_wk.mesh());
     auto kmesh = std::get<1>(g_wk.mesh());
 
     g_Dwk_t g_mwk({wmesh, kmesh}, g_wk.target_shape());
+    g_mwk() = 0.0;
+
     auto arr = mpi_view(kmesh);
 
 #pragma omp parallel for 
