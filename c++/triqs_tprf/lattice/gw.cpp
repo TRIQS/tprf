@@ -200,20 +200,18 @@ namespace triqs_tprf {
     return fock_sigma(v_k, g_wk);
   }
 
-  template<typename W_t, typename g_t>
-  auto gw_sigma_impl(W_t W_wk, g_t g_wk) {
+  template<typename W_dyn_t, typename W_const_t, typename g_t>
+  auto gw_sigma_impl(W_dyn_t W_dyn_wk, W_const_t W_const_k, g_t g_wk) {
 
-  auto Wwm = std::get<0>(W_wk.mesh());
+  auto Wwm = std::get<0>(W_dyn_wk.mesh());
   auto gwm = std::get<0>(g_wk.mesh());
 
   if (Wwm.beta() != gwm.beta())
     TRIQS_RUNTIME_ERROR << "gw_sigma: inverse temperatures are not the same.\n";
   if (Wwm.statistic() != Boson || gwm.statistic() != Fermion)
     TRIQS_RUNTIME_ERROR << "gw_sigma: statistics are incorrect.\n";
-  if (std::get<1>(W_wk.mesh()) != std::get<1>(g_wk.mesh()))
+  if (std::get<1>(W_dyn_wk.mesh()) != std::get<1>(g_wk.mesh()))
     TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
-
-  auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
 
   // Dynamic GW self energy
   //auto g_tr = make_gf_from_fourier<0, 1>(g_wk); // Fixme! Use parallell transform
@@ -245,7 +243,8 @@ namespace triqs_tprf {
   }
 
   g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk) {
-    return gw_sigma_impl(W_wk, g_wk);
+    auto [W_dyn_wk, W_const_k] = split_into_dynamic_wk_and_constant_k(W_wk);
+    return gw_sigma_impl(W_dyn_wk, W_const_k, g_wk);
   }
 
   /*
