@@ -90,7 +90,57 @@ namespace triqs_tprf {
  */
 
   g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
-  
+
+  /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
+
+    Fourier transforms the dynamic part of the interaction and the 
+    single-particle Green's function to imaginary time and real space.
+
+    .. math::
+        G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
+
+    .. math::
+        W^{(dyn)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
+          \left\{ W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+
+    computes the GW self-energy as the product
+
+    .. math::
+        \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
+          - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+
+    and transforms back to frequency and momentum
+
+    .. math::
+        \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k}) =
+          \mathcal{F} \left\{ \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) \right\}
+
+    The self-energy of the static part of the interaction is calculated
+    as the sum
+
+    .. math::
+        \Sigma^{(stat)}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
+          \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{k}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+
+    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    single particle Green's function.
+
+    The total GW self-energy is given by
+
+    .. math::
+        \Sigma_{ab}(i\omega_n, \mathbf{k}) = 
+          \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k})
+          + \Sigma^{(stat)}_{ab}(\mathbf{k})
+
+    @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
+    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
+    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
+    @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
+ */
+
+  g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, chi_k_cvt v_k, g_Dwk_cvt g_wk);
+
   /** Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
     Computes the Hartree self-energy of a static interaction as the sum
@@ -128,6 +178,7 @@ namespace triqs_tprf {
 */
 
   e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
+  e_k_t fock_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk);
 
   e_r_t fock_sigma(chi_r_cvt v_r, e_r_cvt rho_r);
 
@@ -141,6 +192,7 @@ namespace triqs_tprf {
 */
 
   e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
+  e_k_t gw_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk);
   
   /** Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 

@@ -169,34 +169,27 @@ namespace triqs_tprf {
   return sigma_r;
   }
 
-  e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
-
-  if (v_k.mesh() != std::get<1>(g_wk.mesh())) TRIQS_RUNTIME_ERROR << "fock_sigma: k-space meshes are not the same.\n";
-
-  auto _     = all_t{};
-  auto kmesh = std::get<1>(g_wk.mesh());
-
-  e_k_t sigma_k(kmesh, g_wk.target_shape());
-  sigma_k() = 0.0;
-
-  auto arr = mpi_view(kmesh);
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < arr.size(); idx++) {
-    auto &k = arr[idx];
-
-    for (auto q : kmesh) {
-
-      auto g_w  = g_wk[_, k + q];
-      auto dens = density(g_w);
-
-      for (auto [a, b, c, d] : v_k.target_indices()) { sigma_k[k](a, b) += -v_k[q](a, c, d, b) * dens(d, c) / kmesh.size(); }
-    }
+  template<typename g_t>
+  e_k_t fock_sigma_impl(chi_k_cvt v_k, g_t g_wk) {
+    auto v_r = make_gf_from_fourier(v_k);
+    auto rho_k = rho_k_from_g_wk(g_wk);
+    auto rho_r = make_gf_from_fourier(rho_k);
+    auto sigma_fock_r = fock_sigma(v_r, rho_r);
+    auto sigma_fock_k = make_gf_from_fourier(sigma_fock_r);
+    return sigma_fock_k;
   }
-  sigma_k = mpi::all_reduce(sigma_k);
-  return sigma_k;
+
+  e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
+    return fock_sigma_impl(v_k, g_wk);
+  }
+  e_k_t fock_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk) {
+    return fock_sigma_impl(v_k, g_wk);
   }
 
   e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk) {
+    return fock_sigma(v_k, g_wk);
+  }
+  e_k_t gw_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk) {
     return fock_sigma(v_k, g_wk);
   }
 
@@ -214,29 +207,20 @@ namespace triqs_tprf {
     TRIQS_RUNTIME_ERROR << "gw_sigma: k-space meshes are not the same.\n";
 
   // Dynamic GW self energy
-  //auto g_tr = make_gf_from_fourier<0, 1>(g_wk); // Fixme! Use parallell transform
   auto g_wr = fourier_wk_to_wr(g_wk);
   auto g_tr = fourier_wr_to_tr(g_wr);
-  
-  //auto W_dyn_tr = make_gf_from_fourier<0, 1>(W_dyn_wk); // Fixme! Use parallell transform
   auto W_dyn_wr = chi_wr_from_chi_wk(W_dyn_wk);
   auto W_dyn_tr = chi_tr_from_chi_wr(W_dyn_wr);
   
   auto sigma_dyn_tr = gw_dynamic_sigma(W_dyn_tr, g_tr);
 
   // Static Fock part
-
-  //auto sigma_fock_k = fock_sigma(W_const_k, g_wk); // Has N_k^2 scaling, not fast..
-
-  auto W_const_r = make_gf_from_fourier(W_const_k);
-  auto rho_k = rho_k_from_g_wk(g_wk);
-  auto rho_r = make_gf_from_fourier(rho_k);
-  auto sigma_fock_r = fock_sigma(W_const_r, rho_r);
-  auto sigma_fock_k = make_gf_from_fourier(sigma_fock_r);
+  auto sigma_fock_k = fock_sigma(W_const_k, g_wk);
 
   // Add dynamic and static parts
   auto _ = all_t{};
-  auto sigma_wk = make_gf_from_fourier<0, 1>(sigma_dyn_tr); // Fixme! Use parallell transform
+  auto sigma_wr = fourier_tr_to_wr(sigma_dyn_tr);
+  auto sigma_wk = fourier_wr_to_wk(sigma_wr);
   for (auto w : gwm) sigma_wk[w, _] += sigma_fock_k; // Single loop with no work per w, no need to parallellize over mpi
 
   return sigma_wk;
@@ -247,11 +231,14 @@ namespace triqs_tprf {
     return gw_sigma_impl(W_dyn_wk, W_const_k, g_wk);
   }
 
-  /*
-  g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, g_Dwk_cvt g_wk) {
-    return gw_sigma_impl(W_wk, g_wk);
+  g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, chi_k_cvt v_k, g_Dwk_cvt g_wk) {
+    auto wmesh = std::get<0>(W_wk.mesh());
+    auto _ = all_t{};
+    chi_Dwk_t W_dyn_wk(W_wk.mesh(), W_wk.target_shape());
+    for (auto w : wmesh) W_dyn_wk[w, _] = W_wk[w,_] - v_k;
+
+    return gw_sigma_impl(W_dyn_wk, v_k, g_wk);
   }
-  */
   
   // ----------------------------------------------------
   // g0w_sigma via spectral representation

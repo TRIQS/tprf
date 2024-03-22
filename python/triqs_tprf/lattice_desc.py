@@ -698,6 +698,9 @@ Returns
 out
      GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`""")
 
+
+module.add_function ("g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, chi_k_cvt v_k, g_Dwk_cvt g_wk)")
+
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::hartree_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::e_r_cvt rho_r)")
 module.add_function ("triqs_tprf::e_r_t triqs_tprf::fock_sigma (triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r)")
 
@@ -749,6 +752,8 @@ Returns
 out
      Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`""")
 
+module.add_function ("e_k_t fock_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk)")
+
 module.add_function ("triqs_tprf::e_k_t triqs_tprf::gw_sigma (triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk)", doc = r"""Static GW self energy :math:`\Sigma(\mathbf{k})` calculator
 
     Computes the GW self-energy (equivalent to the Fock self-energy)
@@ -765,6 +770,8 @@ Returns
 -------
 out
      Static GW self-energy (Fock) :math:`\Sigma_{ab}(\mathbf{k})`""")
+
+module.add_function ("e_k_t gw_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk)")
 
 module.add_function ("triqs_tprf::g_tr_t triqs_tprf::gw_dynamic_sigma (triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr)", doc = r"""Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator
 

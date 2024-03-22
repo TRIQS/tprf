@@ -11,6 +11,7 @@ set(all_tests
   lattice_utility
   gf
   gw
+  gw_dlr
   gw_hubbard_dimer
   gw_hubbard_dimer_dlr
   gw_hubbard_dimer_matrix
