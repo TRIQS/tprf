@@ -131,6 +131,53 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
   return F_wk;  
 }
 
+template<typename F_out_t, typename g_t>  
+F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk) {
+
+  int nb = g_wk.target().shape()[0];
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
+  auto wmesh_gf = std::get<0>(g_wk.mesh());
+
+  if (wmesh.size() > wmesh_gf.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
+  if (nb != 1)
+    TRIQS_RUNTIME_ERROR << "Non-linearized Eliashberg not implemented for multiorbital systems.\n";
+
+  auto F_wk = make_gf(delta_wk);
+  F_wk *= 0.;
+
+  auto meshes_mpi = mpi_view(delta_wk.mesh());
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
+    auto &[w, k] = meshes_mpi[idx];
+
+    for (auto [d, c] : F_wk.target_indices()) {
+      for (auto [e, f] : delta_wk.target_indices()) {
+        auto denom = delta_wk[w, k](e, f) * nda::conj(delta_wk[w, k](e, f)) - 1.0/g_wk[w, k](c, f) * 1.0/nda::conj(g_wk[w, -k](e, d));
+        F_wk[w,k](d,c) += -delta_wk[w, k](e, f) / denom;
+
+        //F_wk[w, k](d, c) += g_wk[w, k](c, f) * nda::conj(g_wk[w, -k](e, d)) * delta_wk[w, k](e, f);
+      }
+    }
+  }
+
+  F_wk = mpi::all_reduce(F_wk);
+
+  return F_wk;
+}
+
+g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt delta_wk) {
+  return eliashberg_F_wk_template<g_wk_t, g_wk_vt>(g_wk, delta_wk);
+}
+g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
+  return eliashberg_F_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk, delta_wk);
+}
+
+
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
                        g_wk_vt delta_wk) {
 

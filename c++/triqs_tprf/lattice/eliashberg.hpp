@@ -149,6 +149,8 @@ namespace triqs_tprf {
   g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk);
   g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk);
   g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk);
+  g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt delta_wk);
+  g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk);
 
   /** Fourier transform Gamma parts to imaginary time and real-space  
   
