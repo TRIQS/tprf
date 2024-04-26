@@ -159,8 +159,6 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk) {
       for (auto [e, f] : delta_wk.target_indices()) {
         auto denom = delta_wk[w, k](e, f) * nda::conj(delta_wk[w, k](e, f)) - 1.0/g_wk[w, k](c, f) * 1.0/nda::conj(g_wk[w, -k](e, d));
         F_wk[w,k](d,c) += -delta_wk[w, k](e, f) / denom;
-
-        //F_wk[w, k](d, c) += g_wk[w, k](c, f) * nda::conj(g_wk[w, -k](e, d)) * delta_wk[w, k](e, f);
       }
     }
   }
@@ -179,7 +177,7 @@ g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
-                       g_wk_vt delta_wk) {
+                       g_wk_vt delta_wk, bool linearized=true) {
 
   //auto [wmesh, kmesh] = delta_wk.mesh();
   auto wmesh = std::get<0>(delta_wk.mesh());
@@ -192,7 +190,11 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
           " (" << gamma_wmesh.size() << ") must be atleast TWICE the size of the mesh of Delta (" <<
           wmesh.size() << ").";
 
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  g_wk_t F_wk;
+  if (linearized)
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  else
+    F_wk = eliashberg_F_wk(g_wk, delta_wk);
 
   auto delta_wk_out = make_gf(delta_wk);
   delta_wk_out *= 0.;
@@ -313,9 +315,14 @@ g_Dtr_t eliashberg_dynamic_gamma_f_product(chi_Dtr_vt Gamma_pp_dyn_tr, g_Dtr_vt 
 
 template<typename delta_out_t, typename chi_t, typename g_t>  
 delta_out_t eliashberg_product_fft_template(chi_t Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r,
-                                   g_t g_wk, g_t delta_wk) {
+                                   g_t g_wk, g_t delta_wk, bool linearized) {
 
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  delta_out_t F_wk;
+  if (linearized)
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  else
+    F_wk = eliashberg_F_wk(g_wk, delta_wk);
+
   auto F_wr = fourier_wk_to_wr(F_wk);
   auto F_tr = fourier_wr_to_tr(F_wr);
 
@@ -333,21 +340,26 @@ delta_out_t eliashberg_product_fft_template(chi_t Gamma_pp_dyn_tr, chi_r_vt Gamm
   return delta_wk_out;
 }
 
-g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk) {
-  return eliashberg_product_fft_template<g_wk_t, chi_tr_vt, g_wk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk);
+g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk, bool linearized=true) {
+  return eliashberg_product_fft_template<g_wk_t, chi_tr_vt, g_wk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized);
 }
 
-g_Dwk_t eliashberg_product_fft(chi_Dtr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
-  return eliashberg_product_fft_template<g_Dwk_t, chi_Dtr_vt, g_Dwk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk);
+g_Dwk_t eliashberg_product_fft(chi_Dtr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk, bool linearized=true) {
+  return eliashberg_product_fft_template<g_Dwk_t, chi_Dtr_vt, g_Dwk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized);
 }
 
 // optimized version if there is only a constant term
 
 template<typename delta_out_t, typename g_t>  
 delta_out_t eliashberg_product_fft_constant_template(chi_r_vt Gamma_pp_const_r,
-                                        g_t g_wk, g_t delta_wk) {
+                                        g_t g_wk, g_t delta_wk, bool linearized) {
 
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  delta_out_t F_wk;
+  if (linearized)
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+  else
+    F_wk = eliashberg_F_wk(g_wk, delta_wk);
+
   auto F_wr = fourier_wk_to_wr(F_wk);
   auto F_tr = fourier_wr_to_tr(F_wr);
 
@@ -363,12 +375,12 @@ delta_out_t eliashberg_product_fft_constant_template(chi_r_vt Gamma_pp_const_r,
   return delta_wk_out;
 }
 
-g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk) {
-  return eliashberg_product_fft_constant_template<g_wk_t, g_wk_vt>(Gamma_pp_const_r, g_wk, delta_wk);
+g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk, bool linearized=true) {
+  return eliashberg_product_fft_constant_template<g_wk_t, g_wk_vt>(Gamma_pp_const_r, g_wk, delta_wk, linearized);
 }
 
-g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
-  return eliashberg_product_fft_constant_template<g_Dwk_t, g_Dwk_vt>(Gamma_pp_const_r, g_wk, delta_wk);
+g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk, bool linearized=true) {
+  return eliashberg_product_fft_constant_template<g_Dwk_t, g_Dwk_vt>(Gamma_pp_const_r, g_wk, delta_wk, linearized);
 }
 
 
