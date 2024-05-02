@@ -560,7 +560,57 @@ def solve_eliashberg_nonlinear(
     product="FFT",
     symmetrize_fct=lambda x: x,
 ):
-    r""" Solve the non-linearized Eliashberg equation
+    r""" Solve the non-linearized single-band Eliashberg equation
+   
+    Returns the anomalous self-energy, obtained by solving the non-linearized single-band
+    Eliashberg equation. The Eliashberg equation implementation is using fourier transformations
+    for computational efficiency. The anomalous self-energy is found using an iterative
+    root-finding algorithm.
+
+    Parameters
+    ----------
+    Gamma_pp_wk : Gf,
+               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
+    g_wk : Gf, 
+           Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
+           be a MeshProduct with the components (MeshImFreq, MeshBrZone).
+    initial_delta : Gf, optional
+                   An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
+                   an iterative solver, given as a Gf with MeshProduct with the components
+                   (MeshImFreq, MeshBrZone).
+                   If not given :func:`semi_random_initial_delta` will be called.
+    Gamma_pp_const_k : float or np.ndarray or Gf, optional
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
+                       be a MeshBrZone. If not given, the constant part will be fitted.
+    tol : float, optional
+          Relative accuracy for anomalous self-energy (stopping criterion).
+    max_it : int, optional
+          Maximum number of iterations performed.
+    product : str, ['FFT', 'SUM'], optional
+              Which function of the Eliashberg product shall be used:
+
+                  'FFT' : triqs_tprf.lattice.eliashberg_product_fft,
+                          which uses Fourier transformation for optimal computational efficiency.
+
+                  'SUM' : triqs_tprf.lattice.eliashberg_product, uses the explicit sum.
+                          Restrictions : wmesh of Gamma_pp_wk must be atleast twice the size of the one of g_wk.
+    symmetrize_fct : function, optional
+                     A function that takes one parameter: A Green's function 
+                     :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the
+                     Gf must be a MeshProduct with the components 
+                     (MeshImFreq, MeshBrZone).
+                     This function is applied after every iteration of the
+                     solver and can be used to enforce a specific symmetry.
+                     If no symmetries are enforced, caution is need, because
+                     unphysical symmetries can occur.
+
+    Returns
+    -------
+    delta_wk : Gf,
+               The anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` 
+               as Gf with MeshProduct with the components (MeshImFreq, MeshBrZone).
     """
     
     def from_x_to_wk(delta_x):
