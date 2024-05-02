@@ -157,8 +157,8 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk) {
 
     for (auto [d, c] : F_wk.target_indices()) {
       for (auto [e, f] : delta_wk.target_indices()) {
-        auto denom = delta_wk[w, k](e, f) * nda::conj(delta_wk[w, k](e, f)) - 1.0/g_wk[w, k](c, f) * 1.0/nda::conj(g_wk[w, -k](e, d));
-        F_wk[w,k](d,c) += -delta_wk[w, k](e, f) / denom;
+        auto denom = delta_wk[w, k](e, f) * nda::conj(delta_wk[w, k](e, f)) + 1.0/g_wk[w, k](c, f) * 1.0/nda::conj(g_wk[w, -k](e, d));
+        F_wk[w,k](d,c) += delta_wk[w, k](e, f) / denom;
       }
     }
   }
