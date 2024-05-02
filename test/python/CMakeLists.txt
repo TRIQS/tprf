@@ -67,6 +67,7 @@ set(all_tests
   tpsc/test_tpsc_plus_Sigma
   tpsc/test_tpsc_solver_h5
   tpsc/test_triqs_TBLattice
+  eliashberg/nonlinear_eliashberg_solver
 )
 
 foreach(test ${all_tests})
