@@ -547,3 +547,79 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
 
     gamma_triplet.data[:] += -0.5 * U_d + 0.5 * U_m
     return gamma_triplet
+
+
+
+def solve_eliashberg_nonlinear(
+    Gamma_pp_wk,
+    g_wk,
+    initial_delta=None,
+    Gamma_pp_const_k=None,
+    tol=1e-10,
+    max_it=1e5,
+    product="FFT",
+    symmetrize_fct=lambda x: x,
+):
+    r""" Solve the non-linearized Eliashberg equation
+    """
+    
+    def from_x_to_wk(delta_x):
+        delta_wk = g_wk.copy()
+        delta_wk.data[:] = delta_x.reshape(delta_wk.data.shape)
+        return delta_wk
+
+    def from_wk_to_x(delta_wk):
+        delta_x = delta_wk.data.copy().flatten()
+        return delta_x
+
+    hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
+
+    if product == "FFT":
+
+        Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(
+            Gamma_pp_wk, Gamma_pp_const_k
+        )
+
+        if np.allclose(
+            Gamma_pp_dyn_tr.data, 0
+        ):  # -- If dynamic part is zero reduced calculation
+            eli_prod = lambda delta_wk: eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk, linearized=False)
+
+        else:
+            eli_prod = lambda delta_wk: eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized=False)
+
+    elif product == "SUM":
+        if(hasDLRMesh): 
+            raise NotImplementedError(
+                "There is no implementation of the eliashberg product "
+                "called %s when using DLR. Please use the FFT product instead."%product
+            )
+
+        eli_prod = lambda delta_wk: eliashberg_product(Gamma_pp_wk, g_wk, delta_wk, linearized=False)
+
+    else:
+        raise NotImplementedError(
+            "There is no implementation of the eliashberg product"
+            " called %s." % product
+        )
+
+    if not initial_delta:
+        initial_delta = semi_random_initial_delta(g_wk)
+
+    delta_prev = initial_delta
+
+    it = 1 
+    while True:
+        delta_wk = eli_prod(delta_prev)
+        delta_wk = symmetrize_fct(delta_wk)
+
+        diff = np.max(np.abs(delta_prev.data[:] - delta_wk.data[:]))
+        if np.allclose(diff, 0, atol=tol):
+            break
+
+        delta_prev = delta_wk
+        it += 1
+        if it > max_it:
+            raise AssertionError("Did not converge.")
+
+    return delta_wk
