@@ -557,6 +557,8 @@ def solve_eliashberg_nonlinear(
     Gamma_pp_const_k=None,
     tol=1e-10,
     max_it=1e5,
+    mixing_frac = 0.1,
+    steffensens_method = False,
     product="FFT",
     symmetrize_fct=lambda x: x,
 ):
@@ -588,6 +590,11 @@ def solve_eliashberg_nonlinear(
           Relative accuracy for anomalous self-energy (stopping criterion).
     max_it : int, optional
           Maximum number of iterations performed.
+    mixing_frac : float, optional
+          Fraction of the delta of the previous iteration is mixed in with the new delta to
+          avoid trapping of the algorithm.
+    steffensens_method : bool, optional
+          Whether to use Steffensen's method as the iterative root-finding algorithm.
     product : str, ['FFT', 'SUM'], optional
               Which function of the Eliashberg product shall be used:
 
@@ -660,7 +667,22 @@ def solve_eliashberg_nonlinear(
 
     it = 1 
     while True:
-        delta_wk = eli_prod(delta_prev)
+
+        if steffensens_method:
+            fDelta = delta_prev - eli_prod(delta_prev)
+            
+            nonzeroinds = ~np.isclose(fDelta.data[:],0.0)
+            gDelta = np.ones_like(fDelta.data[:])
+            gDelta[nonzeroinds] = (delta_prev.data[nonzeroinds] + fDelta.data[nonzeroinds] - eli_prod(delta_prev + fDelta).data[nonzeroinds]) / fDelta.data[nonzeroinds] - 1.0
+
+            delta_wk = delta_prev - fDelta / gDelta
+        else:
+            delta_wk = eli_prod(delta_prev)
+        
+        # Mixing of previous solution to avoid trapping
+        delta_wk = mixing_frac * delta_prev + (1.0 - mixing_frac) * delta_wk
+
+        # Symmetrizing
         delta_wk = symmetrize_fct(delta_wk)
 
         diff = np.max(np.abs(delta_prev.data[:] - delta_wk.data[:]))
