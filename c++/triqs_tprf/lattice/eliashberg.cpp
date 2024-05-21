@@ -34,7 +34,7 @@ namespace triqs_tprf {
 // Helper function computing F = GG \Delta
 
 template<typename F_out_t, typename g_t>  
-F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
+F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk, mesh::brzone::mesh_point_t q_fmp) {
 
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
@@ -56,7 +56,7 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
 
     for (auto [d, c] : F_wk.target_indices()) {
       for (auto [e, f] : delta_wk.target_indices()) {
-        F_wk[w, k](d, c) += g_wk[w, k](c, f) * nda::conj(g_wk[w, -k](e, d)) * delta_wk[w, k](e, f);
+        F_wk[w, k](d, c) += g_wk[w, k](c, f) * nda::conj(g_wk[w, -k+q_fmp](e, d)) * delta_wk[w, k](e, f);
       }
     }
   }
@@ -66,11 +66,13 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk) {
   return F_wk;
 }
 
-g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
-  return eliashberg_g_delta_g_product_template<g_wk_t, g_wk_vt>(g_wk, delta_wk);
+g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk, long fmpindex) {
+  auto kmesh = std::get<1>(delta_wk.mesh());
+  auto q_fmp = kmesh[fmpindex];
+  return eliashberg_g_delta_g_product_template<g_wk_t, g_wk_vt>(g_wk, delta_wk, q_fmp);
 }
 
-g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
+g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpindex) {
 
   // Performing the product of (G*G) * delta in DLR coefficient space
   // removes spurious eigenvectors in the linearized Eliashberg equation.
@@ -78,6 +80,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
+  auto q_fmp = kmesh[fmpindex];
 
   auto wmesh_gf = std::get<0>(g_wk.mesh());
 
@@ -104,7 +107,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 	auto d_w = gf(wmesh);
 	
 	for( auto w : wmesh ) {
-	  gg_w[w] = g_wk[w, k](c, f) * nda::conj(g_wk[w, -k](e, d));
+	  gg_w[w] = g_wk[w, k](c, f) * nda::conj(g_wk[w, -k+q_fmp](e, d));
 	  d_w[w] = delta_wk[w, k](e, f);
 	}
 
@@ -196,7 +199,7 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
 
   g_wk_t F_wk;
   if (linearized)
-    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
   else
     F_wk = eliashberg_F_wk(g_wk, delta_wk, fmpindex);
 
@@ -323,7 +326,7 @@ delta_out_t eliashberg_product_fft_template(chi_t Gamma_pp_dyn_tr, chi_r_vt Gamm
 
   delta_out_t F_wk;
   if (linearized)
-    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
   else
     F_wk = eliashberg_F_wk(g_wk, delta_wk, fmpindex);
 
@@ -360,7 +363,7 @@ delta_out_t eliashberg_product_fft_constant_template(chi_r_vt Gamma_pp_const_r,
 
   delta_out_t F_wk;
   if (linearized)
-    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk);
+    F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
   else
     F_wk = eliashberg_F_wk(g_wk, delta_wk, fmpindex);
 

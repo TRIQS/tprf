@@ -49,6 +49,7 @@ def solve_eliashberg(
     solver="IRAM",
     symmetrize_fct=lambda x: x,
     k=6,
+    fmp_index = 0,
 ):
     r""" Solve the linearized Eliashberg equation
     
@@ -107,6 +108,11 @@ def solve_eliashberg(
         The number of leading superconducting gaps that shall be calculated. Does
         only have an effect, if 'IRAM' is used as a solver.
 
+    fmp_index : int, optional
+                The momentum mesh data index corresponding to the momentum used in a 
+                finite momentum pairing calculation. The default value corresponds to no
+                finite momentum pairing.
+
     Returns
     -------
     Es : list of float,
@@ -142,12 +148,12 @@ def solve_eliashberg(
             Gamma_pp_dyn_tr.data, 0
         ):  # -- If dynamic part is zero reduced calculation
             eli_prod = functools.partial(
-                eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk
+                eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk, fmpindex=fmp_index
             )
 
         else:
             eli_prod = functools.partial(
-                eliashberg_product_fft, Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk
+                eliashberg_product_fft, Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, fmpindex=fmp_index
             )
 
     elif product == "SUM":
@@ -157,7 +163,7 @@ def solve_eliashberg(
                 "called %s when using DLR. Please use the FFT product instead."%product
             )
 
-        eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
+        eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk, fmpindex=fmp_index)
 
     else:
         raise NotImplementedError(
