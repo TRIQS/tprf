@@ -561,6 +561,8 @@ def solve_eliashberg_nonlinear(
     steffensens_method = False,
     product="FFT",
     symmetrize_fct=lambda x: x,
+    fmp_index = 0,
+    verbose = False,
 ):
     r""" Solve the non-linearized single-band Eliashberg equation
    
@@ -612,6 +614,10 @@ def solve_eliashberg_nonlinear(
                      solver and can be used to enforce a specific symmetry.
                      If no symmetries are enforced, caution is need, because
                      unphysical symmetries can occur.
+    fmp_index : int, optional
+                The momentum mesh data index corresponding to the momentum used in a 
+                finite momentum pairing calculation. The default value corresponds to no
+                finite momentum pairing.
 
     Returns
     -------
@@ -640,10 +646,10 @@ def solve_eliashberg_nonlinear(
         if np.allclose(
             Gamma_pp_dyn_tr.data, 0
         ):  # -- If dynamic part is zero reduced calculation
-            eli_prod = lambda delta_wk: eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk, linearized=False)
+            eli_prod = lambda delta_wk: eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk, linearized=False, fmpindex=fmp_index)
 
         else:
-            eli_prod = lambda delta_wk: eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized=False)
+            eli_prod = lambda delta_wk: eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized=False, fmpindex=fmp_index)
 
     elif product == "SUM":
         if(hasDLRMesh): 
@@ -652,7 +658,7 @@ def solve_eliashberg_nonlinear(
                 "called %s when using DLR. Please use the FFT product instead."%product
             )
 
-        eli_prod = lambda delta_wk: eliashberg_product(Gamma_pp_wk, g_wk, delta_wk, linearized=False)
+        eli_prod = lambda delta_wk: eliashberg_product(Gamma_pp_wk, g_wk, delta_wk, linearized=False, fmpindex=fmp_index)
 
     else:
         raise NotImplementedError(
@@ -686,6 +692,8 @@ def solve_eliashberg_nonlinear(
         delta_wk = symmetrize_fct(delta_wk)
 
         diff = np.max(np.abs(delta_prev.data[:] - delta_wk.data[:]))
+        if verbose and (it%10==0):
+            print("(%i) Error: %.14f"%(it, diff))
         if np.allclose(diff, 0, atol=tol):
             break
 

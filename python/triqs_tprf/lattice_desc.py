@@ -1111,7 +1111,7 @@ Returns
 out
      dynamical screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true)", doc = r"""Linearized Eliashberg product via summation
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product (triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true, long fmpindex=0)", doc = r"""Linearized Eliashberg product via summation
 
      Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
@@ -1144,7 +1144,7 @@ Returns
 out
      Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true)", doc = r"""Linearized Eliashberg product via FFT
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true, long fmpindex=0)", doc = r"""Linearized Eliashberg product via FFT
 
      Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
@@ -1247,18 +1247,18 @@ out
      Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`""")
 
 
-module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_Dtr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, bool linearized=true)", doc = r"""Add documentation!""")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft (triqs_tprf::chi_Dtr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, bool linearized=true, long fmpindex=0)", doc = r"""Add documentation!""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true)", doc = r"""""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, bool linearized=true, long fmpindex=0)", doc = r"""""")
 
-module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, bool linearized=true)", doc = r"""""")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_product_fft_constant (triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, bool linearized=true, long fmpindex=0)", doc = r"""""")
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
 
 module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_g_delta_g_product (triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk)", doc = r"""""")
 
-module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk)", doc = r"""""")
-module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk)", doc = r"""""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, long fmpindex=0)", doc = r"""""")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, long fmpindex=0)", doc = r"""""")
 
 module.add_function ("std::tuple<chi_tr_t, chi_r_t> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""Fourier transform Gamma parts to imaginary time and real-space
 
