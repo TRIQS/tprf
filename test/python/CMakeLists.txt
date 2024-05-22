@@ -68,6 +68,7 @@ set(all_tests
   tpsc/test_tpsc_solver_h5
   tpsc/test_triqs_TBLattice
   eliashberg/nonlinear_eliashberg_solver
+  eliashberg/finite_momentum
 )
 
 foreach(test ${all_tests})
