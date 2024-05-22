@@ -134,8 +134,22 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpi
   return F_wk;  
 }
 
+template<typename d_out_t, typename g_t>
+d_out_t eliashberg_denominator_template(g_t g_wk, g_t delta_wk, long fmpindex=0) {
+  int nb = g_wk.target().shape()[0];
+  auto g_phi_g_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
+  auto denom_wk = make_gf(delta_wk);
+  denom_wk *= 0.;
+
+  for (auto [n, k] : denom_wk.mesh()) {
+    denom_wk[n,k] = nda::eye<long>(nb) + g_phi_g_wk[n,k] * nda::conj(delta_wk[n,k]);
+  }
+
+  return denom_wk;
+}
+
 template<typename F_out_t, typename g_t>  
-F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk, mesh::brzone::mesh_point_t q_fmp) {
+F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk, long fmpindex=0) {
 
   int nb = g_wk.target().shape()[0];
   auto wmesh = std::get<0>(delta_wk.mesh());
@@ -147,39 +161,21 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk, mesh::brzone::mesh_poin
       TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
           " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
           wmesh.size() << ").";
-  if (nb != 1)
-    TRIQS_RUNTIME_ERROR << "Non-linearized Eliashberg not implemented for multiorbital systems.\n";
 
-  auto F_wk = make_gf(delta_wk);
-  F_wk *= 0.;
-
-  auto meshes_mpi = mpi_view(delta_wk.mesh());
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
-    auto &[w, k] = meshes_mpi[idx];
-
-    for (auto [d, c] : F_wk.target_indices()) {
-      for (auto [e, f] : delta_wk.target_indices()) {
-        auto denom = g_wk[w, k](c, f) * nda::conj(g_wk[w, -k+q_fmp](e, d)) * delta_wk[w, k](e, f) * nda::conj(delta_wk[w, k](e, f)) + 1.0;
-        F_wk[w,k](d,c) += g_wk[w, k](c, f) * nda::conj(g_wk[w, -k+q_fmp](e, d)) * delta_wk[w, k](e, f) / denom;
-      }
-    }
+  auto denom_wk = eliashberg_denominator_template<F_out_t, g_t>(g_wk, delta_wk, fmpindex);
+  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
+  for (auto [n, k] : F_wk.mesh()) {
+    F_wk[n,k] = inverse(denom_wk[n,k]) * F_wk[n,k];
   }
-
-  F_wk = mpi::all_reduce(F_wk);
-
+  
   return F_wk;
 }
 
 g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt delta_wk, long fmpindex=0) {
-  auto kmesh = std::get<1>(delta_wk.mesh());
-  auto q_fmp = kmesh[fmpindex];
-  return eliashberg_F_wk_template<g_wk_t, g_wk_vt>(g_wk, delta_wk, q_fmp);
+  return eliashberg_F_wk_template<g_wk_t, g_wk_vt>(g_wk, delta_wk, fmpindex);
 }
 g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpindex=0) {
-  auto kmesh = std::get<1>(delta_wk.mesh());
-  auto q_fmp = kmesh[fmpindex];
-  return eliashberg_F_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk, delta_wk, q_fmp);
+  return eliashberg_F_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk, delta_wk, fmpindex);
 }
 
 
