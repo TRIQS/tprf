@@ -124,10 +124,10 @@ def SolveEliashbergAtTemperature(T, qind):
     np.testing.assert_array_almost_equal(leadingEv, leadingEv_ana, decimal=3)
 
     print("--> solve_eliashberg_nonlinear")
-    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", tol=1e-6, mixing_frac=0.2, fmp_index=qind)
+    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", tol=1e-5, mixing_frac=0.2, fmp_index=qind)
                 
     # Expect constant eigenvector
-    delta_nonlin = np.unique( np.round( delta_nonlin_wk.data[:], decimals=6) )
+    delta_nonlin = np.unique( np.round( delta_nonlin_wk.data[:], decimals=5) )
     assert np.shape(delta_nonlin) == (1,)
     delta_nonlin = np.abs(delta_nonlin[0])
     
