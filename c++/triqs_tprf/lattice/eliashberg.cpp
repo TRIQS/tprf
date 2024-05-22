@@ -66,13 +66,13 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t delta_wk, mesh::brzo
   return F_wk;
 }
 
-g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk, long fmpindex) {
+g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk, long fmpindex=0) {
   auto kmesh = std::get<1>(delta_wk.mesh());
   auto q_fmp = kmesh[fmpindex];
   return eliashberg_g_delta_g_product_template<g_wk_t, g_wk_vt>(g_wk, delta_wk, q_fmp);
 }
 
-g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpindex) {
+g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpindex=0) {
 
   // Performing the product of (G*G) * delta in DLR coefficient space
   // removes spurious eigenvectors in the linearized Eliashberg equation.
