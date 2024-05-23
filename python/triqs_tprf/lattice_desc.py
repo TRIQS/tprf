@@ -1259,6 +1259,8 @@ module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_g_delta_g_produ
 
 module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk, long fmpindex=0)", doc = r"""""")
 module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_F_wk(triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk, long fmpindex=0)", doc = r"""""")
+module.add_function ("triqs_tprf::g_wk_t triqs_tprf::eliashberg_g_wk(triqs_tprf::g_wk_vt g_in_wk, triqs_tprf::g_wk_vt delta_wk, long fmpindex=0)", doc = r"""""")
+module.add_function ("triqs_tprf::g_Dwk_t triqs_tprf::eliashberg_g_wk(triqs_tprf::g_Dwk_vt g_in_wk, triqs_tprf::g_Dwk_vt delta_wk, long fmpindex=0)", doc = r"""""")
 
 module.add_function ("std::tuple<chi_tr_t, chi_r_t> triqs_tprf::dynamic_and_constant_to_tr (triqs_tprf::chi_wk_vt Gamma_pp_dyn_wk, triqs_tprf::chi_k_vt Gamma_pp_const_k)", doc = r"""Fourier transform Gamma parts to imaginary time and real-space
 

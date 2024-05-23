@@ -137,21 +137,21 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpi
 template<typename d_out_t, typename g_t>
 d_out_t eliashberg_denominator_template(g_t g_wk, g_t delta_wk, long fmpindex=0) {
   int nb = g_wk.target().shape()[0];
-  auto g_phi_g_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
+  //auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
   auto denom_wk = make_gf(delta_wk);
-  denom_wk *= 0.;
 
+  auto kmesh = std::get<1>(delta_wk.mesh());
+  auto q_fmp = kmesh[fmpindex];
   for (auto [n, k] : denom_wk.mesh()) {
-    denom_wk[n,k] = nda::eye<long>(nb) + g_phi_g_wk[n,k] * nda::conj(delta_wk[n,k]);
+    //denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_delta_g_wk[n,k] * nda::conj(delta_wk[n,k]);
+    denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_wk[n,k] * delta_wk[n,k] * nda::conj(g_wk[n,-k+q_fmp]) * nda::conj(delta_wk[n,k]);
   }
-
   return denom_wk;
 }
 
 template<typename F_out_t, typename g_t>  
 F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk, long fmpindex=0) {
 
-  int nb = g_wk.target().shape()[0];
   auto wmesh = std::get<0>(delta_wk.mesh());
   auto kmesh = std::get<1>(delta_wk.mesh());
 
@@ -163,9 +163,13 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t delta_wk, long fmpindex=0) {
           wmesh.size() << ").";
 
   auto denom_wk = eliashberg_denominator_template<F_out_t, g_t>(g_wk, delta_wk, fmpindex);
-  auto F_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
+  //auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, delta_wk, fmpindex);
+  auto F_wk = make_gf(delta_wk);
+
+  auto q_fmp = kmesh[fmpindex];
   for (auto [n, k] : F_wk.mesh()) {
-    F_wk[n,k] = inverse(denom_wk[n,k]) * F_wk[n,k];
+    //F_wk[n,k] = inverse(denom_wk[n,k]) * g_delta_g_wk[n,k];
+    F_wk[n,k] = inverse(denom_wk[n,k]) * g_wk[n,k] * delta_wk[n,k] * nda::conj(g_wk[n,-k+q_fmp]);
   }
   
   return F_wk;
@@ -178,6 +182,34 @@ g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk, long fmpindex=0) {
   return eliashberg_F_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk, delta_wk, fmpindex);
 }
 
+template<typename g_out_t, typename g_t>  
+g_out_t eliashberg_g_wk_template(g_t g_in_wk, g_t delta_wk, long fmpindex=0) {
+
+  auto wmesh = std::get<0>(delta_wk.mesh());
+  auto kmesh = std::get<1>(delta_wk.mesh());
+
+  auto wmesh_gf = std::get<0>(g_in_wk.mesh());
+
+  if (wmesh.size() > wmesh_gf.size())
+      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
+          wmesh.size() << ").";
+
+  auto denom_wk = eliashberg_denominator_template<g_out_t, g_t>(g_in_wk, delta_wk, fmpindex);
+  auto g_out_wk = make_gf(g_in_wk);
+  for (auto [n, k] : g_out_wk.mesh()) {
+    g_out_wk[n,k] = inverse(denom_wk[n,k]) * g_in_wk[n,k];
+  }
+  
+  return g_out_wk;
+}
+
+g_wk_t eliashberg_g_wk(g_wk_vt g_in_wk, g_wk_vt delta_wk, long fmpindex=0) {
+  return eliashberg_g_wk_template<g_wk_t, g_wk_vt>(g_in_wk, delta_wk, fmpindex);
+}
+g_Dwk_t eliashberg_g_wk(g_Dwk_vt g_in_wk, g_Dwk_vt delta_wk, long fmpindex=0) {
+  return eliashberg_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_in_wk, delta_wk, fmpindex);
+}
 
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
                        g_wk_vt delta_wk, bool linearized=true, long fmpindex=0) {
