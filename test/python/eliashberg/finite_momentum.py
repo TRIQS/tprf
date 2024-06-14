@@ -84,19 +84,25 @@ def SolveEliashbergAtTemperature(T, qind):
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
     kmesh = MeshBrZone(bz, [nk, 1, 1])
-    q_fmp = np.linalg.norm(kmesh[qind].value)
+    q_fmp = kmesh[qind].value
 
     beta = 1.0 / (kB * T)
     wmesh_f  = MeshDLRImFreq(beta, 'Fermion', wmax, eps)
     wmesh_b = MeshDLRImFreq(beta, 'Boson', wmax, eps)
 
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
+    Enkmq = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
         kfolded = backfold_k(k.value, kmesh)
         knorm = np.linalg.norm(kfolded)
         Enk.data[k.data_index,:] = knorm**2.0
 
+        kmqfolded = backfold_k(k.value - q_fmp, kmesh)
+        kmqnorm = np.linalg.norm(kmqfolded)
+        Enkmq.data[k.data_index,:] = kmqnorm**2.0
+
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=Enk, mesh=wmesh_f)
+    g0bar_wk = lattice_dyson_g0_wk(mu=mu, e_k=Enkmq, mesh=wmesh_f)
 
     print('--> setup interaction vertex')
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
@@ -109,7 +115,8 @@ def SolveEliashbergAtTemperature(T, qind):
     delta0_wk = semi_random_initial_delta(g0_wk)
 
     print("--> solve_eliashberg")
-    vals, vecs = solve_eliashberg(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", solver="IRAM", tol=1e-6, fmp_index=qind)
+    vals, vecs = solve_eliashberg(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k,
+                                  product="FFT", solver="IRAM", tol=1e-6, gbar_wk=g0bar_wk)
     leadingIndex = np.argmax(np.real(vals))
     leadingEv = vals[leadingIndex]
     delta_lin_wk = vecs[leadingIndex]
@@ -120,11 +127,12 @@ def SolveEliashbergAtTemperature(T, qind):
     delta_lin = np.abs(delta_lin[0])
     
     # Compare with leading eigenvalue evaluated from analytical Matsubara summations
-    leadingEv_ana = AnalyticalMatsubaraSumGapEquation(0.0, beta, q_fmp, U, mu)
+    leadingEv_ana = AnalyticalMatsubaraSumGapEquation(0.0, beta, np.linalg.norm(q_fmp), U, mu)
     np.testing.assert_array_almost_equal(leadingEv, leadingEv_ana, decimal=3)
 
     print("--> solve_eliashberg_nonlinear")
-    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", tol=1e-5, mixing_frac=0.2, fmp_index=qind)
+    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k,
+                                                 product="FFT", tol=1e-5, mixing_frac=0.2, gbar_wk=g0bar_wk)
                 
     # Expect constant eigenvector
     delta_nonlin = np.unique( np.round( delta_nonlin_wk.data[:], decimals=5) )
@@ -132,7 +140,7 @@ def SolveEliashbergAtTemperature(T, qind):
     delta_nonlin = np.abs(delta_nonlin[0])
     
     # Compare with gap function evaluated from analytical Matsubara summations
-    anaGapEqn = AnalyticalMatsubaraSumGapEquation(delta_nonlin, beta, q_fmp, U, mu)
+    anaGapEqn = AnalyticalMatsubaraSumGapEquation(delta_nonlin, beta, np.linalg.norm(q_fmp), U, mu)
     if leadingEv >= 1.0:
         np.testing.assert_array_almost_equal(anaGapEqn, 1.0, decimal=3)
     
