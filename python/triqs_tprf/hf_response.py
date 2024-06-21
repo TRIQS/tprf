@@ -215,7 +215,7 @@ class HartreeFockResponse(BaseResponse):
         U_AB = self._to_matrix_AB(self.hfs.U_abcd)
         chi0_AB = self._to_matrix_AB(self.chi0_abcd)
 
-        e = np.linalg.eigvals(np.mat(chi0_AB) * np.mat(U_AB))
+        e = np.linalg.eigvals(np.asmatrix(chi0_AB) * np.asmatrix(U_AB))
         
         idx = np.argsort(e.real)
         e = e[idx]
@@ -282,8 +282,8 @@ class HartreeResponse(BaseResponse):
         super(HartreeResponse, self).__init__(hartree_solver)
         
         I_ab = np.eye(self.norb)
-        U_ab = np.mat(self.extract_dens_dens(self.solver.U_abcd))
-        chi0_ab = np.mat(self._compute_chi0_ab())
+        U_ab = np.asmatrix(self.extract_dens_dens(self.solver.U_abcd))
+        chi0_ab = np.asmatrix(self._compute_chi0_ab())
         chi_ab = chi0_ab * np.linalg.inv(I_ab - U_ab * chi0_ab)
 
         self.chi0_ab = np.array(chi0_ab)
