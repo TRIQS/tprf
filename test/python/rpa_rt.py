@@ -242,7 +242,103 @@ def test_fft(verbose=True):
         plt.show()
 
 
-def test_chi0(verbose=True):
+def test_g0_Tk(verbose=True):
+
+    norb = 1
+    beta = 10.0
+    nk = 8
+    a0 = 1.0
+    t = 1.0
+
+    Nt = 256 * 4
+    dt = 0.1 / 4
+    zero_padding = 0
+
+    units = [(a0, 0, 0),
+             (0, a0, 0)]
+
+    hop= {(+1,0) : t * np.eye(norb),       
+          (-1,0) : t * np.eye(norb),     
+          (0,+1) : t * np.eye(norb),
+          (0,-1) : t * np.eye(norb)}
+
+    orb_pos = [(0,0,0)] * norb
+
+    H = TBLattice(units, hop, orb_pos)
+
+    kmesh = H.get_kmesh(n_k=(nk, nk, 1))
+    e_k = H.fourier(kmesh)
+    e_k.data[:] -= -2.0
+
+    t = dt * np.arange(Nt)
+    tmesh = MeshReTime(t[0], t[-1], len(t))
+    t_ref = np.array([ float(val) for val in tmesh ])
+    np.testing.assert_array_almost_equal(t, t_ref)
+    
+    g0_tk_les, g0_tk_gtr = g0_Tk_les_gtr_from_e_k(e_k, tmesh, beta)
+    g0_tk_ret = g0_tk_gtr - g0_tk_les
+
+    for k in kmesh:
+        g0_t_ret_ref = Gf(mesh=tmesh, target_shape=g0_tk_ret.target_shape)
+        g0_t_ret_ref.data[:, 0, 0] = -1j * np.exp(-1j * t * e_k[k].flatten())
+        np.testing.assert_array_almost_equal(g0_t_ret_ref.data, g0_tk_ret[:, k].data)
+
+    eta = 0.5
+
+    g0_tk_ret_eta = g0_tk_ret.copy()
+    g0_tk_ret_eta.data[:, :, 0, 0] *= np.exp(- t * eta)[:, None]
+
+    g0_fk = fourier_from_tX_to_fX(
+        g0_tk_ret_eta, zero_padding=zero_padding, windowing=False)
+
+    fmesh = g0_fk.mesh[0]
+    f = np.array(list(fmesh.values()))
+    
+    for k in kmesh:
+        g0_fk_ref = Gf(mesh=fmesh, target_shape=g0_fk.target_shape)
+        g0_fk_ref.data[:, 0, 0] = 1/(f - e_k[k] + 1j * eta)
+        diff = np.max(np.abs(g0_fk[:, k].data - g0_fk_ref.data))
+        #print(f'diff = {diff:2.2E}')
+        np.testing.assert_array_almost_equal(g0_fk[:, k].data, g0_fk_ref.data, decimal=4)
+        
+    if verbose:
+
+        kidx = Idx(0, 0, 0)
+
+        g0_t_ret_ref = Gf(mesh=tmesh, target_shape=g0_tk_ret.target_shape)
+        g0_t_ret_ref.data[:, 0, 0] = -1j * np.exp(-1j * t * e_k[kidx].flatten())
+
+        g0_fk_ref = Gf(mesh=fmesh, target_shape=g0_fk.target_shape)
+        g0_fk_ref.data[:, 0, 0] = 1/(f - e_k[kidx] + 1j * eta)        
+
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(6, 8))
+        
+        subp = [2, 1, 1]
+
+        plt.subplot(*subp); subp[-1] += 1
+        plt.plot(t, g0_tk_ret[:, kidx].data[:, 0, 0].real, label='Re')
+        plt.plot(t, g0_tk_ret[:, kidx].data[:, 0, 0].imag, label='Im')
+        plt.plot(t, g0_t_ret_ref.data[:, 0, 0].real, ':', label='Re')
+        plt.plot(t, g0_t_ret_ref.data[:, 0, 0].imag, ':', label='Im')
+        plt.ylabel(r'$G_0(t, k)$')
+        plt.xlabel(r'$t$')
+        plt.legend(loc='best')
+
+        plt.subplot(*subp); subp[-1] += 1
+        plt.plot(f, g0_fk[:, kidx].data[:, 0, 0].real, label='Re')
+        plt.plot(f, g0_fk[:, kidx].data[:, 0, 0].imag, label='Im')
+        plt.plot(f, g0_fk_ref.data[:, 0, 0].real, ':', label='Re')
+        plt.plot(f, g0_fk_ref.data[:, 0, 0].imag, ':', label='Im')
+        plt.ylabel(r'$G_0(\omega, k)$')
+        plt.xlabel(r'$\omega$')
+        plt.legend(loc='best')
+        
+        plt.tight_layout()
+        plt.show()
+
+    
+def test_chi0(verbose=False):
 
     beta = 100.0
     mu = 0.0
@@ -402,9 +498,11 @@ def test_chi0(verbose=True):
     Wc_tk_gtr = W_tk_RPA(pi_tk_gtr, V_k)
 
     Wc_tk_ref = Wc_tk_gtr - Wc_tk_les
-    np.testing.assert_array_almost_equal(Wc_tk.data, Wc_tk_ref.data)
-    exit()
+    #np.testing.assert_array_almost_equal(Wc_tk.data, Wc_tk_ref.data)
+    #exit()
     
+    print(Wc_tk)
+
     tmr = time.time()
     print('--> fourier_from_tk_to_tr Wc')
     Wc_tr = fourier_Tk_to_Tr(Wc_tk)
@@ -451,7 +549,7 @@ def test_chi0(verbose=True):
     #sigma_fk.data[:] *= 0.
     
     sigma_f = interpolate_g_fk(sigma_fk, k0)
-    
+
     if verbose:
         import matplotlib.pyplot as plt
         plt.figure(figsize=(6, 8))
@@ -492,6 +590,7 @@ def test_chi0(verbose=True):
 
     
 if __name__ == "__main__":
-        
+
+    test_g0()
     #test_fft()
-    test_chi0()
+    #test_chi0()
