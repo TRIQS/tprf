@@ -242,33 +242,33 @@ def test_fft(verbose=True):
         plt.show()
 
 
-def test_g0_Tk(verbose=True):
+def test_g0_Tk(verbose=False):
+    """ Test real-time non-interacting Green's function by comparison
+    with real-frequency analytic expression. """
 
-    norb = 1
     beta = 10.0
-    nk = 8
-    a0 = 1.0
     t = 1.0
+    mu = -2.0
+    norb = 1
 
+    nk = 8
     Nt = 256 * 4
     dt = 0.1 / 4
     zero_padding = 0
 
-    units = [(a0, 0, 0),
-             (0, a0, 0)]
+    H = TBLattice(
+        units=[(1, 0, 0), (0, 1, 0)],
+        hoppings = {
+            ( 0,  0) : -mu * np.eye(norb),
+            (+1,  0) : t * np.eye(norb),       
+            (-1,  0) : t * np.eye(norb),     
+            ( 0, +1) : t * np.eye(norb),
+            ( 0, -1) : t * np.eye(norb)},
+        orbital_positions = [(0,0,0)] * norb,
+        )
 
-    hop= {(+1,0) : t * np.eye(norb),       
-          (-1,0) : t * np.eye(norb),     
-          (0,+1) : t * np.eye(norb),
-          (0,-1) : t * np.eye(norb)}
-
-    orb_pos = [(0,0,0)] * norb
-
-    H = TBLattice(units, hop, orb_pos)
-
-    kmesh = H.get_kmesh(n_k=(nk, nk, 1))
+    kmesh = H.get_kmesh(n_k=nk)
     e_k = H.fourier(kmesh)
-    e_k.data[:] -= -2.0
 
     t = dt * np.arange(Nt)
     tmesh = MeshReTime(t[0], t[-1], len(t))
@@ -286,7 +286,7 @@ def test_g0_Tk(verbose=True):
     eta = 0.5
 
     g0_tk_ret_eta = g0_tk_ret.copy()
-    g0_tk_ret_eta.data[:, :, 0, 0] *= np.exp(- t * eta)[:, None]
+    g0_tk_ret_eta.data[:, :, 0, 0] *= np.exp(- t * eta)[:, None] # Manual Lorenz window
 
     g0_fk = fourier_from_tX_to_fX(
         g0_tk_ret_eta, zero_padding=zero_padding, windowing=False)
@@ -337,7 +337,98 @@ def test_g0_Tk(verbose=True):
         plt.tight_layout()
         plt.show()
 
+
+def test_chi0_Tk(verbose=False):
+    """ Test real-time chi0 calculation by comparison with Lindhard result
+    in real-frequency """
+
+    beta = 10.0
+    t = 1.0
+    mu = -2.0
+    norb = 1
+
+    nk = 8
+    Nt = 256 * 4
+    dt = 0.1 / 4
+    zero_padding = 4
+
+    H = TBLattice(
+        units=[(1, 0, 0), (0, 1, 0)],
+        hoppings = {
+            ( 0,  0) : -mu * np.eye(norb),
+            (+1,  0) : t * np.eye(norb),       
+            (-1,  0) : t * np.eye(norb),     
+            ( 0, +1) : t * np.eye(norb),
+            ( 0, -1) : t * np.eye(norb)},
+        orbital_positions = [(0,0,0)] * norb,
+        )
+
+    kmesh = H.get_kmesh(n_k=nk)
+    e_k = H.fourier(kmesh)
+
+    t = dt * np.arange(Nt)
+    tmesh = MeshReTime(t[0], t[-1], len(t))
+    t_ref = np.array([ float(val) for val in tmesh ])
+    np.testing.assert_array_almost_equal(t, t_ref)
     
+    g0_tk_les, g0_tk_gtr = g0_Tk_les_gtr_from_e_k(e_k, tmesh, beta)
+
+    g0_tr_les = fourier_Tk_to_Tr(g0_tk_les)
+    g0_tr_gtr = fourier_Tk_to_Tr(g0_tk_gtr)
+
+    chi0_tr = chi0_Tr_from_g_Tr_PH(g0_tr_les, g0_tr_gtr)
+    chi0_tk = fourier_Tr_to_Tk(chi0_tr)
+
+    eta = 0.5
+    chi0_tk_eta = chi0_tk.copy()
+    chi0_tk_eta.data[:, :, 0, 0, 0, 0] *= np.exp(- t * eta)[:, None] # Manual Lorenz window
+
+    chi0_fk = fourier_from_tX_to_fX(
+            chi0_tk_eta, zero_padding=zero_padding, windowing=False)
+    
+    from triqs_tprf.lattice import lindhard_chi00
+    mu_chi0 = 0.0
+    chi0_fk_ref = lindhard_chi00(e_k, chi0_fk.mesh[0], beta, mu_chi0, eta)
+
+    #diff = np.max(np.abs(chi0_fk.data - chi0_fk_ref.data))
+    #print(f'diff = {diff:2.2E}')
+
+    np.testing.assert_array_almost_equal(chi0_fk.data, chi0_fk_ref.data, decimal=5)
+    
+    if verbose:
+
+        fmesh = chi0_fk.mesh[0]
+        f = np.array(list(fmesh.values()))
+        
+        kidx = Idx(1, 0, 0)
+
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(6, 8))
+        
+        subp = [2, 1, 1]
+
+        plt.subplot(*subp); subp[-1] += 1
+        plt.plot(t, chi0_tk[:, kidx].data[:, 0, 0, 0, 0].real, label='Re')
+        plt.plot(t, chi0_tk[:, kidx].data[:, 0, 0, 0, 0].imag, label='Im')
+        plt.plot(t, chi0_tk_eta[:, kidx].data[:, 0, 0, 0, 0].real, ':', label='Re')
+        plt.plot(t, chi0_tk_eta[:, kidx].data[:, 0, 0, 0, 0].imag, ':', label='Im')
+        plt.ylabel(r'$\chi_0(t, q)$')
+        plt.xlabel(r'$t$')
+        plt.legend(loc='best')
+
+        plt.subplot(*subp); subp[-1] += 1
+        plt.plot(f, chi0_fk[:, kidx].data[:, 0, 0, 0, 0].real, label='Re')
+        plt.plot(f, chi0_fk[:, kidx].data[:, 0, 0, 0, 0].imag, label='Im')
+        plt.plot(f, chi0_fk_ref[:, kidx].data[:, 0, 0, 0, 0].real, ':', label='Re')
+        plt.plot(f, chi0_fk_ref[:, kidx].data[:, 0, 0, 0, 0].imag, ':', label='Im')
+        plt.ylabel(r'$\chi_0(\omega, q)$')
+        plt.xlabel(r'$\omega$')
+        plt.legend(loc='best')
+        
+        plt.tight_layout()
+        plt.show()
+
+        
 def test_chi0(verbose=False):
 
     beta = 100.0
@@ -591,6 +682,7 @@ def test_chi0(verbose=False):
     
 if __name__ == "__main__":
 
-    test_g0()
+    test_g0_Tk()
+    test_chi0_Tk()
     #test_fft()
     #test_chi0()
