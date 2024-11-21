@@ -275,7 +275,98 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False, verbose=True):
     del chi0_wr
 
     return chi0_wk
+# ----------------------------------------------------------------------
+def imtime_bubble_chi0_ab_wk(ga_wk,gb_wk, nw=1, save_memory=False, verbose=True):
+    ncores = multiprocessing.cpu_count()
 
+    wmesh, kmesh =  g_wk.mesh.components
+
+    norb = g_wk.target_shape[0]
+    beta = wmesh.beta
+    nw_g = len(wmesh)
+    nk = len(kmesh)
+
+    ntau = 2 * nw_g
+
+    is_dlr_mesh = type(wmesh) == MeshDLRImFreq
+    if is_dlr_mesh:
+        iw_values = np.fromiter(wmesh.values(), dtype=complex)
+        is_symmetrized = np.allclose(iw_values, -iw_values[::-1])
+
+    
+    # -- Memory Approximation
+
+    ng_tr = ntau * np.prod(nk) * norb**2 # storing G(tau, r)
+    ng_wr = nw_g * np.prod(nk) * norb**2 # storing G(w, r)
+    ng_t = ntau * norb**2 # storing G(tau)
+
+    nchi_tr = ntau * np.prod(nk) * norb**4 # storing \chi(tau, r)
+    nchi_wr = nw * np.prod(nk) * norb**4 # storing \chi(w, r)
+    nchi_t = ntau * norb**4 # storing \chi(tau)
+    nchi_w = nw * norb**4 # storing \chi(w)
+    nchi_r = np.prod(nk) * norb**4 # storing \chi(r)
+
+    if nw == 1:
+        ntot_case_1 = ng_tr + ng_wr
+        ntot_case_2 = ng_tr + nchi_wr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_3 = 4 * nchi_wr
+
+        ntot = max(ntot_case_1, ntot_case_2, ntot_case_3)
+
+    else:
+        ntot_case_1 = ng_tr + nchi_tr + ncores*(nchi_t + 2*ng_t)
+        ntot_case_2 = nchi_tr + nchi_wr + ncores*(nchi_w + nchi_t)
+    
+        ntot = max(ntot_case_1, ntot_case_2)
+
+    nbytes = ntot * np.complex128().nbytes
+    ngb = nbytes / 1024.**3
+
+    if verbose and mpi.is_master_node():
+        print(tprf_banner(), "\n")
+        print('beta  =', beta)
+        print('nk    =', nk)
+        print('nw    =', nw_g)
+        print('norb  =', norb)
+        print()
+        print('Approx. Memory Utilization: %2.2f GB\n' % ngb)
+
+    if verbose: mpi.report('--> fourier_wk_to_wr')
+    ga_wr = fourier_wk_to_wr(ga_wk)
+    gb_wr = fourier_wk_to_wr(gb_wk)
+    del ga_wk
+    del gb_wk
+
+    if verbose: mpi.report('--> fourier_wr_to_tr')
+    ga_tr = fourier_wr_to_tr(ga_wr)
+    gb_tr = fourier_wr_to_tr(gb_wr)
+    del ga_wr
+    del gb_wr
+    
+    if nw == 1:
+        if verbose: mpi.report('--> chi0_w0r_from_grt_PH (bubble in tau & r)')
+        chi0_wr = chi0_w0r_from_grt_ab_PH(ga_tr, gb_tr)
+        del ga_tr
+        del gb_tr
+    else:
+        if not save_memory:
+            if verbose: mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
+            chi0_tr = chi0_tr_from_grt_ab_PH(ga_tr, gb_tr)
+            del ga_tr
+            del gb_tr
+            
+            if verbose: mpi.report('--> chi_wr_from_chi_tr')
+            chi0_wr = chi_wr_from_chi_tr(chi0_tr, nw=nw)
+            del chi0_tr
+        elif save_memory:
+            chi0_wr = chi0_wr_from_grt_PH(g_tr, nw=nw)
+
+        
+    if verbose: mpi.report('--> chi_wk_from_chi_wr (r->k)')
+    chi0_wk = chi_wk_from_chi_wr(chi0_wr)
+    del chi0_wr
+
+    return chi0_wk
 # ----------------------------------------------------------------------
 def chi_contraction(chi, op1, op2):
     """Contract a susceptibility with two operators

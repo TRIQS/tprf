@@ -38,7 +38,7 @@ namespace triqs_tprf {
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr);
 chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize=false);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
-
+chi_wr_t chi0_wr_from_grt_ab_PH(g_tr_cvt ga_tr, g_tr_cvt gb_tr, int nw);
 /** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
 
   Computes
@@ -52,6 +52,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
   @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.
  */
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr);
+chi_wr_t chi0_w0r_from_grt_ab_PH(g_tr_cvt ga_tr,g_tr_cvt gb_tr);
 
 /** Static susceptibility calculation :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
    

@@ -134,7 +134,58 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 
   return chi0_tr;
 }
+// ----------------------------------------------------
+// chi0 bubble in imaginary time for multiple Green's functions
 
+chi_tr_t chi0_tr_from_grt_ab_PH(g_tr_cvt ga_tr,g_tr_cvt gb_tr) {
+
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(ga_tr.mesh());
+  auto rmesh = std::get<1>(ga_tr.mesh());
+
+  int nb = ga_tr.target().shape()[0];
+  int ntau = tmesh.size();
+  double beta = tmesh.beta();
+
+  chi_tr_t chi0_tr{{{beta, Boson, ntau}, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = ga_tr.target();
+  auto chi_target = chi0_tr.target();
+  
+  // -- This does not work on the boundaries!! The eval wraps to the other
+  // regime!
+  // -- gt(beta) == gt(beta + 0^+)
+  // chi0_tr(tau, r)(a, b, c, d) << g_tr(tau, r)(d, a) * g_tr(-tau, -r)(b, c);
+
+  //for (auto r : rmesh) {
+
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr[idx];
+
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = ga_tr[_, r];
+      g_mr_t = gb_tr(_, -r);
+    }
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+#pragma omp critical
+    chi0_tr[_, r] = chi0_t;
+  }
+
+  chi0_tr = mpi::all_reduce(chi0_tr);
+
+  return chi0_tr;
+}
 // -- memory optimized version for smaller nw 
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 
@@ -180,7 +231,51 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
   chi0_wr = mpi::all_reduce(chi0_wr);
   return chi0_wr;
 }  
+// -- memory optimized version for smaller nw 
+chi_wr_t chi0_wr_from_grt_ab_PH(g_tr_cvt ga_tr, g_tr_cvt gb_tr,int nw=1) {
 
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(ga_tr.mesh());
+  auto rmesh = std::get<1>(ga_tr.mesh());
+
+  int nb = ga_tr.target().shape()[0];
+  int ntau = tmesh.size();
+  double beta = tmesh.beta();
+
+  chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = ga_tr.target();
+  auto chi_target = chi0_wr.target();
+  
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr[idx];
+
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = ga_tr[_, r];
+      g_mr_t = gb_tr(_, -r);
+    }
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+#pragma omp critical
+    {
+    auto chi0_w = make_gf_from_fourier(chi0_t, nw);
+    chi0_wr[_, r] = chi0_w;
+    }
+  }
+
+  chi0_wr = mpi::all_reduce(chi0_wr);
+  return chi0_wr;
+}  
 // -- optimized version for w=0
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 
@@ -213,6 +308,50 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
     {
       g_pr_t = g_tr[_, r];
       g_mr_t = g_tr(_, -r);
+    }
+
+    for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
+
+    auto int_chi0 = chi_trapz_tau(chi0_t);
+    
+#pragma omp critical
+    chi0_wr[0, r] = int_chi0;
+  }
+
+  chi0_wr = mpi::all_reduce(chi0_wr);
+  return chi0_wr;
+}  
+chi_wr_t chi0_w0r_from_grt_ab_PH(g_tr_cvt ga_tr,g_tr_cvt gb_tr) {
+
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(ga_tr.mesh());
+  auto rmesh = std::get<1>(ga_tr.mesh());
+
+  int nw = 1;
+  int nb = ga_tr.target().shape()[0];
+  int ntau = tmesh.size();
+  double beta = tmesh.beta();
+
+  chi_wr_t chi0_wr{{{beta, Boson, nw}, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = ga_tr.target();
+  auto chi_target = chi0_wr.target();
+  
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for 
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto &r = arr[idx];
+
+    auto chi0_t = make_gf<imtime>({beta, Boson, ntau}, chi_target);
+    auto g_pr_t = make_gf<imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = ga_tr[_, r];
+      g_mr_t = gb_tr(_, -r);
     }
 
     for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
