@@ -4,8 +4,8 @@
 #
 # TPRF: Two-Particle Response Function (TPRF) Toolbox for TRIQS
 #
-# Copyright (C) 2023 H. U.R. Strand
-# Authors: H. U.R. Strand
+# Copyright (C) 2023 H. U.R. Strand and E G.C.P. van Loon
+# Authors: H. U.R. Strand and E. G.C.P. van Loon
 #
 # TPRF is free software: you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
@@ -31,6 +31,9 @@ from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH
 
 from triqs_tprf.linalg import product_PH, inverse_PH
 from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH, chi_from_gg2_PH
+
+from triqs_tprf.bse import get_chi0_nk_at_specific_w
+from triqs_tprf.lattice_utils import add_fake_bosonic_mesh
 
 
 def impurity_reducible_vertex_F(g_w, g2_wnn):
@@ -135,10 +138,89 @@ def solve_lattice_dbse(g_wk, F_wnn, L_wn, chi_imp_w):
     print('--> DBSE chi_kw')
     chi_kw = chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(
         chi0_nonlocal_wnk, F_wnn, L_resize_wn)
+    
     for w in bmesh:
         chi_kw[:, w].data[:] += chi_imp_w[Idx(w.index)].data
 
     del chi0_nonlocal_wnk
     del L_resize_wn
     
+    return chi_kw
+
+
+def solve_lattice_dbse_lomem(g_wk, F_wnn, L_wn, chi_imp_w):
+
+    r""" Compute the generalized lattice susceptibility 
+    :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega_n)` using the dual Bethe-Salpeter 
+    equation (DBSE).
+
+    This implementation loops over individual bosonic frequencies, requiring less memory
+    but slightly more computations.
+
+    Parameters
+    ----------
+
+    g_wk : Gf,
+           Single-particle Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})`.
+    F_wnn : Gf,
+                Local particle-hole reducible vertex function 
+                :math:`F_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n, i\nu_n')`.
+    L_wn : Gf,
+                Local particle-hole reducible triangle vertex function 
+                :math:`L_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n)`.
+    chi_imp_w : Gf,
+                Generalized DMFT impurity susceptibility
+                :math:`\chi_{a\bar{b}c\bar{d}}(i\omega_n)`.
+
+    Returns
+    -------
+    chi_kw : Gf,
+             Generalized lattice susceptibility 
+             :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
+    """
+    
+    bmesh = F_wnn.mesh[0]
+    fmesh = F_wnn.mesh[1]
+
+    assert( len(fmesh) <= len(g_wk.mesh[0]) )
+    assert( len(bmesh) <= len(L_wn.mesh[0]) )
+    assert( len(fmesh) <= len(L_wn.mesh[1]) )
+    assert( len(bmesh) <= len(chi_imp_w.mesh) )
+    
+    nw = (len(bmesh) + 1) // 2
+    nn = len(fmesh) // 2
+    
+    L_resize_wn = Gf(mesh=MeshProduct(bmesh, fmesh), indices=L_wn.indices)
+    for w, n in L_resize_wn.mesh:
+        L_resize_wn[w, n] = L_wn[Idx(w.index), Idx(n.index)]
+
+    kmesh = g_wk.mesh[1]
+    chi_kw = Gf(mesh=MeshProduct(kmesh, bmesh), indices=F_wnn.indices)
+    
+    for W in bmesh:
+        
+        print('-'*72)
+        print(f'DBSE: Low memory calc at bosonic frequency index {W.index}.')
+        print(f'DBSE: {W}')
+        print('-'*72)
+
+        idx = Idx(W.index)
+        F_Wnn = add_fake_bosonic_mesh(F_wnn[idx, :, :])
+        L_resize_Wn = add_fake_bosonic_mesh(L_resize_wn[idx, :])
+
+        print('--> chi0_nonlocal_Wnk')
+        chi0_nonlocal_Wnk = add_fake_bosonic_mesh(get_chi0_nk_at_specific_w(
+            g_wk, nw_index=W.index, nwf=nn, g_nonlocal=True))
+
+        print('--> DBSE chi_kW')
+        chi_kW = chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(
+            chi0_nonlocal_Wnk, F_Wnn, L_resize_Wn)
+
+        chi_kw[:, idx] = chi_kW[:, Idx(0)] + chi_imp_w[idx].data
+            
+        del chi0_nonlocal_Wnk
+        del chi_kW
+
+    del L_resize_wn
+
     return chi_kw

@@ -675,7 +675,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
   auto arr = mpi_view(chi_kw.mesh()); // FIXME Use library implementation
-  std::cout << "BSE rank " << comm.rank() << " of " << comm.size() << " has "
+  std::cout << "DBSE rank " << comm.rank() << " of " << comm.size() << " has "
 	    << arr.size() << " jobs." << std::endl;
 
   triqs::utility::timer t;
@@ -780,7 +780,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
       //double t_left = double(t) * ( N / (idx + 1) - 1. );
       int done_percent = (N == 0) ? 100 : int(floor(100 * double(idx + 1) / N));
       
-      std::cout << "BSE " << triqs::utility::timestamp() << " "
+      std::cout << "DBSE " << triqs::utility::timestamp() << " "
 		<< std::setfill(' ') << std::setw(3) << done_percent << "% "
 		<< "ETA " << triqs::utility::estimate_time_left(N, idx, t)
 		<< " job no "
@@ -794,7 +794,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
 
   t.stop();
   if(comm.rank() == 0 )
-    std::cout << "BSE TIME: " << double(t) << " s" << std::endl;
+    std::cout << "DBSE TIME: " << double(t) << " s" << std::endl;
 
   return chi_kw;
 }

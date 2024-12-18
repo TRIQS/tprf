@@ -253,7 +253,7 @@ def get_chi0_wnk(g_wk, nw=1, nwf=None):
     return chi0_wnk    
 
 
-def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
+def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None, g_nonlocal=False):
     r""" Compute the generalized bare lattice susceptibility 
     :math:`\chi^{0}_{\bar{a}b\bar{c}d}(i\omega_{n=\mathrm{nw\_index}}, i\nu_n, \mathbf{k})` from the single-particle
     Green's function :math:`G_{a\bar{b}}(i\nu_n, \mathbf{k})` for a specific :math:`i\omega_{n=\mathrm{nw\_index}}`.
@@ -267,7 +267,11 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
                The bosonic Matsubara frequency index :math:`i\omega_{n=\mathrm{nw\_index}}`
                at which :math:`\chi^0` is calculated.
     nwf : int,
-          Number of fermionic frequencies in :math:`\chi^0`.    
+          Number of fermionic frequencies in :math:`\chi^0`.
+
+    g_nonlocal : bool, optional
+          Special case for D-BSE. Remove local component of the single particle Green's function.
+          Default: `False`
 
     Returns
     -------
@@ -290,6 +294,9 @@ def get_chi0_nk_at_specific_w(g_wk, nw_index=1, nwf=None):
 
     mpi.report('--> g_wr from g_wk')
     g_wr = fourier_wk_to_wr(g_wk)
+
+    if g_nonlocal:
+        g_wr[:, Idx(0, 0, 0)] = 0.
     
     mpi.report('--> chi0_wnr from g_wr')
     chi0_nr = chi0_nr_from_gr_PH_at_specific_w(nw_index=nw_index, nn=nwf, g_nr=g_wr)
