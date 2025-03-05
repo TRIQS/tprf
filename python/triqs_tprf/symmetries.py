@@ -24,6 +24,9 @@
 
 import numpy as np
 
+from triqs.gf import MeshDLRImFreq
+
+
 def enforce_symmetry(gf, variables, symmetries):
     """Symmetrize Green's function in the given variables
 
@@ -133,6 +136,11 @@ def _split_frequency(gf):
     if not gf.mesh[0].statistic == 'Fermion':
         raise ValueError("The Green's function must be a fermionic one")
 
+    has_DLR_mesh = type(gf.mesh[0]) == MeshDLRImFreq
+    has_symmetric_mesh = gf.mesh[0].symmetrize if has_DLR_mesh else True
+    if not has_symmetric_mesh:
+        raise ValueError("The Green's function must have a symmetric frequency mesh")
+
     nw_half = gf.data.shape[0]//2
 
     negative_half = gf.data[:nw_half]
@@ -156,6 +164,12 @@ def _check_frequency_symmetry(gf, atol=1e-08):
     +1 if the Green's function is even in frequency space, -1 if odd,
     and None if undefined.
     """
+
+    has_DLR_mesh = type(gf.mesh[0]) == MeshDLRImFreq
+    has_symmetric_mesh = gf.mesh[0].symmetrize if has_DLR_mesh else True
+    if not has_symmetric_mesh:
+        raise ValueError("The Green's function must have a symmetric frequency mesh")
+
     negative_half, positive_half = _split_frequency(gf)
 
     if np.allclose(negative_half[::-1], positive_half, atol=atol):
@@ -178,6 +192,12 @@ def _symmetrize_frequency(gf, symmetry='even'):
                    'even' : no sign change :math:`\nu_n\rightarrow\nu_{-n}`
                    'odd'  : sign change :math:`\nu_n\rightarrow\nu_{-n}`
     """
+
+    has_DLR_mesh = type(gf.mesh[0]) == MeshDLRImFreq
+    has_symmetric_mesh = gf.mesh[0].symmetrize if has_DLR_mesh else True
+    if not has_symmetric_mesh:
+        raise ValueError("The Green's function must have a symmetric frequency mesh")
+
     negative_half, positive_half = _split_frequency(gf)
     avg = _average_halfs(negative_half[::-1], positive_half)
 
