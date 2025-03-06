@@ -83,6 +83,77 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
 }
 
 // ----------------------------------------------------
+// chi0 bubble in DLR imaginary time
+// -- specialization for w=0 (static bubble susceptibility)
+
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
+
+  auto _ = all_t{};
+
+  auto tmesh = std::get<0>(g_tr.mesh());
+  auto rmesh = std::get<1>(g_tr.mesh());
+
+  int nb = g_tr.target().shape()[0];
+  double beta = tmesh.beta();
+
+  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps(), symmetrize};
+
+  imfreq bmesh{beta, Boson, 1};
+  chi_wr_t chi0_w0r{{bmesh, rmesh}, {nb, nb, nb, nb}};
+
+  auto g_target = g_tr.target();
+  auto chi_target = chi0_w0r.target();
+
+  auto arr = mpi_view(rmesh);
+
+#pragma omp parallel for
+  for (unsigned int idx = 0; idx < arr.size(); idx++) {
+    auto & r = arr[idx];
+
+    auto chi0_t = make_gf<dlr_imtime>(btmesh, chi_target);
+    auto g_pr_t = make_gf<dlr_imtime>(tmesh, g_target);
+    auto g_mr_t = make_gf<dlr_imtime>(tmesh, g_target);
+
+#pragma omp critical
+    {
+      g_pr_t = g_tr[_, r];
+      g_mr_t = g_tr(_, -r);
+    }
+
+    auto g_pr_c = make_gf_dlr(g_pr_t);
+    auto g_mr_c = make_gf_dlr(g_mr_t);
+
+    for (auto t : tmesh)
+      chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
+
+    auto I = integrate_dlr_tau(chi0_t);
+
+#pragma omp critical
+    chi0_w0r[0, r] = I;
+  }
+
+  chi0_w0r = mpi::all_reduce(chi0_w0r);
+
+  return chi0_w0r;
+}
+
+
+target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {
+
+  auto chi_x = make_gf_dlr(chi_t);
+
+  auto I = zeros<dcomplex>(chi_x.target_shape());
+  for(int l = 0; l < chi_x.mesh().size(); ++l) {
+    auto w = chi_x.mesh().dlr_freq()[l];
+    auto k0 = cppdlr::k_it(0, w);
+    auto k1 = cppdlr::k_it(1, w);
+    I += chi_x.mesh().beta() * (k1 - k0) / w * chi_x[l];
+  }
+
+  return I;
+}
+
+// ----------------------------------------------------
 // chi0 bubble in imaginary time
 
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {

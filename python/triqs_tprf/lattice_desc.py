@@ -1385,6 +1385,25 @@ Returns
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.""")
 
+module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, bool symmetrize=false)", doc = r"""Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})` using analytic integration of DLR basis functions in imaginary time.
+
+  Computes
+
+  .. math::
+     \chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r}) =
+     - \int_0^\beta d\tau \,
+     G_{d\bar{a}}(\tau, \mathbf{r}) G_{b\bar{c}}(-\tau, -\mathbf{r})
+
+Parameters
+----------
+g_tr
+     Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\tau, \mathbf{r})`.
+
+Returns
+-------
+out
+     Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.""")
+
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi_w0r_from_chi_tr (triqs_tprf::chi_tr_cvt chi_tr)", doc = r"""Static susceptibility calculation :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
 
   Explicit calculation of the static, zero frequency response, by 2nd order trapetzoidal
