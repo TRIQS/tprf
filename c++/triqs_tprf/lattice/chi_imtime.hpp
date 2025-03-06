@@ -52,6 +52,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
   @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.
  */
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr);
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize=false);
 
 /** Static susceptibility calculation :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
    
@@ -142,5 +143,6 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
 chi_Dwr_t chi_wr_from_chi_wk(chi_Dwk_cvt chi_wk);
 
 chi_t_t::target_t::value_t chi_trapz_tau(chi_t_cvt chi_t);
+chi_t_t::target_t::value_t integrate_dlr_tau(chi_Dt_cvt chi_t);
 
 } // namespace triqs_tprf
