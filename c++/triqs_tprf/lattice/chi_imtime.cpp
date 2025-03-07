@@ -147,7 +147,7 @@ chi_t_t::target_t::value_t integrate_dlr_tau(chi_Dt_cvt chi_t) {
     auto w = chi_x.mesh().dlr_freq()[l];
     auto k0 = cppdlr::k_it(0, w);
     auto k1 = cppdlr::k_it(1, w);
-    I += chi_x.mesh().beta() * (k1 - k0) / w * chi_x[l];
+    I += chi_x.mesh().beta() * (k0 - k1) / w * chi_x[l];
   }
 
   return I;
