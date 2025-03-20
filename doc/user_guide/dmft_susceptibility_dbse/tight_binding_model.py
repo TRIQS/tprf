@@ -61,6 +61,7 @@ def dft_band_structure(mu=11.6591, filename='./calc_dft/band_structure/sro_bands
 if __name__ == '__main__':
 
     t_r = tight_binding_model()
+    print(t_r.orbital_names)
 
     G, M, X = [0., 0., 0.], [0., 0., 0.5], [-0.25, 0.25, 0.25]
     labels = [r'$\Gamma$', r'$X$', r'$M$', r'$\Gamma$', ]
@@ -92,4 +93,5 @@ if __name__ == '__main__':
     plt.legend(loc='best')
     plt.grid(True); plt.tight_layout();
     plt.savefig('figure_sro_band_structure.svg')
+    plt.show()
 
