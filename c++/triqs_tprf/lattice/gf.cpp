@@ -246,7 +246,32 @@ g_Tk_t fourier_Tr_to_Tk(g_Tr_cvt g_Tr) {
   return g_Tk;
 }
 
-chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr) {
+chi_wk_t fourier_wr_to_wk(chi_wr_cvt chi_wr) {
+  auto chi_wk = fourier_wr_to_wk_general_target(chi_wr);
+  return chi_wk;
+}
+
+chi_wr_t fourier_wk_to_wr(chi_wk_cvt chi_wk) {
+  auto chi_wr = fourier_wk_to_wr_general_target(chi_wk);
+  return chi_wr;
+}
+
+chi_Dwk_t fourier_wr_to_wk(chi_Dwr_cvt chi_Dwr) {
+  auto chi_Dwk = fourier_wr_to_wk_general_target(chi_Dwr);
+  return chi_Dwk;
+}
+
+chi_Dwr_t fourier_wk_to_wr(chi_Dwk_cvt chi_Dwk) {
+  auto chi_Dwr = fourier_wk_to_wr_general_target(chi_Dwk);
+  return chi_Dwr;
+}
+  
+chi_Tr_t fourier_Tr_to_Tk(chi_Tk_cvt chi_Tk) {
+  auto chi_Tr = fourier_wk_to_wr_general_target(chi_Tk);
+  return chi_Tr;
+}
+
+ chi_Tk_t fourier_Tr_to_Tk(chi_Tr_cvt chi_Tr) {
   auto chi_Tk = fourier_wr_to_wk_general_target(chi_Tr);
   return chi_Tk;
 }
@@ -273,6 +298,25 @@ g_Dtr_t fourier_wr_to_tr(g_Dwr_cvt g_wr, int nt) {
   auto g_tr = fourier_Dwr_to_Dtr_general_target(g_wr);
   return g_tr;
 }
-  
+
+chi_wr_t fourier_tr_to_wr(chi_tr_cvt chi_tr, int nw) {
+  auto chi_wr = fourier_tr_to_wr_general_target(chi_tr, nw);
+  return chi_wr;
+}
+
+chi_tr_t fourier_wr_to_tr(chi_wr_cvt chi_wr, int nt) {
+  auto chi_tr = fourier_wr_to_tr_general_target(chi_wr, nt);
+  return chi_tr;
+}
+
+chi_Dwr_t fourier_tr_to_wr(chi_Dtr_cvt chi_Dtr, int nw) {
+  auto chi_Dwr = fourier_Dtr_to_Dwr_general_target(chi_Dtr);
+  return chi_Dwr;
+}
+
+chi_Dtr_t fourier_wr_to_tr(chi_Dwr_cvt chi_Dwr, int nt) {
+  auto chi_Dtr = fourier_Dwr_to_Dtr_general_target(chi_Dwr);
+  return chi_Dtr;
+}  
   
 } // namespace triqs_tprf
