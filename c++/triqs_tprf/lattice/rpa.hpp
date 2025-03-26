@@ -41,6 +41,7 @@ namespace triqs_tprf {
   */
 
   chi_wk_t solve_rpa_PH(chi_wk_vt chi0, array_contiguous_view<std::complex<double>, 4> U);
+  chi_Dwk_t solve_rpa_PH(chi_Dwk_vt chi0, array_contiguous_view<std::complex<double>, 4> U);
 
   /** Random Phase Approximation (RPA) in the particle-hole channel
    

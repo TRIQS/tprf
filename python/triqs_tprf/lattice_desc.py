@@ -571,6 +571,8 @@ Returns
 out
      RPA suceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`""")
 
+module.add_function ("triqs_tprf::chi_Dwk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_Dwk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)")
+
 module.add_function ("triqs_tprf::chi_fk_t triqs_tprf::solve_rpa_PH (triqs_tprf::chi_fk_vt chi0, array_contiguous_view<std::complex<double>, 4> U)", doc = r"""Random Phase Approximation (RPA) in the particle-hole channel
 
      Computes the equation
