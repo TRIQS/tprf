@@ -35,8 +35,11 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // chi0 bubble in DLR imaginary time
 
-chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetrize) {
 
+  assert( g_tr.mesh() == g_bwd_tr.mesh() );
+  assert( g_tr.target() == g_bwd_tr.target() );
+  
   auto _ = all_t{};
 
   auto tmesh = std::get<0>(g_tr.mesh());
@@ -64,7 +67,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr(_, -r);
+      g_mr_t = g_bwd_tr(_, -r);
     }
 
     auto g_pr_c = make_gf_dlr(g_pr_t);
@@ -82,11 +85,18 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
   return chi0_tr;
 }
 
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
+  return chi0_tr_from_grt_PH(g_tr, g_tr, symmetrize);
+}
+    
 // ----------------------------------------------------
 // chi0 bubble in DLR imaginary time
 // -- specialization for w=0 (static bubble susceptibility)
 
-chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetrize) {
+
+  assert( g_tr.mesh() == g_bwd_tr.mesh() );
+  assert( g_tr.target() == g_bwd_tr.target() );
 
   auto _ = all_t{};
 
@@ -117,7 +127,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr(_, -r);
+      g_mr_t = g_bwd_tr(_, -r);
     }
 
     auto g_pr_c = make_gf_dlr(g_pr_t);
@@ -137,6 +147,9 @@ chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
   return chi0_w0r;
 }
 
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
+  return chi0_w0r_from_grt_PH(g_tr, g_tr, symmetrize);
+}
 
 target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {
 
@@ -156,7 +169,10 @@ target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {
 // ----------------------------------------------------
 // chi0 bubble in imaginary time
 
-chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
+chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr) {
+
+  assert( g_tr.mesh() == g_bwd_tr.mesh() );
+  assert( g_tr.target() == g_bwd_tr.target() );
 
   auto _ = all_t{};
 
@@ -192,7 +208,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr(_, -r);
+      g_mr_t = g_bwd_tr(_, -r);
     }
 
     for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
@@ -206,8 +222,15 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
   return chi0_tr;
 }
 
+chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
+  return chi0_tr_from_grt_PH(g_tr, g_tr);
+}
+
 // -- memory optimized version for smaller nw 
-chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
+chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr, int nw=1) {
+
+  assert( g_tr.mesh() == g_bwd_tr.mesh() );
+  assert( g_tr.target() == g_bwd_tr.target() );
 
   auto _ = all_t{};
 
@@ -236,7 +259,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr(_, -r);
+      g_mr_t = g_bwd_tr(_, -r);
     }
 
     for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
@@ -250,10 +273,17 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 
   chi0_wr = mpi::all_reduce(chi0_wr);
   return chi0_wr;
+}
+
+chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
+  return chi0_wr_from_grt_PH(g_tr, g_tr, nw);
 }  
 
 // -- optimized version for w=0
-chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
+chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr) {
+
+  assert( g_tr.mesh() == g_bwd_tr.mesh() );
+  assert( g_tr.target() == g_bwd_tr.target() );
 
   auto _ = all_t{};
 
@@ -283,7 +313,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
 #pragma omp critical
     {
       g_pr_t = g_tr[_, r];
-      g_mr_t = g_tr(_, -r);
+      g_mr_t = g_bwd_tr(_, -r);
     }
 
     for (auto t : tmesh) chi0_t[t](a, b, c, d) << g_pr_t(t)(d, a) * g_mr_t(beta - t)(b, c);
@@ -298,6 +328,10 @@ chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
   return chi0_wr;
 }  
 
+chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr) {
+  return chi0_w0r_from_grt_PH(g_tr, g_tr);
+}
+  
 target_value_t<chi_t_t>::regular_type chi_trapz_tau(chi_t_cvt chi_t) {
 
   auto tmesh = chi_t.mesh();
