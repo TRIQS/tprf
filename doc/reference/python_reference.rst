@@ -60,6 +60,12 @@ GW approximation
 .. autofunction:: triqs_tprf.gw.gw_sigma
 .. autofunction:: triqs_tprf.gw.g0w_sigma
 
+Two-particle self-consistent solver (TPSC)
+==========================================
+
+.. autoclass:: triqs_tprf.tpsc_solver.tpsc_solver
+   :members:
+
 Linearized Eliashberg equation 
 ==============================
 

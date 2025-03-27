@@ -1,3 +1,6 @@
+
+add_subdirectory(tpsc)
+
 # Copy h5 files to binary dir
 file(GLOB_RECURSE all_h5_tgz_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.ref.h5 *.tar.gz)
 foreach(file ${all_h5_tgz_files})
@@ -57,14 +60,14 @@ set(all_tests
   eliashberg/symmetrize_delta
   eliashberg/compare_dlr_and_direct
   eliashberg/dlr_eliashberg_solver
-  test_tpsc_chi_sum_rule
-  test_tpsc_G_Sigma_sum_rule
-  test_tpsc_hubbard_square_lattice
-  test_tpsc_hubbard_triangular_lattice
-  test_tpsc_improved_bubble
-  test_tpsc_plus_Sigma
-  test_tpsc_solver_h5
-  test_triqs_TBLattice
+  tpsc/test_tpsc_chi_sum_rule
+  tpsc/test_tpsc_G_Sigma_sum_rule
+  tpsc/test_tpsc_hubbard_square_lattice
+  tpsc/test_tpsc_hubbard_triangular_lattice
+  tpsc/test_tpsc_improved_bubble
+  tpsc/test_tpsc_plus_Sigma
+  tpsc/test_tpsc_solver_h5
+  tpsc/test_triqs_TBLattice
 )
 
 foreach(test ${all_tests})

@@ -16,6 +16,7 @@ Tutorials
    user_guide/dmft_susceptibility_dbse/dmft_susceptibility_dbse
    user_guide/Linearized Eliashberg equation on the attractive Hubbard model.ipynb
    user_guide/Solving the linearized Eliashberg equation in the random phase approximation limit
+   user_guide/TPSC_Hubbard_triangular_lattice.ipynb
 
 Python reference manual
 -----------------------
