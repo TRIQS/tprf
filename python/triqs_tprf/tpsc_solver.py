@@ -595,23 +595,25 @@ class tpsc_solver:
 
         # Fourier transform Gs to real space
         g2_tr = fourier_wk_to_tr(self.g_wk)
-        g2_mtr = fourier_wk_to_mtr(self.g_wk)
         g0_tr = fourier_wk_to_tr(self.g0_wk)
-        g0_mtr = fourier_wk_to_mtr(self.g0_wk)
 
-        # calculate chi2
-        chi2_tr = fourier_wk_to_tr(self.chi0_wk).copy()
-        chi2_tr.data[:,0,0,0,0] = -g2_tr.data[:,0,0]*g0_mtr.data[:,0,0] - g2_mtr.data[:,0,0]*g0_tr.data[:,0,0]
+        from triqs_tprf.lattice import chi0_tr_from_grt_PH
+
+        chi2_tr = \
+            chi0_tr_from_grt_PH(g2_tr, g0_tr) + \
+            chi0_tr_from_grt_PH(g0_tr, g2_tr)
 
         self.chi2_wk = fourier_tr_to_wk(chi2_tr)
 
-        if False:
-            from triqs_tprf.lattice import chi0_tr_from_grt_PH
+        if True:
+            g2_mtr = fourier_wk_to_mtr(self.g_wk)
+            g0_mtr = fourier_wk_to_mtr(self.g0_wk)
 
-            chi0_1 = chi0_tr_from_grt_PH(g2_tr, g0_tr)
-            chi0_2 = chi0_tr_from_grt_PH(g0_tr, g2_tr)
-
-            chi2_tr_ref = chi0_1 + chi0_2
+            # calculate chi2
+            chi2_tr_ref = fourier_wk_to_tr(self.chi0_wk).copy()
+            chi2_tr_ref.data[:, :, 0, 0, 0, 0] = \
+                -  g2_tr.data[:, :, 0, 0] * g0_mtr.data[:, :, 0, 0] \
+                - g2_mtr.data[:, :, 0, 0] *  g0_tr.data[:, :, 0, 0]
 
             np.testing.assert_array_almost_equal(chi2_tr_ref.data, chi2_tr.data)
 

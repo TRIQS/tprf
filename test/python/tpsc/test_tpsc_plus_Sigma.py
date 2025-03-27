@@ -64,3 +64,7 @@ def test_TPSC_plus_Sigma():
     sigma_old = S._calc_sigma_deprecated()
 
     np.testing.assert_array_almost_equal(sigma_new.data, sigma_old.data)
+
+
+if __name__ == '__main__':
+    test_TPSC_plus_Sigma()

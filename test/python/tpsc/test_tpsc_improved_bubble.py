@@ -56,3 +56,7 @@ def test_GG0_bubble():
 
     # get improved bubble
     S._imtime_bubble_chi2_wk()
+
+
+if __name__ == '__main__':
+    test_GG0_bubble()
