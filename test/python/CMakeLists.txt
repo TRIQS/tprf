@@ -60,8 +60,7 @@ set(all_tests
   eliashberg/symmetrize_delta
   eliashberg/compare_dlr_and_direct
   eliashberg/dlr_eliashberg_solver
-  tpsc/test_tpsc_chi_sum_rule
-  tpsc/test_tpsc_G_Sigma_sum_rule
+  tpsc/test_tpsc_sum_rules
   tpsc/test_tpsc_hubbard_square_lattice
   tpsc/test_tpsc_hubbard_triangular_lattice
   tpsc/test_tpsc_improved_bubble

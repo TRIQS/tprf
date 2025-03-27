@@ -23,8 +23,14 @@
 """
 TPSC for the Hubbard model on the square lattice
 
-checking that the TPSC result does satisfy the exact sum rule
+checking that the TPSC result does satisfy the exact sum rules
+
 Sum_k (chi_sp(k) + chi_ch(k)) = 2n - n^2
+
+and
+
+Sum_k (\Sigma^(2)(k) G^(0)(k)) = U * doubleocc
+
 at default parameters (U=2, beta=2.5, n=1, square lattice with nearest-neighbour hopping only)
 
 https://jp1.journaldephysique.org/articles/jp1/abs/1997/11/jp1v7p1309/jp1v7p1309.html
@@ -38,35 +44,33 @@ from triqs.lattice.tight_binding import TBLattice
 from triqs_tprf.tpsc_solver import tpsc_solver
 
 
-def test_chi_sum_rule():
-    
-    # define the parameters
+def test_tpsc_sum_rules():
+
     n = 1.0
     U = 2.0
-    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
     t = 1.0
-    n_k = 128
-    # lattice geometry
-    units = [(1,0,0), (0,1,0)]
-    hoppings = {(+1,+0) : [[-t]],
-                (-1,+0) : [[-t]],
-                (+0,+1) : [[-t]],
-                (+0,-1) : [[-t]]}
-    Lat = TBLattice(units=units, hoppings=hoppings)
-    kmesh = Lat.get_kmesh(n_k=n_k)
-    e_k = Lat.fourier(kmesh)
 
-    # initialize and run solver
-    S = tpsc_solver(n=n, U=U, wmesh=wmesh, e_k=e_k, verbose=False)
-    S.solve(calc_sigma=False, calc_g=False, check_self_consistency=False)
+    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
 
-    # get chi sum rule
-    chi_sum = S._get_density(S.chisp_wk + S.chich_wk)
+    tb = TBLattice(
+        units=[(1,0,0), (0,1,0)],
+        hoppings={(+1,+0) : [[-t]],
+                  (-1,+0) : [[-t]],
+                  (+0,+1) : [[-t]],
+                  (+0,-1) : [[-t]]})
 
-    # test against exact result
-    np.testing.assert_array_almost_equal(chi_sum, 2*S.n - S.n**2)
-
+    e_k = tb.fourier(tb.get_kmesh(n_k=8))
     
+    S = tpsc_solver(n, U, wmesh, e_k)
+    S.solve(calc_sigma=True)
+
+    tr_chi_sum = S._get_density(S.chisp_wk + S.chich_wk)
+    np.testing.assert_array_almost_equal(tr_chi_sum, 2*S.n - S.n**2)
+    
+    trace_SigmaG0 = S._get_density(S.sigma_wk * S.g0_wk)
+    np.testing.assert_array_almost_equal(trace_SigmaG0, S.U*S.docc)
+
+
 if __name__ == '__main__':
-    test_chi_sum_rule()
+    test_tpsc_sum_rules()
     

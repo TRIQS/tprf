@@ -37,31 +37,30 @@ def test_TPSC_plus_Sigma():
     # define the parameters
     n = 1.0/2
     U = 2.0
-    wmesh = MeshDLRImFreq(beta=5, statistic='Fermion', w_max=12.0, eps=1e-14)
     t = 1.0
-    n_k = 128
-    # lattice geometry
-    units = [(1,0,0), (0,1,0)]
-    hoppings = {(+1,+0) : [[-t]],
-                (-1,+0) : [[-t]],
-                (+0,+1) : [[-t]],
-                (+0,-1) : [[-t]]}
-    Lat = TBLattice(units=units, hoppings=hoppings)
-    kmesh = Lat.get_kmesh(n_k=n_k)
-    e_k = Lat.fourier(kmesh)
+    
+    wmesh = MeshDLRImFreq(beta=5, statistic='Fermion', w_max=12.0, eps=1e-14)
+
+    tb = TBLattice(
+        units=[(1,0,0), (0,1,0)],
+        hoppings={(+1,+0) : [[-t]],
+                  (-1,+0) : [[-t]],
+                  (+0,+1) : [[-t]],
+                  (+0,-1) : [[-t]]})
+
+    e_k = tb.fourier(tb.get_kmesh(n_k=8))
 
     # initialize and run solver
-    S = tpsc_solver(n=n, U=U, wmesh=wmesh, e_k=e_k)
-    S.solve(calc_sigma=True, calc_g=True, check_self_consistency=False)
+    S = tpsc_solver(n, U, wmesh, e_k)
+    S.solve(calc_g=True)
 
     # get improved bubble
-    S._imtime_bubble_chi2_wk()
+    chi2_wk = S.get_GG0_bubble_chi2_wk()
    
     # do first level TPSC again
-    S.chi0_wk = S.chi2_wk
-    S._calc_first_level_approx()
-    sigma_new = S._calc_sigma_TPSC_dynamic()
-    sigma_old = S._calc_sigma_deprecated()
+    S.solve(chi0_wk=chi2_wk, calc_sigma=False, calc_g=False)
+    sigma_new = S.get_sigma_tpsc_dynamic()
+    sigma_old = S.get_sigma_tpsc_dynamic_numpy()
 
     np.testing.assert_array_almost_equal(sigma_new.data, sigma_old.data)
 

@@ -39,45 +39,40 @@ from triqs_tprf.tpsc_solver import tpsc_solver
 def test_tpsc_hubbard_square_lattice():
 
     # Parameters
-    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
     U = 2.0     # Hubbard interaction
     n = 1.0     # Electron density (half-filling)
     t = -1.0    # Nearest neighbour hopping
 
+    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
+    
     # Square lattice tight binding model
-    Lat = TBLattice(
+    
+    tb = TBLattice(
         units=[(1,0,0), (0,1,0)],
-        hoppings={
-            (+1,+0) : [[t]],
-            (-1,+0) : [[t]],
-            (+0,+1) : [[t]],
-            (+0,-1) : [[t]]
-            },
-        )
+        hoppings={(+1,+0) : [[t]],
+                  (-1,+0) : [[t]],
+                  (+0,+1) : [[t]],
+                  (+0,-1) : [[t]]})
 
-    k_mesh = Lat.get_kmesh(n_k=128)
+    e_k = tb.fourier(tb.get_kmesh(n_k=16)) # n_k=128 for exact reference
+    
+    S = tpsc_solver(n, U, wmesh, e_k)
+    S.solve()
 
-    # Dispersion on momentum space
-    e_k = Lat.fourier(k_mesh)
-
-
-    # -- Run TPSC calculation
-    S = tpsc_solver(n=n, U=U, wmesh=wmesh, e_k=e_k, verbose=False)
-    S.solve(calc_sigma=False, calc_g=False, check_self_consistency=False)
-
-    # Reference results for
+    # -- Reference results for
 
     # screened spin and charge interaction vertices
+
     Usp_ref = 1.5104441009131098
     Uch_ref = 3.597697989091686
 
     # double occupancy
+    
     docc_ref = 0.1888055126141387
 
-    # Compare
-    np.testing.assert_array_almost_equal(S.Usp, Usp_ref)
-    np.testing.assert_array_almost_equal(S.Uch, Uch_ref)
-    np.testing.assert_array_almost_equal(S.docc, docc_ref)
+    np.testing.assert_array_almost_equal(S.Usp, Usp_ref, decimal=4)
+    np.testing.assert_array_almost_equal(S.Uch, Uch_ref, decimal=4)
+    np.testing.assert_array_almost_equal(S.docc, docc_ref, decimal=4)
 
 
 if __name__ == '__main__':

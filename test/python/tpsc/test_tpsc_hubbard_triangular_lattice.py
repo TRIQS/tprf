@@ -40,14 +40,15 @@ def test_tpsc_hubbard_triangular_lattice():
     
     # Parameters
 
-    wmesh = MeshDLRImFreq(beta=7.5, statistic='Fermion', w_max=12.0, eps=1e-14)
     U = 3.0     # Hubbard interaction
     n = 0.6     # Electron density (half-filling)
     t = -1.0    # Nearest neighbour hopping
     tp = -1.0   # Next nearest neighbour hopping
 
+    wmesh = MeshDLRImFreq(beta=7.5, statistic='Fermion', w_max=12.0, eps=1e-14)
+    
     # Square lattice tight binding model
-    Lat = TBLattice(
+    tb = TBLattice(
         units=[(1,0,0), (0,1,0)],
         hoppings={
             (+1,+0) : [[t]],
@@ -57,21 +58,14 @@ def test_tpsc_hubbard_triangular_lattice():
             (+1,+1) : [[tp]],
             (+1,-1) : [[tp]],
             (-1,+1) : [[tp]],
-            (-1,-1) : [[tp]]
-            },
-        )
+            (-1,-1) : [[tp]]})
 
-    k_mesh = Lat.get_kmesh(n_k=128)
+    e_k = tb.fourier(tb.get_kmesh(n_k=128))
 
-    # Dispersion on momentum space
-    e_k = Lat.fourier(k_mesh)
+    S = tpsc_solver(n, U, wmesh, e_k)
+    S.solve()
 
-
-    # -- Run TPSC calculation
-    S = tpsc_solver(n=n, U=U, wmesh=wmesh, e_k=e_k, verbose=False)
-    S.solve(calc_sigma=False, calc_g=False, check_self_consistency=False)
-
-    # Reference results for
+    # -- Reference results for
 
     # screened spin and charge interaction vertices
     Usp_ref = 2.0914849020422714

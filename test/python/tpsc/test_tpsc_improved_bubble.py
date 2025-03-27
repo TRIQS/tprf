@@ -34,28 +34,25 @@ from triqs_tprf.tpsc_solver import tpsc_solver
 
 def test_GG0_bubble():
 
-    # define the parameters
     n = 1.0
     U = 2.0
-    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
     t = 1.0
-    n_k = 128
-    # lattice geometry
-    units = [(1,0,0), (0,1,0)]
-    hoppings = {(+1,+0) : [[-t]],
-                (-1,+0) : [[-t]],
-                (+0,+1) : [[-t]],
-                (+0,-1) : [[-t]]}
-    Lat = TBLattice(units=units, hoppings=hoppings)
-    kmesh = Lat.get_kmesh(n_k=n_k)
-    e_k = Lat.fourier(kmesh)
+    
+    wmesh = MeshDLRImFreq(beta=2.5, statistic='Fermion', w_max=12.0, eps=1e-14)
 
-    # initialize and run solver
-    S = tpsc_solver(n=n, U=U, wmesh=wmesh, e_k=e_k, verbose=False)
-    S.solve(calc_sigma=True, calc_g=True, check_self_consistency=False)
+    tb = TBLattice(
+        units=[(1,0,0), (0,1,0)],
+        hoppings={(+1,+0) : [[-t]],
+                  (-1,+0) : [[-t]],
+                  (+0,+1) : [[-t]],
+                  (+0,-1) : [[-t]]})
 
-    # get improved bubble
-    S._imtime_bubble_chi2_wk()
+    e_k = tb.fourier(tb.get_kmesh(n_k=8))
+
+    S = tpsc_solver(n, U, wmesh, e_k)
+    S.solve(calc_g=True)
+
+    chi2_wk = S.get_GG0_bubble_chi2_wk()
 
 
 if __name__ == '__main__':
