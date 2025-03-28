@@ -52,6 +52,23 @@ class tpsc_solver:
     """
     Two-particle self-consistency [1] solver for single-band Hubbard models
 
+    TPSC assumes RPA-like charge and spin susceptibilities
+    .. math::
+        \chi_{ch}(k) = \frac{\chi_0(k)}{1 + \frac{U_{ch}}{2}\chi_0(k)}, \quad
+        \chi_{sp}(k) = \frac{\chi_0(k)}{1 - \frac{U_{sp}}{2}\chi_0(k)}
+    with renormalized vertices and determines them such that the sum rules
+    .. math::
+        \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
+        \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
+    are fulfilled. This is done by imposing the Ansatz
+    .. math::
+        U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
+
+    An approximation to the self-energy is obtained through
+    .. math::
+        \Sigma_\sigma(k) = Un_{-\sigma} + \frac{U}{8}\frac{T}{N}\sum_{q}{
+        \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}.
+        
     Determining the single-particle Green's function and self-energy,
     as well as the charge and spin susceptibilities.
 
@@ -116,16 +133,19 @@ class tpsc_solver:
         Parameters
         ----------
         calc_sigma : bool, optional
-                     Enable the TPSC-self-energy calculation (default: `True`)
+                     Enable the TPSC-self-energy calculation (default: `False`)
         calc_g : bool, optional
-                 Enable the lattice Green's function calculation (default: `True`)
+                 Enable the lattice Green's function calculation (default: `False`)
         
         Usp_tol : double, optional
                   Tolerance for spin vertex `Usp` solution (default: 2e-12)
         Uch_tol : double, optional
                   Tolerance for charge vertex `Uch` solution (default: 2e-12)
-        Uch_max : maximum value of the charge vertex `Uch` to consider
+        Uch_max : double, optional
+                  maximum value of the charge vertex `Uch` to consider
                   in numerical search (default: 100.)
+        chi0_wk : Gf, optional
+                  Enables passing of a partially dressed susceptibility (default: None)
         """
 
         if calc_g == True: calc_sigma = True
@@ -184,6 +204,23 @@ class tpsc_solver:
 
 
     def _solve_Usp(self, chi0_wk, Usp_tol, Usp_epsilon=1e-7):
+        """
+        Calculates screened spin vertex Usp given a bare susceptibility.
+
+        Parameters
+        ----------
+        chi0_wk : Gf
+                  bare susceptibility
+        Usp_tol : double
+                  Tolerance for spin vertex `Usp` solution
+        Usp_epsilon : double, optional
+                      Offset from maximum value of the spin vertex `Usp` to consider
+
+        Returns
+        -------
+        Usp : double
+              Screened spin vertex `Usp`
+        """
 
         def Usp_root(Usp):
             chi_wk = self._solve_rpa(chi0_wk, Usp)
@@ -204,6 +241,24 @@ class tpsc_solver:
 
 
     def _solve_Uch(self, chi0_wk, Uch_tol, Uch_max):
+        """
+        Calculates screened charge vertex `Uch` given a bare susceptibility.
+
+        Parameters
+        ----------
+        chi0_wk : Gf
+                  bare susceptibility
+        Uch_tol : double
+                  Tolerance for spin vertex `Uch` solution
+    	Uch_max : double
+                  maximum value of the charge vertex `Uch` to consider
+                  in numerical search
+
+        Returns
+        -------
+        Uch : double
+              Screened spin vertex `Uch`
+        """
 
         def Uch_root(Uch):
             chi_wk = self._solve_rpa(chi0_wk, -Uch)
@@ -230,7 +285,8 @@ class tpsc_solver:
 
         Returns
         -------
-        
+        chi_wk : Gf
+                 RPA-susceptibility with given vertex
         """
 
         if False:
@@ -244,6 +300,21 @@ class tpsc_solver:
 
     
     def _get_density(self, g_wk):
+        """
+        Calculates
+        .. math::
+            \sum_{k}{g(k)}
+
+        Parameters
+        ----------
+        g_wk : Gf
+               Green's function in Matsubara frequency and momentum space
+            
+        Returns
+        -------
+        dens : double
+               Density of passed Green's function
+        """
 
         wmesh = g_wk.mesh[0]
         nk = g_wk.data.shape[1]
@@ -263,6 +334,23 @@ class tpsc_solver:
         return dens   
 
     def _calc_g0_wk(self, target_density):
+        """
+        Calculates the non-interacting Green's function
+        .. math::
+            g_0(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}))^{-1}
+        using the solvers dispersion relation.
+        Chemical potential is chosen such that g0_wk has the correct density.
+
+        Parameters
+        ----------
+        target_density : double
+                         total electron density (spin up and down combined)
+        
+        Returns
+        -------
+        g0_wk : Gf
+                non-interacting Green's function
+        """
 
         # find the mu that leads to the correct density
         mu_min, mu_max = np.min(self.e_k.data.real), np.max(self.e_k.data.real)
@@ -278,6 +366,27 @@ class tpsc_solver:
 
 
     def _calc_g_wk(self, target_density, sigma_wk):
+        """
+        Calculates the interacting Green's function
+        .. math::
+            g_\sigma(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}) - \Sigma_\sigma(k))
+        using the solvers dispersion relation.
+        Chemical potential is chosen such that g0_wk has the correct density.
+
+        Parameters
+        ----------
+        target_density : double
+                         total electron density (spin up and down combined)
+        sigma_wk : Gf
+                   self-energy
+        
+        Returns
+        -------
+        g_wk : Gf
+               non-interacting Green's function
+        mu : double
+             chemical potential
+        """
 
         # find the mu that leads to the correct density
         mu_min, mu_max = np.min(self.e_k.data.real), np.max(self.e_k.data.real)
@@ -295,7 +404,17 @@ class tpsc_solver:
     
     def get_sigma_tpsc_dynamic_numpy(self):
         """
-        Calculates the second-level approximation of the self-energy.
+        Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
+        .. math::
+            \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
+            \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
+
+        Uses numpy-arrays instead of built-in TRIQS functionality.
+
+        Returns
+        -------
+        sigma_wk : Gf
+                   dynamic TPSC-self energy
         """
 
         # define effective potential
@@ -317,9 +436,18 @@ class tpsc_solver:
 
         return sigma_wk
         
+
     def get_sigma_tpsc_dynamic(self):
         """
         Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
+        .. math::
+            \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
+            \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
+
+        Returns
+        -------
+        sigma_wk : Gf
+                   dynamic TPSC-self energy
         """
 
         # define effective potential
@@ -347,7 +475,15 @@ class tpsc_solver:
 
     def get_sigma(self):
         """
-        Calculates the self-energy including the Hartree-Fock term.
+        Calculates the full second-level TPSC approximation to the self-energy.
+        .. math::
+            \Sigma_\sigma^{TPSC}(k) = Un_{-\sigma} \frac{U}{8}\frac{T}{N}\sum_{q}{
+            \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
+        
+        Returns
+        -------
+        sigma_wk : Gf
+                   TPSC-self energy
         """
 
         sigma_dyn_wk = self.get_sigma_tpsc_dynamic()
@@ -358,19 +494,18 @@ class tpsc_solver:
 
     def get_GG0_bubble_chi2_wk(self):
         """
-        Calculates chi2(r,tau) = - G2(r,tau)*G0(-r,-tau) - G2(-r,-tau)*G0(r,tau) in wk-space.
+        Calculates the partially dressed susceptibility
+        .. math::
+            chi_2(k) = -\frac{T}{N}\sum_{q}{\left[
+            G_\sigma^{TPSC}(q)G_{0\sigma}(q+k) + G_\sigma^{TPSC}(q+k)G_{0\sigma}(q)\right]}
+        used in the TPSC+ calculation [2]
 
-        Requires
-        --------
-        self.g0_dlr_wk and self.g2_dlr_wk must have been calculated
-
-        Parameters
-        ----------
-        self                :   self
-
+        [2] C. Gauvin-Ndiaye, C. Lahaie, Y.M. Vilk, A.-M.S. Tremblay Phys.Rev.B 108, 075144, 2023
+        https://doi.org/10.1103/PhysRevB.108.075144 and https://doi.org/10.48550/arXiv.2305.19219
+        
         Returns
         -------
-        self.chi2_dlr_wk    :   second-level approximation of bubble in TPSC
+        chi2_wk : Gf
         """
 
         # Fourier transform Gs to real space
@@ -478,17 +613,15 @@ def fourier_wk_to_tr(g_wk):
     """
     Fourier-transforms a Green's function from wk to tr representation.
 
-    Requires
-    --------
-    g_wk must be defined on a MeshProduct(Mesh(DLR)ImFreq, MeshBrZone)
-
     Parameters
     ----------
-    triqs.gf g_wk       : TRIQS Green's function
+    g_wk : Gf
+           Green's function in wk representation
 
     Returns
     -------
-    triqs.gf g_tr       : TRIQS Green's function on a MeshProduct(Mesh(DLR)ImTime, MeshCycLat)
+    g_tr : Gf
+           Fourier-transform of passed Green's function
     """
 
     # extract mesh
@@ -517,19 +650,17 @@ def fourier_wk_to_tr(g_wk):
 
 def fourier_wk_to_mtr(g_wk):
     """
-    Fourier-transforms a Green's function from wk to (-t,-r) representation.
-
-    Requires
-    --------
-    g_wk must be defined on a MeshProduct(Mesh(DLR)ImFreq, MeshBrZone)
+    Fourier-transforms a Green's function from wk to mtr representation.
 
     Parameters
     ----------
-    triqs.gf g_wk       : TRIQS Green's function
+    g_wk : Gf
+           Green's function in wk representation
 
     Returns
     -------
-    triqs.gf g_mtr      : TRIQS Green's function on a MeshProduct(Mesh(DLR)ImTime, MeshCycLat)
+    g_mtr : Gf
+            Fourier-transform of passed Green's function
     """
 
     # extract mesh
@@ -560,19 +691,17 @@ def fourier_wk_to_mtr(g_wk):
 
 def fourier_tr_to_wk(g_tr):
     """
-    Fourier-transforms a Green's function from wk to tr representation.
-
-    Requires
-    --------
-    g_tr must be defined on a MeshProduct(Mesh(DLR)ImTime, MeshCycLat)
+    Fourier-transforms a Green's function from tr to wk representation.
 
     Parameters
     ----------
-    triqs.gf g_tr       : TRIQS Green's function
+    g_tr : Gf
+           Green's function in wk representation
 
     Returns
     -------
-    triqs.gf g_wk       : TRIQS Green's function on a MeshProduct(Mesh(DLR)ImFreq, MeshBrZone)
+    g_wk : Gf
+           Fourier-transform of passed Green's function
     """
 
     # extract mesh
