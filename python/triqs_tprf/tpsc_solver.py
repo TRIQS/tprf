@@ -48,8 +48,7 @@ from triqs_tprf.lattice import fourier_wr_to_wk
 
 
 class tpsc_solver:
-    
-    """
+    r"""
     Two-particle self-consistency [1] solver for single-band Hubbard models
 
     TPSC assumes RPA-like charge and spin susceptibilities
