@@ -124,7 +124,7 @@ class tpsc_solver:
 
 
     def solve(self, calc_sigma=False, calc_g=False,
-              Usp_tol=2e-12, Uch_tol=2e-12, Uch_max=100., chi0_wk=None):
+              Usp_tol=2e-12, Uch_tol=2e-12, Uch_max=100., Usp_epsilon=1e-7, chi0_wk=None):
         """
         Run the TPSC-calculation on the given model determining the screened
         spin and charge vertices `Usp` and `Uch`, respectively.
@@ -143,6 +143,9 @@ class tpsc_solver:
         Uch_max : double, optional
                   maximum value of the charge vertex `Uch` to consider
                   in numerical search (default: 100.)
+        Usp_epsilon : double, optional
+                Offset from maximum value of the spin vertex `Usp` to consider
+                Increases numerical stability of root search (default: 1e-7)
         chi0_wk : Gf, optional
                   Enables passing of a partially dressed susceptibility (default: None)
         """
@@ -161,7 +164,7 @@ class tpsc_solver:
         self.vprint("\nCalculating first level of approximation...")
 
         self.vprint("\n   Calculating Usp...")
-        self.Usp = self._solve_Usp(self.chi0_wk, Usp_tol)
+        self.Usp = self._solve_Usp(self.chi0_wk, Usp_tol, Usp_epsilon)
         
         self.vprint("\n   Calculating Uch...")
         self.Uch = self._solve_Uch(self.chi0_wk, Uch_tol, Uch_max)
@@ -170,7 +173,7 @@ class tpsc_solver:
         self.chisp_wk = self._solve_rpa(self.chi0_wk, self.Usp)
         self.chich_wk = self._solve_rpa(self.chi0_wk, -self.Uch)
 
-        chi_sum_rule = self._get_density(self.chisp_wk + self.chich_wk) - (2*self.n - self.n**2)
+        chi_sum_rule = np.abs(self._get_density(self.chisp_wk + self.chich_wk) - (2*self.n - self.n**2))
         assert( chi_sum_rule < np.min([Usp_tol, Uch_tol]) )
         
         if self.use_tpsc_ansatz == True:
@@ -202,7 +205,7 @@ class tpsc_solver:
             self.vprint(f'Relative difference = {rel_diff:2.2E}')                    
 
 
-    def _solve_Usp(self, chi0_wk, Usp_tol, Usp_epsilon=1e-7):
+    def _solve_Usp(self, chi0_wk, Usp_tol, Usp_epsilon):
         """
         Calculates screened spin vertex Usp given a bare susceptibility.
 
@@ -212,8 +215,9 @@ class tpsc_solver:
                   bare susceptibility
         Usp_tol : double
                   Tolerance for spin vertex `Usp` solution
-        Usp_epsilon : double, optional
+        Usp_epsilon : double
                       Offset from maximum value of the spin vertex `Usp` to consider
+                      Increases numerical stability of root search
 
         Returns
         -------
