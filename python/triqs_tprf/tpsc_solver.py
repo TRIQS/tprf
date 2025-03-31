@@ -170,8 +170,8 @@ class tpsc_solver:
         self.Uch = self._solve_Uch(self.chi0_wk, Uch_tol, Uch_max)
 
         self.vprint("\n   Calculating chisp_wk and chich_wk...")
-        self.chisp_wk = self._solve_rpa(self.chi0_wk, self.Usp)
-        self.chich_wk = self._solve_rpa(self.chi0_wk, -self.Uch)
+        self.chisp_wk = self._solve_rpa(self.chi0_wk, +0.5 * self.Usp)
+        self.chich_wk = self._solve_rpa(self.chi0_wk, -0.5 * self.Uch)
 
         chi_sum_rule = np.abs(self._get_density(self.chisp_wk + self.chich_wk) - (2*self.n - self.n**2))
         assert( chi_sum_rule < np.min([Usp_tol, Uch_tol]) )
@@ -226,7 +226,7 @@ class tpsc_solver:
         """
 
         def Usp_root(Usp):
-            chi_wk = self._solve_rpa(chi0_wk, Usp)
+            chi_wk = self._solve_rpa(chi0_wk, 0.5 * Usp)
             tr_chi = self._get_density(chi_wk)
 
             if self.use_tpsc_ansatz == True:
@@ -264,7 +264,7 @@ class tpsc_solver:
         """
 
         def Uch_root(Uch):
-            chi_wk = self._solve_rpa(chi0_wk, -Uch)
+            chi_wk = self._solve_rpa(chi0_wk, -0.5 * Uch)
             tr_chi = self._get_density(chi_wk)
             
             if self.use_tpsc_ansatz == True:
@@ -294,11 +294,11 @@ class tpsc_solver:
 
         if False:
             # TPRF RPA routine (its tensor/matrix products gives a large overhead for the scalar case)
-            V = 0.5 * U_vert * np.ones((1, 1, 1, 1), dtype=complex)
+            V = U_vert * np.ones((1, 1, 1, 1), dtype=complex)
             chi_wk = solve_rpa_PH(chi0_wk, V)
 
         chi_wk = chi0_wk.copy()
-        chi_wk.data[:] = chi0_wk.data/(1 - U_vert/2*chi0_wk.data) # FIXME: 1/2 fator to U_vert
+        chi_wk.data[:] = chi0_wk.data/(1 - U_vert * chi0_wk.data) # FIXME: 1/2 fator to U_vert
         return chi_wk
 
     
