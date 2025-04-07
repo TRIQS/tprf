@@ -76,7 +76,7 @@ class tpsc_solver:
     """
 
     def __init__(self, n, U, wmesh, e_k, docc='tpsc_ansatz', verbose=True):
-        """
+        r"""
         Initialize the TPSC solver.
 
         Parameters
@@ -112,7 +112,7 @@ class tpsc_solver:
 
         self.vprint(tpsc_banner()+'\n')
         if self.use_tpsc_ansatz:
-            self.vprint("  Using the TPSC-Ansatz for the double occupancy.")
+            self.vprint("Using the TPSC-Ansatz for the double occupancy.")
         else:
             self.vprint(f'docc = {self.docc} (not using the TPSC-ansatz)')
         self.vprint()
@@ -125,7 +125,7 @@ class tpsc_solver:
 
     def solve(self, calc_sigma=False, calc_g=False,
               Usp_tol=2e-12, Uch_tol=2e-12, Uch_max=100., Usp_epsilon=1e-7, chi0_wk=None):
-        """
+        r"""
         Run the TPSC-calculation on the given model determining the screened
         spin and charge vertices `Usp` and `Uch`, respectively.
 
@@ -155,21 +155,20 @@ class tpsc_solver:
         if chi0_wk is not None:
             self.chi0_wk = chi0_wk
         else:
-            self.vprint("\nCalculating non-interacting Green's function (g0_wk) and susceptibility (chi0_wk)")
-
+            self.vprint("\n--> lattice_dyson_g0_wk")
             self.g0_wk = self._calc_g0_wk(self.n)
             nw = -1 if isinstance(self.wmesh, MeshDLRImFreq) else self.wmesh.n_iw # tprf api FIXME!
+
+            self.vprint("\n--> imtime_bubble_chi0_wk")
             self.chi0_wk = 2*imtime_bubble_chi0_wk(self.g0_wk, nw=nw, verbose=False)
 
-        self.vprint("\nCalculating first level of approximation...")
-
-        self.vprint("\n   Calculating Usp...")
+        self.vprint("\n--> get Usp")
         self.Usp = self._solve_Usp(self.chi0_wk, Usp_tol, Usp_epsilon)
         
-        self.vprint("\n   Calculating Uch...")
+        self.vprint("\n--> get Uch")
         self.Uch = self._solve_Uch(self.chi0_wk, Uch_tol, Uch_max)
 
-        self.vprint("\n   Calculating chisp_wk and chich_wk...")
+        self.vprint("\n--> get chisp_wk and chich_wk")
         self.chisp_wk = self._solve_rpa(self.chi0_wk, +0.5 * self.Usp)
         self.chich_wk = self._solve_rpa(self.chi0_wk, -0.5 * self.Uch)
 
@@ -177,36 +176,35 @@ class tpsc_solver:
         assert( chi_sum_rule < np.min([Usp_tol, Uch_tol]) )
         
         if self.use_tpsc_ansatz == True:
-            self.vprint("\n   Calculating double occupancy...")
+            self.vprint("\n--> get double occupancy")
             self.docc = self.Usp/self.U*self.n*self.n/4
         
         # print out results
         self.vprint("\nSummary first level approximation:")
         self.vprint(f"    Usp = {self.Usp}, Uch = {self.Uch}")
-        self.vprint(f"    Double Occupation <n_up*n_down> = {self.docc}")
+        self.vprint(f"    <n_up*n_down> = {self.docc}")
                 
         if calc_sigma:
-            self.vprint("\nCalculating self-energy...")
+            self.vprint("\n--> get sigma_wk")
             self.sigma_wk = self.get_sigma()
         
         if calc_g:
-            self.vprint("\nCalculating Green\'s function...")
+            self.vprint("\n--> get g_wk")
             self.g_wk, self.mu = self._calc_g_wk(self.n, self.sigma_wk)
 
-            self.vprint("-"*72)
-            self.vprint('Doing sum rule check of second-level approximation...')
+            self.vprint('\nCheck sum rules of second-level approximation:')
 
             tr_SG0 = self._get_density(self.sigma_wk * self.g0_wk)
             tr_SG  = self._get_density(self.sigma_wk * self.g_wk)
             rel_diff = np.abs((tr_SG0 - tr_SG) / tr_SG0)
 
-            self.vprint(f'Tr[Sigma * G0] = {tr_SG0 - self.U * self.docc}')
-            self.vprint(f'Tr[Sigma * G ] = {tr_SG  - self.U * self.docc}')
-            self.vprint(f'Relative difference = {rel_diff:2.2E}')                    
+            self.vprint(f'    Tr[Sigma * G0] = {tr_SG0 - self.U * self.docc}')
+            self.vprint(f'    Tr[Sigma * G ] = {tr_SG  - self.U * self.docc}')
+            self.vprint(f'    Relative difference = {rel_diff:2.2E}')                    
 
 
     def _solve_Usp(self, chi0_wk, Usp_tol, Usp_epsilon):
-        """
+        r"""
         Calculates screened spin vertex Usp given a bare susceptibility.
 
         Parameters
@@ -244,7 +242,7 @@ class tpsc_solver:
 
 
     def _solve_Uch(self, chi0_wk, Uch_tol, Uch_max):
-        """
+        r"""
         Calculates screened charge vertex `Uch` given a bare susceptibility.
 
         Parameters
@@ -279,7 +277,7 @@ class tpsc_solver:
 
 
     def _solve_rpa(self, chi0_wk, U_vert):
-        """
+        r"""
         Calculates an rpa-susceptibility with a scalar vertex from the non-interacting susceptibility.
 
         Parameters
@@ -303,7 +301,7 @@ class tpsc_solver:
 
     
     def _get_density(self, g_wk):
-        """
+        r"""
         Calculates
         .. math::
             \sum_{k}{g(k)}
@@ -337,7 +335,7 @@ class tpsc_solver:
         return dens   
 
     def _calc_g0_wk(self, target_density):
-        """
+        r"""
         Calculates the non-interacting Green's function
         .. math::
             g_0(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}))^{-1}
@@ -369,7 +367,7 @@ class tpsc_solver:
 
 
     def _calc_g_wk(self, target_density, sigma_wk):
-        """
+        r"""
         Calculates the interacting Green's function
         .. math::
             g_\sigma(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}) - \Sigma_\sigma(k))
@@ -406,7 +404,7 @@ class tpsc_solver:
     
     
     def get_sigma_tpsc_dynamic_numpy(self):
-        """
+        r"""
         Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
         .. math::
             \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
@@ -441,7 +439,7 @@ class tpsc_solver:
         
 
     def get_sigma_tpsc_dynamic(self):
-        """
+        r"""
         Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
         .. math::
             \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
@@ -477,7 +475,7 @@ class tpsc_solver:
 
 
     def get_sigma(self):
-        """
+        r"""
         Calculates the full second-level TPSC approximation to the self-energy.
         .. math::
             \Sigma_\sigma^{TPSC}(k) = Un_{-\sigma} \frac{U}{8}\frac{T}{N}\sum_{q}{
@@ -496,7 +494,7 @@ class tpsc_solver:
 
 
     def get_GG0_bubble_chi2_wk(self):
-        """
+        r"""
         Calculates the partially dressed susceptibility
         .. math::
             chi_2(k) = -\frac{T}{N}\sum_{q}{\left[
