@@ -121,6 +121,7 @@ class tpsc_solver:
         self.vprint(f'beta = {self.beta}')
         self.vprint(f'n = {self.n}')
         self.vprint(f'U = {self.U}')
+        self.vprint()
 
 
     def solve(self, calc_sigma=False, calc_g=False,
@@ -155,20 +156,20 @@ class tpsc_solver:
         if chi0_wk is not None:
             self.chi0_wk = chi0_wk
         else:
-            self.vprint("\n--> lattice_dyson_g0_wk")
+            self.vprint("--> lattice_dyson_g0_wk")
             self.g0_wk = self._calc_g0_wk(self.n)
             nw = -1 if isinstance(self.wmesh, MeshDLRImFreq) else self.wmesh.n_iw # tprf api FIXME!
 
-            self.vprint("\n--> imtime_bubble_chi0_wk")
+            self.vprint("--> imtime_bubble_chi0_wk")
             self.chi0_wk = 2*imtime_bubble_chi0_wk(self.g0_wk, nw=nw, verbose=False)
 
-        self.vprint("\n--> get Usp")
+        self.vprint("--> get Usp")
         self.Usp = self._solve_Usp(self.chi0_wk, Usp_tol, Usp_epsilon)
         
-        self.vprint("\n--> get Uch")
+        self.vprint("--> get Uch")
         self.Uch = self._solve_Uch(self.chi0_wk, Uch_tol, Uch_max)
 
-        self.vprint("\n--> get chisp_wk and chich_wk")
+        self.vprint("--> get chisp_wk and chich_wk")
         self.chisp_wk = self._solve_rpa(self.chi0_wk, +0.5 * self.Usp)
         self.chich_wk = self._solve_rpa(self.chi0_wk, -0.5 * self.Uch)
 
@@ -176,23 +177,26 @@ class tpsc_solver:
         assert( chi_sum_rule < np.min([Usp_tol, Uch_tol]) )
         
         if self.use_tpsc_ansatz == True:
-            self.vprint("\n--> get double occupancy")
+            self.vprint("--> get double occupancy")
             self.docc = self.Usp/self.U*self.n*self.n/4
         
         # print out results
-        self.vprint("\nSummary first level approximation:")
+        self.vprint()
+        self.vprint("Summary first level approximation:")
         self.vprint(f"    Usp = {self.Usp}, Uch = {self.Uch}")
         self.vprint(f"    <n_up*n_down> = {self.docc}")
-                
+        self.vprint()
+
         if calc_sigma:
-            self.vprint("\n--> get sigma_wk")
+            self.vprint("--> get sigma_wk")
             self.sigma_wk = self.get_sigma()
         
         if calc_g:
-            self.vprint("\n--> get g_wk")
+            self.vprint("--> get g_wk")
             self.g_wk, self.mu = self._calc_g_wk(self.n, self.sigma_wk)
 
-            self.vprint('\nCheck sum rules of second-level approximation:')
+            self.vprint()
+            self.vprint('Check sum rules of second-level approximation:')
 
             tr_SG0 = self._get_density(self.sigma_wk * self.g0_wk)
             tr_SG  = self._get_density(self.sigma_wk * self.g_wk)
