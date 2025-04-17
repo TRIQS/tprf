@@ -73,66 +73,72 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
   return eliashberg_g_delta_g_product(g_wk, g_wk, delta_wk);
 }
 
+
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt delta_wk) {
-
-  // Performing the product of (G*G) * delta in DLR coefficient space
-  // removes spurious eigenvectors in the linearized Eliashberg equation.
-  // (H. U.R. Strand July 2023)
-
-  auto wmesh = std::get<0>(delta_wk.mesh());
-  auto kmesh = std::get<1>(delta_wk.mesh());
-
-  auto wmesh_gf = std::get<0>(g_wk.mesh());
-
-  if (wmesh.size() > wmesh_gf.size())
-      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
-          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
-          wmesh.size() << ").";
-
-  auto F_wk = make_gf(delta_wk);
-  F_wk *= 0.;
-
-  auto tmesh = dlr_imtime(wmesh);
-  tmesh.dlr_it().convolve_init(); // NB! Initialization not thread-safe, trigger it manually here.
-  
-  auto mesh_mpi = mpi_view(kmesh);
-#pragma omp parallel for
-  for (unsigned int idx = 0; idx < mesh_mpi.size(); idx++){
-    auto & k = mesh_mpi[idx];
-
-    for (auto [d, c] : g_wk.target_indices()) {
-      for (auto [e, f] : delta_wk.target_indices()) {
-
-	auto gg_w = gf(wmesh);
-	auto d_w = gf(wmesh);
-	
-	for( auto w : wmesh ) {
-	  gg_w[w] = g_wk[w, k](c, f) * nda::conj(gbar_wk[w, -k](e, d));
-	  d_w[w] = delta_wk[w, k](e, f);
-	}
-
-	auto gg_c = make_gf_dlr(gg_w);
-	auto d_c = make_gf_dlr(d_w);
-
-	auto f_t = gf(tmesh);
-	f_t.data() = tmesh.dlr_it().convolve(
-	  tmesh.beta(), static_cast<cppdlr::statistic_t>(tmesh.statistic()),
-	  gg_c.data(), d_c.data());
-
-	auto f_c = make_gf_dlr(f_t);
-	auto f_w = make_gf_dlr_imfreq(f_c);
-	  
-	for( auto w : wmesh ) {
-	  F_wk[w, k](d, c) += f_w[w];
-	}
-      }
-    }
-  }
-
-  F_wk = mpi::all_reduce(F_wk);
-
-  return F_wk;  
+  return eliashberg_g_delta_g_product_template<g_Dwk_t, g_Dwk_vt>(g_wk, gbar_wk, delta_wk);
 }
+
+//g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt delta_wk) {
+//
+//  // Performing the product of (G*G) * delta in DLR coefficient space
+//  // removes spurious eigenvectors in the linearized Eliashberg equation.
+//  // (H. U.R. Strand July 2023)
+//
+//  auto wmesh = std::get<0>(delta_wk.mesh());
+//  auto kmesh = std::get<1>(delta_wk.mesh());
+//
+//  auto wmesh_gf = std::get<0>(g_wk.mesh());
+//
+//  if (wmesh.size() > wmesh_gf.size())
+//      TRIQS_RUNTIME_ERROR << "The size of the Matsubara frequency mesh of the Green's function"
+//          " (" << wmesh_gf.size() << ") must be atleast the size of the mesh of Delta (" <<
+//          wmesh.size() << ").";
+//
+//  auto F_wk = make_gf(delta_wk);
+//  F_wk *= 0.;
+//
+//  auto tmesh = dlr_imtime(wmesh);
+//  tmesh.dlr_it().convolve_init(); // NB! Initialization not thread-safe, trigger it manually here.
+//  
+//  auto mesh_mpi = mpi_view(kmesh);
+//#pragma omp parallel for
+//  for (unsigned int idx = 0; idx < mesh_mpi.size(); idx++){
+//    auto & k = mesh_mpi[idx];
+//
+//    for (auto [d, c] : g_wk.target_indices()) {
+//      for (auto [e, f] : delta_wk.target_indices()) {
+//
+//	auto gg_w = gf(wmesh);
+//	auto d_w = gf(wmesh);
+//    auto d_offset = delta_wk[0, k];
+//
+//	for( auto w : wmesh ) {
+//	  gg_w[w] = g_wk[w, k](c, f) * nda::conj(gbar_wk[w, -k](e, d));
+//	  d_w[w] = delta_wk[w, k](e, f) - d_offset(e, f);
+//	}
+//
+//	auto gg_c = make_gf_dlr(gg_w);
+//	auto d_c = make_gf_dlr(d_w);
+//
+//	auto f_t = gf(tmesh);
+//	f_t.data() = tmesh.dlr_it().convolve(
+//	  tmesh.beta(), static_cast<cppdlr::statistic_t>(tmesh.statistic()),
+//	  gg_c.data(), d_c.data());
+//
+//	auto f_c = make_gf_dlr(f_t);
+//	auto f_w = make_gf_dlr_imfreq(f_c);
+//	  
+//	for( auto w : wmesh ) {
+//	  F_wk[w, k](d, c) += f_w[w] + gg_w[w] * d_offset(e, f);
+//	}
+//      }
+//    }
+//  }
+//
+//  F_wk = mpi::all_reduce(F_wk);
+//
+//  return F_wk;  
+//}
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
   return eliashberg_g_delta_g_product(g_wk, g_wk, delta_wk);
 }
@@ -140,12 +146,11 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 template<typename d_out_t, typename g_t>
 d_out_t eliashberg_denominator_template(g_t g_wk, g_t gbar_wk, g_t delta_wk) {
   int nb = g_wk.target().shape()[0];
-  //auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
+  auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
   auto denom_wk = make_gf(delta_wk);
 
   for (auto [n, k] : denom_wk.mesh()) {
-    //denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_delta_g_wk[n,k] * nda::conj(delta_wk[n,k]);
-    denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_wk[n,k] * delta_wk[n,k] * nda::conj(gbar_wk[n,-k]) * nda::conj(delta_wk[n,k]);
+    denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_delta_g_wk[n,k] * nda::conj(delta_wk[n,k]);
   }
   return denom_wk;
 }
@@ -162,12 +167,11 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t gbar_wk, g_t delta_wk) {
           wmesh.size() << ").";
 
   auto denom_wk = eliashberg_denominator_template<F_out_t, g_t>(g_wk, gbar_wk, delta_wk);
-  //auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
+  auto g_delta_g_wk = eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
   auto F_wk = make_gf(delta_wk);
 
   for (auto [n, k] : F_wk.mesh()) {
-    //F_wk[n,k] = inverse(denom_wk[n,k]) * g_delta_g_wk[n,k];
-    F_wk[n,k] = inverse(denom_wk[n,k]) * g_wk[n,k] * delta_wk[n,k] * nda::conj(gbar_wk[n,-k]);
+    F_wk[n,k] = inverse(denom_wk[n,k]) * g_delta_g_wk[n,k];
   }
   
   return F_wk;
