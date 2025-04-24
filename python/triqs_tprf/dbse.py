@@ -22,6 +22,8 @@
 #
 ################################################################################
 
+import numpy as np
+
 from triqs.gf import Gf, MeshProduct, Idx
 
 from triqs_tprf.lattice import fourier_wk_to_wr
@@ -65,6 +67,14 @@ def impurity_reducible_vertex_F(g_w, g2_wnn):
             :math:`F_{abcd}(\omega, \nu, \nu')`
     """
 
+    assert( len(g_w.target_shape) == 2 )
+    assert( len(g2_wnn.target_shape) == 4 )
+
+    norb = g_w.target_shape[0]
+
+    assert( (np.array(g_w.target_shape) == norb).all() )
+    assert( (np.array(g2_wnn.target_shape) == norb).all() )
+
     chi_wnn = chi_from_gg2_PH(g_w, g2_wnn)
     chi0_wnn = chi0_from_gg2_PH(g_w, g2_wnn)
 
@@ -104,6 +114,8 @@ def solve_lattice_dbse(g_wk, F_wnn, L_wn, chi_imp_w):
              :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
     """
 
+    # -- Check mesh sizes
+
     bmesh = F_wnn.mesh[0]
     fmesh = F_wnn.mesh[1]
 
@@ -114,6 +126,21 @@ def solve_lattice_dbse(g_wk, F_wnn, L_wn, chi_imp_w):
     
     nw = (len(bmesh) + 1) // 2
     nn = len(fmesh) // 2
+
+    # -- Check target_shape(s)
+
+    assert( len(g_wk.target_shape) == 2 )
+    assert( len(F_wnn.target_shape) == 4 )
+    assert( len(L_wn.target_shape) == 4 )
+    assert( len(chi_imp_w.target_shape) == 4 )
+
+    norb = g_wk.target_shape[0]
+
+    assert( (np.array(g_wk.target_shape) == norb).all() )
+    assert( (np.array(F_wnn.target_shape) == norb).all() )
+    assert( (np.array(L_wn.target_shape) == norb).all() )
+    assert( (np.array(chi_imp_w.target_shape) == norb).all() )
+
     
     print('--> g_nonlocal_wr')
     # -- Remove local gf component (at r = 0)
@@ -178,7 +205,9 @@ def solve_lattice_dbse_lomem(g_wk, F_wnn, L_wn, chi_imp_w):
              Generalized lattice susceptibility 
              :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
     """
-    
+
+    # -- Check mesh sizes
+
     bmesh = F_wnn.mesh[0]
     fmesh = F_wnn.mesh[1]
 
@@ -189,6 +218,21 @@ def solve_lattice_dbse_lomem(g_wk, F_wnn, L_wn, chi_imp_w):
     
     nw = (len(bmesh) + 1) // 2
     nn = len(fmesh) // 2
+
+    # -- Check target_shape(s)
+
+    assert( len(g_wk.target_shape) == 2 )
+    assert( len(F_wnn.target_shape) == 4 )
+    assert( len(L_wn.target_shape) == 4 )
+    assert( len(chi_imp_w.target_shape) == 4 )
+
+    norb = g_wk.target_shape[0]
+
+    assert( (np.array(g_wk.target_shape) == norb).all() )
+    assert( (np.array(F_wnn.target_shape) == norb).all() )
+    assert( (np.array(L_wn.target_shape) == norb).all() )
+    assert( (np.array(chi_imp_w.target_shape) == norb).all() )
+
     
     L_resize_wn = Gf(mesh=MeshProduct(bmesh, fmesh), indices=L_wn.indices)
     for w, n in L_resize_wn.mesh:
