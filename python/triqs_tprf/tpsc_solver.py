@@ -174,7 +174,8 @@ class tpsc_solver:
         self.chich_wk = self._solve_rpa(self.chi0_wk, -0.5 * self.Uch)
 
         chi_sum_rule = np.abs(self._get_density(self.chisp_wk + self.chich_wk) - (2*self.n - self.n**2))
-        assert( chi_sum_rule < np.min([Usp_tol, Uch_tol]) )
+        assert( chi_sum_rule < 1e-6)
+        #np.min([Usp_tol, Uch_tol]) )
         
         if self.use_tpsc_ansatz == True:
             self.vprint("--> get double occupancy")
@@ -359,6 +360,7 @@ class tpsc_solver:
 
         # find the mu that leads to the correct density
         mu_min, mu_max = np.min(self.e_k.data.real), np.max(self.e_k.data.real)
+        mu_min, mu_max = 10*mu_min, 10*mu_max
 
         def target_function(mu):
             g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=self.e_k, mesh=self.wmesh)
