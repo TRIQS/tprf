@@ -48,36 +48,10 @@ from triqs_tprf.lattice import fourier_wr_to_wk
 
 
 class tpsc_solver:
-    r"""
-    Two-particle self-consistency [1] solver for single-band Hubbard models
-
-    TPSC assumes RPA-like charge and spin susceptibilities
-    .. math::
-        \chi_{ch}(k) = \frac{\chi_0(k)}{1 + \frac{U_{ch}}{2}\chi_0(k)}, \quad
-        \chi_{sp}(k) = \frac{\chi_0(k)}{1 - \frac{U_{sp}}{2}\chi_0(k)}
-    with renormalized vertices and determines them such that the sum rules
-    .. math::
-        \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
-        \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
-    are fulfilled. This is done by imposing the Ansatz
-    .. math::
-        U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
-
-    An approximation to the self-energy is obtained through
-    .. math::
-        \Sigma_\sigma(k) = Un_{-\sigma} + \frac{U}{8}\frac{T}{N}\sum_{q}{
-        \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}.
-        
-    Determining the single-particle Green's function and self-energy,
-    as well as the charge and spin susceptibilities.
-
-    [1] Y.M. Vilk, A.-M.S. Tremblay, J. Phys. I France, v7, no 11, pp 1309-1368 (1997)
-    https://doi.org/10.1051/jp1:1997135 and https://arxiv.org/abs/cond-mat/9702188
-    """
 
     def __init__(self, n, U, wmesh, e_k, docc='tpsc_ansatz', verbose=True):
-        r"""
-        Initialize the TPSC solver.
+
+        r""" Two-particle self-consistency (TPSC) [1]_ solver for single-band Hubbard models.
 
         Parameters
         ----------
@@ -93,6 +67,41 @@ class tpsc_solver:
                double occupancy (default: `tpsc_ansatz` using the TPSC-Ansatz [1])
         verbose : bool, optional
                   Verbose printouts (default: `True`)
+
+        Notes
+        -----
+        TPSC assumes RPA-like charge and spin susceptibilities
+
+        .. math::
+        
+            \chi_{ch}(k) = \frac{\chi_0(k)}{1 + \frac{U_{ch}}{2}\chi_0(k)}, \quad
+            \chi_{sp}(k) = \frac{\chi_0(k)}{1 - \frac{U_{sp}}{2}\chi_0(k)}
+
+        with renormalized vertices and determines them such that the sum rules
+
+        .. math::
+
+            \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
+            \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
+
+        are fulfilled. This is done by imposing the Ansatz
+
+        .. math::
+
+            U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
+
+        An approximation to the self-energy is obtained through
+
+        .. math::
+
+            \Sigma_\sigma(k) = Un_{-\sigma} + \frac{U}{8}\frac{T}{N}\sum_{q}{
+            \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}.
+
+        Determining the single-particle Green's function and self-energy,
+        as well as the charge and spin susceptibilities.
+
+        .. [1] Y.M. Vilk, A.-M.S. Tremblay, J. Phys. I France, v7, no 11, pp 1309-1368 (1997)
+            https://doi.org/10.1051/jp1:1997135 and https://arxiv.org/abs/cond-mat/9702188
         """
         
         self.n = n
@@ -128,7 +137,7 @@ class tpsc_solver:
               Usp_tol=2e-12, Uch_tol=2e-12, Uch_max=100., Usp_epsilon=1e-7, chi0_wk=None):
         r"""
         Run the TPSC-calculation on the given model determining the screened
-        spin and charge vertices `Usp` and `Uch`, respectively.
+        spin and charge vertices :math:`U_{sp}` and :math:`U_{ch}`, respectively.
 
         Parameters
         ----------
@@ -138,17 +147,17 @@ class tpsc_solver:
                  Enable the lattice Green's function calculation (default: `False`)
         
         Usp_tol : double, optional
-                  Tolerance for spin vertex `Usp` solution (default: 2e-12)
+                  Tolerance for spin vertex :math:`U_{sp}` solution (default: `2e-12`)
         Uch_tol : double, optional
-                  Tolerance for charge vertex `Uch` solution (default: 2e-12)
+                  Tolerance for charge vertex :math:`U_{ch}` solution (default: `2e-12`)
         Uch_max : double, optional
-                  maximum value of the charge vertex `Uch` to consider
-                  in numerical search (default: 100.)
+                  maximum value of the charge vertex :math:`U_{ch}` to consider
+                  in numerical search (default: `100.0`)
         Usp_epsilon : double, optional
-                Offset from maximum value of the spin vertex `Usp` to consider
-                Increases numerical stability of root search (default: 1e-7)
+                Offset from maximum value of the spin vertex :math:`U_{sp}` to consider
+                Increases numerical stability of root search (default: `1e-7`)
         chi0_wk : Gf, optional
-                  Enables passing of a partially dressed susceptibility (default: None)
+                  Enables passing of a partially dressed susceptibility (default: `None`)
         """
 
         if calc_g == True: calc_sigma = True
@@ -217,15 +226,15 @@ class tpsc_solver:
         chi0_wk : Gf
                   bare susceptibility
         Usp_tol : double
-                  Tolerance for spin vertex `Usp` solution
+                  Tolerance for spin vertex :math:`U_{sp}` solution
         Usp_epsilon : double
-                      Offset from maximum value of the spin vertex `Usp` to consider
+                      Offset from maximum value of the spin vertex :math:`U_{sp]` to consider
                       Increases numerical stability of root search
 
         Returns
         -------
         Usp : double
-              Screened spin vertex `Usp`
+              Screened spin vertex :math:`U_{sp}`
         """
 
         def Usp_root(Usp):
@@ -248,22 +257,22 @@ class tpsc_solver:
 
     def _solve_Uch(self, chi0_wk, Uch_tol, Uch_max):
         r"""
-        Calculates screened charge vertex `Uch` given a bare susceptibility.
+        Calculates screened charge vertex :math:`U_{ch}` given a bare susceptibility.
 
         Parameters
         ----------
         chi0_wk : Gf
                   bare susceptibility
         Uch_tol : double
-                  Tolerance for spin vertex `Uch` solution
+                  Tolerance for spin vertex :math:`U_{ch}` solution
     	Uch_max : double
-                  maximum value of the charge vertex `Uch` to consider
+                  maximum value of the charge vertex :math:`U_{ch}` to consider
                   in numerical search
 
         Returns
         -------
         Uch : double
-              Screened spin vertex `Uch`
+              Screened spin vertex :math:`U_{ch}`
         """
 
         def Uch_root(Uch):
@@ -342,8 +351,11 @@ class tpsc_solver:
     def _calc_g0_wk(self, target_density):
         r"""
         Calculates the non-interacting Green's function
+        
         .. math::
+
             g_0(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}))^{-1}
+
         using the solvers dispersion relation.
         Chemical potential is chosen such that g0_wk has the correct density.
 
@@ -375,8 +387,11 @@ class tpsc_solver:
     def _calc_g_wk(self, target_density, sigma_wk):
         r"""
         Calculates the interacting Green's function
+
         .. math::
+
             g_\sigma(k) = (i\omega_n + \mu - \varepsilon(\mathbf{k}) - \Sigma_\sigma(k))
+
         using the solvers dispersion relation.
         Chemical potential is chosen such that g0_wk has the correct density.
 
@@ -412,7 +427,9 @@ class tpsc_solver:
     def get_sigma_tpsc_dynamic_numpy(self):
         r"""
         Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
+
         .. math::
+
             \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
             \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
 
@@ -447,7 +464,9 @@ class tpsc_solver:
     def get_sigma_tpsc_dynamic(self):
         r"""
         Calculates the dynamic part of the second-level TPSC approximation of the self-energy.
+
         .. math::
+
             \Sigma_\sigma^{dyn, TPSC}(k) = \frac{U}{8}\frac{T}{N}\sum_{q}{
             \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
 
@@ -483,7 +502,9 @@ class tpsc_solver:
     def get_sigma(self):
         r"""
         Calculates the full second-level TPSC approximation to the self-energy.
+
         .. math::
+
             \Sigma_\sigma^{TPSC}(k) = Un_{-\sigma} \frac{U}{8}\frac{T}{N}\sum_{q}{
             \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}
         
@@ -502,13 +523,16 @@ class tpsc_solver:
     def get_GG0_bubble_chi2_wk(self):
         r"""
         Calculates the partially dressed susceptibility
-        .. math::
-            chi_2(k) = -\frac{T}{N}\sum_{q}{\left[
-            G_\sigma^{TPSC}(q)G_{0\sigma}(q+k) + G_\sigma^{TPSC}(q+k)G_{0\sigma}(q)\right]}
-        used in the TPSC+ calculation [2]
 
-        [2] C. Gauvin-Ndiaye, C. Lahaie, Y.M. Vilk, A.-M.S. Tremblay Phys.Rev.B 108, 075144, 2023
-        https://doi.org/10.1103/PhysRevB.108.075144 and https://doi.org/10.48550/arXiv.2305.19219
+        .. math::
+
+            \chi_2(k) = -\frac{T}{N}\sum_{q}{\left[
+            G_\sigma^{TPSC}(q)G_{0\sigma}(q+k) + G_\sigma^{TPSC}(q+k)G_{0\sigma}(q)\right]}
+
+        used in the TPSC+ calculation [2]_
+
+        .. [2] C. Gauvin-Ndiaye, C. Lahaie, Y.M. Vilk, A.-M.S. Tremblay Phys.Rev.B 108, 075144, 2023
+            https://doi.org/10.1103/PhysRevB.108.075144 and https://doi.org/10.48550/arXiv.2305.19219
         
         Returns
         -------
