@@ -30,6 +30,8 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH
 from triqs_tprf.lattice import chi0q_from_chi0r
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH
+from triqs_tprf.lattice import chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH
+from triqs_tprf.lattice import lattice_dyson_g_w
 
 from triqs_tprf.linalg import product_PH, inverse_PH
 from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH, chi_from_gg2_PH
@@ -175,7 +177,7 @@ def solve_lattice_dbse(g_wk, F_wnn, L_wn, chi_imp_w):
     return chi_kw
 
 
-def solve_lattice_dbse_lomem(g_wk, F_wnn, L_wn, chi_imp_w):
+def solve_lattice_dbse_lomem_w(g_wk, F_wnn, L_wn, chi_imp_w):
 
     r""" Compute the generalized lattice susceptibility 
     :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega_n)` using the dual Bethe-Salpeter 
@@ -264,6 +266,107 @@ def solve_lattice_dbse_lomem(g_wk, F_wnn, L_wn, chi_imp_w):
             
         del chi0_nonlocal_Wnk
         del chi_kW
+
+    del L_resize_wn
+
+    return chi_kw
+
+
+def solve_lattice_dbse_lomem_kw(mu, e_k, sigma_w, F_wnn, L_wn, chi_imp_w):
+
+    r""" Compute the generalized lattice susceptibility 
+    :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, \omega_n)` using the dual Bethe-Salpeter 
+    equation (DBSE).
+
+    This implementation loops over individual bosonic frequencies and mometa,
+    requiring less memory but slightly more computations.
+
+    Parameters
+    ----------
+
+    mu : double,
+                Chemical potential
+    e_k : Gf,
+                Lattice dispersion :math:`\epsilon_{a\bar{b}}(\mathbf{k})`.
+    sigma_w : Gf,
+                Local self-energy :math:`\Sigma_{a\bar{b}}(i\nu_n)`.    
+    F_wnn : Gf,
+                Local particle-hole reducible vertex function 
+                :math:`F_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n, i\nu_n')`.
+    L_wn : Gf,
+                Local particle-hole reducible triangle vertex function 
+                :math:`L_{a\bar{b}c\bar{d}}(i\omega_n, i\nu_n)`.
+    chi_imp_w : Gf,
+                Generalized DMFT impurity susceptibility
+                :math:`\chi_{a\bar{b}c\bar{d}}(i\omega_n)`.
+
+    Returns
+    -------
+    chi_kw : Gf,
+             Generalized lattice susceptibility 
+             :math:`\chi_{\bar{a}b\bar{c}d}(\mathbf{k}, i\omega_n)`.
+    """
+
+    # -- Check mesh sizes
+
+    bmesh = F_wnn.mesh[0]
+    fmesh = F_wnn.mesh[1]
+
+    assert( len(fmesh) <= len(sigma_w.mesh) )
+    assert( len(bmesh) <= len(L_wn.mesh[0]) )
+    assert( len(fmesh) <= len(L_wn.mesh[1]) )
+    assert( len(bmesh) <= len(chi_imp_w.mesh) )
+    
+    nw = (len(bmesh) + 1) // 2
+    nn = len(fmesh) // 2
+
+    # -- Check target_shape(s)
+
+    assert( len(sigma_w.target_shape) == 2 )
+    assert( len(F_wnn.target_shape) == 4 )
+    assert( len(L_wn.target_shape) == 4 )
+    assert( len(chi_imp_w.target_shape) == 4 )
+
+    norb = sigma_w.target_shape[0]
+
+    assert( (np.array(sigma_w.target_shape) == norb).all() )
+    assert( (np.array(F_wnn.target_shape) == norb).all() )
+    assert( (np.array(L_wn.target_shape) == norb).all() )
+    assert( (np.array(chi_imp_w.target_shape) == norb).all() )
+    
+    
+    L_resize_wn = Gf(mesh=MeshProduct(bmesh, fmesh), indices=L_wn.indices)
+    for w, n in L_resize_wn.mesh:
+        L_resize_wn[w, n] = L_wn[Idx(w.index), Idx(n.index)]
+
+    g_loc_w = lattice_dyson_g_w(mu, e_k, sigma_w)
+
+    kmesh = e_k.mesh
+    chi_kw = Gf(mesh=MeshProduct(kmesh, bmesh), indices=F_wnn.indices)
+
+    mem = np.prod(chi_kw.data.shape) * 128 / 8
+    print(f'chi_kw.data.shape = {chi_kw.data.shape}')
+    print(f'Memory estimate: {mem / 1024**3} GB')
+    
+    chi_kw.data[:] = 0 # Trigger full alloc
+    
+    import itertools
+    for W, Q in itertools.product(bmesh, kmesh):
+        
+        print('-'*72)
+        print(f'DBSE: Low memory calc at bosonic frequency index {W.index} and momentum index {Q.index}.')
+        print(f'DBSE: {W}')
+        print(f'DBSE: {Q}')
+        print('-'*72)
+
+        idx = Idx(W.index)
+        
+        chi_QW = chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH(
+            mu, e_k, sigma_w, g_loc_w, F_wnn, L_resize_wn, W.data_index, Q.data_index)
+
+        chi_kw[Q, idx] = chi_QW + chi_imp_w[idx].data
+            
+        del chi_QW
 
     del L_resize_wn
 

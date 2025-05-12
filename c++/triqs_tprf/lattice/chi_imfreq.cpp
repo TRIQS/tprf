@@ -306,7 +306,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point
     for (auto n : fmesh) {
 
       auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]);
-      auto g_bc = inverse((n + mu) * I - e_k[k - q] - sigma_w[n + w]);
+      auto g_bc = inverse((n + w + mu) * I - e_k[k - q] - sigma_w[n + w]);
 
       for (auto a : range(nb))
         for (auto b : range(nb))
@@ -798,6 +798,103 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
 
   return chi_kw;
 }
+
+// ----------------------------------------------------
+
+// Helper function compiting chi0 non-local for fixed bosonic frequency w and momentum q.
+// using the self energy and the dispersion (instead of the greens function)
+
+CPP2PY_IGNORE
+gf<imfreq, tensor_valued<4>> chi0_nonloc_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, double mu, e_k_cvt e_k, g_w_cvt sigma_w, g_w_cvt g_loc_w) {
+
+  int nb = e_k.target().shape()[0];
+  auto kmesh = e_k.mesh();
+
+  auto fmesh_large = sigma_w.mesh();
+
+  assert(fmesh_large == g_loc_w.mesh());
+
+  assert(fmesh.size() < fmesh_large.size());
+
+  double beta = fmesh.beta();
+  auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
+
+  gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
+
+  for (auto k : kmesh) {
+    for (auto n : fmesh) {
+
+      auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]) - g_loc_w[matsubara_freq(n)];
+      auto g_bc = inverse((n + w + mu) * I - e_k[k - q] - sigma_w[n + w]) - g_loc_w[n + w];
+      
+      for (auto a : range(nb))
+        for (auto b : range(nb))
+          for (auto c : range(nb))
+            for (auto d : range(nb))
+              chi0_n[n](a, b, c, d) -= g_da(d, a) * g_bc(b, c);
+    }
+  }
+
+  chi0_n *= beta / kmesh.size();
+
+  return chi0_n;
+}
+
+target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH(
+  double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_wnn_cvt F_wnn, chi_nn_cvt L_wn,
+  int widx, int qidx) {
+
+  auto _ = all_t{};
+  
+  auto target_shape = F_wnn.target_shape();
+
+  auto &bmesh = std::get<0>(F_wnn.mesh());
+  auto &fmesh = std::get<1>(F_wnn.mesh());
+  auto &kmesh = e_k.mesh();
+
+  auto w = std::get<0>(F_wnn.mesh())[widx];
+  auto q = e_k.mesh()[qidx];  
+
+  triqs::utility::timer t_ksum;
+  t_ksum.start();
+  
+  auto chi0_n = chi0_nonloc_n_from_e_k_sigma_w_PH(w, q, fmesh, mu, e_k, sigma_w, g_loc_w);
+
+  t_ksum.stop();
+  std::cout << "DBSE TIME (k-sum): " << double(t_ksum) << " s" << std::endl;
+
+  triqs::utility::timer t_bse;
+  t_bse.start();
+  
+  chi_nn_t chi0_nn({fmesh, fmesh}, target_shape);
+  chi0_nn *= 0.;
+  
+  for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
+
+  auto I = identity<Channel_t::PH>(chi0_nn);
+
+  chi_nn_t F_nn({fmesh, fmesh}, target_shape);
+
+#pragma omp critical
+  F_nn = F_wnn[w, _, _];
+    
+  // this step could be optimized, using the diagonality of chi0 and I
+  auto denom = chi_nn_t{I - product<Channel_t::PH>(chi0_nn, F_nn)};
+
+  // also the last product here
+  auto chi = chi_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
+
+  // trace out fermionic frequencies
+  array<std::complex<double>, 4> tr_chi(target_shape);
+  
+  tr_chi = scalar_product_PH(L_wn[w, _], chi, L_wn[w, _]);
+
+  t_bse.stop();
+  std::cout << "DBSE TIME (bse): " << double(t_bse) << " s" << std::endl;
+  
+  return tr_chi;
+}
+
 
 // ----------------------------------------------------
   
