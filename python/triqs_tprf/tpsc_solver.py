@@ -49,60 +49,61 @@ from triqs_tprf.lattice import fourier_wr_to_wk
 
 class tpsc_solver:
 
+    r""" Two-particle self-consistency (TPSC) [1]_ solver for single-band Hubbard models.
+
+    Parameters
+    ----------
+    n : double
+        total electron density (spin up and down combined)
+    U : double
+        Hubbard interaction
+    wmesh : MeshImFreq or MeshDLRImFreq
+            imaginary frequency mesh
+    e_k : Gf
+          dispersion relation (excluding spin DOFs)
+    docc : double, optional
+           double occupancy (default: `tpsc_ansatz` using the TPSC-Ansatz [1])
+    verbose : bool, optional
+              Verbose printouts (default: `True`)
+
+    Notes
+    -----
+    TPSC assumes RPA-like charge and spin susceptibilities
+
+    .. math::
+
+        \chi_{ch}(k) = \frac{\chi_0(k)}{1 + \frac{U_{ch}}{2}\chi_0(k)}, \quad
+        \chi_{sp}(k) = \frac{\chi_0(k)}{1 - \frac{U_{sp}}{2}\chi_0(k)}
+
+    with renormalized vertices and determines them such that the sum rules
+
+    .. math::
+
+        \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
+        \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
+
+    are fulfilled. This is done by imposing the Ansatz
+
+    .. math::
+
+        U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
+
+    An approximation to the self-energy is obtained through
+
+    .. math::
+
+        \Sigma_\sigma(k) = Un_{-\sigma} + \frac{U}{8}\frac{T}{N}\sum_{q}{
+        \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}.
+
+    Determining the single-particle Green's function and self-energy,
+    as well as the charge and spin susceptibilities.
+
+    .. [1] Y.M. Vilk, A.-M.S. Tremblay, J. Phys. I France, v7, no 11, pp 1309-1368 (1997)
+        https://doi.org/10.1051/jp1:1997135 and https://arxiv.org/abs/cond-mat/9702188
+    """    
+
+    
     def __init__(self, n, U, wmesh, e_k, docc='tpsc_ansatz', verbose=True):
-
-        r""" Two-particle self-consistency (TPSC) [1]_ solver for single-band Hubbard models.
-
-        Parameters
-        ----------
-        n : double
-            total electron density (spin up and down combined)
-        U : double
-            Hubbard interaction
-        wmesh : MeshImFreq or MeshDLRImFreq
-                imaginary frequency mesh
-        e_k : Gf
-              dispersion relation (excluding spin DOFs)
-        docc : double, optional
-               double occupancy (default: `tpsc_ansatz` using the TPSC-Ansatz [1])
-        verbose : bool, optional
-                  Verbose printouts (default: `True`)
-
-        Notes
-        -----
-        TPSC assumes RPA-like charge and spin susceptibilities
-
-        .. math::
-        
-            \chi_{ch}(k) = \frac{\chi_0(k)}{1 + \frac{U_{ch}}{2}\chi_0(k)}, \quad
-            \chi_{sp}(k) = \frac{\chi_0(k)}{1 - \frac{U_{sp}}{2}\chi_0(k)}
-
-        with renormalized vertices and determines them such that the sum rules
-
-        .. math::
-
-            \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
-            \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
-
-        are fulfilled. This is done by imposing the Ansatz
-
-        .. math::
-
-            U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
-
-        An approximation to the self-energy is obtained through
-
-        .. math::
-
-            \Sigma_\sigma(k) = Un_{-\sigma} + \frac{U}{8}\frac{T}{N}\sum_{q}{
-            \left[3U_{sp}\chi_{sp}(k) + U_{ch}\chi_{ch}(k)\right]G_{0\sigma}(k+q)}.
-
-        Determining the single-particle Green's function and self-energy,
-        as well as the charge and spin susceptibilities.
-
-        .. [1] Y.M. Vilk, A.-M.S. Tremblay, J. Phys. I France, v7, no 11, pp 1309-1368 (1997)
-            https://doi.org/10.1051/jp1:1997135 and https://arxiv.org/abs/cond-mat/9702188
-        """
         
         self.n = n
         self.U = U
