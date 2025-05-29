@@ -79,14 +79,14 @@ class tpsc_solver:
 
     .. math::
 
-        \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\braket{n_\uparrow n_\downarrow} - n^2, \quad
-        \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\braket{n_\uparrow n_\downarrow}
+        \frac{T}{N}\sum_{k}{\chi_{ch}(k)} = n + 2\langle n_\uparrow n_\downarrow \rangle - n^2, \quad
+        \frac{T}{N}\sum_{k}{\chi_{sp}(k)} = n - 2\langle n_\uparrow n_\downarrow \rangle
 
     are fulfilled. This is done by imposing the Ansatz
 
     .. math::
 
-        U_{sp}\braket{n_\uparrow}\braket{n_\downarrow} = U\braket{n_\uparrow n_\downarrow}.
+        U_{sp}\langle n_\uparrow \rangle \langle n_\downarrow \rangle = U \langle n_\uparrow n_\downarrow \rangle.
 
     An approximation to the self-energy is obtained through
 
