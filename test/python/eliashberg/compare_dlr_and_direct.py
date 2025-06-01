@@ -32,6 +32,9 @@ def compare_g_Dwk_and_g_wk(g_Dwk, g_wk, decimal=7):
         g_Dw.data[:] = g_Dwk.data[:,k.data_index,:]
         g_Dc = make_gf_dlr(g_Dw)
         g_ref_wk[:,k] = dlr_on_imfreq(g_Dc, wmesh)
+
+    diff = np.max(np.abs(g_wk.data[:] - g_ref_wk.data[:]))
+    print(f'diff = {diff:2.2E}')
     
     np.testing.assert_array_almost_equal(g_wk.data[:], g_ref_wk.data[:], decimal=decimal)
 
@@ -39,9 +42,9 @@ def compare_g_Dtk_and_g_tk(g_Dtk, g_tk, decimal=7):
     tmesh, kmesh = g_tk.mesh.components
     DLRtmesh = g_Dtk.mesh.components[0]
 
-    print(kmesh)
-    for k in kmesh:
-        print(k)
+    #print(kmesh)
+    #for k in kmesh:
+    #    print(k)
     
     g_ref_tk =Gf(mesh=g_tk.mesh, target_shape=g_tk.target_shape)
     for k in kmesh:
@@ -50,6 +53,9 @@ def compare_g_Dtk_and_g_tk(g_Dtk, g_tk, decimal=7):
         g_Dc = make_gf_dlr(g_Dt)
         g_ref_tk[:,k] = dlr_on_imtime(g_Dc, tmesh)
     
+    diff = np.max(np.abs(g_tk.data[:] - g_ref_tk.data[:]))
+    print(f'diff = {diff:2.2E}')
+
     np.testing.assert_array_almost_equal(g_tk.data[:], g_ref_tk.data[:], decimal=decimal)
 
 
@@ -58,7 +64,7 @@ def ElectronPhononInteraction(iw, g2, wD):
     return g2 * 2.0 * wD / (iw**2.0 - wD**2.0)
 
 
-def eliashberg_compare_dlr_and_direct():
+def eliashberg_compare_dlr_and_direct(symmetrize=False):
     """ Some test description
     Author: Yann in 't Veld (2023) """ 
     
@@ -68,17 +74,21 @@ def eliashberg_compare_dlr_and_direct():
     beta = 2.0
     nk = 3
 
-    nw = 50
-    lamb = 10.
-    eps = 1e-8
+    #nw = 50
+    #lamb = 10.
+    #eps = 1e-8
 
+    nw = 1000
+    lamb = 20.
+    eps = 1e-15
+    
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
     kmesh = MeshBrZone(bz, [nk, nk, nk])
     
     wmesh = MeshImFreq(beta, 'Fermion', nw)
-    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps, symmetrize=symmetrize)
 
     print('--> lattice_dyson_g0_wk')
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
@@ -110,13 +120,13 @@ def eliashberg_compare_dlr_and_direct():
     F_wk = eliashberg_g_delta_g_product(g0_wk, delta_wk)
     F_Dwk = eliashberg_g_delta_g_product(g0_Dwk, delta_Dwk)
 
-    print(F_wk.data[nw,0:20,0,0])
+    #print(F_wk.data[nw,0:20,0,0])
 
     compare_g_Dwk_and_g_wk(F_Dwk, F_wk)
-
+    
     print('--> setup interaction vertex')
     numesh = MeshImFreq(beta, 'Boson', nw)
-    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
+    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps, symmetrize=symmetrize)
 
     I_wk = Gf(mesh=MeshProduct(numesh, kmesh), target_shape=[1]*4)
     for nu in numesh:
@@ -136,7 +146,7 @@ def eliashberg_compare_dlr_and_direct():
         I_k.data[:] = 1.0 / knorm 
 
     compare_g_Dwk_and_g_wk(I_Dwk, I_wk)
-
+    
     print("--> dynamic_and_constant_to_tr")
     I_dyn_tr, I_r_ref = dynamic_and_constant_to_tr(I_wk, I_k)
     I_dyn_Dtr, I_r = dynamic_and_constant_to_tr(I_Dwk, I_k)
@@ -151,10 +161,16 @@ def eliashberg_compare_dlr_and_direct():
     F_Dwr = fourier_wk_to_wr(F_Dwk)
     F_Dtr = fourier_wr_to_tr(F_Dwr)
 
+    # -- Check that the two imaginary time meshes (bosonic and fermionic) has the same tau nodes
+    bmesh = I_dyn_Dtr.mesh[0]
+    fmesh = F_Dtr.mesh[0]
+    bt = np.array([t.value for t in bmesh])
+    ft = np.array([t.value for t in fmesh])
+    np.testing.assert_array_almost_equal(bt, ft)
+    
     delta_wk_out = eliashberg_product_fft(I_dyn_tr, I_r, g0_wk, delta_wk)
     delta_Dwk_out = eliashberg_product_fft(I_dyn_Dtr, I_r, g0_Dwk, delta_Dwk)
     compare_g_Dwk_and_g_wk(delta_Dwk_out, delta_wk_out)
-
 
     print("--> eliashberg_product_fft_constant")
 
@@ -163,4 +179,5 @@ def eliashberg_compare_dlr_and_direct():
     compare_g_Dwk_and_g_wk(delta_Dwk_out_const, delta_wk_out_const)
 
 if __name__ == "__main__":
-    eliashberg_compare_dlr_and_direct()
+    eliashberg_compare_dlr_and_direct(symmetrize=False)
+    eliashberg_compare_dlr_and_direct(symmetrize=True)

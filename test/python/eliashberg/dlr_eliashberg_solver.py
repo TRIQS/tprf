@@ -67,7 +67,7 @@ def ElectronPhononInteraction(iw, g2, wD):
     return g2 * 2.0 * wD / (iw**2.0 - wD**2.0)
 
 
-def test_dlr_eliashberg_solver():
+def test_dlr_eliashberg_solver(symmetrize=False):
     """ Some test description
     Author: Yann in 't Veld (2023) """ 
     
@@ -87,7 +87,7 @@ def test_dlr_eliashberg_solver():
     kmesh = MeshBrZone(bz, [nk, nk, nk])
    
     wmesh = MeshImFreq(beta, 'Fermion', nw)
-    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps, symmetrize=symmetrize)
 
     print('--> lattice_dyson_g0_wk')
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
@@ -108,7 +108,7 @@ def test_dlr_eliashberg_solver():
 
     print('--> setup interaction vertex')
     numesh = MeshImFreq(beta, 'Boson', nw)
-    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
+    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps, symmetrize=symmetrize)
 
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
     I_k.data[:] = 0.0
@@ -150,4 +150,5 @@ def test_dlr_eliashberg_solver():
     np.testing.assert_array_almost_equal(delta_wk_out_dlr.data[:], delta_wk_out.data[:], decimal=3)
 
 if __name__ == "__main__":
-    test_dlr_eliashberg_solver()
+    test_dlr_eliashberg_solver(symmetrize=False)
+    test_dlr_eliashberg_solver(symmetrize=True)
