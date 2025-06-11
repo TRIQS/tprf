@@ -30,10 +30,11 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH
 from triqs_tprf.lattice import chi0q_from_chi0r
 from triqs_tprf.lattice import chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH
-from triqs_tprf.lattice import chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH
+from triqs_tprf.lattice import chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH
 from triqs_tprf.lattice import lattice_dyson_g_w
 
 from triqs_tprf.linalg import product_PH, inverse_PH
+from triqs_tprf.linalg_utils import gf_matrix_from_tensor, gf_tensor_from_matrix
 from triqs_tprf.chi_from_gg2 import chi0_from_gg2_PH, chi_from_gg2_PH
 
 from triqs_tprf.bse import get_chi0_nk_at_specific_w
@@ -86,6 +87,69 @@ def impurity_reducible_vertex_F(g_w, g2_wnn):
     F_wnn = product_PH(inv_chi0_wnn, product_PH(g2_conn_wnn, inv_chi0_wnn))
     
     return F_wnn
+
+
+def impurity_reducible_vertex_F_nn(w, g_w, g2_nn):
+
+    r"""Compute the impurity reducible vertex function 
+    :math:`F_{abcd}(\omega, \nu, \nu')` at fixed bosonic frequency :math:`\omega`.
+    
+    Computes:
+
+    .. math::
+       F_{abcd}(\omega, \nu, \nu') =  [\chi^{(0)}]^{-1} (\chi - \chi^{(0)} ) [\chi^{(0)}]^{-1} 
+
+    where the inverses are taken in the particle-hole channel pairing
+    of fermionic frequencies :math:`\nu` and :math:`\nu'` and orbital
+    indices.
+
+    Parameters
+    ----------
+
+    w : Bosonic Matsubara Frequency
+    g_w : Single particle Green's function
+          :math:`G_{ab}(\nu)`
+    g2_nn : Two-particle Green's function
+            :math:`G^{(2)}_{abcd}(\nu, \nu')`
+
+    Returns
+    -------
+
+    F_nn : Particle-hole reducible vertex function 
+           :math:`F_{abcd}(\omega, \nu, \nu')` at the given bosonic frequency :math:`\omega`.
+    """
+    
+    fmesh = g2_nn.mesh[0]
+    beta = fmesh.beta
+    
+    chi0_n = Gf(mesh=fmesh, target_shape=g2_nn.target_shape)    
+    for n in fmesh:
+        chi0_n[n] = -beta * np.einsum('da,bc->abcd', g_w(n).data, g_w(w + n).data)
+
+    g2c_nn = g2_nn.copy()
+
+    for n in fmesh:
+        g2c_nn[n, n] -= chi0_n[n]
+
+    if w.index == 0:
+        # Correction
+        for n1, n2 in g2c_nn.mesh:
+            g2c_nn[n1, n2] -= beta * np.einsum('ba,dc->abcd', g_w(n1).data, g_w(n2).data)
+
+    chi0_n_mat = gf_matrix_from_tensor(chi0_n)
+    g2c_nn_mat = gf_matrix_from_tensor(g2c_nn)
+
+    chi0_n_mat_inv = chi0_n_mat.copy()
+    chi0_n_mat_inv.data[:] = np.linalg.inv(chi0_n_mat.data)
+        
+    F_nn_mat = g2c_nn_mat.copy()
+    for n1, n2 in F_nn_mat.mesh:
+        F_nn_mat[n1, n2] = np.matmul(
+            chi0_n_mat_inv[n1].data, np.matmul(g2c_nn_mat[n1, n2].data, chi0_n_mat_inv[n2].data))
+
+    F_nn = gf_tensor_from_matrix(F_nn_mat)
+        
+    return F_nn
 
 
 def solve_lattice_dbse(g_wk, F_wnn, L_wn, chi_imp_w):
@@ -360,9 +424,12 @@ def solve_lattice_dbse_lomem_kw(mu, e_k, sigma_w, F_wnn, L_wn, chi_imp_w):
         print('-'*72)
 
         idx = Idx(W.index)
+
+        F_nn = F_wnn[W, :, :]
+        L_resize_n = L_resize_wn[W, :]
         
-        chi_QW = chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH(
-            mu, e_k, sigma_w, g_loc_w, F_wnn, L_resize_wn, W.data_index, Q.data_index)
+        chi_QW = chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH(
+            mu, e_k, sigma_w, g_loc_w, F_nn, L_resize_n, W.data_index, Q.data_index, bmesh)
 
         chi_kw[Q, idx] = chi_QW + chi_imp_w[idx].data
             

@@ -840,20 +840,20 @@ gf<imfreq, tensor_valued<4>> chi0_nonloc_n_from_e_k_sigma_w_PH(mesh::imfreq::mes
   return chi0_n;
 }
 
-target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH(
-  double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_wnn_cvt F_wnn, chi_nn_cvt L_wn,
-  int widx, int qidx) {
+target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH(
+  double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_nn_cvt F_nn, chi_w_cvt L_n,
+  int widx, int qidx, mesh::imfreq bmesh) {
 
   auto _ = all_t{};
   
-  auto target_shape = F_wnn.target_shape();
+  auto target_shape = F_nn.target_shape();
 
-  auto &bmesh = std::get<0>(F_wnn.mesh());
-  auto &fmesh = std::get<1>(F_wnn.mesh());
+  // auto &bmesh = std::get<0>(F_nn.mesh());
+  auto &fmesh = std::get<1>(F_nn.mesh());
   auto &kmesh = e_k.mesh();
 
-  auto w = std::get<0>(F_wnn.mesh())[widx];
-  auto q = e_k.mesh()[qidx];  
+  auto w = bmesh[widx];
+  auto q = kmesh[qidx];  
 
   triqs::utility::timer t_ksum;
   t_ksum.start();
@@ -871,23 +871,33 @@ target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_
   
   for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
 
-  auto I = identity<Channel_t::PH>(chi0_nn);
+  chi_nn_t I = identity<Channel_t::PH>(chi0_nn);
 
-  chi_nn_t F_nn({fmesh, fmesh}, target_shape);
-
-#pragma omp critical
-  F_nn = F_wnn[w, _, _];
+  chi_nn_t F_nn_copy({fmesh, fmesh}, target_shape);
+  F_nn_copy = F_nn;
+  
+  //#pragma omp critical
+  //F_nn = F_wnn[w, _, _];
     
   // this step could be optimized, using the diagonality of chi0 and I
-  auto denom = chi_nn_t{I - product<Channel_t::PH>(chi0_nn, F_nn)};
+  chi_nn_t chi0F = product<Channel_t::PH>(chi0_nn, F_nn_copy);
+
+  chi_nn_t denom = identity<Channel_t::PH>(chi0_nn);
+  denom -= chi0F;
+
+  //chi_nn_t denom = I - chi0F;
+  
+  //chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, F_nn_copy);
+  //auto denom = chi_nn_t(I - product<Channel_t::PH>(chi0_nn, F_nn_copy));
 
   // also the last product here
-  auto chi = chi_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
+  //auto chi = chi_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
+  chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
 
   // trace out fermionic frequencies
   array<std::complex<double>, 4> tr_chi(target_shape);
   
-  tr_chi = scalar_product_PH(L_wn[w, _], chi, L_wn[w, _]);
+  tr_chi = scalar_product_PH(L_n, chi, L_n);
 
   t_bse.stop();
   std::cout << "DBSE TIME (bse): " << double(t_bse) << " s" << std::endl;

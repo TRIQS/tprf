@@ -180,7 +180,7 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt g
  */
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn, chi_nn_cvt L_wn);
 
-target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_wnn_and_L_wn_PH(double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_wnn_cvt F_wnn, chi_nn_cvt L_wn, int widx, int qidx);
+  target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH(double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_nn_cvt F_nn, chi_w_cvt L_n, int widx, int qidx, mesh::imfreq bmesh);
   
 gf<prod<brzone, imfreq>, tensor_valued<4>>
 chiq_sum_nu_from_g_wk_and_gamma_PH(gk_iw_t g_wk, g2_iw_vt gamma_ph_wnn, int tail_corr_nwf=-1);
