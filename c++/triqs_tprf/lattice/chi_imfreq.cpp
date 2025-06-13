@@ -806,35 +806,49 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
 
 CPP2PY_IGNORE
 gf<imfreq, tensor_valued<4>> chi0_nonloc_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, double mu, e_k_cvt e_k, g_w_cvt sigma_w, g_w_cvt g_loc_w) {
-
-  int nb = e_k.target().shape()[0];
+ 
+  int nb = e_k.target().shape()[0];  
   auto kmesh = e_k.mesh();
-
   auto fmesh_large = sigma_w.mesh();
 
   assert(fmesh_large == g_loc_w.mesh());
-
   assert(fmesh.size() < fmesh_large.size());
 
   double beta = fmesh.beta();
   auto I = nda::eye<ek_vt::scalar_t>(e_k.target_shape()[0]);
 
-  gf<imfreq, tensor_valued<4>> chi0_n{fmesh, {nb, nb, nb, nb}};
+  chi_w_t chi0_n{fmesh, {nb, nb, nb, nb}};
+  
+  /*
+  for (auto n : fmesh) {
+    for (auto k : kmesh) {
+  */
 
-  for (auto k : kmesh) {
-    for (auto n : fmesh) {
+  auto mp = mesh::prod{kmesh, fmesh};
 
-      auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]) - g_loc_w[matsubara_freq(n)];
-      auto g_bc = inverse((n + w + mu) * I - e_k[k - q] - sigma_w[n + w]) - g_loc_w[n + w];
+#pragma omp declare reduction(+ : chi_w_t : omp_out += omp_in) initializer(omp_priv = omp_orig)
+
+#pragma omp parallel for reduction(+:chi0_n)
+  for (unsigned int idx = 0; idx < mp.size(); idx++) {
+    auto [k, n] = *std::next(mp.begin(), idx);
+
+    auto chi0_tensor = nda::zeros<std::complex<double>>(nb, nb, nb, nb);
       
-      for (auto a : range(nb))
-        for (auto b : range(nb))
-          for (auto c : range(nb))
-            for (auto d : range(nb))
-              chi0_n[n](a, b, c, d) -= g_da(d, a) * g_bc(b, c);
-    }
+    auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]) - g_loc_w[matsubara_freq(n)];
+    auto g_bc = inverse((n + w + mu) * I - e_k[k - q] - sigma_w[n + w]) - g_loc_w[n + w];
+      
+    for (auto a : range(nb))
+      for (auto b : range(nb))
+	for (auto c : range(nb))
+	  for (auto d : range(nb))
+	    chi0_tensor(a, b, c, d) = -g_da(d, a) * g_bc(b, c);
+            //chi0_n[n](a, b, c, d) -= g_da(d, a) * g_bc(b, c);
+    
+    chi0_n[n] += chi0_tensor;
+    
+  // }}
   }
-
+  
   chi0_n *= beta / kmesh.size();
 
   return chi0_n;
@@ -843,6 +857,8 @@ gf<imfreq, tensor_valued<4>> chi0_nonloc_n_from_e_k_sigma_w_PH(mesh::imfreq::mes
 target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH(
   double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_nn_cvt F_nn, chi_w_cvt L_n,
   int widx, int qidx, mesh::imfreq bmesh) {
+
+  mpi::communicator comm;
 
   auto _ = all_t{};
   
@@ -861,7 +877,8 @@ target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n
   auto chi0_n = chi0_nonloc_n_from_e_k_sigma_w_PH(w, q, fmesh, mu, e_k, sigma_w, g_loc_w);
 
   t_ksum.stop();
-  std::cout << "DBSE TIME (k-sum): " << double(t_ksum) << " s" << std::endl;
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (k-sum): " << double(t_ksum) << " s" << std::endl;
 
   triqs::utility::timer t_bse;
   t_bse.start();
@@ -875,10 +892,7 @@ target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n
 
   chi_nn_t F_nn_copy({fmesh, fmesh}, target_shape);
   F_nn_copy = F_nn;
-  
-  //#pragma omp critical
-  //F_nn = F_wnn[w, _, _];
-    
+      
   // this step could be optimized, using the diagonality of chi0 and I
   chi_nn_t chi0F = product<Channel_t::PH>(chi0_nn, F_nn_copy);
 
@@ -897,10 +911,18 @@ target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n
   // trace out fermionic frequencies
   array<std::complex<double>, 4> tr_chi(target_shape);
   
+  t_bse.stop();
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (bse): " << double(t_bse) << " s" << std::endl;
+
+  triqs::utility::timer t_tri;
+  t_tri.start();
+
   tr_chi = scalar_product_PH(L_n, chi, L_n);
 
-  t_bse.stop();
-  std::cout << "DBSE TIME (bse): " << double(t_bse) << " s" << std::endl;
+  t_tri.stop();
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (tri): " << double(t_tri) << " s" << std::endl;
   
   return tr_chi;
 }
