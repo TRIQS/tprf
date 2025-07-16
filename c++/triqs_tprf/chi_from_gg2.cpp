@@ -109,4 +109,18 @@ g2_iw_t chi0_from_gg2_PP(g_iw_vt g, g2_iw_vt g2) { return chi0_from_gg2<Channel_
 g2_iw_t chi_from_gg2_PH(g_iw_vt g, g2_iw_vt g2) { return chi_from_gg2<Channel_t::PH>(g, g2); }
 g2_iw_t chi_from_gg2_PP(g_iw_vt g, g2_iw_vt g2) { return chi_from_gg2<Channel_t::PP>(g, g2); }
 
+// ----------------------------------------------------
+
+chi_nn_t chi0_from_g_PH(g_iw_cvt g, const mesh::imfreq fmesh, const mesh::imfreq bmesh) {
+
+  double beta = g.mesh().beta();
+  int nb = g.target_shape()[0];
+  auto chi0_wn = gf<prod<imfreq, imfreq>, tensor_valued<4>>({bmesh, fmesh}, {nb, nb, nb, nb});
+
+  chi0_wn(Omega, n)(a, b, c, d) << -beta * g(n)(d, a) * g(Omega + n)(b, c);
+
+  return chi0_wn;
+}
+
+  
 } // namespace triqs_tprf

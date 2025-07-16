@@ -1753,6 +1753,8 @@ out
 
 module.add_function ("target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n_PH(double mu, ek_vt e_k, g_iw_vt sigma_w, g_iw_vt g_loc_w, chi_nn_cvt F_nn, chi_w_cvt L_n, int widx, int qidx, mesh::imfreq bmesh)", doc ="")
 
+module.add_function ("target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_X0_n_F_nn_and_L_n_PH(double mu, ek_vt e_k, g_iw_vt sigma_w, chi_w_cvt X0_n, chi_nn_cvt F_nn, chi_w_cvt L_n, int widx, int qidx, mesh::imfreq bmesh)", doc ="")
+
 module.add_function ("triqs_tprf::chi_kw_t triqs_tprf::chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH (triqs_tprf::chi_wnk_cvt chi0_wnk, triqs_tprf::chi_wnn_cvt gamma_ph_wnn, triqs_tprf::chi_nn_cvt L_wn)", doc = r"""Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
 
   Computes

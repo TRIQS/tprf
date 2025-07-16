@@ -929,6 +929,82 @@ target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_F_nn_and_L_n
 
 
 // ----------------------------------------------------
+
+target_value_t<chi_kw_t>::regular_type chiq_sum_nu_from_e_k_sigma_w_X0_n_F_nn_and_L_n_PH(
+  double mu, ek_vt e_k, g_iw_vt sigma_w, chi_w_cvt X0_n, chi_nn_cvt F_nn, chi_w_cvt L_n,
+  int widx, int qidx, mesh::imfreq bmesh) {
+
+  mpi::communicator comm;
+
+  auto _ = all_t{};
+  
+  auto target_shape = F_nn.target_shape();
+
+  auto &fmesh = std::get<1>(F_nn.mesh());
+  auto &kmesh = e_k.mesh();
+
+  auto w = bmesh[widx];
+  auto q = kmesh[qidx];  
+
+  triqs::utility::timer t_ksum;
+  t_ksum.start();
+  
+  auto chi0_n = chi0_n_from_e_k_sigma_w_PH(w, q, fmesh, mu, e_k, sigma_w);
+
+  chi0_n -= X0_n; // Subtract local bubble
+
+  t_ksum.stop();
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (k-sum): " << double(t_ksum) << " s" << std::endl;
+
+  triqs::utility::timer t_bse;
+  t_bse.start();
+  
+  chi_nn_t chi0_nn({fmesh, fmesh}, target_shape);
+  chi0_nn *= 0.;
+  
+  for (auto n : fmesh) chi0_nn[n, n] = chi0_n[n];
+
+  chi_nn_t I = identity<Channel_t::PH>(chi0_nn);
+
+  chi_nn_t F_nn_copy({fmesh, fmesh}, target_shape);
+  F_nn_copy = F_nn;
+      
+  // this step could be optimized, using the diagonality of chi0 and I
+  chi_nn_t chi0F = product<Channel_t::PH>(chi0_nn, F_nn_copy);
+
+  chi_nn_t denom = identity<Channel_t::PH>(chi0_nn);
+  denom -= chi0F;
+
+  //chi_nn_t denom = I - chi0F;
+  
+  //chi_nn_t denom = I - product<Channel_t::PH>(chi0_nn, F_nn_copy);
+  //auto denom = chi_nn_t(I - product<Channel_t::PH>(chi0_nn, F_nn_copy));
+
+  // also the last product here
+  //auto chi = chi_nn_t{product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn)};
+  chi_nn_t chi = product<Channel_t::PH>(inverse<Channel_t::PH>(denom), chi0_nn);
+
+  // trace out fermionic frequencies
+  array<std::complex<double>, 4> tr_chi(target_shape);
+  
+  t_bse.stop();
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (bse): " << double(t_bse) << " s" << std::endl;
+
+  triqs::utility::timer t_tri;
+  t_tri.start();
+
+  tr_chi = scalar_product_PH(L_n, chi, L_n);
+
+  t_tri.stop();
+  if(comm.rank() == 0)
+    std::cout << "DBSE TIME (tri): " << double(t_tri) << " s" << std::endl;
+  
+  return tr_chi;
+}
+
+// ----------------------------------------------------
   
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn) {
 

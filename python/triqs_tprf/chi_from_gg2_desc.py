@@ -137,5 +137,7 @@ out
      chi0 particle-particle bubble
      :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau')`""")
 
+module.add_function ("triqs_tprf::chi_nn_t triqs_tprf::chi0_from_g_PH(triqs_tprf::g_iw_cvt g, triqs::mesh::imfreq fmesh, triqs::mesh::imfreq bmesh)", doc = r"""""")
+
 
 module.generate_code()

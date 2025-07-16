@@ -42,6 +42,8 @@ template <Channel_t CH> g2_iw_t chi0_from_gg2(g_iw_cvt g, g2_iw_cvt g2);
   */
 g2_iw_t chi0_from_gg2_PH(g_iw_vt g, g2_iw_vt g2);
 
+chi_nn_t chi0_from_g_PH(g_iw_cvt g, const mesh::imfreq fmesh, const mesh::imfreq bmesh);
+
   /** Bubble susceptibility :math:`\chi^{(0)} = GG` in the Particle-Particle channel
 
   Computes
