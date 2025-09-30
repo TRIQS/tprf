@@ -3,3 +3,4 @@ doc/_autosummary
 doc/cpp2rst_generated
 __pycache__
 .*
+.claude
