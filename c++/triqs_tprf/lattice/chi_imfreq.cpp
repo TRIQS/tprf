@@ -305,8 +305,8 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point
   for (auto k : kmesh) {
     for (auto n : fmesh) {
 
-      auto g_da = inverse((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]);
-      auto g_bc = inverse((n + mu) * I - e_k[k - q] - sigma_w[n + w]);
+      auto g_da = nda::linalg::inv((n + mu) * I - e_k[k] - sigma_w[matsubara_freq(n)]);
+      auto g_bc = nda::linalg::inv((n + mu) * I - e_k[k - q] - sigma_w[n + w]);
 
       for (auto a : range(nb))
         for (auto b : range(nb))

@@ -66,7 +66,7 @@ std::tuple<g_Tk_t, g_Tk_t> g0_Tk_les_gtr_from_e_k(e_k_cvt e_k, mesh::retime Tmes
     auto &k = arr[idx];
 
     matrix<std::complex<double>> e_k_mat(e_k[k]);
-    auto [ek, Uk] = linalg::eigenelements(e_k_mat);
+    auto [ek, Uk] = linalg::eigh(e_k_mat);
 
     auto occ = fermi_nda(beta*ek);
 

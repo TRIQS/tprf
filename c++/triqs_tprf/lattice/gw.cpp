@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <nda/nda.hpp>
-#include <nda/linalg/eigenelements.hpp>
+#include <nda/linalg/eigh.hpp>
 
 #include "gw.hpp"
 #include "common.hpp"
@@ -264,7 +264,7 @@ namespace triqs_tprf {
     auto kpqvec = std::array<double, 3>{kpqpoint(0), kpqpoint(1), kpqpoint(2)};
 
     array<std::complex<double>, 2> e_kq_mat(e_k(kpqvec) - mu);
-    auto eig_kq = linalg::eigenelements(e_kq_mat);
+    auto eig_kq = linalg::eigh(e_kq_mat);
     auto ekq    = eig_kq.first;
     auto Ukq    = eig_kq.second;
 
@@ -335,7 +335,7 @@ namespace triqs_tprf {
     auto kpqvec = std::array<double, 3>{kpqpoint(0), kpqpoint(1), kpqpoint(2)};
 
     array<std::complex<double>, 2> e_kq_mat(e_k(kpqvec) - mu);
-    auto eig_kq = linalg::eigenelements(e_kq_mat);
+    auto eig_kq = linalg::eigh(e_kq_mat);
     auto ekq    = eig_kq.first;
     auto Ukq    = eig_kq.second;
 

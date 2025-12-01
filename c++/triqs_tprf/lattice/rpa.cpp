@@ -54,7 +54,7 @@ namespace triqs_tprf {
     auto chi  = make_matrix_view(group_indices_view(chi_arr, idx_group<0, 1>, idx_group<3, 2>));
     auto chi0 = make_matrix_view(group_indices_view(chi0_arr, idx_group<0, 1>, idx_group<3, 2>));
 
-    chi = inverse(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
+    chi = nda::linalg::inv(I - chi0 * U) * chi0; // Inverted BSE specialized for rpa
 
     chi_wk[w, k] = chi_arr;             // assign back using the array_view
     }
