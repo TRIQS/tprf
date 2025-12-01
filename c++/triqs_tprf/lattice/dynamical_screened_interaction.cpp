@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <nda/nda.hpp>
-#include <nda/linalg/eigenelements.hpp>
+#include <nda/linalg/eigh.hpp>
 
 #include "dynamical_screened_interaction.hpp"
 #include "common.hpp"
@@ -71,7 +71,7 @@ namespace triqs_tprf {
       auto W_mat   = make_matrix_view(group_indices_view(W_arr, idx_group<0, 1>, idx_group<3, 2>));
 
       if constexpr (susType == false)
-        W_mat = V_mat * inverse(I - chi_mat * V_mat);
+        W_mat = V_mat * nda::linalg::inv(I - chi_mat * V_mat);
       else
         W_mat = V_mat * chi_mat * V_mat + V_mat;
 
@@ -117,7 +117,7 @@ namespace triqs_tprf {
 	  for( auto f : range(nb) ) 
 	    denom(a,b,c,d) -= chi_wk[w,k](a,b,e,f)*V_k[k](e,f,c,d);
       
-      inv_denom_mat = inverse(denom_mat);
+      inv_denom_mat = nda::linalg::inv(denom_mat);
 
       for (auto const &[a, b, c, d] : V_k.target_indices())
 	for( auto e : range(nb) ) 

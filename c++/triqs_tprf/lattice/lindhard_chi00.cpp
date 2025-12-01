@@ -52,10 +52,10 @@ namespace triqs_tprf {
 
         // -- If this is moved out to the k-loop the threading breaks?!?
         matrix<std::complex<double>> e_k_mat(e_k[k] - mu);
-        auto [ek, Uk] = linalg::eigenelements(e_k_mat);
+        auto [ek, Uk] = linalg::eigh(e_k_mat);
 
         matrix<std::complex<double>> e_kq_mat(e_k(k + q) - mu);
-        auto [ekq, Ukq] = linalg::eigenelements(e_kq_mat);
+        auto [ekq, Ukq] = linalg::eigh(e_kq_mat);
 
         for (int i : range(nb)) {
           for (int j : range(nb)) {

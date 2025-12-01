@@ -37,7 +37,7 @@ namespace triqs_tprf {
    auto mat     = channel_matrix_view<CH>(g_w_dat);
    auto mat_inv = channel_matrix_view<CH>(g_w_inv_dat);
 
-   mat_inv = inverse(mat);
+   mat_inv = nda::linalg::inv(mat);
 
    g_inv.data() = g_w_inv_dat;
 

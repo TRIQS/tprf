@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <nda/nda.hpp>
-#include <nda/linalg/eigenelements.hpp>
+#include <nda/linalg/eigh.hpp>
 
 #include "gw.hpp"
 #include "common.hpp"
