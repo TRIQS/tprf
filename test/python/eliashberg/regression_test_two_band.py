@@ -57,7 +57,7 @@ def test_next_delta(g0_wk, gamma, expected_next_delta):
 
 def test_solve_eliashberg(g0_wk, gamma, expected_E, expected_eigen_mode):
     Es, eigen_modes = solve_eliashberg(gamma, g0_wk, product='FFT', solver='IRAM')
-    np.testing.assert_allclose(Es[0], expected_E) 
+    np.testing.assert_allclose(Es[0], expected_E)
     assert allclose_by_scalar_multiplication(eigen_modes[0], expected_eigen_mode),\
                 "Eigenvectors are not the same."
 

@@ -61,7 +61,7 @@ def test_call_eliashberg_product_fft(g0_wk, gamma):
     with patch("triqs_tprf.eliashberg.eliashberg_product_fft") as patched:
         patched.return_value = g0_wk
 
-        solve_eliashberg(gamma, g0_wk, product="FFT")
+        solve_eliashberg(gamma, g0_wk, product="FFT", k=1)
 
     patched.assert_called()
 
@@ -72,7 +72,7 @@ def test_call_eliashberg_product_fft_constant(g0_wk, gamma):
 
         non_dynamic_gamma = 0 * gamma
 
-        solve_eliashberg(non_dynamic_gamma, g0_wk, product="FFT")
+        solve_eliashberg(non_dynamic_gamma, g0_wk, product="FFT", k=1)
 
     patched.assert_called()
 
@@ -81,7 +81,7 @@ def test_call_eliashberg_product(g0_wk, gamma):
     with patch("triqs_tprf.eliashberg.eliashberg_product") as patched:
         patched.return_value = g0_wk
 
-        solve_eliashberg(gamma, g0_wk, product="SUM")
+        solve_eliashberg(gamma, g0_wk, product="SUM", k=1)
 
     patched.assert_called()
 
