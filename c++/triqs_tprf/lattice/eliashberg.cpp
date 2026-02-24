@@ -171,7 +171,7 @@ F_out_t eliashberg_F_wk_template(g_t g_wk, g_t gbar_wk, g_t delta_wk) {
   auto F_wk = make_gf(delta_wk);
 
   for (auto [n, k] : F_wk.mesh()) {
-    F_wk[n,k] = inverse(denom_wk[n,k]) * g_delta_g_wk[n,k];
+    F_wk[n,k] = nda::linalg::inv(denom_wk[n,k]) * g_delta_g_wk[n,k];
   }
   
   return F_wk;
@@ -205,7 +205,7 @@ g_out_t eliashberg_g_wk_template(g_t g_in_wk, g_t gbar_in_wk, g_t delta_wk) {
   auto denom_wk = eliashberg_denominator_template<g_out_t, g_t>(g_in_wk, gbar_in_wk, delta_wk);
   auto g_out_wk = make_gf(g_in_wk);
   for (auto [n, k] : g_out_wk.mesh()) {
-    g_out_wk[n,k] = inverse(denom_wk[n,k]) * g_in_wk[n,k];
+    g_out_wk[n,k] = nda::linalg::inv(denom_wk[n,k]) * g_in_wk[n,k];
   }
   
   return g_out_wk;
