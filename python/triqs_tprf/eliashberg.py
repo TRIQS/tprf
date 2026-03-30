@@ -49,6 +49,7 @@ def solve_eliashberg(
     solver="IRAM",
     symmetrize_fct=lambda x: x,
     k=6,
+    max_it=1e5,
     gbar_wk=None,
 ):
     r""" Solve the linearized Eliashberg equation
@@ -107,6 +108,10 @@ def solve_eliashberg(
     k : int, optional
         The number of leading superconducting gaps that shall be calculated. Does
         only have an effect, if 'IRAM' is used as a solver.
+
+    max_it : float, optional
+             The maximum number of iterations that shall be done before a error is raised.
+             Does only have an effect, if 'PM' is used as a solver.
 
     gbar_wk : Gf, optional
               The time-reverse Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
@@ -185,7 +190,7 @@ def solve_eliashberg(
     initial_delta = from_wk_to_x(initial_delta)
 
     if solver == "PM":
-        es, evs = power_method_LR(matvec, initial_delta, tol=tol)
+        es, evs = power_method_LR(matvec, initial_delta, tol=tol, max_it=max_it)
         es, evs = [es], [evs]
 
     elif solver == "IRAM":
