@@ -15,7 +15,8 @@ from triqs.operators.util.hamiltonians import h_int_kanamori
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq
 
 # ----------------------------------------------------------------------
 

@@ -10,7 +10,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, MeshBrZone, MeshProduct, Idx
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq, MeshBrZone, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice_utils import add_fake_bosonic_mesh

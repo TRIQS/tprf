@@ -32,14 +32,14 @@ import numpy as np
 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf
-from triqs.gf import Idx
-from triqs.gf import MeshImFreq
-from triqs.gf import MeshDLRImFreq
-from triqs.gf import MeshProduct
-from triqs.gf import MeshBrZone
+from triqs.gfs import Gf
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq
+from triqs.mesh import MeshDLRImFreq
+from triqs.mesh import MeshProduct
+from triqs.mesh import MeshBrZone
 
-from triqs.gf import make_gf_dlr
+from triqs.gfs import make_gf_dlr
 
 from triqs.lattice import BrillouinZone
 
@@ -543,7 +543,7 @@ def pade_analytical_continuation_wk(
     Parameters
     ----------
 
-    g_wk : triqs.gf.Gf with mesh (MeshImFreq or MeshDLRImFreq, MeshBrZone)
+    g_wk : triqs.gfs.Gf with mesh (MeshImFreq or MeshDLRImFreq, MeshBrZone)
         Lattice Green's function in Matsubara frequency and momentum space :math:`G(i\omega_n, \mathbf{k})`.
     fmesh : MeshReFreq
         Real frequency mesh to perform the analytical continuation to.
@@ -555,7 +555,7 @@ def pade_analytical_continuation_wk(
     Returns
     -------
 
-    g_fk : triqs.gf.Gf with mesh (MeshReFreq, MeshBrZone)
+    g_fk : triqs.gfs.Gf with mesh (MeshReFreq, MeshBrZone)
         Analytically continued real-frequency lattice Green's function
     
     """

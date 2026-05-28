@@ -7,8 +7,9 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 
 from triqs_tprf.gw import gw_sigma, g0w_sigma
 
-from triqs.gf import Gf, MeshImFreq, MeshReFreq, MeshBrZone
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshReFreq, MeshBrZone
+from triqs.mesh import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------

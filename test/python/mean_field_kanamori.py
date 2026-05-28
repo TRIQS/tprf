@@ -76,7 +76,8 @@ e_k = t_r.fourier(kmesh)
 nw = 20
 beta = 0.544
 
-from triqs.gf import MeshImFreq, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq
 wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk

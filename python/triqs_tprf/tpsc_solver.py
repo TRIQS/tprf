@@ -28,11 +28,12 @@ import numpy as np
 
 from scipy.optimize import brentq
 
-from triqs.gf import Gf, MeshProduct
-from triqs.gf import MeshCycLat, MeshBrZone
-from triqs.gf import MeshImFreq, MeshDLRImFreq
-from triqs.gf import MeshImTime, MeshDLRImTime
-from triqs.gf import density as density_from_gf
+from triqs.gfs import Gf
+from triqs.mesh import MeshProduct
+from triqs.mesh import MeshCycLat, MeshBrZone
+from triqs.mesh import MeshImFreq, MeshDLRImFreq
+from triqs.mesh import MeshImTime, MeshDLRImTime
+from triqs.gfs import density as density_from_gf
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk

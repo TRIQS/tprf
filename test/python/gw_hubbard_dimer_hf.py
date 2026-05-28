@@ -24,7 +24,8 @@ import itertools
 import numpy as np
 from scipy.linalg import block_diag
 
-from triqs.gf import Gf, MeshImFreq
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq
 from triqs.operators import n, c, c_dag
 from triqs.lattice.tight_binding import TBLattice
 

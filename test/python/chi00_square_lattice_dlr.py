@@ -5,14 +5,15 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq, Idx, Gf
-from triqs.gf.gf_factories import make_gf_dlr
+from triqs.gfs import Idx, Gf
+from triqs.mesh import MeshImFreq
+from triqs.gfs.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
 
 from triqs_tprf.tight_binding import TBLattice
 from triqs_tprf.lattice import lattice_dyson_g0_wk
-from triqs.gf.meshes import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 
 from triqs_tprf.lattice import dlr_on_imfreq
 from triqs_tprf.lattice import lindhard_chi00

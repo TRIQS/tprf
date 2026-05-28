@@ -13,8 +13,9 @@ from triqs_tprf.gw import lindhard_chi00
 from triqs_tprf.gw import g0w_sigma
 from triqs_tprf.gw import dynamical_screened_interaction_W
 
-from triqs.gf import Gf, MeshReFreq, inverse
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf, inverse
+from triqs.mesh import MeshReFreq
+from triqs.mesh import MeshProduct
 
 # ----------------------------------------------------------------------
 

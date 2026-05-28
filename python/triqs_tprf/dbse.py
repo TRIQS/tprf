@@ -24,7 +24,8 @@
 
 import numpy as np
 
-from triqs.gf import Gf, MeshProduct, Idx
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshProduct
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi0r_from_gr_PH

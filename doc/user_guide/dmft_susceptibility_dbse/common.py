@@ -30,7 +30,8 @@ from datetime import datetime
 from h5 import HDFArchive
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshImFreq, Fourier, BlockGf, inverse
+from triqs.gfs import Gf, Fourier, BlockGf, inverse
+from triqs.mesh import MeshImFreq
 
 from triqs.operators import c as c_operator
 from triqs.operators import Operator, dagger
@@ -45,7 +46,7 @@ from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.ParameterCollection import ParameterCollections
 from triqs_tprf.utilities import BlockGf_data
 
-from triqs.gf.meshes import MeshDLR
+from triqs.mesh import MeshDLR
 from triqs_tprf.fitdlr import fitdlr
 from triqs_tprf.fitdlr import BlockSymmetrizer
 
@@ -235,7 +236,7 @@ def fit_dlr(G_tau, p):
 
     G_c_mat, sol = fitdlr(cmesh, G_tau_mat, H, p.fundamental_operators, **opt)
 
-    from triqs.gf.gf_factories import make_gf_imtime
+    from triqs.gfs.gf_factories import make_gf_imtime
     G_mat_fit = make_gf_imtime(G_c_mat, len(G_tau_mat.mesh))
 
     BlockGf_from_Gf_matrix_valued(G_tau, G_mat_fit)

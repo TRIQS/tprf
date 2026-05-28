@@ -25,8 +25,8 @@ import numpy as np
 
 from h5 import HDFArchive
 
-from triqs.gf import Gf, Fourier
-from triqs.gf import make_gf_from_fourier
+from triqs.gfs import Gf, Fourier
+from triqs.gfs import make_gf_from_fourier
 
 from triqs_tprf.lattice import lattice_dyson_g_wk
 

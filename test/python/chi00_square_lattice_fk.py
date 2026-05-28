@@ -5,7 +5,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq, MeshReFreq, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq, MeshReFreq
 
 # ----------------------------------------------------------------------
 

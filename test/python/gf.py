@@ -18,9 +18,10 @@ from triqs_tprf.gw import gw_sigma
 from triqs_tprf.gw import gw_dynamic_sigma
 from triqs_tprf.gw import g0w_sigma
 
-from triqs.gf.meshes import MeshDLRImFreq
-from triqs.gf import Gf, MeshImFreq, MeshReFreq
-from triqs.gf.mesh_product import MeshProduct
+from triqs.mesh import MeshDLRImFreq
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshReFreq
+from triqs.mesh import MeshProduct
 
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr

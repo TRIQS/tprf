@@ -25,8 +25,9 @@ import itertools
 import numpy as np
 
 from h5 import HDFArchive
-from triqs.gf import Gf, MeshImFreq, Idx, inverse
-from triqs.gf.gf_factories import make_gf_from_fourier
+from triqs.gfs import Gf, Idx, inverse
+from triqs.mesh import MeshImFreq
+from triqs.gfs.gf_factories import make_gf_from_fourier
 from triqs.operators import n, c, c_dag, Operator, dagger
 
 from gw_hubbard_dimer import GWHubbardDimer

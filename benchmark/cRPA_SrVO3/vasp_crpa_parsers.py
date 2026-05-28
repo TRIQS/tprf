@@ -51,7 +51,8 @@ def read_vasp_crpa_momentum_space_interaction_to_ndarray(path, prefix, verbose=F
 
 def convert_from_ndarray_to_triqs(U_Q, Q, cell, kpts):
 
-    from triqs.gf import Gf, MeshBrZone
+    from triqs.gfs import Gf
+    from triqs.mesh import MeshBrZone
     from triqs.lattice.lattice_tools import BrillouinZone
     from triqs.lattice.lattice_tools import BravaisLattice
 

@@ -31,7 +31,7 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import itertools
 import numpy as np
 
-from triqs.gf.block_gf import fix_gf_struct_type
+from triqs.gfs.block_gf import fix_gf_struct_type
 from triqs.operators import c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------    

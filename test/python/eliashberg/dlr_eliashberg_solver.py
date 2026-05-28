@@ -12,12 +12,13 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
 
-from triqs.gf import Gf, MeshImFreq, MeshBrZone
-from triqs.gf.meshes import MeshDLRImFreq, MeshDLR
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshBrZone
+from triqs.mesh import MeshDLRImFreq, MeshDLR
+from triqs.mesh import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
-from triqs.gf.gf_factories import make_gf_dlr
+from triqs.gfs.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
 

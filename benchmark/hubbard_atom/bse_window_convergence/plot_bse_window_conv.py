@@ -8,7 +8,7 @@ Author: Hugo U.R. Strand (2017), hugo.strand@gmail.com """
 # ----------------------------------------------------------------------
 
 import numpy as np
-from triqs.gf import *
+from triqs.gfs import *
 from triqs_tprf.analytic_hubbard_atom import analytic_hubbard_atom
 
 # ----------------------------------------------------------------------

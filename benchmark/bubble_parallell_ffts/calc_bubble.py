@@ -9,7 +9,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq
+from triqs.mesh import MeshImFreq
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 

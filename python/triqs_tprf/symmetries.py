@@ -24,7 +24,7 @@
 
 import numpy as np
 
-from triqs.gf import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 
 
 def enforce_symmetry(gf, variables, symmetries):

@@ -30,7 +30,7 @@ https://github.com/amstremblay/TPSC
 
 import numpy as np
 
-from triqs.gf import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 from triqs.lattice.tight_binding import TBLattice
 
 from triqs_tprf.tpsc_solver import tpsc_solver

@@ -29,8 +29,8 @@ from scipy.sparse.linalg import eigs
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf
-from triqs.gf.meshes import MeshDLRImFreq
+from triqs.gfs import Gf
+from triqs.mesh import MeshDLRImFreq
 from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr

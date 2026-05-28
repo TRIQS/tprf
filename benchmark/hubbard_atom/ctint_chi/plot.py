@@ -2,11 +2,12 @@
 
 import numpy as np
 
-from triqs.gf import *
+from triqs.gfs import *
 from h5 import HDFArchive
 from triqs.utility import mpi
 
-from triqs.gf import Gf, MeshImFreq, iOmega_n, inverse
+from triqs.gfs import Gf, iOmega_n, inverse
+from triqs.mesh import MeshImFreq
 from triqs.operators import c, c_dag, n
 from itertools import product
 

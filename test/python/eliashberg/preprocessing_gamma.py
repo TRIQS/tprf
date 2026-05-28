@@ -1,7 +1,7 @@
 """ Author: Stefan Käser (2020) stefan.kaeser7@gmail.com """
 import numpy as np
 
-from triqs.gf import MeshProduct, MeshImFreq, MeshBrZone, MeshImTime, MeshCycLat
+from triqs.mesh import MeshProduct, MeshImFreq, MeshBrZone, MeshImTime, MeshCycLat
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients

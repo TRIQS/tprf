@@ -51,7 +51,7 @@ def fitdlr(dlr_mesh, G_tau, H, fundamental_operators, symmetrizer=None,
         Triqs imaginary time Green's function on linear tau mesh (with stochastic noise)
     H : triqs.operator.Operator
         Second quatized Triqs operator corresponding to G_tau
-    fundamental_operators : list() of triqs.gf.operators.c
+    fundamental_operators : list() of triqs.gfs.operators.c
         List of Triqs annihilation operators determining the orbital order of G_tau
     symmetrizer : BlockSymmetrizer, optional
         Symmetry class instance determining additional symmetries of G_tau. Default `None`
@@ -96,7 +96,7 @@ def fitdlr(dlr_mesh, G_tau, H, fundamental_operators, symmetrizer=None,
         print(f'fitdlr: nfev {sol.nfev} nit {sol.nit} njev {sol.njev} success {sol.success}')
         print(f'fitdlr: res (g, rho, norm) = ({sol.res:1.1E}, {sol.density_res:1.1E}, {sol.norm_res:1.1E})')
 
-    from triqs.gf import Gf
+    from triqs.gfs import Gf
     G_c = Gf(mesh=dlr_mesh, target_shape=G_tau.target_shape)
     G_c.data[:] = G_xaa_sym
 
@@ -107,8 +107,8 @@ class triqs_driver:
 
     def __init__(self, cmesh):
 
-        from triqs.gf import Gf
-        from triqs.gf.meshes import MeshDLR
+        from triqs.gfs import Gf
+        from triqs.mesh import MeshDLR
 
         assert( type(cmesh) == MeshDLR )
 
@@ -128,8 +128,8 @@ class triqs_driver:
 
     def initial_guess_from_tau_interp1d(self, tau_i, G_iaa, beta):
 
-        from triqs.gf import Gf
-        from triqs.gf.gf_factories import make_gf_dlr
+        from triqs.gfs import Gf
+        from triqs.gfs.gf_factories import make_gf_dlr
 
         G_c = Gf(mesh=self.m, target_shape=G_iaa.shape[1:])
         G_t = make_gf_dlr_imtime(G_c)
@@ -165,7 +165,7 @@ class triqs_driver:
         
         if not hasattr(self, 'eval_T'):
             cmesh = self.m
-            from triqs.gf import Gf
+            from triqs.gfs import Gf
             gc = Gf(mesh=cmesh, target_shape=[len(cmesh), 1])
             gc.data[:, :, 0] = np.eye(len(cmesh))
             eval_T = np.zeros((len(tau_i), len(cmesh)))

@@ -4,8 +4,9 @@ import numpy as np
 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshReFreq, MeshBrZone
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshReFreq, MeshBrZone
+from triqs.mesh import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import g0w_sigma, g0w_dynamic_sigma

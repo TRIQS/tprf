@@ -4,11 +4,12 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImTime, MeshImFreq
+from triqs.gfs import Gf
+from triqs.mesh import MeshImTime, MeshImFreq
 from triqs.operators import c, c_dag, n
 
-from triqs.gf import inverse, iOmega_n, Fourier
-from triqs.gf.gf_factories import make_gf_imtime, make_gf_imfreq, make_gf_dlr_imtime
+from triqs.gfs import inverse, iOmega_n, Fourier
+from triqs.gfs.gf_factories import make_gf_imtime, make_gf_imfreq, make_gf_dlr_imtime
 
 from triqs.atom_diag import AtomDiag, atomic_g_iw, atomic_g_tau
 
@@ -63,7 +64,7 @@ def test_fit(verbose=False):
     tol = 1e-5
     G_tau.data[:] += np.random.normal(scale=tol, size=G_tau.data.shape)
 
-    from triqs.gf.meshes import MeshDLR
+    from triqs.mesh import MeshDLR
     cmesh = MeshDLR(beta, 'Fermion', w_max=1., eps=1e-6)
         
     block_mat = np.array([[1, 0], [0, 2]])

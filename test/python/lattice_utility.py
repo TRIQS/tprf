@@ -13,9 +13,10 @@ from triqs_tprf.lattice import split_into_dynamic_wk_and_constant_k, add_dynamic
 from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 
-from triqs.gf import Gf, MeshImFreq, Idx, MeshImTime, MeshBrZone
-from triqs.gf.meshes import MeshDLRImFreq, MeshReFreq
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq, MeshImTime, MeshBrZone
+from triqs.mesh import MeshDLRImFreq, MeshReFreq
+from triqs.mesh import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------

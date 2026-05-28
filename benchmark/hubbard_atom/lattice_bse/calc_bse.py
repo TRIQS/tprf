@@ -4,11 +4,11 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf
-from triqs.gf import inverse
-from triqs.gf import iOmega_n
-from triqs.gf import MeshImFreq
-from triqs.gf import MeshBrZone
+from triqs.gfs import Gf
+from triqs.gfs import inverse
+from triqs.gfs import iOmega_n
+from triqs.mesh import MeshImFreq
+from triqs.mesh import MeshBrZone
 
 from triqs.lattice import BrillouinZone, BravaisLattice
 

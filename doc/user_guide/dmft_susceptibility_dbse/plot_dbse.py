@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from triqs.gf import MeshBrillouinZone, Idx, Gf, MeshProduct
+from triqs.gfs import Idx, Gf
+from triqs.mesh import MeshBrZone, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------

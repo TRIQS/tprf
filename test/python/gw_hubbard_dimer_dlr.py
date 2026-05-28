@@ -24,8 +24,9 @@
 import numpy as np
 
 
-from triqs.gf import Gf, MeshImFreq, Idx
-from triqs.gf import inverse, iOmega_n
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq
+from triqs.gfs import inverse, iOmega_n
 from triqs.lattice.tight_binding import TBLattice
 
 
@@ -36,7 +37,7 @@ from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import chi_wr_from_chi_wk
 
 from triqs_tprf.gw_solver import GWSolver
-from triqs.gf.meshes import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 
 
 class GWHubbardDimerDLR:

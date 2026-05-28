@@ -42,7 +42,7 @@ from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------
 
-from triqs.gf.block_gf import fix_gf_struct_type
+from triqs.gfs.block_gf import fix_gf_struct_type
 import triqs.utility.mpi as mpi
 
 # ----------------------------------------------------------------------

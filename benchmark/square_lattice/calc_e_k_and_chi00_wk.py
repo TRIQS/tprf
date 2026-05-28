@@ -5,7 +5,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq
+from triqs.mesh import MeshImFreq
 from h5 import HDFArchive
 
 # ----------------------------------------------------------------------

@@ -15,7 +15,8 @@ from scipy.optimize import brentq
     
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq
 
 # ----------------------------------------------------------------------
 

@@ -24,8 +24,9 @@
 import numpy as np
 
 
-from triqs.gf import Gf, MeshImFreq, Idx
-from triqs.gf import inverse, iOmega_n
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq
+from triqs.gfs import inverse, iOmega_n
 from triqs.lattice.tight_binding import TBLattice
 
 

@@ -22,7 +22,8 @@
 
 import numpy as np
 
-from triqs.gf import Gf, MeshImFreq
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq
 from triqs.operators import n, c, c_dag
 from triqs.lattice.tight_binding import TBLattice
 

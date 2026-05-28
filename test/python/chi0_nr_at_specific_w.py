@@ -15,7 +15,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq, Idx, MeshProduct
+from triqs.gfs import Idx
+from triqs.mesh import MeshImFreq, MeshProduct
 from triqs_tprf.utilities import create_g0_wk_for_test_model
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.lattice import fourier_wk_to_wr

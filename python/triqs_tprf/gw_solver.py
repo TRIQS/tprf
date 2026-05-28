@@ -27,8 +27,9 @@ import numpy as np
 from h5.formats import register_class 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshProduct, Idx, MeshImFreq
-from triqs.gf.gf_factories import make_gf_from_fourier
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshProduct, MeshImFreq
+from triqs.gfs.gf_factories import make_gf_from_fourier
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.lattice import lattice_dyson_g_wk
@@ -60,9 +61,9 @@ from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.ase_timing import Timer, timer
 
 
-from triqs.gf.meshes import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 from triqs_tprf.lattice import dlr_on_imfreq
-from triqs.gf.gf_factories import make_gf_dlr
+from triqs.gfs.gf_factories import make_gf_dlr
 
 
 class GWSolver():

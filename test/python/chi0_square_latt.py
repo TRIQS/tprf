@@ -4,7 +4,8 @@
 import itertools
 import numpy as np
 
-from triqs.gf import Gf, MeshImFreq, MeshProduct, MeshBrZone
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshProduct, MeshBrZone
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs.applications.tprf.lattice import g0k_from_ek

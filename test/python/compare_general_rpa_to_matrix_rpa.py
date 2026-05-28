@@ -52,7 +52,7 @@ print(e_k)
 # ----------------------------------------------------------------------
 # -- Bare susceptibility from Green's function bubble
 
-from triqs.gf import MeshImFreq
+from triqs.mesh import MeshImFreq
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 
 wmesh = MeshImFreq(beta=5.0, S='Fermion', n_max=30)

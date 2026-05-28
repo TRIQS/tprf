@@ -25,7 +25,8 @@
 
 import numpy as np
 
-from triqs.gf import MeshImFreq, MeshProduct, Gf
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshProduct
 
 
 from triqs_tprf.linalg_utils import ChannelOrder
@@ -74,7 +75,7 @@ def test_conversion_between_tensor_and_matrix_valued_channel_representations():
     # - Constants are treated like unit matrix times constant
     # - Products are matrix products
 
-    from triqs.gf import inverse
+    from triqs.gfs import inverse
 
     U = np.random.random((n, n, n, n)) # Need channel grouping for this as well
     U_mat = matrix_from_tensor(U)

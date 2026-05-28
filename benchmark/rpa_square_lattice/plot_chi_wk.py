@@ -9,7 +9,8 @@ from scipy.interpolate import griddata
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from triqs.gf import MeshBrZone, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshBrZone
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------

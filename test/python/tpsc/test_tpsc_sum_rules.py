@@ -38,7 +38,7 @@ https://jp1.journaldephysique.org/articles/jp1/abs/1997/11/jp1v7p1309/jp1v7p1309
 
 import numpy as np
 
-from triqs.gf import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 from triqs.lattice.tight_binding import TBLattice
 
 from triqs_tprf.tpsc_solver import tpsc_solver

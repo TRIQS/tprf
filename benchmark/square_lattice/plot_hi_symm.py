@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from triqs.gf import MeshBrZone, Idx
+from triqs.gfs import Idx
+from triqs.mesh import MeshBrZone
 
 from triqs_tprf.lattice_utils import k_space_path
 

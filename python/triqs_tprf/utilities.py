@@ -30,9 +30,10 @@ import numpy as np
 
 from h5 import HDFArchive
 
-from triqs.gf import Gf, MeshImFreq, MeshProduct, BlockGf
-from triqs.gf.tools import fit_legendre
-from triqs.gf.gf_fnt import enforce_discontinuity
+from triqs.gfs import Gf, BlockGf
+from triqs.mesh import MeshImFreq, MeshProduct
+from triqs.gfs.tools import fit_legendre
+from triqs.gfs.gf_fnt import enforce_discontinuity
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk, solve_rpa_PH, construct_phi_wk
 from triqs_tprf.tight_binding import create_model_for_tests

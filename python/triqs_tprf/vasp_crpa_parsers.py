@@ -71,7 +71,8 @@ def read_vasp_crpa_vq_to_ndarray(path, prefix, verbose=False, orbsub=[]):
 
 def convert_from_ndarray_to_triqs(U_Q, Q, units, orbital_positions, kpts):
 
-    from triqs.gf import Gf, MeshBrZone
+    from triqs.gfs import Gf
+    from triqs.mesh import MeshBrZone
     from triqs.lattice.lattice_tools import BrillouinZone
     from triqs.lattice.lattice_tools import BravaisLattice
     from triqs_tprf.tight_binding import TBLattice

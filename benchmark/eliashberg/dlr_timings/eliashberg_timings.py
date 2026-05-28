@@ -10,9 +10,10 @@ from triqs_tprf.lattice import eliashberg_product_fft, eliashberg_product_fft_co
 from triqs_tprf.lattice import fourier_wk_to_wr
 from triqs_tprf.lattice import fourier_wr_to_tr
 
-from triqs.gf import Gf, MeshImFreq, MeshBrillouinZone
-from triqs.gf.meshes import MeshDLRImFreq
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshBrZone
+from triqs.mesh import MeshDLRImFreq
+from triqs.mesh import MeshProduct
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 
 # ----------------------------------------------------------------------
@@ -39,7 +40,7 @@ def eliashberg_timings():
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrillouinZone(bz, np.array([nk, nk, nk], dtype=int))
+    kmesh = MeshBrZone(bz, np.array([nk, nk, nk], dtype=int))
     
     wmesh = MeshImFreq(beta, 'Fermion', nw)
     DLRwmesh = MeshDLRImFreq(beta, 'Fermion', w_max, eps)

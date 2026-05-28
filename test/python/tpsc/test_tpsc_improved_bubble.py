@@ -27,7 +27,7 @@ DOI: https://doi.org/10.1103/PhysRevB.108.075144
 
 import numpy as np
 
-from triqs.gf import MeshDLRImFreq
+from triqs.mesh import MeshDLRImFreq
 from triqs.lattice.tight_binding import TBLattice
 
 from triqs_tprf.tpsc_solver import tpsc_solver

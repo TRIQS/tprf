@@ -15,7 +15,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Idx
+from triqs.gfs import Idx
 
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.utilities import create_eliashberg_ingredients

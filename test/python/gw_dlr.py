@@ -15,11 +15,11 @@ from triqs_tprf.gw import bubble_PI_wk
 from triqs_tprf.gw import dynamical_screened_interaction_W
 from triqs_tprf.gw import gw_sigma, fock_sigma
 
-from triqs.gf import Gf, Idx
-from triqs.gf import MeshImFreq, MeshImTime, MeshDLRImFreq, MeshDLRImTime
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq, MeshImTime, MeshDLRImFreq, MeshDLRImTime
+from triqs.mesh import MeshProduct
 
-from triqs.gf.gf_factories import make_gf_dlr
+from triqs.gfs.gf_factories import make_gf_dlr
 
 # ----------------------------------------------------------------------
 

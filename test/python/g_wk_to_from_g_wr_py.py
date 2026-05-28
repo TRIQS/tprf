@@ -3,8 +3,9 @@ import numpy as np
 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, MeshImFreq, MeshProduct
-from triqs.gf import MeshBrZone, MeshCycLat
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshProduct
+from triqs.mesh import MeshBrZone, MeshCycLat
 from triqs.lattice import BrillouinZone, BravaisLattice
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk

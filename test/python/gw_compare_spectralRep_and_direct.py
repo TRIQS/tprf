@@ -12,8 +12,9 @@ from triqs_tprf.lattice import lattice_dyson_g0_wk
 from triqs_tprf.gw import gw_sigma
 from triqs_tprf.gw import g0w_sigma
 
-from triqs.gf import Gf, MeshImFreq
-from triqs.gf.mesh_product import MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq
+from triqs.mesh import MeshProduct
 
 # ----------------------------------------------------------------------
 

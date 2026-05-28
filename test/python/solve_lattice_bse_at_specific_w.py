@@ -17,7 +17,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, Idx, MeshProduct, MeshBrZone
+from triqs.gfs import Gf, Idx
+from triqs.mesh import MeshImFreq, MeshProduct, MeshBrZone
 from triqs_tprf.utilities import create_g0_wk_for_test_model
 from triqs_tprf.ParameterCollection import ParameterCollection
 from triqs_tprf.bse import solve_lattice_bse, solve_lattice_bse_at_specific_w

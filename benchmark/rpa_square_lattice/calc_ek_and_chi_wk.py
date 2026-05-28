@@ -6,7 +6,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshImFreq
+from triqs.mesh import MeshImFreq
 from h5 import HDFArchive
 from triqs.operators import n, c, c_dag, Operator, dagger
 

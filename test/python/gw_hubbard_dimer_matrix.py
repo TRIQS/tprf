@@ -26,8 +26,9 @@ import numpy as np
 
 from triqs.lattice.tight_binding import TBLattice
 
-from triqs.gf import Gf, MeshImFreq, Idx, inverse
-from triqs.gf.gf_factories import make_gf_from_fourier
+from triqs.gfs import Gf, Idx, inverse
+from triqs.mesh import MeshImFreq
+from triqs.gfs.gf_factories import make_gf_from_fourier
 
 from triqs.operators import n, c, c_dag, Operator, dagger
 from triqs_tprf.rpa_tensor import get_rpa_tensor

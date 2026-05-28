@@ -16,7 +16,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Idx
+from triqs.gfs import Idx
 from triqs.lattice.lattice_tools import BrillouinZone
 from triqs.operators import n, c, c_dag, Operator, dagger
 

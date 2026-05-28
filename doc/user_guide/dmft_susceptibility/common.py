@@ -26,7 +26,8 @@ import numpy as np
 
 import triqs.utility.mpi as mpi
 from h5 import HDFArchive
-from triqs.gf import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx
+from triqs.gfs import Gf, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx
+from triqs.mesh import MeshImFreq
 
 import triqs_cthyb
 

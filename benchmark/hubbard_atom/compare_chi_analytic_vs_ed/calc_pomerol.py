@@ -8,7 +8,7 @@ Author: Hugo U.R. Strand (2017) hugo.strand@gmail.com """
 
 import numpy as np
 
-from triqs.gf import Gf
+from triqs.gfs import Gf
 from triqs.operators import c, c_dag
 from h5 import HDFArchive
 from triqs.utility import mpi # needed for pomerol2triqs

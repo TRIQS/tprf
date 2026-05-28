@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 from h5 import HDFArchive
-from triqs.gf import MeshBrZone
+from triqs.mesh import MeshBrZone
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':

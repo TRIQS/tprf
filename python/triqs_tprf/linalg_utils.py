@@ -27,7 +27,7 @@ import numpy as np
 
 from math import isqrt
 
-from triqs.gf import Gf
+from triqs.gfs import Gf
 
 
 class ChannelOrder():

@@ -6,7 +6,8 @@
 import itertools
 import numpy as np
 
-from triqs.gf import Gf, MeshImFreq, MeshImTime, MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshImTime, MeshProduct
 
 # ----------------------------------------------------------------------
 def first_index(mesh):

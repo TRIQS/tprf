@@ -27,8 +27,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf
-from triqs.gf.block_gf import fix_gf_struct_type
+from triqs.gfs import Gf
+from triqs.gfs.block_gf import fix_gf_struct_type
 from triqs.operators import n, c, c_dag, Operator, dagger
 
 # ----------------------------------------------------------------------

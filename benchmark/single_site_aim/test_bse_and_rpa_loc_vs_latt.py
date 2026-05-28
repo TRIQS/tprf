@@ -10,11 +10,11 @@ Author: Hugo U.R. Strand (2018) hugo.strand@gmail.com """
 import os
 import numpy as np
 
-from triqs.gf import Gf, Idx
+from triqs.gfs import Gf, Idx
 from triqs.operators import c, c_dag
 from h5 import HDFArchive
 
-from triqs.gf import MeshBrZone, MeshProduct, MeshImFreq
+from triqs.mesh import MeshBrZone, MeshProduct, MeshImFreq
 from triqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
 
 # ----------------------------------------------------------------------

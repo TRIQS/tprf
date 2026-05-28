@@ -11,11 +11,11 @@ import numpy as np
 
 import triqs.utility.mpi as mpi
 
-from triqs.gf import Gf, Idx, inverse, iOmega_n
+from triqs.gfs import Gf, Idx, inverse, iOmega_n
 from triqs.operators import c, c_dag
 from h5 import HDFArchive
 
-from triqs.gf import MeshBrZone, MeshProduct, MeshImFreq
+from triqs.mesh import MeshBrZone, MeshProduct, MeshImFreq
 from triqs.lattice.lattice_tools import BravaisLattice, BrillouinZone
 
 # ----------------------------------------------------------------------

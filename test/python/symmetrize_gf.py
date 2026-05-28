@@ -15,7 +15,8 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 
-from triqs.gf import Gf, MeshImFreq, MeshBrZone, MeshProduct
+from triqs.gfs import Gf
+from triqs.mesh import MeshImFreq, MeshBrZone, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 from triqs_tprf.ParameterCollection import *
 

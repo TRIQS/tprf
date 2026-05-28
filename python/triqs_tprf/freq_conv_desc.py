@@ -6,7 +6,7 @@ from cpp2py.wrap_generator import *
 module = module_(full_name = "freq_conv", doc = r"functionality for changing frequency conventions", app_name = "triqs_tprf")
 
 # Imports
-module.add_imports(*['triqs.gf', 'triqs.gf.meshes'])
+module.add_imports(*['triqs.gfs', 'triqs.mesh'])
 
 # Add here all includes
 module.add_include("triqs_tprf/freq_conv.hpp")

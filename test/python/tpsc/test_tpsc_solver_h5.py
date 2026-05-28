@@ -3,7 +3,8 @@ import numpy as np
 
 from h5 import HDFArchive
 
-from triqs.gf import MeshDLRImFreq, MeshImFreq, Gf
+from triqs.gfs import Gf
+from triqs.mesh import MeshDLRImFreq, MeshImFreq
 from triqs.lattice.tight_binding import TBLattice
 
 from triqs_tprf.tpsc_solver import tpsc_solver
