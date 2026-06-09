@@ -3,7 +3,7 @@
 Spin susceptibility in Sr2RuO4
 ==============================
 
-In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of `PRB 100, 125120 (2019) <https://doi.org/10.1103/PhysRevB.100.125120>`_. We will use the reformulation of the (DMFT) lattice susceptibility in terms of the dual Bethe-Salpeter equation (DBSE) with :math:`1/N_\nu^3` convergence with respect to the number of fermionic Matsubara frequencies :math:`N_\nu`, for details see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
+In this tutorial we will compute the static magnetic susceptibilitly :math:`\chi_{S_z S_z}(\mathbf{q})` of the correlated Hund's metal Sr2RuO4 withn dynamical mean field theory (DMFT), reproducing the results of `PRB 100, 125120 (2019) <https://doi.org/10.1103/PhysRevB.100.125120>`_. We will use the reformulation of the (DMFT) lattice susceptibility in terms of the dual Bethe-Salpeter equation (DBSE) with :math:`1/N_\nu^3` convergence with respect to the number of fermionic Matsubara frequencies :math:`N_\nu`, for details see `Phys. Rev. B 109, 155157 (2024) <https://doi.org/10.1103/PhysRevB.109.155157>`_.
 
 The calculation is based on a Wannier model for the three bands crossing the Fermi level in Sr2RuO4. These bands have Ru-4d t2g symmetry and a Wannier interpolation with Wannier90 converges in just a few iterations, giving the band structure
 
