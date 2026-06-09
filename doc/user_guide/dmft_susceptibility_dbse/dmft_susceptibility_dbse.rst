@@ -47,3 +47,11 @@ see  :download:`plot_dbse.py <plot_dbse.py>` for the plot script.
 Since the standard Bethe-Salpeter equation (BSE) only converges as :math:`1/N_\nu` the calculations at :math:`N_\nu = 4, 8, 16` are far from the :math:`N_\nu \rightarrow \infty` limit and requires extrapolation in order to obtain a quantiative correct result. However, using the dual Bethe-Salpeter equation (DBSE) implementation we observe a drastically improved convergence rate and already at :math:`N_\nu=4` the result is within 5% of the converged solution.
 
 If you use the dual Bethe-Salpeter equation formulation in your work please cite `Phys. Rev. B 109, 155157 (2024) <https://doi.org/10.1103/PhysRevB.109.155157>`_.
+
+Attention points
+^^^^^^^^^^^^^^^^
+The DBSE and BSE are equivalent only at DMFT self-consistency, when :math:`\sum_k G^\text{DMFT}(k,\nu) = g^\text{impurity}(nu)`. Thus, it is important to ensure that the DMFT self-consistency cycle is properly converged before evaluating the vertices and (D)BSE. 
+
+The DBSE is OpenMP parallelized, typically the best performance is obtained by running on a single node with maximal OpenMP parallelization and no MPI parallelization. E.g., if you have 10 cores available: ``OMP_NUM_THREADS=10 mpirun -np 1 script.py`` 
+
+The current implementation performs the (D)BSE for all bosonic frequencies and momenta in one go, which is not optimal in terms of memory usage.  
