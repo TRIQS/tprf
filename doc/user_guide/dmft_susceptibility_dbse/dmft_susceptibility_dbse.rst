@@ -46,4 +46,4 @@ see  :download:`plot_dbse.py <plot_dbse.py>` for the plot script.
 
 Since the standard Bethe-Salpeter equation (BSE) only converges as :math:`1/N_\nu` the calculations at :math:`N_\nu = 4, 8, 16` are far from the :math:`N_\nu \rightarrow \infty` limit and requires extrapolation in order to obtain a quantiative correct result. However, using the dual Bethe-Salpeter equation (DBSE) implementation we observe a drastically improved convergence rate and already at :math:`N_\nu=4` the result is within 5% of the converged solution.
 
-If you use the dual Bethe-Salpeter equation formulation in your work please cite `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_.
+If you use the dual Bethe-Salpeter equation formulation in your work please cite `Phys. Rev. B 109, 155157 (2024) <https://doi.org/10.1103/PhysRevB.109.155157>`_.
