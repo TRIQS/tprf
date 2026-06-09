@@ -25,7 +25,7 @@ In order to use the dual Bethe-Salpeter equation for computing the lattice susce
 
 Since the hybridization function of the Sr2RuO4 impurity problem is diagonal due to symmetry, it is not possible to sample all spin-orbital components :math:`abcd` of these correlators using partition function sampling Monte Carlo. Therefore we use the hybridization expansion with worm sampling as implemented in `W2Dynamics <https://github.com/w2dynamics/w2dynamics>`_ to sample these correlators, using the `TRIQS/w2dynamics_interface <https://github.com/triqs/w2dynamics_interface>`_. The example scripts for the sampling are :download:`calc_g2.py <calc_g2.py>`, :download:`calc_tri.py <calc_tri.py>`, and :download:`calc_chi.py <calc_chi.py>`.
 
-From :math:`g^{(4)}_{abcd}(\omega, \nu, \nu')` we compute the impurity reducible vertex function :math:`F_{abcd}(\omega, \nu, \nu')` and from :math:`g^{(3)}_{abcd}(\omega, \nu)` the three point vertex function :math:`L_{abcd}(\omega, \nu)` is obtained, see `arXiv 2306.05157 <https://arxiv.org/abs/2306.05157>`_. Using the impurity susceptibility :math:`X_{abcd}(\omega)`, :math:`F`, and :math:`L` the lattice susceptibility :math:`\chi` is given by
+From :math:`g^{(4)}_{abcd}(\omega, \nu, \nu')` we compute the impurity reducible vertex function :math:`F_{abcd}(\omega, \nu, \nu')` and from :math:`g^{(3)}_{abcd}(\omega, \nu)` the three point vertex function :math:`L_{abcd}(\omega, \nu)` is obtained, see Phys. Rev. B 109, 155157 (2024) <https://doi.org/10.1103/PhysRevB.109.155157>_. Using the impurity susceptibility :math:`X_{abcd}(\omega)`, :math:`F`, and :math:`L` the lattice susceptibility :math:`\chi` is given by
 
 .. math::
    \chi = X + L \frac{\tilde{\chi}^0}{1 - \tilde{\chi}^0 F} L
