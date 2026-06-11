@@ -10,22 +10,21 @@ The model has a hopping parameter :math: `t`, a Hubbard interaction :math: `U`, 
 Vertices
 --------
 
-(plotting scripts for vertices here)
-
-
-Bethe-Salpeter Equation
------------------------
-
-(short discussion of BSE script)
+:download:`plot_vertex.py <plot_vertex.py>`
+(Include discussion of plot script and figure here)
 
 Convergence of Susceptibility
 -----------------------------
 
-(Show convergence of different components here)
+:download:`plot_components.py <plot_components.py>`
+
+(Include discussion of plot script and figure here)
 
 Larmor precession
 -----------------
 
-In the presence of a Zeeman field :math: `B`, the total spin of the system will undergo Larmor precession. This is visible in the in-plane (x,y) components of the spin susceptibility. The frequency of the oscillation is fixed by :math: `B` and is thus known analytically. This is a good check on the numerical results. 
+In the presence of a Zeeman field :math: `B`, the total spin of the system will undergo Larmor precession. This is visible in the in-plane (x,y) components of the spin susceptibility at :math: `\mathbf{q}=\Gamma`. The frequency of the oscillation is fixed by :math: `B` and is thus known analytically. This is a good check on the numerical results. 
 
-(plot scripts)
+:download:`plot_chiG.py <plot_chiG.py>`
+
+(Include discussion of plot script and figure here)
