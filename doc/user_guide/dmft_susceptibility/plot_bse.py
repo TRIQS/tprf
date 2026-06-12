@@ -28,8 +28,8 @@ from triqs_tprf.lattice_utils import k_space_path
 def get_path():    
 
     G = np.array([0.0, 0.0, 0.0]) * 2.*np.pi
-    X = np.array([0.5, 0.5, 0.0]) * 2.*np.pi
-    M = np.array([0.5, 0.0, 0.0]) * 2.*np.pi
+    M = np.array([0.5, 0.5, 0.0]) * 2.*np.pi
+    X = np.array([0.5, 0.0, 0.0]) * 2.*np.pi
 
     paths = [(G, X), (X, M), (M, G)]
     k_vecs, k_plot, K_plot = k_space_path(paths, num=100)
