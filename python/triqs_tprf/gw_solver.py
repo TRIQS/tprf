@@ -416,7 +416,7 @@ class GWSolver():
 TRIQS: GW solver
 """
         else:
-            logo = """
+            logo = r"""
  _____ ___ ___ ___  ___
 |_   _| _ \_ _/ _ \/ __| 
   | | |   /| | (_) \__ \ 

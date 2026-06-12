@@ -462,7 +462,7 @@ def solve_lattice_bse_at_specific_w(g_wk, gamma_wnn, nw_index):
 
     if mpi.is_master_node():
         print(tprf_banner(), "\n")
-        print('Lattice BSE with local vertex approximation at specific \omega.\n')
+        print('Lattice BSE with local vertex approximation at specific \\omega.\n')
         print('nk    =', nk)
         print('nw_index    =', nw_index)
         print('nwf   =', nwf)

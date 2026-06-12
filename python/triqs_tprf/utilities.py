@@ -130,7 +130,7 @@ def legendre_filter(G_tau, order=100, G_l_cut=1e-19):
 # ----------------------------------------------------------------------
 def G2_loc_fixed_fermionic_window_python(g2, nwf):
 
-    """ Limit the last two fermionic freqiencies of a three
+    r""" Limit the last two fermionic frequencies of a three
     frequency Green's function object :math:`G(\omega, \nu, \nu')`
     to ``nwf``. """
 

@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 
-""" Test if calculating the lattice susceptibility via the Bethe-
+r""" Test if calculating the lattice susceptibility via the Bethe-
     Salpeter equation for a specific \omega gives the same result as the
     function used for a whole bosonic Matsubara mesh. 
 

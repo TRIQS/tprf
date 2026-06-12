@@ -31,7 +31,7 @@ subp = [2, 2, 1]
 
 plt.subplot(*subp); subp[-1] += 1
 plt.plot(ps.iter, ps.dG_l, 's-')
-plt.ylabel('$\max | \Delta G_l |$')
+plt.ylabel(r'$\max | \Delta G_l |$')
 plt.xlabel('Iteration')
 plt.semilogy([], [])
 

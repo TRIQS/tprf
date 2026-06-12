@@ -20,7 +20,7 @@
 #
 ################################################################################
 
-"""
+r"""
 TPSC for the Hubbard model on the square lattice
 
 checking that the TPSC result does satisfy the exact sum rules

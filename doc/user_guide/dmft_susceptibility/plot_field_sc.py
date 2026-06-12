@@ -11,7 +11,7 @@ def plot_ps(ps):
     plt.plot(ps.iter, ps.dG_l, 's-', label=r'$\Delta G_l$')
     plt.plot(ps.iter, ps.dM, 'o-', label=r'$\Delta M$')
     plt.semilogy([], [])
-    plt.ylabel('$\Delta G_l$, $\Delta M$')
+    plt.ylabel(r'$\Delta G_l$, $\Delta M$')
     plt.legend(loc='best')
     plt.xlabel('Iteration')
 

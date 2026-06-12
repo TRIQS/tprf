@@ -91,8 +91,8 @@ plt.pcolor(qx.reshape((n_k, n_k)), qy.reshape((n_k, n_k)), data.reshape((n_k, n_
 
 plt.colorbar()
 plt.axis('equal')
-plt.xlabel('$q_x/\pi$')
-plt.ylabel('$q_y/\pi$')
+plt.xlabel(r'$q_x/\pi$')
+plt.ylabel(r'$q_y/\pi$')
 plt.tight_layout()
 plt.savefig('figure_chi0q_w0_square_latt.pdf')
 

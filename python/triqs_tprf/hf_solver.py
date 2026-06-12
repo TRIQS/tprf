@@ -510,7 +510,7 @@ class HartreeFockSolver(object):
 TRIQS: Hartree-Fock solver
 """
         else:
-            logo = """
+            logo = r"""
  _____ ___ ___ ___  ___   _  _ ___
 |_   _| _ \_ _/ _ \/ __| | || | __|
   | | |   /| | (_) \__ \ | __ | _|
@@ -568,7 +568,7 @@ class HartreeSolver(HartreeFockSolver):
 TRIQS: Hartree solver
 """
         else:
-            logo = """
+            logo = r"""
  _____ ___ ___ ___  ___   _  _
 |_   _| _ \_ _/ _ \/ __| | || |
   | | |   /| | (_) \__ \ | __ |

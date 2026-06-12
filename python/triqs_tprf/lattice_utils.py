@@ -278,7 +278,7 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False, verbose=True):
 
 # ----------------------------------------------------------------------
 def chi_contraction(chi, op1, op2):
-    """Contract a susceptibility with two operators
+    r"""Contract a susceptibility with two operators
 
     Parameters
     ----------
@@ -538,7 +538,7 @@ def gf_matrix_to_tensor(g_mat, target_shape):
 def pade_analytical_continuation_wk(
     g_wk, fmesh, n_points=32, freq_offset=0.05):
 
-    """ Perform Pade analytical continuation of a lattice Green's function
+    r""" Perform Pade analytical continuation of a lattice Green's function
 
     Parameters
     ----------

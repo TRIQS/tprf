@@ -70,13 +70,13 @@ if True:
 plt.subplot(*subp); subp[-1] += 1
 plt.plot(ps.iter, ps.dG, 's-')
 plt.plot(ps.iter, ps.iter * 0 + p.G_tol, '-r', lw=1)
-plt.ylabel('$\max | \Delta G_l |$')
+plt.ylabel(r'$\max | \Delta G_l |$')
 plt.xlabel('Iteration')
 plt.semilogy([], [])
 
 plt.subplot(*subp); subp[-1] += 1
 plt.plot(ps.iter, ps.mu, 's-')
-plt.ylabel('$\mu$')
+plt.ylabel(r'$\mu$')
 plt.xlabel('Iteration')
 
 plt.subplot(*subp); subp[-1] += 1

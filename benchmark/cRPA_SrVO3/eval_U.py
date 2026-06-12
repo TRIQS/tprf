@@ -93,10 +93,10 @@ def red_to_2ind(uijkl, verbose=False):
 
     if verbose:
         np.set_printoptions(precision=3,suppress=True)
-        print('reduced U anti-parallel = U_mm\'\^oo\' = U_mm\'mm\' matrix : \n', Uij_anti)
+        print('reduced U anti-parallel = U_mm\'\\^oo\' = U_mm\'mm\' matrix : \n', Uij_anti)
         print('reduced Uijij : \n', Uijij)
         print('reduced Uijji : \n', Uijji)
-        print('reduced U parallel = U_mm\'\^oo = U_mm\'mm\' - U_mm\'m\'m matrix : \n', Uij_par)
+        print('reduced U parallel = U_mm\'\\^oo = U_mm\'mm\' - U_mm\'m\'m matrix : \n', Uij_par)
 
     return Uij_anti, Uijij, Uijji, Uij_par
 
