@@ -200,11 +200,6 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False, verbose=True):
 
     ntau = 2 * nw_g
 
-    is_dlr_mesh = type(wmesh) == MeshDLRImFreq
-    if is_dlr_mesh:
-        iw_values = np.fromiter(wmesh.values(), dtype=complex)
-        is_symmetrized = np.allclose(iw_values, -iw_values[::-1])
-
     # -- Memory Approximation
 
     ng_tr = ntau * np.prod(nk) * norb**2 # storing G(tau, r)
@@ -257,10 +252,7 @@ def imtime_bubble_chi0_wk(g_wk, nw=1, save_memory=False, verbose=True):
     else:
         if not save_memory:
             if verbose: mpi.report('--> chi0_tr_from_grt_PH (bubble in tau & r)')
-            if is_dlr_mesh:
-                chi0_tr = chi0_tr_from_grt_PH(g_tr, is_symmetrized)
-            else:
-                chi0_tr = chi0_tr_from_grt_PH(g_tr)
+            chi0_tr = chi0_tr_from_grt_PH(g_tr)
             del g_tr
             
             if verbose: mpi.report('--> chi_wr_from_chi_tr')

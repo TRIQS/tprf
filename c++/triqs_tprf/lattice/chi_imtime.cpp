@@ -35,7 +35,7 @@ namespace triqs_tprf {
 // ----------------------------------------------------
 // chi0 bubble in DLR imaginary time
 
-chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetrize) {
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
   assert( g_tr.target() == g_bwd_tr.target() );
@@ -48,7 +48,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetriz
   int nb = g_tr.target().shape()[0];
   double beta = tmesh.beta();
 
-  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps(), symmetrize};
+  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps(), tmesh.symmetrize()};
   chi_Dtr_t chi0_tr{{btmesh, rmesh}, {nb, nb, nb, nb}};
 
   auto g_target = g_tr.target();
@@ -85,15 +85,15 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetriz
   return chi0_tr;
 }
 
-chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
-  return chi0_tr_from_grt_PH(g_tr, g_tr, symmetrize);
+chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
+  return chi0_tr_from_grt_PH(g_tr, g_tr);
 }
     
 // ----------------------------------------------------
 // chi0 bubble in DLR imaginary time
 // -- specialization for w=0 (static bubble susceptibility)
 
-chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetrize) {
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
   assert( g_tr.target() == g_bwd_tr.target() );
@@ -106,7 +106,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetriz
   int nb = g_tr.target().shape()[0];
   double beta = tmesh.beta();
 
-  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps(), symmetrize};
+  dlr_imtime btmesh{beta, Boson, tmesh.w_max(), tmesh.eps(), tmesh.symmetrize()};
 
   imfreq bmesh{beta, Boson, 1};
   chi_wr_t chi0_w0r{{bmesh, rmesh}, {nb, nb, nb, nb}};
@@ -147,8 +147,8 @@ chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr, bool symmetriz
   return chi0_w0r;
 }
 
-chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, bool symmetrize) {
-  return chi0_w0r_from_grt_PH(g_tr, g_tr, symmetrize);
+chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr) {
+  return chi0_w0r_from_grt_PH(g_tr, g_tr);
 }
 
 target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {

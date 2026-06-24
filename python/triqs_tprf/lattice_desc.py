@@ -1347,9 +1347,9 @@ out
 
 module.add_function ("triqs_tprf::chi_tr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_tr_cvt g_tr, triqs_tprf::g_tr_cvt g_bwd_tr)")
 
-module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, bool symmetrize=false)")
+module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr)")
 
-module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, triqs_tprf::g_Dtr_cvt g_bwd_tr, bool symmetrize=false)")
+module.add_function ("triqs_tprf::chi_Dtr_t triqs_tprf::chi0_tr_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, triqs_tprf::g_Dtr_cvt g_bwd_tr)")
                      
 module.add_function ("std::tuple<triqs_tprf::g_Tk_t, triqs_tprf::g_Tk_t> triqs_tprf::g0_Tk_les_gtr_from_e_k(triqs_tprf::e_k_cvt e_k, triqs::mesh::retime Tmesh, double beta)")
 
@@ -1399,7 +1399,7 @@ out
 
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_tr_cvt g_tr, triqs_tprf::g_tr_cvt g_bwd_tr)")
 
-module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, bool symmetrize=false)", doc = r"""Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})` using analytic integration of DLR basis functions in imaginary time.
+module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr)", doc = r"""Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})` using analytic integration of DLR basis functions in imaginary time.
 
   Computes
 
@@ -1418,7 +1418,7 @@ Returns
 out
      Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.""")
 
-module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, triqs_tprf::g_Dtr_cvt g_bwd_tr, bool symmetrize=false)")
+module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi0_w0r_from_grt_PH (triqs_tprf::g_Dtr_cvt g_tr, triqs_tprf::g_Dtr_cvt g_bwd_tr)")
 
 module.add_function ("triqs_tprf::chi_wr_t triqs_tprf::chi_w0r_from_chi_tr (triqs_tprf::chi_tr_cvt chi_tr)", doc = r"""Static susceptibility calculation :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
 
