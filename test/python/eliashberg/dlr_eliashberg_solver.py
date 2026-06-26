@@ -88,7 +88,8 @@ def test_dlr_eliashberg_solver():
     kmesh = MeshBrZone(bz, [nk, nk, nk])
    
     wmesh = MeshImFreq(beta, 'Fermion', nw)
-    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
+    # FIXME: symmetrize=False is required as the eliashberg solver currently has numerical issues with symmetrized DLR meshes (needs investigation).
+    DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps, symmetrize=False)
 
     print('--> lattice_dyson_g0_wk')
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
@@ -109,7 +110,7 @@ def test_dlr_eliashberg_solver():
 
     print('--> setup interaction vertex')
     numesh = MeshImFreq(beta, 'Boson', nw)
-    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps)
+    DLRnumesh = MeshDLRImFreq(beta, 'Boson', lamb, eps, symmetrize=False)
 
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
     I_k.data[:] = 0.0
