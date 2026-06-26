@@ -98,7 +98,7 @@ chi_wk = solve_rpa_PH(chi00_wk, U_abcd)
 
 from triqs_tprf.matrix_rpa import tensor_to_matrix, matrix_to_tensor
 
-test_chi = np.chararray([norb]*4, itemsize=4)
+test_chi = np.empty([norb]*4, dtype='S4')
 
 for i,j,k,l in itertools.product(list(range(norb)), repeat=4):
     test_chi[i,j,k,l] = "%s%s%s%s"%(i,j,k,l)
@@ -108,7 +108,7 @@ print(tensor_to_matrix(test_chi))
 print()
 np.testing.assert_equal(test_chi, matrix_to_tensor(tensor_to_matrix(test_chi)))
 
-test_us = np.chararray([norb]*4, itemsize=2)
+test_us = np.empty([norb]*4, dtype='S2')
 
 for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
@@ -131,7 +131,7 @@ print(tensor_to_matrix(test_us))
 print()
 np.testing.assert_equal(test_us, matrix_to_tensor(tensor_to_matrix(test_us)))
 
-test_uc = np.chararray([norb]*4, itemsize=6)
+test_uc = np.empty([norb]*4, dtype='S6')
 
 for a,b,c,d in itertools.product(list(range(norb)), repeat=4):
 
