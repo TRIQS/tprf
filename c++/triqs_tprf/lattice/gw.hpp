@@ -27,13 +27,13 @@ namespace triqs_tprf {
 
   /** Density matrix from lattic Green's function
       
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return rho_k density matrix :math:`\rho_{ab}(\mathbf{k})`
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return rho_k density matrix \f$ \rho_{ab}(\mathbf{k}) \f$
   */
   e_k_t rho_k_from_g_wk(g_wk_cvt g_wk);
   e_k_t rho_k_from_g_wk(g_Dwk_cvt g_wk);
 
-  /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
+  /** GW self energy \f$ \Sigma(i\omega_n, \mathbf{k}) \f$ calculator for dynamic interactions
 
     Splits the interaction into a dynamic and a static part
     
@@ -47,134 +47,148 @@ namespace triqs_tprf {
     Fourier transforms the dynamic part of the interaction and the 
     single-particle Green's function to imaginary time and real space.
 
-    .. math::
+    \f[
         G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
+    \f]
 
-    .. math::
+    \f[
         W^{(dyn)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
           \left\{ W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+    \f]
 
     computes the GW self-energy as the product
 
-    .. math::
+    \f[
         \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
           - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+    \f]
 
     and transforms back to frequency and momentum
 
-    .. math::
+    \f[
         \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) \right\}
+    \f]
 
     The self-energy of the static part of the interaction is calculated
     as the sum
 
-    .. math::
+    \f[
         \Sigma^{(stat)}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
           \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{k}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+    \f]
 
-    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
     The total GW self-energy is given by
 
-    .. math::
+    \f[
         \Sigma_{ab}(i\omega_n, \mathbf{k}) = 
           \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k})
           + \Sigma^{(stat)}_{ab}(\mathbf{k})
+    \f]
 
-    @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
+    @param W_wk interaction \f$ W_{abcd}(i\omega_n, \mathbf{k}) \f$
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return GW self-energy \f$ \Sigma_{ab}(i\omega_n, \mathbf{k}) \f$
  */
 
   g_wk_t gw_sigma(chi_wk_cvt W_wk, g_wk_cvt g_wk);
 
-  /** GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
+  /** GW self energy \f$ \Sigma(i\omega_n, \mathbf{k}) \f$ calculator for dynamic interactions
 
     Fourier transforms the dynamic part of the interaction and the 
     single-particle Green's function to imaginary time and real space.
 
-    .. math::
+    \f[
         G_{ab}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
           \left\{ G_{ab}(i\omega_n, \mathbf{k}) \right\}
+    \f]
 
-    .. math::
+    \f[
         W^{(dyn)}_{abcd}(\tau, \mathbf{r}) = \mathcal{F}^{-1}
           \left\{ W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k}) \right\}
+    \f]
 
     computes the GW self-energy as the product
 
-    .. math::
+    \f[
         \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) =
           - \sum_{cd} W^{(dyn)}_{acdb}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+    \f]
 
     and transforms back to frequency and momentum
 
-    .. math::
+    \f[
         \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k}) =
           \mathcal{F} \left\{ \Sigma^{(dyn)}_{ab}(\tau, \mathbf{r}) \right\}
+    \f]
 
     The self-energy of the static part of the interaction is calculated
     as the sum
 
-    .. math::
+    \f[
         \Sigma^{(stat)}_{ab}(\mathbf{k}) = -\frac{1}{N_k}
           \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{k}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+    \f]
 
-    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
     The total GW self-energy is given by
 
-    .. math::
+    \f[
         \Sigma_{ab}(i\omega_n, \mathbf{k}) = 
           \Sigma^{(dyn)}_{ab}(i\omega_n, \mathbf{k})
           + \Sigma^{(stat)}_{ab}(\mathbf{k})
+    \f]
 
-    @param W_wk interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
-    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return GW self-energy :math:`\Sigma_{ab}(i\omega_n, \mathbf{k})`
+    @param W_wk interaction \f$ W_{abcd}(i\omega_n, \mathbf{k}) \f$
+    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return GW self-energy \f$ \Sigma_{ab}(i\omega_n, \mathbf{k}) \f$
  */
 
   g_Dwk_t gw_sigma(chi_Dwk_cvt W_wk, chi_k_cvt v_k, g_Dwk_cvt g_wk);
 
-  /** Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
+  /** Hartree self energy \f$ \Sigma_{ab}(\mathbf{k}) \f$ calculator
 
     Computes the Hartree self-energy of a static interaction as the sum
 
-    .. math::
+    \f[
         \Sigma_{ab}(\mathbf{k}) = \frac{1}{N_k}
           \sum_{\mathbf{q},cd} V_{abcd}(\mathbf{q}) \rho_{cd}(\mathbf{k} + \mathbf{q})
+    \f]
 
-    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
-    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return Hartree self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return Hartree self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
 
   e_k_t hartree_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
 
   e_r_t hartree_sigma(chi_k_cvt v_k, e_r_cvt rho_r);
   
-  /** Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
+  /** Fock self energy \f$ \Sigma_{ab}(\mathbf{k}) \f$ calculator
 
     Computes the Fock self-energy of a static interaction as the sum
 
-    .. math::
+    \f[
         \Sigma_{ab}(\mathbf{k}) = -\frac{1}{N_k}
           \sum_{\mathbf{q},cd} V_{acdb}(\mathbf{q}) \rho_{dc}(\mathbf{k} + \mathbf{q})
+    \f]
 
-    where :math:`\rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k})` is the density matrix of the
+    where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
-    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return Fock self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
 
   e_k_t fock_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
@@ -182,29 +196,30 @@ namespace triqs_tprf {
 
   e_r_t fock_sigma(chi_r_cvt v_r, e_r_cvt rho_r);
 
-  /** Static GW self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
+  /** Static GW self energy \f$ \Sigma_{ab}(\mathbf{k}) \f$ calculator
 
     Computes the static GW self-energy (equivalent to the Fock self-energy)
  
-    @param V_k static interaction :math:`V_{abcd}(\mathbf{q})`
-    @param g_wk single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-    @return Static GW self-energy (Fock) :math:`\Sigma_{ab}(\mathbf{k})`
+    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
+    @return Static GW self-energy (Fock) \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
 
   e_k_t gw_sigma(chi_k_cvt v_k, g_wk_cvt g_wk);
   e_k_t gw_sigma(chi_k_cvt v_k, g_Dwk_cvt g_wk);
   
-  /** Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
+  /** Dynamic GW self energy \f$ \Sigma(\tau, \mathbf{r}) \f$ calculator 
 
     Computes the GW self-energy as the product
 
-    .. math::
+    \f[
         \Sigma_{ab}(\tau, \mathbf{r}) =
           - \sum_{cd} W_{abcd}(\tau, \mathbf{r}) G_{cd}(\tau, \mathbf{r})
+    \f]
 
-    @param W_tr interaction :math:`W_{abcd}(\tau, \mathbf{r})`
-    @param g_tr single particle Green's function :math:`G_{ab}(\tau, \mathbf{r})`
-    @return Dynamic GW self-energy :math:`\Sigma_{ab}(\tau, \mathbf{r})`
+    @param W_tr interaction \f$ W_{abcd}(\tau, \mathbf{r}) \f$
+    @param g_tr single particle Green's function \f$ G_{ab}(\tau, \mathbf{r}) \f$
+    @return Dynamic GW self-energy \f$ \Sigma_{ab}(\tau, \mathbf{r}) \f$
  */
 
   g_tr_t gw_dynamic_sigma(chi_tr_cvt W_tr, g_tr_cvt g_tr);
@@ -218,36 +233,39 @@ namespace triqs_tprf {
 
   g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone kmesh);
 
-  /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
+  /** Real frequency GW self energy \f$ \Sigma(\omega, \mathbf{k}) \f$ calculator via the spectral representation
 
     Computes the spectral function of the dynamic part of the screened interaction
     
-    .. math::
+    \f[
         W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
           \left( W_{aabb}(\omega, \mathbf{k}) - V_{aabb}(\mathbf{k}) \right)
+    \f]
           
     and constructs the dynamic part of the GW self energy via the spectral representation
     
-    .. math::
+    \f[
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{\delta_{\omega}}{N_k} \sum_{\mathbf{q}} \sum_{\omega'}
           U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           W^{(spec)}_{ab}(\omega', \mathbf{q})
           \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
+    \f]
           
-    where $\delta_{\omega}$ is the real-frequency mesh spacing and the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+    where \f$ \delta_{\omega} \f$ is the real-frequency mesh spacing and the \f$ U(\mathbf{k}) \f$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$, i.e.
 
-    .. math::
+    \f[
        \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
+    \f]
        
-    @param mu chemical potential :math:`\mu`
+    @param mu chemical potential \f$ \mu \f$
     @param beta inverse temperature
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param W_fk fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
-    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
-    @param delta broadening :math:`\delta`
-    @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
+    @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
+    @param W_fk fully screened interaction \f$ W_{abcd}(\omega, \mathbf{k}) \f$
+    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @param delta broadening \f$ \delta \f$
+    @return real frequency GW self-energy \f$ \Sigma_{ab}(\omega, \mathbf{k}) \f$
 */
 
   g_fk_t g0w_dynamic_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
@@ -260,27 +278,29 @@ namespace triqs_tprf {
 
   e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k, mesh::brzone kmesh);
 
-  /** GW self energy :math:`\Sigma(\mathbf{k})` calculator for static interactions
+  /** GW self energy \f$ \Sigma(\mathbf{k}) \f$ calculator for static interactions
 
     Computes the GW self-energy of a static interaction as the product
 
-    .. math::
+    \f[
         \Sigma_{ab}(\mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
           U_{al}(\mathbf{k}+\mathbf{q}) U^\dagger_{lb}(\mathbf{k}+\mathbf{q})
           V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l})
+    \f]
 
-    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+    where the \f$ U(\mathbf{k}) \f$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$, i.e.
 
-    .. math::
+    \f[
        \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
+    \f]
 
-    @param mu chemical potential :math:`\mu`
+    @param mu chemical potential \f$ \mu \f$
     @param beta inverse temperature
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
-    @return static GW self-energy :math:`\Sigma_{ab}(\mathbf{k})`
+    @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
+    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @return static GW self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
 
   e_k_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_k_cvt v_k);
@@ -293,17 +313,18 @@ namespace triqs_tprf {
 
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta, mesh::brzone kmesh);
 
-  /** Real frequency GW self energy :math:`\Sigma(\omega, \mathbf{k})` calculator via the spectral representation
+  /** Real frequency GW self energy \f$ \Sigma(\omega, \mathbf{k}) \f$ calculator via the spectral representation
 
     Computes the spectral function of the dynamic part of the screened interaction
     
-    .. math::
+    \f[
         W^{(spec)}_{ab}(\omega, \mathbf{k}) = \frac{-1}{\pi} \text{Im}
           \left( W_{aabb}(\omega, \mathbf{k}) - V_{aabb}(\mathbf{k}) \right)
+    \f]
           
     and constructs the GW self energy via the spectral representation
     
-    .. math::
+    \f[
         \Sigma_{ab}(\omega, \mathbf{k}) = \frac{-1}{N_k} \sum_{\mathbf{q}} \sum_{l}
           U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           V_{aabb}(\mathbf{q}) f(\epsilon_{\mathbf{k}+\mathbf{q}, l}) \\
@@ -311,21 +332,23 @@ namespace triqs_tprf {
           U_{al}(\mathbf{k}+\mathbf{q}) U^{\dagger}_{lb}(\mathbf{k}+\mathbf{q})
           W^{(spec)}_{ab}(\omega', \mathbf{q})
           \frac{n_B(\omega') + f(\epsilon_{\mathbf{k}+\mathbf{q}, l})}{\omega + i\delta + \omega' - \epsilon_{\mathbf{k}+\mathbf{q}, l} + \mu}
+    \f]
           
-    where $\delta_{\omega}$ is the real-frequency mesh spacing and the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+    where \f$ \delta_{\omega} \f$ is the real-frequency mesh spacing and the \f$ U(\mathbf{k}) \f$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$, i.e.
 
-    .. math::
+    \f[
        \sum_{\bar{a}b} U^\dagger_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
+    \f]
        
-    @param mu chemical potential :math:`\mu`
+    @param mu chemical potential \f$ \mu \f$
     @param beta inverse temperature
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-    @param W_fk fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
-    @param V_k bare interaction :math:`V_{abcd}(\mathbf{k})`
-    @param delta broadening :math:`\delta`
-    @return real frequency GW self-energy :math:`\Sigma_{ab}(\omega, \mathbf{k})`
+    @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
+    @param W_fk fully screened interaction \f$ W_{abcd}(\omega, \mathbf{k}) \f$
+    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @param delta broadening \f$ \delta \f$
+    @return real frequency GW self-energy \f$ \Sigma_{ab}(\omega, \mathbf{k}) \f$
 */
 
   g_fk_t g0w_sigma(double mu, double beta, e_k_cvt e_k, chi_fk_cvt W_fk, chi_k_cvt v_k, double delta);
