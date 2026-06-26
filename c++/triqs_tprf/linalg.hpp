@@ -258,7 +258,7 @@ namespace triqs_tprf {
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ determinig the shape and size of the unity operator
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
  @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
@@ -281,7 +281,7 @@ namespace triqs_tprf {
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ determinig the shape and size of the unity operator
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
  @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
@@ -305,7 +305,7 @@ namespace triqs_tprf {
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ determinig the shape and size of the unity operator
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
  @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
@@ -329,7 +329,7 @@ namespace triqs_tprf {
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ determinig the shape and size of the unity operator
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
  @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  

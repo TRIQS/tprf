@@ -37,10 +37,11 @@ namespace triqs_tprf {
 
     Splits the interaction into a dynamic and a static part
     
-    .. math ::
+    \f[
         W_{abcd}(i\omega_n, \mathbf{k}) = 
             W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
             + V_{abcd}(\mathbf{k})
+    \f]
 
     by fitting the high-frequency tail.
 
@@ -146,7 +147,7 @@ namespace triqs_tprf {
     \f]
 
     @param W_wk interaction \f$ W_{abcd}(i\omega_n, \mathbf{k}) \f$
-    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param v_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
     @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
     @return GW self-energy \f$ \Sigma_{ab}(i\omega_n, \mathbf{k}) \f$
  */
@@ -165,7 +166,7 @@ namespace triqs_tprf {
     where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
-    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param v_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
     @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
     @return Hartree self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
@@ -186,7 +187,7 @@ namespace triqs_tprf {
     where \f$ \rho_{ab}(\mathbf{k}) = -G_{ba}(\beta, \mathbf{k}) \f$ is the density matrix of the
     single particle Green's function.
 
-    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param v_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
     @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
     @return Fock self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
@@ -200,7 +201,7 @@ namespace triqs_tprf {
 
     Computes the static GW self-energy (equivalent to the Fock self-energy)
  
-    @param V_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
+    @param v_k static interaction \f$ V_{abcd}(\mathbf{q}) \f$
     @param g_wk single particle Green's function \f$ G_{ab}(i\omega_n, \mathbf{k}) \f$
     @return Static GW self-energy (Fock) \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
@@ -263,7 +264,7 @@ namespace triqs_tprf {
     @param beta inverse temperature
     @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
     @param W_fk fully screened interaction \f$ W_{abcd}(\omega, \mathbf{k}) \f$
-    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @param v_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
     @param delta broadening \f$ \delta \f$
     @return real frequency GW self-energy \f$ \Sigma_{ab}(\omega, \mathbf{k}) \f$
 */
@@ -299,7 +300,7 @@ namespace triqs_tprf {
     @param mu chemical potential \f$ \mu \f$
     @param beta inverse temperature
     @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
-    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @param v_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
     @return static GW self-energy \f$ \Sigma_{ab}(\mathbf{k}) \f$
 */
 
@@ -346,7 +347,7 @@ namespace triqs_tprf {
     @param beta inverse temperature
     @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
     @param W_fk fully screened interaction \f$ W_{abcd}(\omega, \mathbf{k}) \f$
-    @param V_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
+    @param v_k bare interaction \f$ V_{abcd}(\mathbf{k}) \f$
     @param delta broadening \f$ \delta \f$
     @return real frequency GW self-energy \f$ \Sigma_{ab}(\omega, \mathbf{k}) \f$
 */

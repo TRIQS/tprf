@@ -509,8 +509,11 @@ static const auto _c2py_doc_1 = _c2py_fun_1.doc(R"DOC()DOC");
 static const auto _c2py_doc_2 = _c2py_fun_2.doc(R"DOC(
 Helper function to evaluate the Bose-Einstein distribution function
 
- .. math ::
-     n_B() = {1}{() - 1}
+ 
+
+.. math::
+
+   n_B(\epsilon) = \frac{1}{\exp(\epsilon) - 1}
 
 Parameters
 ----------
@@ -575,7 +578,7 @@ Returns
 )DOC",
                                                 {{c2py::python_typename<triqs_tprf::g_tr_cvt>()}}, {c2py::python_typename<triqs_tprf::chi_tr_t>()});
 static const auto _c2py_doc_6 = _c2py_fun_6.doc(R"DOC(
-Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
+Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})` using analytic integration of DLR basis functions in imaginary time.
 
  Computes
 
@@ -645,15 +648,16 @@ nw : {par_0}
    Number of bosonic Matsubara freqiencies.
 nn : {par_1}
    Number of fermionic Matsubara freqiencies.
-g_tr : {par_2}
-   Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
+g_wk : {par_2}
+   Single-particle Green's function :math:`G_{a\bar{b}}(\nu, \mathbf{k})` in fermionic Matsubara frequency and momentum-space.
 
 Returns
 -------
 {ret_0}
-   Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
+   Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` in one bosonic and one fermionic Matsuabara frequency and momentum-space.
 )DOC",
-                   {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {}}, {c2py::python_typename<triqs_tprf::chi_wnk_t>()});
+                   {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
+                   {c2py::python_typename<triqs_tprf::chi_wnk_t>()});
 static const auto _c2py_doc_10 =
    _c2py_fun_10.doc(R"DOC(
 Sum over fermionic frequency in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})`. (NB! without tail corrections)
@@ -772,15 +776,16 @@ nw : {par_0}
    Number of bosonic Matsubara freqiencies.
 nn : {par_1}
    Number of fermionic Matsubara freqiencies.
-g_tr : {par_2}
-   Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
+g_nr : {par_2}
+   Single-particle Green's function :math:`G_{a\bar{b}}(\nu, \mathbf{r})` in fermionic Matsubara frequency and real-space.
 
 Returns
 -------
 {ret_0}
    Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
 )DOC",
-                    {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {}}, {c2py::python_typename<triqs_tprf::chi_wnr_t>()});
+                    {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {c2py::python_typename<triqs_tprf::g_wr_cvt>()}},
+                    {c2py::python_typename<triqs_tprf::chi_wnr_t>()});
 static const auto _c2py_doc_15 =
    _c2py_fun_15.doc(R"DOC(
 Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` without MPI parallellization.
@@ -800,16 +805,18 @@ nw : {par_0}
    Number of bosonic Matsubara freqiencies.
 nn : {par_1}
    Number of fermionic Matsubara freqiencies.
-g_tr : {par_2}
-   Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
+g_nr : {par_2}
+   Single-particle Green's function :math:`G_{a\bar{b}}(\nu, \mathbf{r})` in fermionic Matsubara frequency and real-space.
 
 Returns
 -------
 {ret_0}
    Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
 )DOC",
-                    {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {}}, {c2py::python_typename<triqs_tprf::chi_wnr_t>()});
-static const auto _c2py_doc_16 = _c2py_fun_16.doc(R"DOC(
+                    {{c2py::python_typename<int>()}, {c2py::python_typename<int>()}, {c2py::python_typename<triqs_tprf::g_wr_cvt>()}},
+                    {c2py::python_typename<triqs_tprf::chi_wnr_t>()});
+static const auto _c2py_doc_16 =
+   _c2py_fun_16.doc(R"DOC(
 Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
 
  Computes
@@ -825,17 +832,17 @@ Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :m
 
 Parameters
 ----------
-chi_tr : {par_0}
-   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
-                  in imaginary time and real space.
+chi_wr : {par_0}
+   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
+                  in Matsubara frequency and real space.
 
 Returns
 -------
 {ret_0}
-   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
-            in Matsubara frequency and real-space.
+   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
+            in imaginary time and real-space.
 )DOC",
-                                                  {{}}, {c2py::python_typename<triqs_tprf::chi_tr_t>()});
+                    {{c2py::python_typename<triqs_tprf::chi_wr_cvt>()}}, {c2py::python_typename<triqs_tprf::chi_tr_t>()});
 static const auto _c2py_doc_17 = _c2py_fun_17.doc(R"DOC()DOC");
 static const auto _c2py_doc_18 =
    _c2py_fun_18.doc(R"DOC(
@@ -920,7 +927,8 @@ Returns
             in Matsubara frequency and real-space.
 )DOC",
                     {{c2py::python_typename<triqs_tprf::chi_tr_cvt>()}}, {c2py::python_typename<triqs_tprf::chi_wr_t>()});
-static const auto _c2py_doc_21 = _c2py_fun_21.doc(R"DOC(
+static const auto _c2py_doc_21 =
+   _c2py_fun_21.doc(R"DOC(
 Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
 
  Computes
@@ -936,17 +944,17 @@ Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k
 
 Parameters
 ----------
-chi_wr : {par_0}
-   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` 
-                  in imaginary time and momentum space.
+chi_wk : {par_0}
+   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
+                  in Matsubara frequency and momentum space.
 
 Returns
 -------
 {ret_0}
-   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
+   Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
             in Matsubara frequency and real space.
 )DOC",
-                                                  {{}}, {c2py::python_typename<triqs_tprf::chi_wr_t>()});
+                    {{c2py::python_typename<triqs_tprf::chi_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::chi_wr_t>()});
 static const auto _c2py_doc_22 =
    _c2py_fun_22.doc(R"DOC(
 Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k})`.
@@ -1004,6 +1012,15 @@ Returns
                     {c2py::python_typename<triqs_tprf::chi_kw_t>()});
 static const auto _c2py_doc_25 = _c2py_fun_25.doc(R"DOC(
 Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+
+ Computes
+
+ 
+
+.. math::
+
+   \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+   \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
 
 Parameters
 ----------
@@ -1458,8 +1475,11 @@ static const auto _c2py_doc_40 = _c2py_fun_40.doc(R"DOC()DOC");
 static const auto _c2py_doc_41 = _c2py_fun_41.doc(R"DOC(
 Helper function to evaluate the Fermi-Dirac distribution function
 
- .. math ::
-     f() = {1}{() + 1}
+ 
+
+.. math::
+
+   f(\epsilon) = \frac{1}{\exp(\epsilon) + 1}
 
 Parameters
 ----------
@@ -1472,8 +1492,7 @@ Returns
    The value of :math:`f(\epsilon)`.
 )DOC",
                                                   {{c2py::python_typename<double>()}}, {c2py::python_typename<double>()});
-static const auto _c2py_doc_42 =
-   _c2py_fun_42.doc(R"DOC(
+static const auto _c2py_doc_42 = _c2py_fun_42.doc(R"DOC(
 Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
    Computes the Fock self-energy of a static interaction as the sum
@@ -1490,7 +1509,7 @@ Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
 Parameters
 ----------
-V_k : {par_0}
+v_k : {par_0}
    static interaction :math:`V_{abcd}(\mathbf{q})`
 g_wk : {par_1}
    single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
@@ -1500,7 +1519,8 @@ Returns
 {ret_0}
    Fock self-energy :math:`\Sigma_{ab}(\mathbf{k})`
 )DOC",
-                    {{}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::e_k_t>()});
+                                                  {{c2py::python_typename<triqs_tprf::chi_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
+                                                  {c2py::python_typename<triqs_tprf::e_k_t>()});
 static const auto _c2py_doc_43 = _c2py_fun_43.doc(R"DOC(
 Inverse fast fourier transform of real time Green's function from k-space to real space
 
@@ -1693,7 +1713,7 @@ e_k : {par_2}
    discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
 W_fk : {par_3}
    fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
-V_k : {par_4}
+v_k : {par_4}
    bare interaction :math:`V_{abcd}(\mathbf{k})`
 delta : {par_5}
    broadening :math:`\delta`
@@ -1707,7 +1727,7 @@ Returns
                                                    {c2py::python_typename<double>()},
                                                    {c2py::python_typename<triqs_tprf::e_k_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()},
-                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::chi_k_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
 static const auto _c2py_doc_53 = _c2py_fun_53.doc(R"DOC(
@@ -1790,7 +1810,7 @@ beta : {par_1}
    inverse temperature
 e_k : {par_2}
    discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
-V_k : {par_3}
+v_k : {par_3}
    bare interaction :math:`V_{abcd}(\mathbf{k})`
 W_fk : {par_4}
    fully screened interaction :math:`W_{abcd}(\omega, \mathbf{k})`
@@ -1808,7 +1828,7 @@ Returns
                                                   {{c2py::python_typename<double>()},
                                                    {c2py::python_typename<double>()},
                                                    {c2py::python_typename<triqs_tprf::e_k_cvt>()},
-                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::chi_k_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>(), c2py::python_typename<triqs_tprf::g_fk_t>()});
@@ -1845,10 +1865,13 @@ static const auto _c2py_doc_55 = _c2py_fun_55.doc(
 
    Splits the interaction into a dynamic and a static part
 
-   .. math ::
-       W_{abcd}(i, {k}) = 
-           W^{(dyn)}_{abcd}(i, {k})
-           + V_{abcd}({k})
+   
+
+.. math::
+
+   W_{abcd}(i\omega_n, \mathbf{k}) =
+   W^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
+   + V_{abcd}(\mathbf{k})
 
    by fitting the high-frequency tail.
 
@@ -1986,7 +2009,7 @@ W_wk : {par_0}
    interaction :math:`W_{abcd}(i\omega_n, \mathbf{k})`
 g_wk : {par_1}
    single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
-V_k : {par_2}
+v_k : {par_2}
    static interaction :math:`V_{abcd}(\mathbf{q})`
 
 Returns
@@ -2002,10 +2025,9 @@ Returns
 )DOC",
    {{c2py::python_typename<triqs_tprf::chi_wk_cvt>(), c2py::python_typename<triqs_tprf::chi_Dwk_cvt>()},
     {c2py::python_typename<triqs_tprf::g_wk_cvt>(), c2py::python_typename<triqs_tprf::g_Dwk_cvt>()},
-    {}},
+    {c2py::python_typename<triqs_tprf::chi_k_cvt>()}},
    {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>(), c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_56 =
-   _c2py_fun_56.doc(R"DOC(
+static const auto _c2py_doc_56 = _c2py_fun_56.doc(R"DOC(
 Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
    Computes the Hartree self-energy of a static interaction as the sum
@@ -2022,7 +2044,7 @@ Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
 Parameters
 ----------
-V_k : {par_0}
+v_k : {par_0}
    static interaction :math:`V_{abcd}(\mathbf{q})`
 g_wk : {par_1}
    single particle Green's function :math:`G_{ab}(i\omega_n, \mathbf{k})`
@@ -2032,7 +2054,8 @@ Returns
 {ret_0}
    Hartree self-energy :math:`\Sigma_{ab}(\mathbf{k})`
 )DOC",
-                    {{}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::e_k_t>()});
+                                                  {{c2py::python_typename<triqs_tprf::chi_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
+                                                  {c2py::python_typename<triqs_tprf::e_k_t>()});
 static const auto _c2py_doc_57 = _c2py_fun_57.doc(R"DOC(
 Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
 
@@ -2503,10 +2526,13 @@ Splits a rank 4 tensor-valued Green's function into dynamic and constant parts b
    into a dynamic and a constant part in Matsubara frequency space by fitting
    the high-frequency tail.
 
-   .. math ::
-       {abcd}(i, {k}) = 
-           ^{(dyn)}_{abcd}(i, {k})
-           + ^{(stat)}_{abcd}({k})
+   
+
+.. math::
+
+   \chi_{abcd}(i\omega_n, \mathbf{k}) =
+   \chi^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
+   + \chi^{(stat)}_{abcd}(\mathbf{k})
 
 Parameters
 ----------

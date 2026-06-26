@@ -36,10 +36,11 @@ namespace triqs_tprf {
     into a dynamic and a constant part in Matsubara frequency space by fitting
     the high-frequency tail.
     
-    .. math ::
+    \f[
         \chi_{abcd}(i\omega_n, \mathbf{k}) = 
             \chi^{(dyn)}_{abcd}(i\omega_n, \mathbf{k})
             + \chi^{(stat)}_{abcd}(\mathbf{k})
+    \f]
 
   @param chi_wk : general rank 4 tensor-valued Green's function \f$ \chi_{abcd}(i\omega_n, \mathbf{k}) \f$. 
   @return Tuple of chi_dyn_wk, the dynamic part of chi \f$ \chi^{(dyn)}_{abcd}(i\omega_n, \mathbf{k}) \f$, which converges to zero for \f$ \omega_n \rightarrow \infty \f$, and chi_const_k, the part of chi that is constant in Matsubara frequency space \f$ \chi^{(stat)}_{abcd}(\mathbf{k}) \f$.
@@ -68,8 +69,9 @@ namespace triqs_tprf {
 
   /** Helper function to evaluate the Fermi-Dirac distribution function
 
-  .. math ::
+  \f[
       f(\epsilon) = \frac{1}{\exp(\epsilon) + 1}
+  \f]
   
   @param e : point at which to evaluate \f$ f(\epsilon) \f$.
   @return The value of \f$ f(\epsilon) \f$.
@@ -78,8 +80,9 @@ namespace triqs_tprf {
 
   /** Helper function to evaluate the Bose-Einstein distribution function
 
-  .. math ::
+  \f[
       n_B(\epsilon) = \frac{1}{\exp(\epsilon) - 1}
+  \f]
   
   @param e : point at which to evaluate \f$ n_B(\epsilon) \f$.
   @return The value of \f$ n_B(\epsilon) \f$.

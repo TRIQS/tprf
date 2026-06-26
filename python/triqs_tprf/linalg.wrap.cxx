@@ -63,11 +63,6 @@ static auto const _c2py_fun_8 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g2_iw_vt A, triqs_tprf::g2_iw_vt B) { return triqs_tprf::product_PP(A, B); }, "A", "B"),
                            c2py::cfun([](triqs_tprf::g2_nn_vt A, triqs_tprf::g2_nn_vt B) { return triqs_tprf::product_PP(A, B); }, "A", "B")};
 
-// scalar_product_PH
-static auto const _c2py_fun_9 = c2py::dispatcher_f_kw_t{
-   c2py::cfun([](triqs_tprf::g2_n_cvt vL, triqs_tprf::g2_nn_cvt M, triqs_tprf::g2_n_cvt vR) { return triqs_tprf::scalar_product_PH(vL, M, vR); },
-              "vL", "M", "vR")};
-
 static const auto _c2py_doc_0 = _c2py_fun_0.doc(R"DOC(
 Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-hole channel (PH).
 
@@ -90,15 +85,15 @@ Storage is allocated and the result is returned by value.
 
 Parameters
 ----------
-A : {par_0}
-   two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
+g : {par_0}
+   two-particle response function :math:`g \equiv g_{abcd}(\omega, \nu, \nu')` determining the shape and size of the unity operator
 
 Returns
 -------
 {ret_0}
    the unity operator :math:`\mathbf{1}`, in the given channel
 )DOC",
-                                                {{}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
+                                                {{c2py::python_typename<triqs_tprf::g2_iw_vt>()}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
 static const auto _c2py_doc_1 = _c2py_fun_1.doc(R"DOC(
 Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-hole-bar channel (PH-bar).
 
@@ -121,15 +116,15 @@ Storage is allocated and the result is returned by value.
 
 Parameters
 ----------
-A : {par_0}
-   two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
+g : {par_0}
+   two-particle response function :math:`g \equiv g_{abcd}(\omega, \nu, \nu')` determining the shape and size of the unity operator
 
 Returns
 -------
 {ret_0}
    the unity operator :math:`\mathbf{1}`, in the given channel
 )DOC",
-                                                {{}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
+                                                {{c2py::python_typename<triqs_tprf::g2_iw_vt>()}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
 static const auto _c2py_doc_2 = _c2py_fun_2.doc(R"DOC(
 Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-particle channel (PP).
 
@@ -152,15 +147,15 @@ Storage is allocated and the result is returned by value.
 
 Parameters
 ----------
-A : {par_0}
-   two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
+g : {par_0}
+   two-particle response function :math:`g \equiv g_{abcd}(\omega, \nu, \nu')` determining the shape and size of the unity operator
 
 Returns
 -------
 {ret_0}
    the unity operator :math:`\mathbf{1}`, in the given channel
 )DOC",
-                                                {{}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
+                                                {{c2py::python_typename<triqs_tprf::g2_iw_vt>()}}, {c2py::python_typename<triqs_tprf::g2_iw_t>()});
 static const auto _c2py_doc_3 = _c2py_fun_3.doc(R"DOC(
 Two-particle response-function inversion :math:`[g]^{-1}` in the particle-hole channel (PH).
 
@@ -356,7 +351,6 @@ Returns
 )DOC",
                                                 {{c2py::python_typename<triqs_tprf::g2_iw_vt>()}, {c2py::python_typename<triqs_tprf::g2_iw_vt>()}},
                                                 {c2py::python_typename<triqs_tprf::g2_iw_t>()});
-static const auto _c2py_doc_9 = _c2py_fun_9.doc(R"DOC()DOC");
 //--------------------- module function table  -----------------------------
 
 static PyMethodDef module_methods[] = {
@@ -369,7 +363,6 @@ static PyMethodDef module_methods[] = {
    {"product_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_6>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_6.c_str()},
    {"product_PH_bar", (PyCFunction)c2py::pyfkw<_c2py_fun_7>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_7.c_str()},
    {"product_PP", (PyCFunction)c2py::pyfkw<_c2py_fun_8>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_8.c_str()},
-   {"scalar_product_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_9>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_9.c_str()},
    {nullptr, nullptr, 0, nullptr} // Sentinel
 };
 

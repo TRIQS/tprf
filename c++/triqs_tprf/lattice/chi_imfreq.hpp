@@ -37,7 +37,7 @@ namespace triqs_tprf {
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$.
+  @param g_nr Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$ in fermionic Matsubara frequency and real-space.
   @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real-space.
  */
 chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr);
@@ -54,7 +54,7 @@ chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr);
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$.
+  @param g_nr Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$ in fermionic Matsubara frequency and real-space.
   @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real-space.
  */
 chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr);
@@ -71,8 +71,8 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr);
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$.
-  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real-space.
+  @param g_wk Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{k}) \f$ in fermionic Matsubara frequency and momentum-space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum-space.
  */
 chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk);
 
@@ -182,6 +182,13 @@ chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn);
 
 /** Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
+
+  Computes
+
+  \f[
+     \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+  \f]
 
   @param chi0_wnk Generalized lattice bubble susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
   @param gamma_ph_wnn Local particle-hole vertex function \f$ \Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') \f$.

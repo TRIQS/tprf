@@ -43,7 +43,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr, int nw);
 
-/** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) \f$
+/** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) \f$ using analytic integration of DLR basis functions in imaginary time.
 
   Computes
 
@@ -108,10 +108,10 @@ chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw);
          \right\}
   \f]
 
-  @param chi_tr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$ 
-                in imaginary time and real space.
-  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ 
-          in Matsubara frequency and real-space.
+  @param chi_wr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
+                in Matsubara frequency and real space.
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$
+          in imaginary time and real-space.
  */
 chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
 chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau=-1);
@@ -146,9 +146,9 @@ chi_Dwk_t chi_wk_from_chi_wr(chi_Dwr_cvt chi_wr);
          \right\}
   \f]
 
-  @param chi_wr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ 
-                in imaginary time and momentum space.
-  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ 
+  @param chi_wk Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$
+                in Matsubara frequency and momentum space.
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
           in Matsubara frequency and real space.
  */
 chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
