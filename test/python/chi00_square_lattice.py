@@ -84,8 +84,8 @@ def test_square_lattice_chi00():
     kmesh = t_r.get_kmesh(n_k)
     e_k = t_r.fourier(kmesh)
 
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
-    wmesh_bose = MeshImFreq(beta=beta, S='Boson', n_max=nw)
+    wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw_g)
+    wmesh_bose = MeshImFreq(beta=beta, statistic='Boson', n_iw=nw)
 
     print('--> g0_wk')
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)

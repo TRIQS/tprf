@@ -36,8 +36,8 @@ for idx, k in enumerate(bzmesh):
     ek.data[idx] = -2*(np.cos(k[0]) + np.cos(k[1]))
 
 
-mesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_g)
-bmesh = MeshImFreq(beta=beta, S='Boson', n_max=nw)
+mesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw_g)
+bmesh = MeshImFreq(beta=beta, statistic='Boson', n_iw=nw)
 
 iw_list = np.array([ iw for iw in bmesh ])
 iw_zero_idx = np.where(iw_list == 0)[0][0]

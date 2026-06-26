@@ -55,7 +55,7 @@ print(e_k)
 from triqs.mesh import MeshImFreq
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 
-wmesh = MeshImFreq(beta=5.0, S='Fermion', n_max=30)
+wmesh = MeshImFreq(beta=5.0, statistic='Fermion', n_iw=30)
 g0_wk = lattice_dyson_g0_wk(mu=0., e_k=e_k, mesh=wmesh)
 
 from triqs_tprf.lattice_utils import imtime_bubble_chi0_wk

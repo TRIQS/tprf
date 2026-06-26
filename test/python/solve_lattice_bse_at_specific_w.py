@@ -27,8 +27,8 @@ from triqs_tprf.bse import solve_lattice_bse, solve_lattice_bse_at_specific_w
 
 
 def create_random_gamma_wnn(p):
-    wmesh_gamma = MeshImFreq(beta=p.beta, S="Boson", n_max=p.nw_gamma)
-    nmesh_gamma = MeshImFreq(beta=p.beta, S="Fermion", n_max=p.nwf)
+    wmesh_gamma = MeshImFreq(beta=p.beta, statistic="Boson", n_iw=p.nw_gamma)
+    nmesh_gamma = MeshImFreq(beta=p.beta, statistic="Fermion", n_iw=p.nwf)
 
     gamma_wnn = Gf(
         mesh=MeshProduct(wmesh_gamma, nmesh_gamma, nmesh_gamma),

@@ -266,7 +266,7 @@ if __name__ == '__main__':
     #print e_k.data
     
     print('--> lattice g0_wk')
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
+    wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     E_kin = get_kinetic_energy(e_k, g0_wk)

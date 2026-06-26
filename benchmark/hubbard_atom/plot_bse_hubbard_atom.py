@@ -60,8 +60,8 @@ def fixed_fermionic_window_python(g2, nwf):
     nw = (g2.data.shape[0] + 1) / 2
     beta = g2.mesh.components[0].beta
 
-    mesh_iw = MeshImFreq(beta=beta, S='Boson', n_max=nw)
-    mesh_inu = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)
+    mesh_iw = MeshImFreq(beta=beta, statistic='Boson', n_iw=nw)
+    mesh_inu = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nwf)
     mesh_prod = MeshProduct(mesh_iw, mesh_inu, mesh_inu)
 
     g2_out = Gf(mesh=mesh_prod, target_shape=[1,1,1,1])

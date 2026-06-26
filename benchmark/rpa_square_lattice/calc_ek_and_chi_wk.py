@@ -71,7 +71,7 @@ if __name__ == '__main__':
     e_k = t_r.fourier(kmesh)
 
     print('--> g0_wk')
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=n_w)
+    wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=n_w)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     chi00_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)

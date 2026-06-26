@@ -18,7 +18,7 @@ from triqs_tprf.lattice_utils import add_fake_bosonic_mesh
 
 
 def test_add_fake_bosonic_mesh_with_gf_nk(bzmesh):
-    nmesh = MeshImFreq(beta=1, S="Fermion", n_max=1)
+    nmesh = MeshImFreq(beta=1, statistic="Fermion", n_iw=1)
 
     gf_nk = Gf(mesh=MeshProduct(nmesh, bzmesh), target_shape=(2, 2))
     gf_wnk = add_fake_bosonic_mesh(gf_nk)

@@ -78,7 +78,7 @@ beta = 0.544
 
 from triqs.gfs import Idx
 from triqs.mesh import MeshImFreq
-wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
+wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw)
 
 from triqs_tprf.lattice import lattice_dyson_g0_wk
 g0_wk = lattice_dyson_g0_wk(mu=0., e_k=e_k, mesh=wmesh)
