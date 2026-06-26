@@ -33,9 +33,9 @@ from triqs_tprf.ParameterCollection import ParameterCollections
 p = ParameterCollection(
     t = 1.,
     t_prime = 0.,
-    B = 0.5,
+    B = 1,
     crystal_field = 0.,
-    U = 0.5,
+    U = 4,
     N_target=1.0,
     n_l = 30,
     n_k = 8,
