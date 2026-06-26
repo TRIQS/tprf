@@ -1,0 +1,4 @@
+package_name = "triqs_tprf"
+documentation = "Product, Inverse and Identity for two-particle response functions"
+namespaces = "triqs_tprf"
+match_names = "triqs_tprf::(inverse_PH|inverse_PP|inverse_PH_bar|product_PH|product_PP|product_PH_bar|identity_PH|identity_PP|identity_PH_bar|scalar_product_PH)"
