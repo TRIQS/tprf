@@ -1,4 +1,4 @@
 package_name = "triqs_tprf"
 documentation = "Exact correlation functions for the hubbard atom"
 namespaces = "triqs_tprf::hubbard_atom"
-match_names = "triqs_tprf::hubbard_atom::(single_particle_greens_function|chi_ph_magnetic|gamma_ph_magnetic)"
+match_files = "hubbard_atom"

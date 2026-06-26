@@ -1,4 +1,4 @@
 package_name = "triqs_tprf"
 documentation = "functionality for changing frequency conventions"
 namespaces = "triqs_tprf"
-match_names = "triqs_tprf::(block_iw_AB_to_matrix_valued|block_3nu_AABB_to_tensor_valued|get_magnetic_component|from_3nu_PH|from_3nu_PH_bar|from_3nu_PP)"
+match_files = "freq_conv"

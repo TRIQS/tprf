@@ -155,6 +155,7 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
 chi_Dwr_t chi_wr_from_chi_wk(chi_Dwk_cvt chi_wk);
 
 target_value_t<chi_t_t>::regular_type chi_trapz_tau(chi_t_cvt chi_t);
-target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t);
+// internal helper, not part of the Python API
+C2PY_IGNORE target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t);
 
 } // namespace triqs_tprf
