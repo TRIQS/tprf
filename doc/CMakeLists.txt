@@ -1,35 +1,21 @@
+# Fail early if a doc dependency is missing (import names, not distribution names)
+find_package(Python COMPONENTS Interpreter REQUIRED)
+
+foreach(_module numpydoc nbsphinx myst_parser linkify_it sphinx_rtd_theme matplotlib)
+  execute_process(
+    COMMAND ${Python_EXECUTABLE} -c "import ${_module}"
+    RESULT_VARIABLE _rc OUTPUT_QUIET ERROR_QUIET)
+  if(_rc)
+    message(FATAL_ERROR "Building the documentation requires the python module '${_module}' (see requirements.txt).")
+  endif()
+endforeach()
+
 # Generate the sphinx config file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
-
-# -----------------------------------------------------------------------------
-# Create an optional target that allows us to regenerate the C++ doc with c++2rst
-# -----------------------------------------------------------------------------
-add_custom_target(${PROJECT_NAME}_docs_cpp2rst)
-include(${PROJECT_SOURCE_DIR}/share/cmake/extract_flags.cmake)
-extract_flags(${PROJECT_NAME}_c BUILD_INTERFACE)
-separate_arguments(${PROJECT_NAME}_c_CXXFLAGS)
-macro(generate_docs header_file)
-  add_custom_command(
-    TARGET ${PROJECT_NAME}_docs_cpp2rst POST_BUILD
-    COMMAND rm -rf ${CMAKE_CURRENT_SOURCE_DIR}/cpp2rst_generated
-    COMMAND
-      PYTHONPATH=${CPP2PY_BINARY_DIR}:$ENV{PYTHONPATH}
-      PATH=${CPP2PY_BINARY_DIR}/bin:${CPP2PY_ROOT}/bin:$ENV{PATH}
-      c++2rst
-      ${header_file}
-      -N ${PROJECT_NAME}
-      --output_directory ${CMAKE_CURRENT_SOURCE_DIR}/cpp2rst_generated
-      -I${PROJECT_SOURCE_DIR}/c++
-      --cxxflags="${${PROJECT_NAME}_c_CXXFLAGS}"
-  )
-endmacro(generate_docs)
-
-generate_docs(${CMAKE_CURRENT_SOURCE_DIR}/reference/doc_root.hpp)
 
 # --------------------------------------------------------
 # Build & Run the C++ doc examples and capture the output
 # --------------------------------------------------------
-
 add_custom_target(${PROJECT_NAME}_docs_example_output)
 file(GLOB_RECURSE ExampleList RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 foreach(example ${ExampleList})
@@ -54,6 +40,7 @@ endif()
 
 # Sphinx has internal caching, always run it
 add_custom_target(${PROJECT_NAME}_docs_sphinx ALL)
+add_dependencies(${PROJECT_NAME}_docs_sphinx ${PROJECT_NAME}_c ${PROJECT_NAME}_python_modules)
 add_custom_command(
   TARGET ${PROJECT_NAME}_docs_sphinx POST_BUILD
   COMMAND PYTHONPATH=${PROJECT_BINARY_DIR}/python:$ENV{PYTHONPATH} ${SPHINXBUILD_EXECUTABLE} -j auto -c . -b html ${CMAKE_CURRENT_SOURCE_DIR} html
@@ -62,10 +49,13 @@ add_custom_command(
 option(Sphinx_Only "When building the documentation, skip the Python Modules and the generation of C++ Api and example outputs" OFF)
 if(NOT Sphinx_Only)
   # Autodoc usage requires the python modules to be built first
-  add_dependencies(${PROJECT_NAME}_docs_sphinx ${PROJECT_NAME}_python_modules)
+  get_property(CPP2PY_MODULES_LIST GLOBAL PROPERTY CPP2PY_MODULES_LIST)
+  if(CPP2PY_MODULES_LIST)
+    add_dependencies(${PROJECT_NAME}_docs_sphinx ${CPP2PY_MODULES_LIST})
+  endif()
 
   # Generation of C++ Api and Example Outputs
-  add_dependencies(${PROJECT_NAME}_docs_sphinx ${PROJECT_NAME}_docs_cpp2rst ${PROJECT_NAME}_docs_example_output)
+  add_dependencies(${PROJECT_NAME}_docs_sphinx ${PROJECT_NAME}_docs_example_output)
 endif()
 
 # ---------------------------------
@@ -76,3 +66,8 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ COMPONENT documentation DEST
   REGEX "\\.(html|pdf|png|gif|jpg|svg|ico|js|xsl|css|py|txt|inv|bib|ttf|woff2|eot|sh)$"
   PATTERN "_*"
 )
+
+# ---------------------------------
+# Build doxygen documentation
+# ---------------------------------
+add_subdirectory(doxygen)
