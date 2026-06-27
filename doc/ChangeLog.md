@@ -2,6 +2,49 @@
 
 # Changelog
 
+## Version 4.0.0
+
+TPRF version 4.0.0 is a compatibility release for TRIQS version 4.0.0. It
+requires a TRIQS installation of the same major and minor version and includes
+an update to the latest app4triqs skeleton.
+
+We thank all contributors: Jennifer Coulter, Thomas Hahn, Alexander Hampel, Xaver Landerl, Erik van Loon, Henri Menke, Dylan Simon, Hugo U. R. Strand, Yann in 't Veld, Nils Wentzell
+
+The major updates are:
+
+### Two-Particle Self-Consistent approach (TPSC)
+* New one-band Hubbard two-particle self-consistent (TPSC) solver `tpsc_solver`
+* Tutorials on the TPSC solver and the pseudogap, on the square and triangular lattice
+
+### Python bindings migration to clair + c2py
+* The Python bindings are now generated with `clair` + `c2py` instead of `cpp2py`
+* Header docstrings have been converted from RST to doxygen style, and the
+  generated Python docstrings now comply with the NumPy documentation style
+
+### Dual Bethe-Salpeter Equation (DBSE)
+* Memory-efficient (lomem) implementation of the DBSE
+* `target_shape` checks in the DBSE frontends
+* Hubbard-Zeeman model tutorial
+
+### Discrete Lehmann Representation (DLR)
+* `solve_rpa_PH` now supports DLR meshes
+* `chi0_w0r_from_grt_PH` DLR implementation with sign fix
+* Consistent symmetrization of the `imtime_bubble_chi0_wk` DLR bubble; an error
+  is now raised when enforcing symmetries in the Eliashberg solver on
+  non-symmetrized DLR meshes
+
+### TRIQS 4.0 compatibility
+* Run port_to_triqs4 script for the TRIQS 4.0 module and API changes
+* Use the latest app4triqs/4.0.x skeleton
+* Update Python imports to the current TRIQS module layout (`triqs.gf` -> `triqs.gfs`, `triqs.mesh`)
+* Replace deprecated `MeshImFreq` parameters (`S`/`n_max` -> `statistic`/`n_iw`)
+* Update `nda::linalg` function calls and fix `chi_trapz_tau` after the removal
+  of `gf::target_t::value_t` in TRIQS
+* Use the non-deprecated `cppdlr` `convolve` overload in the Eliashberg solver
+* Fix Eliashberg tests for the updated TRIQS tail fitter
+* Fixes several library and documentation issues
+
+
 ## Version 3.3.1
 
 TPRF version 3.3.1 is a patch release that fixes an issue with recent numpy versions.
