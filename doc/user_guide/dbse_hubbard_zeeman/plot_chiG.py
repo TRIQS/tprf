@@ -22,12 +22,12 @@
 
 import numpy as np
 from triqs.plot.mpl_interface import plt,oplot
-import triqs.gf
+import triqs.gfs
 from h5 import HDFArchive
 import itertools
 # ----------------------------------------------------------------------
 
-from triqs.gf import MeshBrillouinZone, Idx, Gf, MeshProduct
+from triqs.gfs import MeshBrillouinZone, Idx, Gf, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 from triqs.operators import n, c, c_dag, Operator
 

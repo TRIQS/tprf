@@ -26,8 +26,8 @@ import itertools
 
 from h5 import HDFArchive
 
-from triqs.gf import Gf, Fourier
-from triqs.gf import make_gf_from_fourier
+from triqs.gfs import Gf, Fourier
+from triqs.gfs import make_gf_from_fourier
 
 from triqs_tprf.lattice import lattice_dyson_g_wk
 
@@ -47,8 +47,8 @@ from w2dyn_cthyb.converters_worm import p3_w2dyn_to_triqs_freq_shift_alt
 from w2dyn_cthyb.converters_worm import L_from_g3
 from w2dyn_cthyb.converters_worm import g2_from_w2dyn_G2_worm_components
 
-from triqs.gf import Gf, MeshProduct, Idx, MeshImFreq
-from triqs.gf import inverse
+from triqs.gfs import Gf, MeshProduct, Idx, MeshImFreq
+from triqs.gfs import inverse
 from triqs_tprf.lattice import fourier_wk_to_wr, chi0r_from_gr_PH, chi0q_from_chi0r, chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH
 
 from triqs_tprf.linalg import product_PH, inverse_PH, identity_PH
