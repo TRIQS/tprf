@@ -39,7 +39,7 @@ namespace triqs_tprf {
     arr.reserve(size);
 
     auto iter = std::next(mesh.begin(), slice.first);
-    for (auto idx : range(0, size)) {
+    for ([[maybe_unused]] auto idx : range(0, size)) {
       arr.emplace_back(*iter);
       iter++;
     }

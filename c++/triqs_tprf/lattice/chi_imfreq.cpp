@@ -670,8 +670,6 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
   auto &fmesh = std::get<1>(chi0_wnk.mesh());
   auto &kmesh = std::get<2>(chi0_wnk.mesh());
 
-  double beta = fmesh.beta();
-
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 
   auto arr = mpi_view(chi_kw.mesh()); // FIXME Use library implementation
