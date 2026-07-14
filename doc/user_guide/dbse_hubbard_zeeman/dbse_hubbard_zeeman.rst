@@ -7,6 +7,8 @@ In this tutorial we will compute the dynamic, momentum-resolved susceptibility :
 
 The model has a hopping parameter :math: `t`, a Hubbard interaction :math: `U`, and a Zeeman magnetic field :math: `B`. The latter appears in the Hamiltonian as :math:`-B (\hat{n}_\uparrow-\hat{n}_\downarrow)` The Zeeman field lifts the degeneracy between spin up and spin down and leads to a richer spin structure of the susceptibility including non-trivial off-diagonal elements. TRIQS/cthyb is used as an impurity solver for the DMFT self-consistency loop, and then the vertices are calculated using W2Dynamics. The overall structure of the scripts is similar to previous tutorials: :download:`common.py <common.py>` is a module with general functionality, :download:`calc_sc_dmft.py <calc_sc_dmft.py>` runs the DMFT self-consistency loop and then :download:`calc_g2.py <calc_g2.py>`, :download:`calc_tri.py <calc_tri.py>`, :download:`calc_chi.py <calc_chi.py>` measure the three required correlation functions. Finally, :download:`calc_bse.py <calc_bse.py>` evaluates the Bethe-Salpeter equation with different fermionic cut-offs ``nwf``. 
 
+If you want to try the dual Bethe-Salpeter equation without running the impurity solver yourself, you can download a dataset from the `Zenodo repository <https://doi.org/10.5281/zenodo.8203355>`_.
+
 Convergence of Susceptibility
 -----------------------------
 
