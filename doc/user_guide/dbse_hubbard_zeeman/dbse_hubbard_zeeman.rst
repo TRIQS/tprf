@@ -18,7 +18,7 @@ In this plot, the extrapolated values of the BSE and DBSE are not identical. The
 
 :download:`plot_components.py <plot_components.py>`
 
-.. image:: figure_bse_w0_comp12.svg
+.. image:: figure_bse_w3_comp12.svg
    :align: center
 
 Larmor precession
