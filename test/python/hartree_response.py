@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # -- Call TPRF chi0_wk bubble calc
 
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=n_w)
+    wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=n_w)
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
 
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=1)

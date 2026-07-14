@@ -23,7 +23,7 @@ e_k = Gf(mesh=bzmesh, target_shape=[1, 1])
 for k in bzmesh:
     e_k[k] = -2*(np.cos(k[0]) + np.cos(k[1])) # does not work...
     
-mesh = MeshImFreq(beta=1.0, S='Fermion', n_max=1024)
+mesh = MeshImFreq(beta=1.0, statistic='Fermion', n_iw=1024)
 g0_wk = lattice_dyson_g0_wk(mu=1.0, e_k=e_k, mesh=mesh)
 
 g0_wr = fourier_wk_to_wr(g0_wk)

@@ -403,12 +403,12 @@ chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk) {
 
 // DLR
   
-chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw) {
+chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int /* nw */) {
   auto chi_wr = fourier_Dtr_to_Dwr_general_target(chi_tr);
   return chi_wr;
 }
 
-chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau) {
+chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int /* ntau */) {
   auto chi_tr = fourier_Dwr_to_Dtr_general_target(chi_wr);
   return chi_tr;
 }  

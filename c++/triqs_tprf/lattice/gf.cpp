@@ -288,12 +288,12 @@ g_tr_t fourier_wr_to_tr(g_wr_cvt g_wr, int nt) {
   return g_tr;
 }
 
-g_Dwr_t fourier_tr_to_wr(g_Dtr_cvt g_tr, int nw) {
+g_Dwr_t fourier_tr_to_wr(g_Dtr_cvt g_tr, int /* nw */) {
   auto g_wr = fourier_Dtr_to_Dwr_general_target(g_tr);
   return g_wr;
 }
 
-g_Dtr_t fourier_wr_to_tr(g_Dwr_cvt g_wr, int nt) {
+g_Dtr_t fourier_wr_to_tr(g_Dwr_cvt g_wr, int /* nt */) {
   auto g_tr = fourier_Dwr_to_Dtr_general_target(g_wr);
   return g_tr;
 }
@@ -308,12 +308,12 @@ chi_tr_t fourier_wr_to_tr(chi_wr_cvt chi_wr, int nt) {
   return chi_tr;
 }
 
-chi_Dwr_t fourier_tr_to_wr(chi_Dtr_cvt chi_Dtr, int nw) {
+chi_Dwr_t fourier_tr_to_wr(chi_Dtr_cvt chi_Dtr, int /* nw */) {
   auto chi_Dwr = fourier_Dtr_to_Dwr_general_target(chi_Dtr);
   return chi_Dwr;
 }
 
-chi_Dtr_t fourier_wr_to_tr(chi_Dwr_cvt chi_Dwr, int nt) {
+chi_Dtr_t fourier_wr_to_tr(chi_Dwr_cvt chi_Dwr, int /* nt */) {
   auto chi_Dtr = fourier_Dwr_to_Dtr_general_target(chi_Dwr);
   return chi_Dtr;
 }  

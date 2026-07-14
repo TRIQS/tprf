@@ -29,7 +29,7 @@ namespace triqs_tprf {
 
      Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
-     .. math::
+     \f[
          \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
          =
          -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
@@ -39,13 +39,14 @@ namespace triqs_tprf {
          G_{c\bar{e}}(i\nu',\mathbf{k}')
          G_{d\bar{f}}(-i\nu',-\mathbf{k}')
          \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+     \f]
 
      by summation.
 
-     @param Gamma_pp particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
-     @param g_wk single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
-     @param delta_wk superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
-     @return Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
+     @param Gamma_pp particle-particle vertex \f$ \Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k}) \f$
+     @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @return Gives the result of the product \f$ \Delta^{\mathrm{s/t}, \mathrm{out}} \f$
 
   */
 
@@ -55,7 +56,7 @@ namespace triqs_tprf {
 
      Computes the linearized Eliashberg product in the singlet/triplet channel given by
 
-     .. math::
+     \f[
         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
         =
         -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
@@ -65,81 +66,89 @@ namespace triqs_tprf {
         G_{c\bar{e}}(i\nu',\mathbf{k}')
         G_{d\bar{f}}(-i\nu',-\mathbf{k}')
         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+     \f]
 
      by taking advantage of the convolution theorem.
 
      We therefore first calculate
 
-     .. math::
+     \f[
          F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
          =
          G_{a\bar{c}}(i\nu,\mathbf{k})
          G_{b\bar{d}}(-i\nu,-\mathbf{k})
          \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
+     \f]
 
      which we then Fourier transform to imaginary time and real-space
 
-     .. math::
+     \f[
         F^{\mathrm{s/t}}_{ab}(\tau,\mathbf{r})
         =
         \mathcal{F}^2
         \big(
         F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
         \big)\,.
+     \f]
 
      We then calculate first the dynamic gap
      
-     .. math::
+     \f[
          \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(\tau,\mathbf{r})
          =
          -\frac{1}{2}
          \Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r})
          F^{\mathrm{s/t}}_{cd}(\tau, \mathbf{r})\,,
+     \f]
 
      and then the static gap
 
-     .. math::
+     \f[
          \Delta^{\mathrm{s/t}, \mathrm{static}}_{\bar{a}\bar{b}}(\mathbf{r})
          =
          -\frac{1}{2}
          \Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})
          F^{\mathrm{s/t}}_{cd}(\tau=0, \mathbf{r})\,.
+     \f]
 
      We then Fourier transform the dynamic gap to imaginary frequencies
 
-     .. math::
+     \f[
          \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
         =
         \mathcal{F}
         \big(
         \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(\tau,\mathbf{r})
         \big)\,,
+     \f]
 
      and then add both component together
      
-     .. math::
+     \f[
         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
         =
         \Delta^{\mathrm{s/t}, \mathrm{dynamic}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
         +
         \Delta^{\mathrm{s/t}, \mathrm{static}}_{\bar{a}\bar{b}}(\mathbf{r})\,,
+     \f]
 
-    and then finally Fourier transform to :math:`\mathbf{k}`-space
+    and then finally Fourier transform to \f$ \mathbf{k} \f$-space
 
-    .. math::
+    \f[
         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})
         =
         \mathcal{F}
         \big(
         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{r})
         \big)\,.
+    \f]
 
 
-     @param Gamma_pp_dyn_tr dynamic part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r})`
-     @param Gamma_pp_const_r static part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})`
-     @param g_wk one-particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
-     @param delta_wk superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
-     @return Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
+     @param Gamma_pp_dyn_tr dynamic part of the particle-particle vertex \f$ \Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r}) \f$
+     @param Gamma_pp_const_r static part of the particle-particle vertex \f$ \Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r}) \f$
+     @param g_wk one-particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @return Gives the result of the product \f$ \Delta^{\mathrm{s/t}, \mathrm{out}} \f$
 
   */
 
@@ -152,17 +161,17 @@ namespace triqs_tprf {
 
   /** Fourier transform Gamma parts to imaginary time and real-space  
   
-  @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.
-  @param Gamma_pp_const_k : The part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
-  @return Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.
+  @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for \f$ \omega_n \rightarrow \infty \f$.
+  @param Gamma_pp_const_k : The part of Gamma that is constant in Matsubara frequency space \f$ \Gamma(\mathbf{k}) \f$.
+  @return Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for \f$ \omega_n \rightarrow \infty \f$, but now in \f$ \tau \f$-space, Gamma_pp_const_r, the constant part of Gamma in real-space.
   */
   std::tuple<chi_tr_t, chi_r_t> dynamic_and_constant_to_tr(chi_wk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k);
 
   /** Fourier transform Gamma parts to imaginary time and real-space  
   
-  @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`.
-  @param Gamma_pp_const_k : The part of Gamma that is constant in Matsubara frequency space :math:`\Gamma(\mathbf{k})`.
-  @return Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for :math:`\omega_n \rightarrow \infty`, but now in :math:`\tau`-space, Gamma_pp_const_r, the constant part of Gamma in real-space.
+  @param Gamma_pp_dyn_wk : The dynamic part of Gamma, which converges to zero for \f$ \omega_n \rightarrow \infty \f$.
+  @param Gamma_pp_const_k : The part of Gamma that is constant in Matsubara frequency space \f$ \Gamma(\mathbf{k}) \f$.
+  @return Tuple of Gamma_pp_dyn_tr,  the dynamic part of Gamma, which converges to zero for \f$ \omega_n \rightarrow \infty \f$, but now in \f$ \tau \f$-space, Gamma_pp_const_r, the constant part of Gamma in real-space.
   */
   std::tuple<chi_Dtr_t, chi_r_t> dynamic_and_constant_to_tr(chi_Dwk_vt Gamma_pp_dyn_wk, chi_k_vt Gamma_pp_const_k);
 
@@ -173,7 +182,7 @@ namespace triqs_tprf {
 
     In this approximation the reducible ladder vertex in density/magnetic channel are given by
 
-    .. math::
+    \f[
         \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
         &\approx
         \frac{1}{(N_\mathbf{k}\beta)^2}
@@ -183,6 +192,7 @@ namespace triqs_tprf {
         &\approx
         U^{\mathrm{d/m}}
         \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
+    \f]
 
 
     where all products are particle-hole products.
@@ -191,9 +201,9 @@ namespace triqs_tprf {
     or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
     irreducible singlet/triplet vertex.
 
-    @param chi density/magnetic susceptibility  :math:`\chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q})`
-    @param U density/magnetic local and static vertex  :math:`U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}}`
-    @return The reducible ladder vertex in the density/magnetic channel :math:`\Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q})`
+    @param chi density/magnetic susceptibility  \f$ \chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q}) \f$
+    @param U density/magnetic local and static vertex  \f$ U^{\mathrm{d/m}}_{a\bar{b}c\bar{d}} \f$
+    @return The reducible ladder vertex in the density/magnetic channel \f$ \Phi^{\mathrm{d/m}}(i\omega_n,\mathbf{q}) \f$
 
   */
   chi_wk_t construct_phi_wk(chi_wk_vt chi, array_contiguous_view<std::complex<double>, 4> U);

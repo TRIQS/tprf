@@ -30,10 +30,7 @@ Python reference manual
 C++ reference manual
 --------------------
 
-.. toctree::
-   :maxdepth: 1
-
-   reference/cpp_reference
+The C++ reference manual can be found `here <./doxygen/index.html>`_.
 
 Theory and notation
 -------------------

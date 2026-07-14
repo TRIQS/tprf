@@ -113,8 +113,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
 
 	auto f_t = gf(tmesh);
 	f_t.data() = tmesh.dlr_it().convolve(
-	  tmesh.beta(), static_cast<cppdlr::statistic_t>(tmesh.statistic()),
-	  gg_c.data(), d_c.data());
+	  tmesh.beta(), gg_c.data(), d_c.data());
 
 	auto f_c = make_gf_dlr(f_t);
 	auto f_w = make_gf_dlr_imfreq(f_c);

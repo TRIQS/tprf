@@ -295,16 +295,16 @@ using g_tau_t = gf<imtime, matrix_valued>;
 typedef g_tau_t::const_view_type g_tau_cvt;
 typedef g_tau_t::view_type g_tau_vt;
 
-/// Container type of $\chi_3$ in Matsubara frequencies
+/// Container type of \f$ \chi_3 \f$ in Matsubara frequencies
 using chi2_iw_t = gf<imfreq, tensor_valued<4>>;
 
-/// Container type of $\chi_3$ in imaginary time
+/// Container type of \f$ \chi_3 \f$ in imaginary time
 using chi2_tau_t = gf<imtime, tensor_valued<4>>;
 
-/// Container type of $\chi_3$ in Matsubara frequencies
+/// Container type of \f$ \chi_3 \f$ in Matsubara frequencies
 using chi3_iw_t = gf<prod<imfreq, imfreq>, tensor_valued<4>>;
 
-/// Container type of $\chi_3$ in imaginary time
+/// Container type of \f$ \chi_3 \f$ in imaginary time
 using chi3_tau_t = gf<prod<imtime, imtime>, tensor_valued<4>>;
 
 /// Container type of two-particle Green and Vertex functions in Matsubara frequencies

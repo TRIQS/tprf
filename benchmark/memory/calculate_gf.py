@@ -23,7 +23,7 @@ t_r = TBLattice(
 
 kmesh = t_r.get_kmesh((nk, 1, 1))
 e_k = t_r.fourier(kmesh)
-wmesh = MeshImFreq(beta=1.0, S='Fermion', n_max=nw)
+wmesh = MeshImFreq(beta=1.0, statistic='Fermion', n_iw=nw)
 
 g0_wk = lattice_dyson_g0_wk(mu=0.0, e_k=e_k, mesh=wmesh)
 

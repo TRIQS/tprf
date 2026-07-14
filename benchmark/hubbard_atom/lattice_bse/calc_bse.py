@@ -55,7 +55,7 @@ def solve_lattice_bse(parm, momsus=False):
     # ------------------------------------------------------------------
     # -- Lattice single-particle Green's function
 
-    mesh = MeshImFreq(beta=parm.beta, S='Fermion', n_max=parm.nwf_gf)
+    mesh = MeshImFreq(beta=parm.beta, statistic='Fermion', n_iw=parm.nwf_gf)
 
     parm.Sigma_iw = parm.G_iw.copy()
     G0_iw = parm.G_iw.copy()

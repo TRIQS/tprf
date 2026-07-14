@@ -1,0 +1,4 @@
+package_name = "triqs_tprf"
+documentation = "Calculation of generalized susceptibilities"
+namespaces = "triqs_tprf"
+match_files = "chi_from_gg2"

@@ -85,10 +85,10 @@ def test_square_lattice_chi00_dlr():
     kmesh = t_r.get_kmesh(n_k)
     e_k = t_r.fourier(kmesh)
 
-    wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw_f)
+    wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw_f)
     DLRwmesh = MeshDLRImFreq(beta, 'Fermion', lamb, eps)
     
-    wmesh_bose = MeshImFreq(beta=beta, S='Boson', n_max=nw)
+    wmesh_bose = MeshImFreq(beta=beta, statistic='Boson', n_iw=nw)
     DLRwmesh_bose = MeshDLRImFreq(beta, 'Boson', lamb, eps)
 
     print('--> chi00_wk analytic')

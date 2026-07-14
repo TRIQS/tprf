@@ -24,20 +24,21 @@
 
 namespace triqs_tprf {
 
-  /** Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
+  /** Generalized Lindhard susceptibility in the particle-hole channel \f$ \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) \f$.
    
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
     in the particle-hole channel. The analytic expression is obtained using residue calculus 
     to explicitly evaluate the matsubara sum of the fourier transformed imaginary time
     bubble product of two non-interacting single-particle Green's functions.
 
-    .. math::
+    \f[
        G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
        \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
+    \f]
 
     The analytic evaluation of the bubble diagram gives
 
-    .. math::
+    \f[
          \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) \equiv 
          \mathcal{F} \left\{
            - G^{(0)}_{d\bar{a}}(\tau, \mathbf{r}) G^{(0)}_{b\bar{c}}(-\tau, -\mathbf{r})
@@ -69,23 +70,25 @@ namespace triqs_tprf {
            \\ \times
            U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k}) 
            U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
+    \f]
 
-    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+    where the \f$ U(\mathbf{k}) \f$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$, i.e.
 
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+    @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
     @param mesh bosonic Matsubara frequency mesh
-    @param mu chemical potential :math:`\mu`
-    @return generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`
+    @param mu chemical potential \f$ \mu \f$
+    @return generalized Lindhard susceptibility in the particle-hole channel \f$ \chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q}) \f$
 
-    .. math::
+    \f[
        \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
+    \f]
 
     .. note::
        The analytic formula is sub-optimal in terms of performance for higher temperatures. The evaluation
-       scales as $\mathcal{O}(N_k^2)$ which is worse than computing the bubble explicitly in imaginary 
-       time, with scaling $\mathcal{O}(N_k N_\tau \log(N_k N_\tau)$ for $N_k \gg N_\tau$.
+       scales as \f$ \mathcal{O}(N_k^2) \f$ which is worse than computing the bubble explicitly in imaginary 
+       time, with scaling \f$ \mathcal{O}(N_k N_\tau \log(N_k N_\tau) \f$ for \f$ N_k \gg N_\tau \f$.
 
     .. note::
        Care must be taken when evaluating the fermionic Matsubara frequency sum of the
@@ -97,20 +100,21 @@ namespace triqs_tprf {
   chi_wk_t lindhard_chi00(e_k_cvt e_k, mesh::imfreq mesh, double mu);
   chi_Dwk_t lindhard_chi00(e_k_cvt e_k, mesh::dlr_imfreq mesh, double mu);
 
-  /** Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`.
+  /** Generalized Lindhard susceptibility in the particle-hole channel and for real frequencies \f$ \chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q}) \f$.
     
     Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
     in the particle-hole channel in real frequencies. The analytic expression is obtained using 
     residue calculus to explicitly evaluate the matsubara sum of the fourier transformed imaginary
     time bubble product of two non-interacting single-particle Green's functions.
 
-    .. math::
+    \f[
        G^{(0)}_{a\bar{b}}(\mathbf{k}, i\omega_n) =
        \left[ i\omega_n \cdot \mathbf{1} - \epsilon(\mathbf{k}) \right]^{-1} .
+    \f]
 
     The analytic continuation of the resulting expression to the real frequency axis gives
  
-    .. math::
+    \f[
         \chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q}) = 
         \frac{1}{N_k} \sum_{\mathbf{k}} \sum_{ij} 
         \frac{ f(\epsilon_{\mathbf{k}, i}) - f(\epsilon_{\mathbf{k}+\mathbf{q}, j}) }
@@ -118,20 +122,22 @@ namespace triqs_tprf {
         \\ \times
         U_{\bar{a}i}(\mathbf{k}) U^\dagger_{id}(\mathbf{k}) 
         U_{\bar{c}j}(\mathbf{k} + \mathbf{q}) U^\dagger_{jb}(\mathbf{k} + \mathbf{q})
+    \f]
  
-    where the $U(\mathbf{k})$ matrices are the diagonalizing unitary transform of the matrix valued 
-    dispersion relation $\epsilon_{\bar{a}b}(\mathbf{k})$, i.e.
+    where the \f$ U(\mathbf{k}) \f$ matrices are the diagonalizing unitary transform of the matrix valued 
+    dispersion relation \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$, i.e.
  
-    .. math::
+    \f[
        \sum_{\bar{a}b} U_{i\bar{a}}(\mathbf{k}) \epsilon_{\bar{a}b}(\mathbf{k}) U^\dagger_{bj} (\mathbf{k})
        = \delta_{ij} \epsilon_{\mathbf{k}, i}
+    \f]
 
-    @param e_k discretized lattice dispersion :math:`\epsilon_{\bar{a}b}(\mathbf{k})`
+    @param e_k discretized lattice dispersion \f$ \epsilon_{\bar{a}b}(\mathbf{k}) \f$
     @param mesh real frequency mesh 
     @param beta inverse temperature
-    @param mu chemical potential :math:`\mu`
-    @param delta broadening :math:`\delta`
-    @return real frequency generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q})`
+    @param mu chemical potential \f$ \mu \f$
+    @param delta broadening \f$ \delta \f$
+    @return real frequency generalized Lindhard susceptibility in the particle-hole channel \f$ \chi^{(00)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{q}) \f$
 */
   chi_fk_t lindhard_chi00(e_k_cvt e_k, mesh::refreq mesh, double beta, double mu, double delta);
 

@@ -143,7 +143,7 @@ def fixed_fermionic_window_python_wnk(chi_wnk, nwf):
     wmesh, nmesh, kmesh = g2.mesh.components
     
     beta = g2.mesh.components[0].beta
-    nmesh_small = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)
+    nmesh_small = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nwf)
 
     chi_wnk_out = Gf(mesh=MeshProduct(wmesh, nmesh_small, kmesh), target_shape=g2.target_shape)
 

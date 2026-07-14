@@ -41,82 +41,82 @@ namespace triqs_tprf {
   using g2_nn_vt  = g2_nn_t::view_type;
   using g2_nn_cvt = g2_nn_t::const_view_type;
 
-  /** Two-particle response-function inversion $[g]^{-1}$.
+  /** Two-particle response-function inversion \f$ [g]^{-1} \f$.
  
- The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
+ The two-particle response function \f$ g_{abcd}(\omega, \nu, \nu') \f$ 
  is cast to matrix form and inverted
 
- .. math::
+ \f[
    [g]^{-1} = [ g_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
  
  Storage is allocated and the inverse is returned by value.
  
  @tparam CH selects the two-particle channel
- @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
- @return :math:`[g]^{-1}` in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function to invert, \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ [g]^{-1} \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
   template <Channel_t CH> g2_iw_t inverse(g2_iw_cvt g);
 
-  /** Two-particle response-function inversion $[g]^{-1}$ in the particle-hole channel (PH).
+  /** Two-particle response-function inversion \f$ [g]^{-1} \f$ in the particle-hole channel (PH).
  
- The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
+ The two-particle response function \f$ g_{abcd}(\omega, \nu, \nu') \f$ 
  is cast to matrix form and inverted
 
- .. math::
+ \f[
    [g]^{-1} = [ g_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
  
  Storage is allocated and the inverse is returned by value.
  
- @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
- @return :math:`[g]^{-1}` in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function to invert, \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ [g]^{-1} \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
   g2_iw_t inverse_PH(g2_iw_vt g);
 
-  /** Two-particle response-function inversion $[g]^{-1}$ in the particle-particle channel (PP).
+  /** Two-particle response-function inversion \f$ [g]^{-1} \f$ in the particle-particle channel (PP).
  
- The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
+ The two-particle response function \f$ g_{abcd}(\omega, \nu, \nu') \f$ 
  is cast to matrix form and inverted
 
- .. math::
+ \f[
    [g]^{-1} = [ g_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
  
  Storage is allocated and the inverse is returned by value.
  
- @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
- @return :math:`[g]^{-1}` in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function to invert, \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ [g]^{-1} \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
   g2_iw_t inverse_PP(g2_iw_vt g);
 
-  /** Two-particle response-function inversion $[g]^{-1}$ in the particle-hole-bar channel (PH-bar).
+  /** Two-particle response-function inversion \f$ [g]^{-1} \f$ in the particle-hole-bar channel (PH-bar).
  
- The two-particle response function $g_{abcd}(\omega, \nu, \nu')$ 
+ The two-particle response function \f$ g_{abcd}(\omega, \nu, \nu') \f$ 
  is cast to matrix form and inverted
 
- .. math::
+ \f[
    [g]^{-1} = [ g_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) ]^{-1}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
  
  Storage is allocated and the inverse is returned by value.
  
- @param g two-particle response function to invert, :math:`g \equiv g_{abcd}(\omega, \nu, \nu')`
- @return :math:`[g]^{-1}` in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function to invert, \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ [g]^{-1} \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
@@ -128,108 +128,108 @@ namespace triqs_tprf {
   g2_nn_t inverse_PP(g2_nn_vt g);
   g2_nn_t inverse_PH_bar(g2_nn_vt g);
 
-  /** Two-particle response-function product :math:`A * B`
+  /** Two-particle response-function product \f$ A * B \f$
  
- The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
- and $B \equiv B_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ The two-particle response functions \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ 
+ and \f$ B \equiv B_{abcd}(\omega, \nu, \nu') \f$ are cast to matrix form and their
  product is computed
 
- .. math::
+ \f[
    (A * B)_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    = \sum_{\bar{\nu}ab} 
    A_{\{\nu\alpha\beta\}, \{\bar{\nu}ab\}}(\omega) 
    B_{\{\bar{\nu}ab\}, \{\nu'\gamma\delta\}}(\omega) 
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the product is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')`
- @param B two-particle response function :math:`B \equiv A_{abcd}(\omega, \nu, \nu')`
- @return :math:`(A * B)` in the given channel
- @include tprf/linalg.hpp
+ @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @param B two-particle response function \f$ B \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ (A * B) \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 
   template <Channel_t CH> g2_iw_t product(g2_iw_cvt A, g2_iw_cvt B);
 
-  /** Two-particle response-function product :math:`A * B` in the particle-hole channel (PH).
+  /** Two-particle response-function product \f$ A * B \f$ in the particle-hole channel (PH).
  
- The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
- and $B \equiv B_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ The two-particle response functions \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ 
+ and \f$ B \equiv B_{abcd}(\omega, \nu, \nu') \f$ are cast to matrix form and their
  product is computed
 
- .. math::
+ \f[
    (A * B)_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    = \sum_{\bar{\nu}ab} 
    A_{\{\nu\alpha\beta\}, \{\bar{\nu}ab\}}(\omega) 
    B_{\{\bar{\nu}ab\}, \{\nu'\gamma\delta\}}(\omega) 
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the product is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')`
- @param B two-particle response function :math:`B \equiv A_{abcd}(\omega, \nu, \nu')`
- @return :math:`(A * B)` in the given channel
- @include tprf/linalg.hpp
+ @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @param B two-particle response function \f$ B \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ (A * B) \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 
   g2_iw_t product_PH(g2_iw_vt A, g2_iw_vt B);
 
-  /** Two-particle response-function product :math:`A * B` in the particle-particle channel (PP).
+  /** Two-particle response-function product \f$ A * B \f$ in the particle-particle channel (PP).
  
- The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
- and $B \equiv B_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ The two-particle response functions \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ 
+ and \f$ B \equiv B_{abcd}(\omega, \nu, \nu') \f$ are cast to matrix form and their
  product is computed
 
- .. math::
+ \f[
    (A * B)_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    = \sum_{\bar{\nu}ab} 
    A_{\{\nu\alpha\beta\}, \{\bar{\nu}ab\}}(\omega) 
    B_{\{\bar{\nu}ab\}, \{\nu'\gamma\delta\}}(\omega) 
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the product is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')`
- @param B two-particle response function :math:`B \equiv A_{abcd}(\omega, \nu, \nu')`
- @return :math:`(A * B)` in the given channel
- @include tprf/linalg.hpp
+ @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @param B two-particle response function \f$ B \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ (A * B) \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 
   g2_iw_t product_PP(g2_iw_vt A, g2_iw_vt B);
 
-  /** Two-particle response-function product :math:`A * B` in the particle-hole-bar channel (PH-bar).
+  /** Two-particle response-function product \f$ A * B \f$ in the particle-hole-bar channel (PH-bar).
  
- The two-particle response functions $A \equiv A_{abcd}(\omega, \nu, \nu')$ 
- and $B \equiv B_{abcd}(\omega, \nu, \nu')$ are cast to matrix form and their
+ The two-particle response functions \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$ 
+ and \f$ B \equiv B_{abcd}(\omega, \nu, \nu') \f$ are cast to matrix form and their
  product is computed
 
- .. math::
+ \f[
    (A * B)_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    = \sum_{\bar{\nu}ab} 
    A_{\{\nu\alpha\beta\}, \{\bar{\nu}ab\}}(\omega) 
    B_{\{\bar{\nu}ab\}, \{\nu'\gamma\delta\}}(\omega) 
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the product is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')`
- @param B two-particle response function :math:`B \equiv A_{abcd}(\omega, \nu, \nu')`
- @return :math:`(A * B)` in the given channel
- @include tprf/linalg.hpp
+ @param A two-particle response function \f$ A \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @param B two-particle response function \f$ B \equiv A_{abcd}(\omega, \nu, \nu') \f$
+ @return \f$ (A * B) \f$ in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
@@ -242,95 +242,95 @@ namespace triqs_tprf {
   g2_nn_t product_PP(g2_nn_vt A, g2_nn_vt B);
   g2_nn_t product_PH_bar(g2_nn_vt A, g2_nn_vt B);
 
-  /** Two-particle response-function identity operator :math:`\mathbf{1}`
+  /** Two-particle response-function identity operator \f$ \mathbf{1} \f$
  
  Constructs the unity-operator in the given channel
  
- .. math::
+ \f[
    \mathbf{1}_{abcd}(\omega,\nu,\nu') =
    \mathbf{1}_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    \equiv 
    \delta_{\nu\nu'} \delta_{\alpha\gamma} \delta_{\beta\delta}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
- @return the unity operator :math:`\mathbf{1}`, in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
+ @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
   template <Channel_t CH> g2_iw_t identity(g2_iw_cvt g);
 
-  /** Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-hole channel (PH).
+  /** Two-particle response-function identity operator \f$ \mathbf{1} \f$ in the particle-hole channel (PH).
  
  Constructs the unity-operator in the given channel
  
- .. math::
+ \f[
    \mathbf{1}_{abcd}(\omega,\nu,\nu') =
    \mathbf{1}_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    \equiv 
    \delta_{\nu\nu'} \delta_{\alpha\gamma} \delta_{\beta\delta}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
- @return the unity operator :math:`\mathbf{1}`, in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
+ @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 
   g2_iw_t identity_PH(g2_iw_vt g);
 
-  /** Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-particle channel (PP).
+  /** Two-particle response-function identity operator \f$ \mathbf{1} \f$ in the particle-particle channel (PP).
  
  Constructs the unity-operator in the given channel
  
- .. math::
+ \f[
    \mathbf{1}_{abcd}(\omega,\nu,\nu') =
    \mathbf{1}_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    \equiv 
    \delta_{\nu\nu'} \delta_{\alpha\gamma} \delta_{\beta\delta}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
- @return the unity operator :math:`\mathbf{1}`, in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
+ @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
 
   g2_iw_t identity_PP(g2_iw_vt g);
 
-  /** Two-particle response-function identity operator :math:`\mathbf{1}` in the particle-hole-bar channel (PH-bar).
+  /** Two-particle response-function identity operator \f$ \mathbf{1} \f$ in the particle-hole-bar channel (PH-bar).
  
  Constructs the unity-operator in the given channel
  
- .. math::
+ \f[
    \mathbf{1}_{abcd}(\omega,\nu,\nu') =
    \mathbf{1}_{\{\nu\alpha\beta\}, \{\nu'\gamma\delta\}}(\omega) 
    \equiv 
    \delta_{\nu\nu'} \delta_{\alpha\gamma} \delta_{\beta\delta}
+ \f]
 
- where the mapping of target-space indices $\{a, b, c, d \}$ to $\{\alpha, \beta\}, \{\gamma, \delta\}$ is channel dependent.
+ where the mapping of target-space indices \f$ \{a, b, c, d \} \f$ to \f$ \{\alpha, \beta\}, \{\gamma, \delta\} \f$ is channel dependent.
 
  Storage is allocated and the result is returned by value.
  
  @tparam CH selects the two-particle channel
- @param A two-particle response function :math:`A \equiv A_{abcd}(\omega, \nu, \nu')` determinig the shape and size of the unity operator
- @return the unity operator :math:`\mathbf{1}`, in the given channel
- @include tprf/linalg.hpp
+ @param g two-particle response function \f$ g \equiv g_{abcd}(\omega, \nu, \nu') \f$ determining the shape and size of the unity operator
+ @return the unity operator \f$ \mathbf{1} \f$, in the given channel
  @note Assign to gf (g2_iw_t) yields move operation while assigning to gf_view (g2_iw_vt) causes extra copy operation
  
  */
@@ -343,6 +343,7 @@ namespace triqs_tprf {
   g2_nn_t identity_PP(g2_nn_vt g);
   g2_nn_t identity_PH_bar(g2_nn_vt g);
 
-  array<g2_nn_cvt::scalar_t, 4> scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR);
+  // internal helper, not part of the Python API
+  C2PY_IGNORE array<g2_nn_cvt::scalar_t, 4> scalar_product_PH(g2_n_cvt vL, g2_nn_cvt M, g2_n_cvt vR);
 
 } // namespace triqs_tprf

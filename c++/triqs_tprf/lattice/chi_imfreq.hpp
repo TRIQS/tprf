@@ -26,157 +26,174 @@
 
 namespace triqs_tprf {
 
-/** Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})`.
+/** Generalized susceptibility bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) =
      - \beta G_{d\bar{a}}(\nu, \mathbf{r}) \cdot G_{b\bar{c}}(\nu + \omega, -\mathbf{r})
+  \f]
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
+  @param g_nr Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$ in fermionic Matsubara frequency and real-space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real-space.
  */
 chi_wnr_t chi0r_from_gr_PH(int nw, int nn, g_wr_cvt g_nr);
 chi_nr_t chi0_nr_from_gr_PH_at_specific_w(int nw_index, int nn, g_wr_cvt g_nr);
 
-/** Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` without MPI parallellization.
+/** Generalized susceptibility bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ without MPI parallellization.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) =
      - \beta G_{d\bar{a}}(\nu, \mathbf{r}) \cdot G_{b\bar{c}}(\nu + \omega, -\mathbf{r})
+  \f]
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
+  @param g_nr Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{r}) \f$ in fermionic Matsubara frequency and real-space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real-space.
  */
 chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr);
 
-/** Generalized susceptibility bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` with convolution in k-space.
+/** Generalized susceptibility bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ with convolution in k-space.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) =
      - \frac{\beta}{N_k} \sum_\mathbf{k} 
      G_{d\bar{a}}(\nu, \mathbf{k}) \cdot G_{b\bar{c}}(\nu + \omega, \mathbf{k} - \mathbf{q})
+  \f]
 
   @param nw Number of bosonic Matsubara freqiencies.
   @param nn Number of fermionic Matsubara freqiencies.
-  @param g_tr Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\nu, \mathbf{r})`.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real-space.
+  @param g_wk Single-particle Green's function \f$ G_{a\bar{b}}(\nu, \mathbf{k}) \f$ in fermionic Matsubara frequency and momentum-space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum-space.
  */
 chi_wnk_t chi0q_from_g_wk_PH(int nw, int nn, g_wk_cvt g_wk);
 
-/** Fourier transform of the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` in momentum-space to :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in real-space.
+/** Fourier transform of the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in momentum-space to \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in real-space.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) =
      \mathcal{F}_{\mathbf{q} \rightarrow \mathbf{r}} \left\{
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})
      \right\}
+  \f]
 
-  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real space.
+  @param chi_wnk Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real space.
  */
 chi_wnr_t chi0r_from_chi0q(chi_wnk_cvt chi_wnk);
 
-/** Fourier transform of the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in real space to :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` in momentum space.
+/** Fourier transform of the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in real space to \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in momentum space.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) =
      \mathcal{F}_{\mathbf{r} \rightarrow \mathbf{q}} \left\{
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})
      \right\}
+  \f]
 
-  @param chi_wnr Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r})` in one bosonic and one fermionic Matsuabara frequency and real space.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @param chi_wnr Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{r}) \f$ in one bosonic and one fermionic Matsuabara frequency and real space.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{q}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum space.
  */
 chi_wnk_t chi0q_from_chi0r(chi_wnr_cvt chi_wnr);
 
-/** Sum over fermionic frequency in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})`. (NB! without tail corrections)
+/** Sum over fermionic frequency in the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k}) \f$. (NB! without tail corrections)
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
      \frac{1}{\beta^2} \sum_{\nu=\nu_{min}}^\nu_{max} \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+  \f]
 
-  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
-  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic Matsubara frequency and momentum space.
+  @param chi_wnk Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ in one bosonic Matsubara frequency and momentum space.
  */
 chi_wk_t chi0q_sum_nu(chi_wnk_cvt chi_wnk);
 
-/** Sum over fermionic frequency in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})` using higher order tail corrections when summing to infinity.
+/** Sum over fermionic frequency in the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k}) \f$ using higher order tail corrections when summing to infinity.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
      \frac{1}{\beta^2} \sum_{\nu=-\infty}^\infty \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+  \f]
 
-  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
-  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic Matsubara frequency and momentum space.
+  @param chi_wnk Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ in one bosonic Matsubara frequency and momentum space.
  */
 chi_wk_t chi0q_sum_nu_tail_corr_PH(chi_wnk_cvt chi_wnk);
 
-/** Sum over fermionic frequency and momentum in the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})`. (NB! without tail corrections)
+/** Sum over fermionic frequency and momentum in the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k}) \f$. (NB! without tail corrections)
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
      \frac{1}{N_k} \sum_\matbf{k} \frac{1}{\beta^2} \sum_{\nu=\nu_{min}}^\nu_{max}
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \mathbf{k})
+  \f]
 
-  @param chi_wnk Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` in one bosonic and one fermionic Matsuabara frequency and momentum space.
-  @return Susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega)` in one bosonic Matsubara frequency.
+  @param chi_wnk Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ in one bosonic and one fermionic Matsuabara frequency and momentum space.
+  @return Susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega) \f$ in one bosonic Matsubara frequency.
  */
 chi_w_t chi0q_sum_nu_q(chi_wnk_cvt chi_wnk);
 
-/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k})`.
+/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k}) \f$.
 
   Computes
 
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k}) =
      \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+  \f]
 
-  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
-  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
-  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k})`.
+  @param chi0_wnk Generalized lattice bubble susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
+  @param gamma_ph_wnn Local particle-hole vertex function \f$ \Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') \f$.
+  @return Generalized lattice susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \nu, \nu', \mathbf{k}) \f$.
  */
 chi_kwnn_t chiq_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn);
 
-/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+/** Lattice Bethe-Salpeter equation solver for the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
 
   Computes
 
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
      \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+  \f]
 
-  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
-  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
-  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+  @param chi0_wnk Generalized lattice bubble susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
+  @param gamma_ph_wnn Local particle-hole vertex function \f$ \Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') \f$.
+  @return Generalized lattice susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
  */
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn);
 
-/** Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+/** Dual lattice Bethe-Salpeter equation solver for the generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
 
-  @param chi0_wnk Generalized lattice bubble susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
-  @param gamma_ph_wnn Local particle-hole vertex function :math:`\Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu')`.
-  @param L_wn Local triangular particle-hole vertex function :math:`L^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu)`.
-  @return Generalized lattice susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`.
+  Computes
+
+  \f[
+     \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
+     \chi^{(0)} \left[ 1 - \Gamma^{(PH)} \chi^{(0)} \right]^{-1}
+  \f]
+
+  @param chi0_wnk Generalized lattice bubble susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
+  @param gamma_ph_wnn Local particle-hole vertex function \f$ \Gamma^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu, \nu') \f$.
+  @param L_wn Local triangular particle-hole vertex function \f$ L^{(PH)}_{\bar{a}b\bar{c}d}(\omega, \nu) \f$.
+  @return Generalized lattice susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$.
  */
 chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_wnn_cvt gamma_ph_wnn, chi_nn_cvt L_wn);
   

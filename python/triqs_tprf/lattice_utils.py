@@ -123,7 +123,7 @@ def strip_sigma(nw, beta, sigma_in, debug=False):
 
     np.testing.assert_almost_equal(beta, sigma_in.mesh.beta)
 
-    wmesh = MeshImFreq(beta, 'Fermion', n_max=nw)
+    wmesh = MeshImFreq(beta, 'Fermion', n_iw=nw)
     sigma = Gf(mesh=wmesh, target_shape=sigma_in.target_shape)
 
     for w in wmesh:
@@ -167,7 +167,7 @@ def bubble_setup(beta, mu, tb_lattice, nk, nw, sigma_w=None):
 
     if sigma is None:
         print('--> g0k')
-        wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
+        wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw)
         g_wk = lattice_dyson_g0_wk(mu=mu, e_k=e_k, mesh=wmesh)
     else:
         print('--> gk')

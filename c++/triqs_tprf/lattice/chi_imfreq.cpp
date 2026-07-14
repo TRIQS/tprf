@@ -250,7 +250,7 @@ chi_wnr_t chi0r_from_gr_PH_nompi(int nw, int nn, g_wr_cvt g_nr) {
 
 // Helper function compiting chi0 for fixed bosonic frequency w and momentum q.
   
-CPP2PY_IGNORE
+C2PY_IGNORE
 gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, g_wk_cvt g_wk) {
 
   int nb = g_wk.target().shape()[0];
@@ -286,7 +286,7 @@ gf<imfreq, tensor_valued<4>> chi0_n_from_g_wk_PH(mesh::imfreq::mesh_point_t w, m
 // Helper function compiting chi0 for fixed bosonic frequency w and momentum q.
 // using the self energy and the dispersion (instead of the greens function)
 
-CPP2PY_IGNORE
+C2PY_IGNORE
 gf<imfreq, tensor_valued<4>> chi0_n_from_e_k_sigma_w_PH(mesh::imfreq::mesh_point_t w, mesh::brzone::mesh_point_t q, mesh::imfreq fmesh, double mu,
                                                         e_k_cvt e_k, g_w_cvt sigma_w) {
 
@@ -669,8 +669,6 @@ chi_kw_t chiq_sum_nu_from_chi0q_and_gamma_and_L_wn_PH(chi_wnk_cvt chi0_wnk, chi_
   auto &bmesh = std::get<0>(chi0_wnk.mesh());
   auto &fmesh = std::get<1>(chi0_wnk.mesh());
   auto &kmesh = std::get<2>(chi0_wnk.mesh());
-
-  double beta = fmesh.beta();
 
   chi_kw_t chi_kw({kmesh, bmesh}, target_shape);
 

@@ -1,0 +1,4 @@
+package_name = "triqs_tprf"
+documentation = "Product, Inverse and Identity for two-particle response functions"
+namespaces = "triqs_tprf"
+match_files = "linalg"

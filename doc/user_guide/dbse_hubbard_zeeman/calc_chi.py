@@ -27,8 +27,8 @@ import numpy as np
 import triqs.utility.mpi as mpi
 from h5 import HDFArchive
 
-from triqs.gf import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx, MeshProduct
-from triqs.gf.tools import fit_legendre
+from triqs.gfs import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx, MeshProduct
+from triqs.gfs.tools import fit_legendre
 
 from triqs.operators import n, c, c_dag, Operator
 from triqs.operators.util.hamiltonians import h_int_kanamori, h_int_density

@@ -31,7 +31,7 @@ p = ParameterCollection(beta = 10,
                         nk = 4,
                         norb = 2,)
 
-wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nw)
+wmesh = MeshImFreq(beta=p.beta, statistic='Fermion', n_iw=p.nw)
 
 cell = np.eye(3)
 bl = BravaisLattice(cell)

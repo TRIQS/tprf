@@ -39,7 +39,7 @@ H = TBLattice(
 kmesh = H.get_kmesh(n_k=[nk]*dim + [1]*(3-dim))
 e_k = H.fourier(kmesh)
 
-wmesh = MeshImFreq(beta=beta, S='Fermion', n_max=nw)
+wmesh = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nw)
 
 print('--> Dyson g0_wk')
 t = time.time()

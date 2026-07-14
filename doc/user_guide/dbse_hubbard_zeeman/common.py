@@ -30,8 +30,8 @@ import numpy as np
 import triqs.utility.mpi as mpi
 from h5 import HDFArchive
 
-from triqs.gf import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx, MeshProduct
-from triqs.gf.tools import fit_legendre
+from triqs.gfs import Gf, MeshImFreq, Fourier, LegendreToMatsubara, BlockGf, inverse, Idx, MeshProduct
+from triqs.gfs.tools import fit_legendre
 
 from triqs.operators import n, c, c_dag, Operator
 from triqs.operators.util.hamiltonians import h_int_kanamori, h_int_density
@@ -186,7 +186,7 @@ def dmft_self_consistent_step(p, verbose=False):
 
     G_l = fit_legendre(cthyb.G_tau, order=p.n_l)
     
-    from triqs.gf import enforce_discontinuity
+    from triqs.gfs import enforce_discontinuity
     for bidx, g_l in G_l: enforce_discontinuity(g_l, np.eye(g_l.target_shape[0]))
     
     p.dG_l = np.max(np.abs(BlockGf_data(G_l-p.G_l))) if hasattr(p,'G_l') else float('nan')

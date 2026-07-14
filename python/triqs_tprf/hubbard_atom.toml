@@ -1,0 +1,4 @@
+package_name = "triqs_tprf"
+documentation = "Exact correlation functions for the hubbard atom"
+namespaces = "triqs_tprf::hubbard_atom"
+match_files = "hubbard_atom"

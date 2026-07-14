@@ -1,0 +1,5 @@
+package_name = "triqs_tprf"
+documentation = "Lattice functionality"
+namespaces = "triqs_tprf"
+# Wrap the lattice sub-headers; also match types.hpp for the Channel_t enum.
+match_files = "lattice|types"

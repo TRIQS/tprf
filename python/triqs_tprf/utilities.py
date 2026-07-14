@@ -141,8 +141,8 @@ def G2_loc_fixed_fermionic_window_python(g2, nwf):
     assert(n//2 >= nwf)
 
     
-    mesh_iw = MeshImFreq(beta=beta, S='Boson', n_max=nw)
-    mesh_inu = MeshImFreq(beta=beta, S='Fermion', n_max=nwf)
+    mesh_iw = MeshImFreq(beta=beta, statistic='Boson', n_iw=nw)
+    mesh_inu = MeshImFreq(beta=beta, statistic='Fermion', n_iw=nwf)
     mesh_prod = MeshProduct(mesh_iw, mesh_inu, mesh_inu)
 
     g2_out = Gf(mesh=mesh_prod, target_shape=g2.target_shape)
@@ -180,7 +180,7 @@ def create_eliashberg_ingredients(p):
     kmesh = H.get_kmesh(n_k=[p.nk] * p.dim + [1] * (3 - p.dim))
     e_k = H.fourier(kmesh)
 
-    wmesh = MeshImFreq(beta=p.beta, S="Fermion", n_max=p.nw)
+    wmesh = MeshImFreq(beta=p.beta, statistic="Fermion", n_iw=p.nw)
     g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
 
     chi0_wk = imtime_bubble_chi0_wk(g0_wk, nw=p.nw)
@@ -214,7 +214,7 @@ def create_g0_wk_for_test_model(p):
     kmesh = H.get_kmesh(n_k=[p.nk] * p.dim + [1] * (3 - p.dim))
     e_k = H.fourier(kmesh)
 
-    wmesh = MeshImFreq(beta=p.beta, S="Fermion", n_max=p.nw)
+    wmesh = MeshImFreq(beta=p.beta, statistic="Fermion", n_iw=p.nw)
     g0_wk = lattice_dyson_g0_wk(mu=p.mu, e_k=e_k, mesh=wmesh)
 
     return g0_wk

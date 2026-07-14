@@ -104,7 +104,7 @@ def make_calc():
     
     bz = BrillouinZone(BravaisLattice(units=np.eye(3), orbital_positions=[(0,0,0)]))
     kmesh = MeshBrZone(bz, [1,1,1])
-    wmesh = MeshImFreq(beta=p.beta, S='Fermion', n_max=p.nwf_gf)
+    wmesh = MeshImFreq(beta=p.beta, statistic='Fermion', n_iw=p.nwf_gf)
 
     lat_rpa.g_wk = Gf(mesh=MeshProduct(wmesh, kmesh), target_shape=p.G_iw.target_shape)
     lat_rpa.g_wk[:, Idx(0, 0, 0)] = p.G_iw

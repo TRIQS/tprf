@@ -24,16 +24,17 @@
 
 namespace triqs_tprf {
 
-/** Generalized susceptibility imaginary time bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
+/** Generalized susceptibility imaginary time bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) =
      - G_{d\bar{a}}(\tau, \mathbf{r}) G_{b\bar{c}}(-\tau, -\mathbf{r})
+  \f]
 
-  @param g_tr Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\tau, \mathbf{r})`.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` in imaginary time and real-space.
+  @param g_tr Imaginary time Green's function in real-space, \f$ G_{a\bar{b}}(\tau, \mathbf{r}) \f$.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$ in imaginary time and real-space.
  */
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr);
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr);
@@ -42,112 +43,119 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw);
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr, int nw);
 
-/** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
+/** Generalized susceptibility zero imaginary frequency bubble in the particle-hole channel \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) \f$ using analytic integration of DLR basis functions in imaginary time.
 
   Computes
 
-  .. math::
+  \f[
      \chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r}) =
      - \int_0^\beta d\tau \,
      G_{d\bar{a}}(\tau, \mathbf{r}) G_{b\bar{c}}(-\tau, -\mathbf{r})
+  \f]
 
-  @param g_tr Imaginary time Green's function in real-space, :math:`G_{a\bar{b}}(\tau, \mathbf{r})`.
-  @return Generalized susceptibility :math:`\chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r})` in real-space.
+  @param g_tr Imaginary time Green's function in real-space, \f$ G_{a\bar{b}}(\tau, \mathbf{r}) \f$.
+  @return Generalized susceptibility \f$ \chi^{(0)}_{\bar{a}b\bar{c}d}(\mathbf{r}) \f$ in real-space.
  */
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr);
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr);
 chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr);
 chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr);
 
-/** Static susceptibility calculation :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})`
+/** Static susceptibility calculation \f$ \chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) \f$
    
   Explicit calculation of the static, zero frequency response, by 2nd order trapetzoidal 
   integration in imaginary time, i.e.
   
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) =
          \int_0^\beta d\tau \, \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) 
+  \f]
 
-  @param chi_tr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
+  @param chi_tr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$ 
                 in imaginary time and real space.
-  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r})` 
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega=0, \mathbf{r}) \f$ 
           at zero Matsubara frequency and real-space.
  */
 chi_wr_t chi_w0r_from_chi_tr(chi_tr_cvt chi_tr);
   
-/** Parallel Fourier transform from  :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
+/** Parallel Fourier transform from  \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$ to \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
 
   Computes
 
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
          \mathcal{F}_{\tau \rightarrow \omega} \left\{
          \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) 
          \right\}
+  \f]
 
-  @param chi_tr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
+  @param chi_tr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$ 
                 in imaginary time and real space.
-  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ 
           in Matsubara frequency and real-space.
  */
 chi_wr_t chi_wr_from_chi_tr(chi_tr_cvt chi_tr, int nw);
 chi_Dwr_t chi_wr_from_chi_tr(chi_Dtr_cvt chi_tr, int nw);
 
-/** Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})`
+/** Fourier transform from \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ to \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$
 
   Computes
 
-  .. math::
+  \f[
          \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) =
          \mathcal{F}_{\omega \rightarrow \tau} \left\{
          \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
          \right\}
+  \f]
 
-  @param chi_tr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r})` 
-                in imaginary time and real space.
-  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
-          in Matsubara frequency and real-space.
+  @param chi_wr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
+                in Matsubara frequency and real space.
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\tau, \mathbf{r}) \f$
+          in imaginary time and real-space.
  */
 chi_tr_t chi_tr_from_chi_wr(chi_wr_cvt chi_wr, int ntau=-1);
 chi_Dtr_t chi_tr_from_chi_wr(chi_Dwr_cvt chi_wr, int ntau=-1);
 
-/** Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})`
+/** Parallel Fourier transform from \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ to \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$
 
   Computes
 
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) =
          \mathcal{F}_{\mathbf{r} \rightarrow \mathbf{k}} \left\{
          \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) 
          \right\}
+  \f]
 
-  @param chi_wr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
+  @param chi_wr Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$ 
                 in Matsubara frequency and real space.
-  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` 
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ 
           in Matsubara frequency and momentum space.
  */
 chi_wk_t chi_wk_from_chi_wr(chi_wr_cvt chi_wr);
 chi_Dwk_t chi_wk_from_chi_wr(chi_Dwr_cvt chi_wr);
 
-/** Parallel Fourier transform from :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` to :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})`
+/** Parallel Fourier transform from \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$ to \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
 
   Computes
 
-  .. math::
+  \f[
      \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) =
          \mathcal{F}_{\mathbf{k} \rightarrow \mathbf{r}} \left\{
          \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) 
          \right\}
+  \f]
 
-  @param chi_wr Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k})` 
-                in imaginary time and momentum space.
-  @return Generalized susceptibility :math:`\chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r})` 
+  @param chi_wk Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{k}) \f$
+                in Matsubara frequency and momentum space.
+  @return Generalized susceptibility \f$ \chi_{\bar{a}b\bar{c}d}(\omega, \mathbf{r}) \f$
           in Matsubara frequency and real space.
  */
 chi_wr_t chi_wr_from_chi_wk(chi_wk_cvt chi_wk);
 chi_Dwr_t chi_wr_from_chi_wk(chi_Dwk_cvt chi_wk);
 
 target_value_t<chi_t_t>::regular_type chi_trapz_tau(chi_t_cvt chi_t);
-target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t);
+// internal helper, not part of the Python API
+C2PY_IGNORE target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t);
 
 } // namespace triqs_tprf

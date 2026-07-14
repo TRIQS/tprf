@@ -1,0 +1,4 @@
+package_name = "triqs_tprf"
+documentation = "functionality for changing frequency conventions"
+namespaces = "triqs_tprf"
+match_files = "freq_conv"
