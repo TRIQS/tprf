@@ -33,7 +33,7 @@ from triqs_tprf.ParameterCollection import ParameterCollections
 p = ParameterCollection(
     t = 1.,
     t_prime = 0.,
-    B = 1,
+    B = 1.0,
     crystal_field = 0.,
     U = 4,
     N_target=1.0,
