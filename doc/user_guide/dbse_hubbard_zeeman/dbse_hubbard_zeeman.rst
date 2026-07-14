@@ -28,7 +28,7 @@ In the presence of a Zeeman field :math:`B`, the total spin of the system will u
 
 :download:`plot_chiG.py <plot_chiG.py>`
 
-.. image:: figure_chiG.svg
+.. image:: fig_chiG.svg
    :align: center
 
 From left to right, this plot shows the :math:`S^x S^x`, :math:`S^x S^y`, :math:`S^z S^z` and :math:`N N` components of :math:`\chi(q=\Gamma,\omega_m)` as a function of :math:`\omega_m`. The orange lines are the BSE result, which darker lines indicating a larger fermionic frequency box. The blue lines are the DBSE results for the same frequency box sizes, which show essentially perfect convergence. In the first two plots, the black lines are the analytically known exact result. For more information, see `Communications Physics 6, 289 (2023) <https://doi.org/10.1038/s42005-023-01411-w>`_.
