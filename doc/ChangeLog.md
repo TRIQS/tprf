@@ -2,6 +2,21 @@
 
 # Changelog
 
+## Version 4.0.1
+
+TPRF version 4.0.1 is a patch release that completes the Hubbard-Zeeman tutorial and fixes several documentation issues.
+
+We thank all contributors: Thomas Hahn, Alexander Hampel, Erik van Loon, Hugo U. R. Strand, Nils Wentzell
+
+Find below an itemized list of changes in this release.
+
+### doc
+* Complete the dual Bethe-Salpeter equation Hubbard-Zeeman tutorial with the model Hamiltonian, a discussion of the BSE and DBSE convergence in the fermionic frequency box size, and the Larmor precession results, including the corresponding figures
+* Link the Zenodo dataset that allows the tutorial to be run without running the impurity solver
+* Add a Zenodo DOI badge to the README
+* Fix the documentation website URLs to not use the triqs_ prefix
+
+
 ## Version 4.0.0
 
 TPRF version 4.0.0 is a compatibility release for TRIQS version 4.0.0. It
