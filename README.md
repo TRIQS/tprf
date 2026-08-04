@@ -1,6 +1,7 @@
 
 # *TPRF*: the Two-Particle Response Function tool box for TRIQS
 
+[![build](https://github.com/TRIQS/tprf/workflows/build/badge.svg)](https://github.com/TRIQS/tprf/actions?query=workflow%3Abuild)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/triqs_tprf.svg)](https://anaconda.org/conda-forge/triqs_tprf)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2638058-blue.svg)](https://doi.org/10.5281/zenodo.2638058)
 
