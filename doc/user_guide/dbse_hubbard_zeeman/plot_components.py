@@ -52,16 +52,16 @@ def plot_chi_k(p, chi_kw, w, component, color=None):
     if color=='black':
         line = plt.plot(k_plot, interp, '-',c=color)
     else:
-        line = plt.plot(k_plot, interp, '-', label=r'$N_{\nu} = $'+'${:d}$'.format(p.nwf),c=color)
+        line = plt.plot(k_plot, interp, '-', label='${:d}$'.format(p.nwf),c=color)
 
     plt.gca().set_xticks(K_plot); plt.gca().set_xticklabels(K_labels)
     plt.grid(True); plt.ylabel(r'$\chi(\mathbf{Q})$')
-    plt.legend(loc='best', fontsize=8)
+    plt.legend(loc='lower left', fontsize=8,title=r'$N_{\nu}$ BSE')
     return line[0].get_color()
 
 import itertools
 
-ws = [0,3,6,] # Selected bosonic frequencies
+ws = [3,] # Selected bosonic frequencies
 components = [(aa,bb,cc,dd) for aa,bb,cc,dd in itertools.product([0,1],repeat=4)]
 
 special_K= get_path()[2][1] # M-point on X axis
@@ -71,8 +71,8 @@ def comp2int(x):
 
 for w,component in itertools.product(ws,components):
     print(w,component, comp2int( component) )
-    if not comp2int(component) in [0,3,6,9,12,15]: continue
-    plt.figure(figsize=(3.25*2, 3))
+    if not comp2int(component) in [12,]: continue # Only plot this particular component(s)
+    plt.figure(figsize=(8, 3))
 
     ps, color = [], None
     for filename in np.sort(glob.glob('data_bse_nwf_*.h5')):
@@ -102,12 +102,9 @@ for w,component in itertools.product(ws,components):
     plt.subplot(*subp); subp[-1] += 1
     plt.plot(X, Y, '--k', lw=1.0, zorder=-100)
     plt.plot(0, y0, 'rx', label=r'BSE')
-    plt.grid(True); plt.legend(loc='best', fontsize=8)
     plt.xlabel(r'$1/N_\nu$'); plt.ylabel(r'$\chi(\mathbf{M})$')
-    plt.title(
-        r'$\lim_{n_\nu \rightarrow \infty} \, \chi(\mathbf{M}) \approx $' + \
-        '${:3.4f}$'.format(y0))
-    plt.tight_layout()
+    titletext=r'$\lim_{N_\nu \rightarrow \infty} \, \chi(\mathbf{M}) \approx $' + \
+        '${:3.4f}$'.format(y0)+' (BSE)'
 
     #Now do the same thing for the DBSE
     ps, color = [], None
@@ -118,7 +115,7 @@ for w,component in itertools.product(ws,components):
         subp = [1, 2, 1]
         plt.subplot(*subp); subp[-1] += 1
         color = plot_chi_k(p,p.chi_kw_dbse,w,component,color='black')
-        plt.title(f'{component}, w={w}')
+        plt.title(f'component: {component}, $\\Omega={w}$')
         plt.subplot(*subp); subp[-1] += 1
         plt.plot(1./p.nwf, p.chi_M, 'o', color=color)
         ps.append(p)
@@ -135,10 +132,14 @@ for w,component in itertools.product(ws,components):
 
     subp = [1, 2, 1]
     plt.subplot(*subp); subp[-1] += 1
-    plt.plot(special_K, y0, 'rx')
+    plt.plot(special_K, y0, color='black',marker='s')
     plt.subplot(*subp); subp[-1] += 1
     plt.plot(X, Y, '--k', lw=1.0, zorder=-100)
-    plt.plot(0, y0, 'rx', label=r'DBSE')
+    plt.plot(0, y0, color='black', marker='s', label=r'DBSE')
+    plt.grid(True); plt.legend(loc='best', fontsize=8)
+
+    plt.title( titletext+', '+'${:3.4f}$'.format(y0)+' (DBSE)',loc='right')
+    plt.tight_layout()
 
     plt.savefig(f'figure_bse_w{w}_comp{comp2int(component)}.svg')
     plt.close()

@@ -22,12 +22,12 @@
 
 import numpy as np
 from triqs.plot.mpl_interface import plt,oplot
-import triqs.gfs
+import triqs.gf
 from h5 import HDFArchive
 import itertools
 # ----------------------------------------------------------------------
 
-from triqs.gfs import MeshBrillouinZone, Idx, Gf, MeshProduct
+from triqs.gf import MeshBrillouinZone, Idx, Gf, MeshProduct
 from triqs.lattice import BrillouinZone, BravaisLattice
 from triqs.operators import n, c, c_dag, Operator
 
@@ -69,7 +69,7 @@ operator_Sx = +0.5*sum( c_dag('up',i)*c('do',i)+c_dag('do',i)*c('up',i) for i in
 operator_Sy = +0.5j*sum( c_dag('up',i)*c('do',i)-c_dag('do',i)*c('up',i) for i in range(num_orbitals) )
 orb_names = list(range(num_orbitals))
 spin_names = ('up', 'do')
-gf_struct = set_operator_structure(spin_names, orb_names, off_diag=True)
+gf_struct = set_operator_structure(spin_names, len(orb_names), off_diag=True)
 
 
 font = {'size'   : 8}
@@ -81,7 +81,7 @@ Q = (0,0,0)
 
 nwfs = [30,28,26,24,22,20,18] # Fermionic frequency cut-offs
 
-fig,axs=plt.subplots(nrows= 1, ncols=4, figsize=(20,10))
+fig,axs=plt.subplots(nrows= 1, ncols=4, figsize=(10,4))
 
 def load_h5(filename):
     print(f'--> Loading: {filename}')
@@ -95,47 +95,53 @@ def plot_chi_kw(filename, operator1,operator2,operator3,operator4,setlabel,ii):
 
     mesh = p.chi_kw_dbse.mesh[1]
     index = 0
+    axs[index].set_xlim(-5,5)
+    axs[index].set_title(r'$\langle S^x S^x \rangle (\mathbf{q}=\mathbf{\Gamma},\omega_m)$')
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_dbse[Idx(Q),wn], operator1, operator1).real for wn in mesh], 
-        marker='x',label=rf'$\chi(Q,\omega)$ DBSE nwf={p.nwf}' if setlabel else '',c='C0', alpha= 1-ii/len(nwfs) )
+        marker='x',label='',c='C0', alpha= 1-ii/len(nwfs) )
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_bse[Idx(Q),wn], operator1, operator1).real for wn in mesh], 
-        marker='+',label=rf'$\chi(Q,\omega)$ BSE nwf={p.nwf}' if setlabel else '',c='C1', alpha= 1-ii/len(nwfs) )
+        marker='+',label='',c='C1', alpha= 1-ii/len(nwfs) )
 
     # Exact
     def f(wn):
         return (2*p.B)*p.M/( (2*p.B)**2+wn**2)
-    axs[index].plot([wn.value.imag for wn in mesh], [ f(wn.value.imag) for wn in mesh], c='black',alpha=0.5, marker='.'   )
+    if ii==0:
+        axs[index].plot([wn.value.imag for wn in mesh], [ f(wn.value.imag) for wn in mesh], c='black', marker='+',linestyle='', label='Exact')
 
-    axs[index].set_xlim(-5,5)
 
     index = 1
     axs[index].set_xlim(-5,5)
+    axs[index].set_title(r'$\langle S^x S^y \rangle (\mathbf{q}=\mathbf{\Gamma},\omega_m)$')
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_dbse[Idx(Q),wn],operator1, operator2).real for wn in mesh], 
-        marker='x',label=rf'$\chi(Q,\omega)$ DBSE nwf={p.nwf}' if setlabel else '',c='C0', alpha= 1-ii/len(nwfs) )
+        marker='x',label='',c='C0', alpha= 1-ii/len(nwfs) )
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_bse[Idx(Q),wn],operator1, operator2).real for wn in mesh], 
-        marker='+',label=rf'$\chi(Q,\omega)$ BSE nwf={p.nwf}' if setlabel else '',c='C1', alpha= 1-ii/len(nwfs) )
+        marker='+',label='',c='C1', alpha= 1-ii/len(nwfs) )
 
     # Exact
     def g(wn):
         return p.M*wn/( (2*p.B)**2+wn**2)
-    axs[index].plot([wn.value.imag for wn in mesh], [ g(wn.value.imag) for wn in mesh], c='black',alpha=0.5, marker='.'   )
+    if ii==0:
+        axs[index].plot([wn.value.imag for wn in mesh], [ g(wn.value.imag) for wn in mesh], c='black', marker='+',linestyle='')
 
 
 
     # Sz
     index = 2
     axs[index].set_xlim(-5,5)
+    axs[index].set_title(r'$\langle S^z S^z \rangle (\mathbf{q}=\mathbf{\Gamma},\omega_m)$')
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_dbse[Idx(Q),wn], operator3, operator3).real for wn in mesh], 
-        marker='x',label=rf'$\chi(Q,\omega)$ DBSE nwf={p.nwf}' if setlabel else '',c='C0', alpha= 1-ii/len(nwfs) )
+        marker='x',label='',c='C0', alpha= 1-ii/len(nwfs) )
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_bse[Idx(Q),wn], operator3, operator3).real for wn in mesh], 
-        marker='+',label=rf'$\chi(Q,\omega)$ BSE nwf={p.nwf}' if setlabel else '',c='C1', alpha= 1-ii/len(nwfs) )
+        marker='+',label='',c='C1', alpha= 1-ii/len(nwfs) )
 
     # N
     index = 3
     axs[index].set_xlim(-5,5)
+    axs[index].set_title(r'$\langle N N \rangle (\mathbf{q}=\mathbf{\Gamma},\omega_m)$')
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_dbse[Idx(Q),wn], operator4, operator4).real for wn in mesh], 
-        marker='x',label=rf'$\chi(Q,\omega)$ DBSE nwf={p.nwf}' if setlabel else '',c='C0', alpha= 1-ii/len(nwfs) )
+        marker='x',label=rf'$N_\nu={p.nwf}$, DBSE' if setlabel else '',c='C0', alpha= 1-ii/len(nwfs) )
     axs[index].plot([wn.value.imag for wn in mesh], [ trace_channel(p.chi_kw_bse[Idx(Q),wn], operator4, operator4).real for wn in mesh], 
-        marker='+',label=rf'$\chi(Q,\omega)$ BSE nwf={p.nwf}' if setlabel else '',c='C1', alpha= 1-ii/len(nwfs) )
+        marker='+',label=rf'$N_\nu={p.nwf}$, BSE' if setlabel else '',c='C1', alpha= 1-ii/len(nwfs) )
 
     return
 
@@ -146,8 +152,12 @@ operator4 = quadratic_operator_to_matrix(operator_N, gf_struct)
 setlabel=True
 for ii,nwf in enumerate(nwfs):
     print("nwf=",nwf)
-    plot_chi_kw(f'data_bse_nwf_{nwf:03d}_nk_008.h5', operator1, operator2, operator3, operator4, setlabel,ii)
+    plot_chi_kw(f'data_bse_nwf_{nwf:03d}.h5', operator1, operator2, operator3, operator4, setlabel,ii)
 
+for ax in axs:
+    ax.set_xlabel(r'$\omega_m$')
+
+axs[0].legend()
 axs[-1].legend()
 #fig.suptitle(f'component={component}')
 fig.tight_layout()
