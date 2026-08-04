@@ -1,6 +1,8 @@
 
 # *TPRF*: the Two-Particle Response Function tool box for TRIQS
 
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2638058-blue.svg)](https://doi.org/10.5281/zenodo.2638058)
+
 Copyright (C) 2017-2021, H. U.R. Strand
 
 Copyright (C) 2018-2019, The Simons Foundation
