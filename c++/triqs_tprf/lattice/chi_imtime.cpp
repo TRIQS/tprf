@@ -38,7 +38,7 @@ namespace triqs_tprf {
 chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
-  assert( g_tr.target() == g_bwd_tr.target() );
+  assert( g_tr.target_shape() == g_bwd_tr.target_shape() );
   
   auto _ = all_t{};
 
@@ -96,7 +96,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr) {
 chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
-  assert( g_tr.target() == g_bwd_tr.target() );
+  assert( g_tr.target_shape() == g_bwd_tr.target_shape() );
 
   auto _ = all_t{};
 
@@ -172,7 +172,7 @@ target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {
 chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
-  assert( g_tr.target() == g_bwd_tr.target() );
+  assert( g_tr.target_shape() == g_bwd_tr.target_shape() );
 
   auto _ = all_t{};
 
@@ -230,7 +230,7 @@ chi_tr_t chi0_tr_from_grt_PH(g_tr_cvt g_tr) {
 chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr, int nw=1) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
-  assert( g_tr.target() == g_bwd_tr.target() );
+  assert( g_tr.target_shape() == g_bwd_tr.target_shape() );
 
   auto _ = all_t{};
 
@@ -283,7 +283,7 @@ chi_wr_t chi0_wr_from_grt_PH(g_tr_cvt g_tr, int nw=1) {
 chi_wr_t chi0_w0r_from_grt_PH(g_tr_cvt g_tr, g_tr_cvt g_bwd_tr) {
 
   assert( g_tr.mesh() == g_bwd_tr.mesh() );
-  assert( g_tr.target() == g_bwd_tr.target() );
+  assert( g_tr.target_shape() == g_bwd_tr.target_shape() );
 
   auto _ = all_t{};
 
