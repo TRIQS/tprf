@@ -73,7 +73,7 @@ chi_Dtr_t chi0_tr_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
     auto g_pr_c = make_gf_dlr(g_pr_t);
     auto g_mr_c = make_gf_dlr(g_mr_t);
     
-    for (auto t : tmesh)
+    for (auto t : btmesh)
       chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
 
 #pragma omp critical
@@ -133,7 +133,7 @@ chi_wr_t chi0_w0r_from_grt_PH(g_Dtr_cvt g_tr, g_Dtr_cvt g_bwd_tr) {
     auto g_pr_c = make_gf_dlr(g_pr_t);
     auto g_mr_c = make_gf_dlr(g_mr_t);
 
-    for (auto t : tmesh)
+    for (auto t : btmesh)
       chi0_t[t](a, b, c, d) << g_pr_c(t)(d, a) * g_mr_c(beta - t)(b, c);
 
     auto I = integrate_dlr_tau(chi0_t);
@@ -160,7 +160,9 @@ target_value_t<chi_t_t>::regular_type integrate_dlr_tau(chi_Dt_cvt chi_t) {
     auto w = chi_x.mesh().dlr_freq()[l];
     auto k0 = cppdlr::k_it(0, w);
     auto k1 = cppdlr::k_it(1, w);
-    I += chi_x.mesh().beta() * (k0 - k1) / w * chi_x[l];
+    // Symmetrized DLR grids contain w = 0, where (k0 - k1) / w is 0/0 with removable limit -1/2.
+    auto q = (w == 0.0) ? -0.5 : (k0 - k1) / w;
+    I += chi_x.mesh().beta() * q * chi_x[l];
   }
 
   return I;

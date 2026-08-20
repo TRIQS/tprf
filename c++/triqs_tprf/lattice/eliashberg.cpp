@@ -245,8 +245,11 @@ delta_t eliashberg_dynamic_gamma_f_product_template(chi_t Gamma_pp_dyn_tr, F_t F
   for (unsigned int idx = 0; idx < meshes_mpi.size(); idx++){
       auto &[t, r] = meshes_mpi[idx];
 
+      // Gamma_pp_dyn_tr is bosonic, so it has to be paired with F_tr by tau index rather than by mesh point.
+      auto tG = tmesh_gamma[t.data_index()];
+
       for (auto [c, a, d, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](d, c);
+        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[tG, r](c, a, d, b) * F_tr[t, r](d, c);
   }
 
   delta_tr_out = mpi::all_reduce(delta_tr_out);

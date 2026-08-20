@@ -96,7 +96,10 @@ namespace triqs_tprf {
   for (unsigned int idx = 0; idx < arr.size(); idx++) {
     auto &[t, r] = arr[idx];
 
-    for (auto [a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[t, r](a, c, d, b) * g_tr[t, r](c, d); }
+    // W_tr is bosonic, so it has to be paired with g_tr by tau index rather than by mesh point.
+    auto tW = Wtm[t.data_index()];
+
+    for (auto [a, b, c, d] : W_tr.target_indices()) { sigma_tr[t, r](a, b) += -W_tr[tW, r](a, c, d, b) * g_tr[t, r](c, d); }
   }
 
   sigma_tr = mpi::all_reduce(sigma_tr);
