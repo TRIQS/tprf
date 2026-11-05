@@ -19,6 +19,34 @@ def ElectronPhononInteraction(iw, g2, wD):
     """Electron-phonon interaction with a dispersionless phonon wD and a scalar electron-phonon coupling g2"""
     return g2 * 2.0 * wD / (iw**2.0 - wD**2.0)
 
+def backfold_k(kvec, kmesh):
+    """Backfold a k-vector into the first Brillouin Zone
+
+    Parameters
+    ----------
+    kvec : numpy.ndarray [shape=(3)]
+       The k-vector to backfold into the first Brillouin Zone
+    kmesh: MeshBrZone
+       The Brillouin Zone mesh on which to backfold
+
+    Returns
+    -------
+    kvecsFolded: numpy.ndarray [shape=(3)]
+        The folded k-vector within the first Brillouin Zone
+    """
+
+    # get the k-vector in internal units
+    kvecInt = kvec @ np.linalg.inv(kmesh.bz.units)
+
+    # backfold the k-vector in internal units
+    # to [-0.5, 0.5] for each dimension
+    for ii in range(len(kvecInt)):
+        kvecInt[ii] = (kvecInt[ii] + 0.5)%1.0 - 0.5
+
+    # get backfolded k-vector in physical units 1/ang
+    kvecFolded = kvecInt @ kmesh.bz.units
+    return kvecFolded
+
 def SolveEliashbergAtTemperature(T):
     print("T = %.5f K"%T)
     
@@ -41,7 +69,8 @@ def SolveEliashbergAtTemperature(T):
     
     Enk = Gf(mesh=kmesh, target_shape=[1]*2)
     for k in kmesh:
-        knorm = np.linalg.norm(k.value)
+        kvec = backfold_k(k.value, kmesh)
+        knorm = np.linalg.norm(kvec)
         Enk.data[k.data_index,:] = 0.1 * knorm**2.0
 
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=Enk, mesh=wmesh_f)

@@ -1353,52 +1353,114 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::chi_wk_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_36 = _c2py_fun_36.doc(R"DOC()DOC");
-static const auto _c2py_doc_37 = _c2py_fun_37.doc(R"DOC()DOC");
-static const auto _c2py_doc_38 = _c2py_fun_38.doc(R"DOC()DOC");
-static const auto _c2py_doc_39 = _c2py_fun_39.doc(R"DOC()DOC");
-static const auto _c2py_doc_40 = _c2py_fun_40.doc(
+static const auto _c2py_doc_36 = _c2py_fun_36.doc(
    R"DOC(
-Linearized Eliashberg product via summation
+Anomalous propagator in Eliashberg theory
 
-    Computes the linearized Eliashberg product in the singlet/triplet channel given by
+    Computes the full (i.e., not linearized) anomalous propagator in Eliashberg theory.
+    We first construct the denominator
 
     
 
 .. math::
 
-   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
-   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-   \\
-   \times
-   G_{c\bar{e}}(i\nu',\mathbf{k}')
-   G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+   \delta_{ab}
+   +
+   G_{a\bar{c}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+   \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
 
-    by summation.
+    which we then invert and subtitute into
+
+    
+
+.. math::
+
+   F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+   G_{c\bar{d}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{e}}(i\nu,\mathbf{k})
+   \bar{G}_{b\bar{e}}(-i\nu,-\mathbf{k})\,.
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
 
 Parameters
 ----------
-Gamma_pp : {par_0}
-   particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
-g_wk : {par_1}
+g_wk : {par_0}
    single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_1}
+   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
 delta_wk : {par_2}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
 
 Returns
 -------
 {ret_0}
-   Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
+   The anomalous propagator :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`
 )DOC",
-   {{c2py::python_typename<triqs_tprf::chi_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+   {{c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
    {c2py::python_typename<triqs_tprf::g_wk_t>()});
-static const auto _c2py_doc_41 = _c2py_fun_41.doc(R"DOC(
-Linearized Eliashberg product via FFT
+static const auto _c2py_doc_37 = _c2py_fun_37.doc(R"DOC()DOC");
+static const auto _c2py_doc_38 = _c2py_fun_38.doc(R"DOC()DOC");
+static const auto _c2py_doc_39 =
+   _c2py_fun_39.doc(R"DOC(
+Normal propagator in Eliashberg theory
 
-    Computes the linearized Eliashberg product in the singlet/triplet channel given by
+    Computes the full (i.e., not linearized) normal propagator in Eliashberg theory.
+    We first construct the denominator
+
+    
+
+.. math::
+
+   \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   \delta_{ab}
+   +
+   G_{a\bar{c}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+   \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
+
+    which we then invert and subtitute into
+
+    
+
+.. math::
+
+   G^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+   G_{c\bar{b}}(i\n',\mathbf{k})
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
+
+Parameters
+----------
+g_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_1}
+   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+delta_wk : {par_2}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   The normal propagator :math:`G^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`
+)DOC",
+                    {{}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+                    {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_40 = _c2py_fun_40.doc(R"DOC(
+Eliashberg product via summation
+
+    Computes the Eliashberg product in the singlet/triplet channel given by
 
     
 
@@ -1410,13 +1472,12 @@ Linearized Eliashberg product via FFT
    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
    \\
    \times
-   G_{c\bar{e}}(i\nu',\mathbf{k}')
-   G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+   F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
 
-    by taking advantage of the convolution theorem.
+    by summation.
 
-    We therefore first calculate
+    Here :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})` is the anomalous propagator. 
+    If linearized=true (default) it will evaluate the linearized propagator
 
     
 
@@ -1425,10 +1486,70 @@ Linearized Eliashberg product via FFT
    F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
    G_{a\bar{c}}(i\nu,\mathbf{k})
-   G_{b\bar{d}}(-i\nu,-\mathbf{k})
+   \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
 
-    which we then Fourier transform to imaginary time and real-space
+    otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
+Parameters
+----------
+Gamma_pp : {par_0}
+   particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
+g_wk : {par_1}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_2}
+   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+delta_wk : {par_3}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+linearized: : {par_4}
+   a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
+
+Returns
+-------
+{ret_0}
+   Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
+)DOC",
+                                                  {{c2py::python_typename<triqs_tprf::chi_wk_vt>()},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {}},
+                                                  {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_41 = _c2py_fun_41.doc(R"DOC(
+Eliashberg product via FFT
+
+    Computes the Eliashberg product in the singlet/triplet channel given by
+
+    
+
+.. math::
+
+   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   =
+   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+   \\
+   \times
+   F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
+
+    by taking advantage of the convolution theorem.
+
+    We therefore first calculate the anomalous propagator :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`.
+    If linearized=true (default) we will evaluate the linearized propagator
+
+    
+
+.. math::
+
+   F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   G_{a\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
+
+    otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
+    We then Fourier transform it to imaginary time and real-space
 
     
 
@@ -1511,8 +1632,12 @@ Gamma_pp_const_r : {par_1}
    static part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})`
 g_wk : {par_2}
    one-particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
-delta_wk : {par_3}
+gbar_wk : {par_3}
+   time-reversed one-particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+delta_wk : {par_4}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+linearized: : {par_5}
+   a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
 
 Returns
 -------
@@ -1522,7 +1647,9 @@ Returns
                                                   {{c2py::python_typename<triqs_tprf::chi_tr_vt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_r_vt>()},
                                                    {c2py::python_typename<triqs_tprf::g_wk_vt>()},
-                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>()});
 static const auto _c2py_doc_42 = _c2py_fun_42.doc(R"DOC()DOC");
 static const auto _c2py_doc_43 = _c2py_fun_43.doc(R"DOC(

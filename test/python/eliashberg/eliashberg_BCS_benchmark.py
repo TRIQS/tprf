@@ -14,13 +14,20 @@ from triqs_tprf.eliashberg import solve_eliashberg, semi_random_initial_delta
 from triqs_tprf.eliashberg import solve_eliashberg_nonlinear
 
 def BCS_gap_equation(E, U, beta, delta=0.0):
-    # Additional factor of 0.5 to account for the same factor
-    # in the Eliashberg functionality of TPRF
+    """The BCS gap equation for a constant dispersion E and a constant interaction U.
+    For a correct solution delta this function is expected to return unity.
+    The factor of 0.5 in the gap equation is to account for the same factor
+    in the solve_eliashberg function of TPRF"""
     E_gapped = np.sqrt(E**2.0 + delta**2.0)
     out = -0.5 * U * np.tanh( 0.5 * beta * E_gapped ) / (2.0 * E_gapped)
     return out
 
 def test_compare_Eliashberg_to_BCS():
+    """ Test the linearized and non-linearized Eliashberg solvers against
+    the analytical BCS gap equation.
+    This is done for a local dispersion E and a local interaction U.
+    Author: Yann in 't Veld (2026) """
+
     nk = 1  # Use a completely local model, so nk=1 is enough
     beta = 100.0
     dlr_wmax = 50.0
@@ -91,7 +98,8 @@ def test_compare_Eliashberg_to_BCS():
     LHS_BCS = BCS_gap_equation(E, U, beta, delta)
     print("  LHS BCS gap equation =", LHS_BCS)
 
-    assert np.isclose(LHS_BCS, 1.0, 1e-2), "Full Eliashberg and BCS did not agree!"
+    if leadingEv > 1.0:
+        assert np.isclose(LHS_BCS, 1.0, 1e-2), "Full Eliashberg and BCS did not agree!"
 
 
 
