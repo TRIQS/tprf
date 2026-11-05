@@ -25,9 +25,9 @@
 
 namespace triqs_tprf {
 
- /** Linearized Eliashberg product via summation
+ /** Eliashberg product via summation
 
-     Computes the linearized Eliashberg product in the singlet/triplet channel given by
+     Computes the Eliashberg product in the singlet/triplet channel given by
 
      \f[
          \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
@@ -36,16 +36,29 @@ namespace triqs_tprf {
          \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
          \\
          \times
-         G_{c\bar{e}}(i\nu',\mathbf{k}')
-         G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+         F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
      \f]
 
      by summation.
 
+     Here \f$ F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k}) \f$ is the anomalous propagator. 
+     If linearized=true (default) it will evaluate the linearized propagator
+
+     \f[
+         F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         G_{a\bar{c}}(i\nu,\mathbf{k})
+         \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
+     \f]
+
+     otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
      @param Gamma_pp particle-particle vertex \f$ \Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k}) \f$
      @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param gbar_wk time-reversed single particle Green's function \f$ \bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$ (optional; defaults to \f$ \bar{G}=G \f$)
      @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param linearized: a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
      @return Gives the result of the product \f$ \Delta^{\mathrm{s/t}, \mathrm{out}} \f$
 
   */
@@ -53,35 +66,36 @@ namespace triqs_tprf {
   g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk, g_wk_vt delta_wk, bool linearized=true);
   g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk, g_wk_vt gbar_wk, g_wk_vt delta_wk, bool linearized=true);
 
- /** Linearized Eliashberg product via FFT
+ /** Eliashberg product via FFT
 
-     Computes the linearized Eliashberg product in the singlet/triplet channel given by
+     Computes the Eliashberg product in the singlet/triplet channel given by
 
      \f[
-        \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
-        =
-        -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
-        \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-        \\
-        \times
-        G_{c\bar{e}}(i\nu',\mathbf{k}')
-        G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-        \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+         \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k}) 
+         =
+         -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+         \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+         \\
+         \times
+         F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
      \f]
 
      by taking advantage of the convolution theorem.
 
-     We therefore first calculate
+     We therefore first calculate the anomalous propagator \f$ F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k}) \f$.
+     If linearized=true (default) we will evaluate the linearized propagator
 
      \f[
          F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
          =
          G_{a\bar{c}}(i\nu,\mathbf{k})
-         G_{b\bar{d}}(-i\nu,-\mathbf{k})
+         \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
          \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
      \f]
 
-     which we then Fourier transform to imaginary time and real-space
+     otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
+     We then Fourier transform it to imaginary time and real-space
 
      \f[
         F^{\mathrm{s/t}}_{ab}(\tau,\mathbf{r})
@@ -148,7 +162,9 @@ namespace triqs_tprf {
      @param Gamma_pp_dyn_tr dynamic part of the particle-particle vertex \f$ \Gamma^{\mathrm{s/t}, \mathrm{dynamic}}_{c\bar{a}d\bar{b}}(\tau, \mathbf{r}) \f$
      @param Gamma_pp_const_r static part of the particle-particle vertex \f$ \Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r}) \f$
      @param g_wk one-particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param gbar_wk time-reversed one-particle Green's function \f$ \bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$ (optional; defaults to \f$ \bar{G}=G \f$)
      @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param linearized: a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
      @return Gives the result of the product \f$ \Delta^{\mathrm{s/t}, \mathrm{out}} \f$
 
   */
@@ -166,10 +182,85 @@ namespace triqs_tprf {
   g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk);
   g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt delta_wk);
   g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk);
+
+ /** Anomalous propagator in Eliashberg theory
+
+     Computes the full (i.e., not linearized) anomalous propagator in Eliashberg theory.
+     We first construct the denominator
+
+     \f[
+         \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         \delta_{ab}
+         +
+         G_{a\bar{c}}(i\nu,\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+         \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
+     \f]
+
+     which we then invert and subtitute into
+
+     \f[
+         F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+         G_{c\bar{d}}(i\nu,\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{e}}(i\nu,\mathbf{k})
+         \bar{G}_{b\bar{e}}(-i\nu,-\mathbf{k})\,.
+     \f]
+
+     WARNING: This method has only been tested for single-orbital systems.
+     For multi-orbital systems the index ordering should be debugged carefully.
+
+     @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param gbar_wk time-reversed single particle Green's function \f$ \bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$ (optional; defaults to \f$ \bar{G}=G \f$)
+     @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @return The anomalous propagator \f$ F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k}) \f$
+
+  */
+
   g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt gbar_wk, g_wk_vt delta_wk);
   g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt delta_wk);
   g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt delta_wk);
   g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk);
+
+
+ /** Normal propagator in Eliashberg theory
+
+     Computes the full (i.e., not linearized) normal propagator in Eliashberg theory.
+     We first construct the denominator
+
+     \f[
+         \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         \delta_{ab}
+         +
+         G_{a\bar{c}}(i\nu,\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+         \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
+     \f]
+
+     which we then invert and subtitute into
+
+     \f[
+         G^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+         =
+         \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+         G_{c\bar{b}}(i\n',\mathbf{k})
+     \f]
+
+     WARNING: This method has only been tested for single-orbital systems.
+     For multi-orbital systems the index ordering should be debugged carefully.
+
+     @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param gbar_wk time-reversed single particle Green's function \f$ \bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$ (optional; defaults to \f$ \bar{G}=G \f$)
+     @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @return The normal propagator \f$ G^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k}) \f$
+
+  */
+
   g_wk_t eliashberg_g_wk(g_wk_vt g_in_wk, g_wk_vt gbar_wk, g_wk_vt delta_wk);
   g_wk_t eliashberg_g_wk(g_wk_vt g_in_wk, g_wk_vt delta_wk);
   g_Dwk_t eliashberg_g_wk(g_Dwk_vt g_in_wk, g_Dwk_vt gbar_in_wk, g_Dwk_vt delta_wk);
