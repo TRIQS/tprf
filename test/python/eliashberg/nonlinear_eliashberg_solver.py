@@ -26,14 +26,14 @@ def SolveEliashbergAtTemperature(T):
     g2 = 0.3
     wD = 0.3
     nk = 8
-
-    wmax = 20.
+    U = 0.5
+    wmax = 50.
     eps = 1e-10
     
     print('--> construct meshes')
     bl = BravaisLattice(units=[(1,0,0)], orbital_positions=[(0,0,0)])
     bz = BrillouinZone(bl)
-    kmesh = MeshBrZone(bz, [nk, nk, nk])
+    kmesh = MeshBrZone(bz, [nk, 1, 1])
     
     beta = 1.0 / (kB * T)
     wmesh_f  = MeshDLRImFreq(beta, 'Fermion', wmax, eps)
@@ -50,9 +50,7 @@ def SolveEliashbergAtTemperature(T):
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
     I_k.data[:] = 0.0
     for k in kmesh:
-        knorm = np.linalg.norm(k.value)
-        if(np.isclose(knorm, 0.0)): continue
-        I_k.data[:] = 0.0 #1.0 / knorm
+        I_k.data[:] = U
 
     I_wk = Gf(mesh=MeshProduct(wmesh_b, kmesh), target_shape=[1]*4)
     for w in wmesh_b:
@@ -63,13 +61,16 @@ def SolveEliashbergAtTemperature(T):
     delta0_wk = semi_random_initial_delta(g0_wk)
         
     print("--> solve_eliashberg")
-    vals, vecs = solve_eliashberg(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", solver="IRAM")
+    vals, vecs = solve_eliashberg(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT", solver="IRAM", tol=1e-8)
     leadingIndex = np.argmax(np.real(vals))
     leadingEv = vals[leadingIndex]
     delta_lin_wk = vecs[leadingIndex]
+    print("  eigenvalue:", leadingEv)
 
     print("--> solve_eliashberg_nonlinear")
-    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta0_wk, Gamma_pp_const_k=I_k, product="FFT")
+    delta_nonlin_wk = solve_eliashberg_nonlinear(I_wk, g0_wk, initial_delta=delta_lin_wk, Gamma_pp_const_k=I_k, product="FFT", tol=1e-8)
+    
+    print("  delta(iw=0):", GetDeltaAtiw0(delta_nonlin_wk, T))
 
     return leadingEv, delta_lin_wk, delta_nonlin_wk
 
@@ -87,9 +88,9 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
     Author: Yann in 't Veld (2024) """
 
     if verbose:
-        TLst = [200, 225, 250, 260, 300]
+        TLst = [100, 150, 190, 200, 210, 250, 300]
     else:
-        TLst = [200, 300]
+        TLst = [100, 300]
     datLst = np.array([SolveEliashbergAtTemperature(T) for T in TLst])
     
     leadingEvLst = datLst[:,0]
@@ -100,12 +101,12 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
     
     for ii in range(len(leadingEvLst)):
         ev = leadingEvLst[ii]
-        delta_iw0 = delta_iw0Lst[ii]
+        delta_iw0 = np.abs(delta_iw0Lst[ii])
         
         if ev > 1.0:
-            assert delta_iw0 > 1e-6
+            assert delta_iw0 > 1e-6, "Gap should be finite below Tc!"
         if ev < 1.0:
-            assert np.isclose(delta_iw0, 0.0, atol=1e-6)
+            assert np.isclose(delta_iw0, 0.0, atol=1e-6), "Gap should vanish above Tc!"
     
     if verbose:
         leadingEvLst = np.array(leadingEvLst, dtype=float)
@@ -121,9 +122,9 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
         ax1.axhline(y=1.0, linewidth=0.5, color='gray', linestyle=':')
         ax1.set_ylabel("$\lambda$", color="cornflowerblue")
 
-        ax2.plot(TLst, delta_iw0Lst, marker='.', color='firebrick')
+        ax2.plot(TLst, np.abs(delta_iw0Lst), marker='.', color='firebrick')
         ax2.axhline(y=0.0, linewidth=0.5, color='black', linestyle='--')
-        ax2.set_ylabel("$\Delta_{k=0}(i\omega_n=0)$", color="firebrick")
+        ax2.set_ylabel("$|\Delta_{k=0}(i\omega_n=0)$|", color="firebrick")
 
         ax1.set_xlabel("T (K)")
 

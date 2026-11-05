@@ -578,10 +578,14 @@ def solve_eliashberg_nonlinear(
 ):
     r""" Solve the non-linearized single-band Eliashberg equation
    
-    Returns the anomalous self-energy, obtained by solving the non-linearized single-band
+    Returns the anomalous self-energy, obtained by solving the non-linearized
     Eliashberg equation. The Eliashberg equation implementation is using fourier transformations
     for computational efficiency. The anomalous self-energy is found using an iterative
     root-finding algorithm.
+    In this implementation we neglect normal state (mass) renormalization.
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
 
     Parameters
     ----------
