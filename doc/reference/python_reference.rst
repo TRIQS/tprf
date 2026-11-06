@@ -66,8 +66,8 @@ Two-particle self-consistent solver (TPSC)
 .. autoclass:: triqs_tprf.tpsc_solver.tpsc_solver
    :members:
 
-Linearized Eliashberg equation 
-==============================
+Eliashberg equation 
+===================
 
 .. autofunction:: triqs_tprf.eliashberg.solve_eliashberg
 .. autofunction:: triqs_tprf.eliashberg.solve_eliashberg_nonlinear

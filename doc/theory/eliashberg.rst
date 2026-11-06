@@ -541,15 +541,19 @@ Performing the inversion we can define the normal and anomalous components of th
               F^*(K) & -\bar{G}(-K)
             \end{pmatrix} \,,
 
-where the anomalous propagator :math:`F(K)`
+where the anomalous and normal propagators are respectively given by
+
+.. math::
+   G(K) = \frac{G^{(0)}(K)}{1 + G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K) \phi^*(K)}\,.
 
 .. math::
    F(K) = \frac{- G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K)}{1 + G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K) \phi^*(K)}\,.
 
-We now substitute the Eliashberg approximation for the anomalous self-energy
+These expressions are implemented in :meth:`triqs_tprf.lattice.eliashberg_g_wk` and :meth:`triqs_tprf.lattice.eliashberg_F_wk`, respectively.
+We now substitute :math:`F(K)` into the Eliashberg approximation for the anomalous self-energy
 
 .. math::
-   \phi(K) = -\frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') F(K')\,,
+   \phi(K) = \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') F(K')\,,
 
 which yields the non-linearized gap-equation
 

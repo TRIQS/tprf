@@ -1105,7 +1105,6 @@ Computes reducible ladder vertex for the approximation of a local and static ver
 
 .. math::
 
-   \begin{aligned}
    \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
    &\approx
    \frac{1}{(N_\mathbf{k}\beta)^2}
@@ -1115,7 +1114,6 @@ Computes reducible ladder vertex for the approximation of a local and static ver
    &\approx
    U^{\mathrm{d/m}}
    \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
-   \end{aligned}
 
    where all products are particle-hole products.
    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.

@@ -640,6 +640,10 @@ def solve_eliashberg_nonlinear(
     delta_wk : Gf,
                The anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` 
                as Gf with MeshProduct with the components (MeshImFreq, MeshBrZone).
+
+    See Also
+    --------
+    :ref:`eliashberg` : Derivation of the non-linearized Eliashberg equation.
     """
     
     def from_x_to_wk(delta_x):
