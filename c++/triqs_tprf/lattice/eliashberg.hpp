@@ -34,8 +34,6 @@ namespace triqs_tprf {
          =
          -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
          \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-         \\
-         \times
          F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
      \f]
 
@@ -199,14 +197,14 @@ namespace triqs_tprf {
          \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
      \f]
 
-     which we then invert and subtitute into
+     which we then invert and substitute into
 
      \f[
          F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
          =
          \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
          G_{c\bar{d}}(i\nu,\mathbf{k})
-         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{e}}(i\nu,\mathbf{k})
+         \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{d}\bar{e}}(i\nu,\mathbf{k})
          \bar{G}_{b\bar{e}}(-i\nu,-\mathbf{k})\,.
      \f]
 
@@ -242,19 +240,19 @@ namespace triqs_tprf {
          \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
      \f]
 
-     which we then invert and subtitute into
+     which we then invert and substitute into
 
      \f[
          G^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
          =
          \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
-         G_{c\bar{b}}(i\n',\mathbf{k})
+         G_{c\bar{b}}(i\nu,\mathbf{k})
      \f]
 
      WARNING: This method has only been tested for single-orbital systems.
      For multi-orbital systems the index ordering should be debugged carefully.
 
-     @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @param g_in_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
      @param gbar_wk time-reversed single particle Green's function \f$ \bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$ (optional; defaults to \f$ \bar{G}=G \f$)
      @param delta_wk superconducting gap \f$ \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k}) \f$
      @return The normal propagator \f$ G^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k}) \f$
@@ -306,7 +304,7 @@ namespace triqs_tprf {
     where all products are particle-hole products.
     The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
     It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
-    or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
+    or :meth:`triqs_tprf.eliashberg.construct_gamma_rpa` to construct the
     irreducible singlet/triplet vertex.
 
     @param chi density/magnetic susceptibility  \f$ \chi^{\mathrm{d/m}}_{\bar{a}b\bar{c}d}(i\omega_n,\mathbf{q}) \f$

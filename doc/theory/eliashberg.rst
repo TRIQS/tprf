@@ -1,7 +1,7 @@
 .. _eliashberg:
 
-Linearized Eliashberg Equation
-==============================
+Eliashberg Equation
+===================
 
 The linearized Eliashberg equation is a generalization of the linearized
 Bardeen-Cooper-Schrieffer (BCS) gap equation to frequency dependent gaps.
@@ -502,6 +502,62 @@ instead of the convolution theorem can be more effecient.
     and 
     `also here <https://github.com/TRIQS/tprf/blob/eliashberg_with_phi/python/triqs_tprf/eliashberg.py#L216>`_.
 
+
+
+Beyond Linearized Eliashberg
+----------------------------
+
+The linearized Eliashberg equation allows us to determine the critical temperature 
+:math:`T_\mathrm{c}`, but in order to obtain the superconducting gap we need to actually
+perform calculations within the superconducting phase.
+To that end, let us derive the Eliashberg gap equation without linearization.
+We consider here a single-orbtial system, such that we can remove the orbital indices. 
+The implementation in TPRF also runs for multi-orbital systems, but it has only been tested for single-orbital systems.
+
+We start from the Dyson equation in the Nambu-Gor'kov basis
+
+.. math::
+    \mathbf{G}(K) = 
+   \left(\mathbf{G}^{(0)}(K)^{-1} - \mathbf{\Sigma}(K)
+       \right)^{-1} \,,
+
+where :math:`\mathbf{G}(K)` is the dressed Green's function, :math:`\mathbf{G}^{(0)}(K)` the bare Green's function and :math:`\mathbf{\Sigma}(K)` the self-energy. The bare Green's function is a diagonal matrix in the Nambu-Gor'kov basis and we assume that the self-energy is anti-diagonal (i.e., we neglect normal state renormalization and keep only the anomalous self-energy :math:`\phi(K)`). 
+We find
+
+.. math::
+    \mathbf{G}(K) = 
+            \begin{pmatrix} 
+              G^{(0),-1}(K) & -\phi(K) \\
+              -\phi^*(K) & -\bar{G}^{(0),-1}(-K)
+            \end{pmatrix}^{-1} \,,
+
+where :math:`G^{(0),-1}(K) = i\omega_n - \epsilon(\mathbf{k})`. 
+Performing the inversion we can define the normal and anomalous components of the dressed Green's function
+
+.. math::
+    \mathbf{G}(K) = 
+            \begin{pmatrix} 
+              G(K) & F(K) \\
+              F^*(K) & -\bar{G}(-K)
+            \end{pmatrix} \,,
+
+where the anomalous propagator :math:`F(K)`
+
+.. math::
+   F(K) = \frac{- G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K)}{1 + G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K) \phi^*(K)}\,.
+
+We now substitute the Eliashberg approximation for the anomalous self-energy
+
+.. math::
+   \phi(K) = -\frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') F(K')\,,
+
+which yields the non-linearized gap-equation
+
+.. math::
+   \phi(K) = -\frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') 
+    \frac{G^{(0)}(K') \phi(K') \bar{G}^{(0)}(-K')}{1 + G^{(0)}(K') \phi(K') \bar{G}^{(0)}(-K') \phi^*(K')}\,.
+
+It is a generalization of Eq. :eq:`linearized_eliashberg_1` and is implemented in :meth:`triqs_tprf.eliashberg.solve_eliashberg_nonlinear`.
 
 .. rubric:: References
 

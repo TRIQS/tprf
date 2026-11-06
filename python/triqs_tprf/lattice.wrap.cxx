@@ -1105,6 +1105,7 @@ Computes reducible ladder vertex for the approximation of a local and static ver
 
 .. math::
 
+   \begin{aligned}
    \Phi^{\text{d/m}}_{a\overline{b}c\overline{d}}(Q)
    &\approx
    \frac{1}{(N_\mathbf{k}\beta)^2}
@@ -1114,11 +1115,12 @@ Computes reducible ladder vertex for the approximation of a local and static ver
    &\approx
    U^{\mathrm{d/m}}
    \chi^{\text{d/m}}(Q) U^{\mathrm{d/m}}\,,
+   \end{aligned}
 
    where all products are particle-hole products.
    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
    It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
-   or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
+   or :meth:`triqs_tprf.eliashberg.construct_gamma_rpa` to construct the
    irreducible singlet/triplet vertex.
 
 Parameters
@@ -1373,7 +1375,7 @@ Anomalous propagator in Eliashberg theory
    \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
 
-    which we then invert and subtitute into
+    which we then invert and substitute into
 
     
 
@@ -1383,7 +1385,7 @@ Anomalous propagator in Eliashberg theory
    =
    \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
    G_{c\bar{d}}(i\nu,\mathbf{k})
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{e}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{d}\bar{e}}(i\nu,\mathbf{k})
    \bar{G}_{b\bar{e}}(-i\nu,-\mathbf{k})\,.
 
     WARNING: This method has only been tested for single-orbital systems.
@@ -1407,8 +1409,8 @@ Returns
    {c2py::python_typename<triqs_tprf::g_wk_t>()});
 static const auto _c2py_doc_37 = _c2py_fun_37.doc(R"DOC()DOC");
 static const auto _c2py_doc_38 = _c2py_fun_38.doc(R"DOC()DOC");
-static const auto _c2py_doc_39 =
-   _c2py_fun_39.doc(R"DOC(
+static const auto _c2py_doc_39 = _c2py_fun_39.doc(
+   R"DOC(
 Normal propagator in Eliashberg theory
 
     Computes the full (i.e., not linearized) normal propagator in Eliashberg theory.
@@ -1427,7 +1429,7 @@ Normal propagator in Eliashberg theory
    \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
 
-    which we then invert and subtitute into
+    which we then invert and substitute into
 
     
 
@@ -1436,14 +1438,14 @@ Normal propagator in Eliashberg theory
    G^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
    \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
-   G_{c\bar{b}}(i\n',\mathbf{k})
+   G_{c\bar{b}}(i\nu,\mathbf{k})
 
     WARNING: This method has only been tested for single-orbital systems.
     For multi-orbital systems the index ordering should be debugged carefully.
 
 Parameters
 ----------
-g_wk : {par_0}
+g_in_wk : {par_0}
    single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
 gbar_wk : {par_1}
    time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
@@ -1455,8 +1457,8 @@ Returns
 {ret_0}
    The normal propagator :math:`G^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`
 )DOC",
-                    {{}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
-                    {c2py::python_typename<triqs_tprf::g_wk_t>()});
+   {{c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+   {c2py::python_typename<triqs_tprf::g_wk_t>()});
 static const auto _c2py_doc_40 = _c2py_fun_40.doc(R"DOC(
 Eliashberg product via summation
 
@@ -1470,8 +1472,6 @@ Eliashberg product via summation
    =
    -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
    \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-   \\
-   \times
    F^{\mathrm{s/t}}_{dc}(i\nu',\mathbf{k}')\,,
 
     by summation.
