@@ -1367,10 +1367,10 @@ Anomalous propagator in Eliashberg theory
    \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
    \delta_{ab}
-   +
+   -
    G_{a\bar{c}}(i\nu,\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
-   \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+   \bar{G}_{e\bar{d}}(i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
 
     which we then invert and substitute into
@@ -1381,7 +1381,7 @@ Anomalous propagator in Eliashberg theory
 
    F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+   -\Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
    G_{c\bar{d}}(i\nu,\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{d}\bar{e}}(i\nu,\mathbf{k})
    \bar{G}_{b\bar{e}}(-i\nu,-\mathbf{k})\,.
@@ -1394,7 +1394,7 @@ Parameters
 g_wk : {par_0}
    single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
 gbar_wk : {par_1}
-   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+   hole Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})=-G_{a\bar{b}}(-i\nu_n,\mathbf{k})`)
 delta_wk : {par_2}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
 
@@ -1421,10 +1421,10 @@ Normal propagator in Eliashberg theory
    \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
    \delta_{ab}
-   +
+   -
    G_{a\bar{c}}(i\nu,\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
-   \bar{G}_{e\bar{d}}(-i\nu,-\mathbf{k})
+   \bar{G}_{e\bar{d}}(i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
 
     which we then invert and substitute into
@@ -1446,7 +1446,7 @@ Parameters
 g_in_wk : {par_0}
    single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
 gbar_wk : {par_1}
-   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+   hole Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})=-G_{a\bar{b}}(-i\nu_n,\mathbf{k})`)
 delta_wk : {par_2}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
 
@@ -1483,8 +1483,8 @@ Eliashberg product via summation
 
    F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   G_{a\bar{c}}(i\nu,\mathbf{k})
-   \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
+   -G_{a\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{b\bar{d}}(i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
 
     otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
@@ -1496,7 +1496,7 @@ Gamma_pp : {par_0}
 g_wk : {par_1}
    single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
 gbar_wk : {par_2}
-   time-reversed single particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+   hole Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}(i\nu_n,\mathbf{k})=-G(-i\nu_n,\mathbf{k})`)
 delta_wk : {par_3}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
 linearized: : {par_4}
@@ -1541,8 +1541,8 @@ Eliashberg product via FFT
 
    F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   G_{a\bar{c}}(i\nu,\mathbf{k})
-   \bar{G}_{b\bar{d}}(-i\nu,-\mathbf{k})
+   -G_{a\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{b\bar{d}}(i\nu,-\mathbf{k})
    \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
 
     otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
@@ -1631,7 +1631,7 @@ Gamma_pp_const_r : {par_1}
 g_wk : {par_2}
    one-particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
 gbar_wk : {par_3}
-   time-reversed one-particle Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}=G`)
+   hole Green's function :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{a\bar{b}}(i\nu_n,\mathbf{k})=-G_{a\bar{b}}(-i\nu_n,\mathbf{k})`)
 delta_wk : {par_4}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
 linearized: : {par_5}

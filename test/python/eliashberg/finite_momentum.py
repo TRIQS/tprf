@@ -15,7 +15,7 @@ from triqs_tprf.eliashberg import solve_eliashberg_nonlinear
 
 kB = 8.6173427909 * 10**(-5.0)
 
-def AnalyticalGapEquation(Enk, Enkmq, mu, beta, U, delta_k=None):
+def AnalyticalGapEquation(Enk, Hnkmq, mu, beta, U, delta_k=None):
     """The gap equation for a constant interaction U.
     Here the Matsubara sum was done analytically.
     The momentum sum is done numerically.
@@ -25,20 +25,20 @@ def AnalyticalGapEquation(Enk, Enkmq, mu, beta, U, delta_k=None):
         delta_k = Enk.copy()
         delta_k.data[:] = 0.0
 
-    def poles(Enk, Enkmq, mu, delta_k, sign=1.0):
+    def poles(Enk, Hnk, mu, delta_k, sign=1.0):
         E = Enk.data[:,0,0] - mu
-        H = Enkmq.data[:,0,0] - mu
+        H = Hnk.data[:,0,0] + mu
         D = delta_k.data[:,0,0]
 
-        sqrtval = (E - H)**2.0\
-                + 4.0 * (E*H + np.abs(D)**2.0)
-        return 0.5 * (E - H + sign * np.sqrt(sqrtval))
+        sqrtval = (E + H)**2.0\
+                + 4.0 * (-E*H + np.abs(D)**2.0)
+        return 0.5 * (E + H + sign * np.sqrt(sqrtval))
 
     kmesh = Enk.mesh
     fermi = lambda E: 0.5 * (1.0 - np.tanh(0.5 * beta * E))
     
-    zpos = poles(Enk, Enkmq, mu, delta_k, sign=1.0)
-    zneg = poles(Enk, Enkmq, mu, delta_k, sign=-1.0)
+    zpos = poles(Enk, Hnkmq, mu, delta_k, sign=1.0)
+    zneg = poles(Enk, Hnkmq, mu, delta_k, sign=-1.0)
     integrant = (1.0 - fermi(zpos) - fermi(-zneg)) / (zpos - zneg)
     
     integval = np.sum(integrant) / len(kmesh)
@@ -94,8 +94,8 @@ def SolveEliashbergAtTemperature(T, q_fmp):
     wmesh_f  = MeshDLRImFreq(beta, 'Fermion', wmax, eps)
     wmesh_b = MeshDLRImFreq(beta, 'Boson', wmax, eps)
     
-    Enk = Gf(mesh=kmesh, target_shape=[1]*2)
-    Enkmq = Gf(mesh=kmesh, target_shape=[1]*2)
+    Enk = Gf(mesh=kmesh, target_shape=[1]*2)   # Electron Gf
+    Hnkmq = Gf(mesh=kmesh, target_shape=[1]*2) # Hole Gf
     for k in kmesh:
         kvec = backfold_k(k.value, kmesh)
         knorm = np.linalg.norm(kvec)
@@ -103,10 +103,10 @@ def SolveEliashbergAtTemperature(T, q_fmp):
 
         kvec = backfold_k(k.value - q_fmp, kmesh)
         knorm = np.linalg.norm(kvec)
-        Enkmq.data[k.data_index,:] = 0.1 * knorm**2.0
+        Hnkmq.data[k.data_index,:] = -0.1 * knorm**2.0
 
     g0_wk = lattice_dyson_g0_wk(mu=mu, e_k=Enk, mesh=wmesh_f)
-    g0bar_wk = lattice_dyson_g0_wk(mu=mu, e_k=Enkmq, mesh=wmesh_f)
+    g0bar_wk = lattice_dyson_g0_wk(mu=-mu, e_k=Hnkmq, mesh=wmesh_f)
 
     print('--> setup interaction vertex')
     I_k = Gf(mesh=kmesh, target_shape=[1]*4)
@@ -134,7 +134,7 @@ def SolveEliashbergAtTemperature(T, q_fmp):
     delta_lin_wk = vecs[leadingIndex]
     print("  eigenvalue:", leadingEv)
 
-    leadingEv_ana = AnalyticalGapEquation(Enk, Enkmq, mu, beta, U)
+    leadingEv_ana = AnalyticalGapEquation(Enk, Hnkmq, mu, beta, U)
     print("  analytical eigenvalue:", leadingEv_ana)
 
     assert np.isclose(leadingEv, leadingEv_ana, atol=1e-2), "Eigenvalue is not as expected"
@@ -156,7 +156,7 @@ def SolveEliashbergAtTemperature(T, q_fmp):
 
         delta_k = Enk.copy()
         delta_k.data[:] = delta_nonlin_wk.data[0,:]
-        LHS_ana = AnalyticalGapEquation(Enk, Enkmq, mu, beta, U, delta_k)
+        LHS_ana = AnalyticalGapEquation(Enk, Hnkmq, mu, beta, U, delta_k)
         print("  Analytical gap LHS:", LHS_ana)
 
         assert np.isclose(LHS_ana, 1.0, atol=1e-2), "Gap is not as expected"
@@ -228,4 +228,4 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
     
     
 if __name__ == "__main__":
-    test_nonlinear_Eliashberg_solver(verbose=False)
+    test_nonlinear_Eliashberg_solver(verbose=True)

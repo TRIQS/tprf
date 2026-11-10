@@ -114,9 +114,10 @@ def solve_eliashberg(
              Does only have an effect, if 'PM' is used as a solver.
 
     gbar_wk : Gf, optional
-              The time-reverse Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
+              The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
               The mesh attribute of the Gf must be a MeshProduct with the components
               (MeshImFreq, MeshBrZone).
+              If None, we set :math:`\bar{G}(i\nu_n, \mathbf{k}) = -G(-i\nu_n, \mathbf{k})`
 
     Returns
     -------
@@ -143,7 +144,7 @@ def solve_eliashberg(
 
     hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
     if gbar_wk is None:
-        gbar_wk = g_wk
+        gbar_wk = -g_wk.conjugate()
 
     if product == "FFT":
 
@@ -634,6 +635,7 @@ def solve_eliashberg_nonlinear(
               The time-reverse Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
               The mesh attribute of the Gf must be a MeshProduct with the components
               (MeshImFreq, MeshBrZone).
+              If None, we set :math:`\bar{G}(i\nu_n, \mathbf{k}) = -G(-i\nu_n, \mathbf{k})`
 
     Returns
     -------
@@ -657,7 +659,7 @@ def solve_eliashberg_nonlinear(
 
     hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
     if gbar_wk is None:
-        gbar_wk = g_wk
+        gbar_wk = -g_wk.conjugate()
 
     if product == "FFT":
 
