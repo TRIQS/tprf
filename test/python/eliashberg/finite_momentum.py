@@ -228,4 +228,4 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
     
     
 if __name__ == "__main__":
-    test_nonlinear_Eliashberg_solver(verbose=True)
+    test_nonlinear_Eliashberg_solver(verbose=False)

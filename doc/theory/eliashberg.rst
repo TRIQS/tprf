@@ -39,6 +39,14 @@ and :math:`G` is the one-particle Green's function.
     one would soley need to implement the spin-dependent particle-particle vertex
     to use them.
 
+.. note::
+   In the equation above and in the following we have assumed that the hole Green's 
+   function :math:`\bar{G}` has the following relation to the electron Green's function 
+   :math:`\bar{G}(i\nu,k) = -G(-i\nu,k)`.
+   This may not always be true, for example in the case of finite momentum pairing.
+   In such cases, one can explicitly give the hole Green's function to the
+   Eliashberg solvers via the `gbar_wk` argument.
+
 Deriving the linearized Eliashberg equation from the normal state
 -----------------------------------------------------------------
 
@@ -512,7 +520,6 @@ The linearized Eliashberg equation allows us to determine the critical temperatu
 perform calculations within the superconducting phase.
 To that end, let us derive the Eliashberg gap equation without linearization.
 We consider here a single-orbtial system, such that we can remove the orbital indices. 
-The implementation in TPRF also runs for multi-orbital systems, but it has only been tested for single-orbital systems.
 
 We start from the Dyson equation in the Nambu-Gor'kov basis
 
@@ -525,43 +532,48 @@ where :math:`\mathbf{G}(K)` is the dressed Green's function, :math:`\mathbf{G}^{
 We find
 
 .. math::
-    \mathbf{G}(K) = 
+    \mathbf{G}(i\nu,k) = 
             \begin{pmatrix} 
-              G^{(0),-1}(K) & -\phi(K) \\
-              -\phi^*(K) & -\bar{G}^{(0),-1}(-K)
+              G^{(0),-1}(i\nu,k) & -\phi(i\nu,k) \\
+              -\phi^*(i\nu,k) & \bar{G}^{(0),-1}(i\nu,-k)
             \end{pmatrix}^{-1} \,,
 
-where :math:`G^{(0),-1}(K) = i\omega_n - \epsilon(\mathbf{k})`. 
+where :math:`G^{(0),-1}(i\nu,k) = i\nu - \epsilon(\mathbf{k})` and :math:`\bar{G}^{(0),-1}(i\nu,k) = -G^{(0),-1}(-i\nu,k)`. 
 Performing the inversion we can define the normal and anomalous components of the dressed Green's function
 
 .. math::
-    \mathbf{G}(K) = 
+    \mathbf{G}(i\nu,k) = 
             \begin{pmatrix} 
-              G(K) & F(K) \\
-              F^*(K) & -\bar{G}(-K)
+              G(i\nu,k) & -F(i\nu,k) \\
+              -F^*(i\nu,k) & \bar{G}(i\nu,-k)
             \end{pmatrix} \,,
 
 where the anomalous and normal propagators are respectively given by
 
 .. math::
-   G(K) = \frac{G^{(0)}(K)}{1 + G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K) \phi^*(K)}\,.
+   G(i\nu,k) = \frac{G^{(0)}(i\nu,k)}{1 - G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k) \phi^*(i\nu,k)}\,.
 
 .. math::
-   F(K) = \frac{- G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K)}{1 + G^{(0)}(K) \phi(K) \bar{G}^{(0)}(-K) \phi^*(K)}\,.
+   F(i\nu,k) = \frac{- G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k)}{1 - G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k) \phi^*(i\nu,k)}\,.
 
 These expressions are implemented in :meth:`triqs_tprf.lattice.eliashberg_g_wk` and :meth:`triqs_tprf.lattice.eliashberg_F_wk`, respectively.
-We now substitute :math:`F(K)` into the Eliashberg approximation for the anomalous self-energy
+We now substitute :math:`F(i\nu,k)` into the Eliashberg approximation for the anomalous self-energy
 
 .. math::
-   \phi(K) = \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') F(K')\,,
+   \phi(i\nu,k) = - \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{i\nu',k'} \Gamma^{s/t}(i\nu-i\nu',k-k') F(i\nu',k')\,,
 
 which yields the non-linearized gap-equation
 
 .. math::
-   \phi(K) = -\frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') 
-    \frac{G^{(0)}(K') \phi(K') \bar{G}^{(0)}(-K')}{1 + G^{(0)}(K') \phi(K') \bar{G}^{(0)}(-K') \phi^*(K')}\,.
+   \phi(i\nu,k) = \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{i\nu',k'} \Gamma^{s/t}(i\nu-i\nu',k-k') 
+    \frac{G^{(0)}(i\nu',k') \phi(i\nu',k') \bar{G}^{(0)}(i\nu',-k')}{1 - G^{(0)}(i\nu',k') \phi(i\nu',k') \bar{G}^{(0)}(i\nu',-k') \phi^*(i\nu',k')}\,.
 
 It is a generalization of Eq. :eq:`linearized_eliashberg_1` and is implemented in :meth:`triqs_tprf.eliashberg.solve_eliashberg_nonlinear`.
+
+.. note::
+   The non-linearized Eliashberg solver :meth:`triqs_tprf.eliashberg.solve_eliashberg_nonlinear` also runs for multi-orbital systems,
+   but it has only been tested for single-orbital systems.
+   The index ordering should be carefully debugged before we recommend using the solver for multi-orbital systems.
 
 .. rubric:: References
 
