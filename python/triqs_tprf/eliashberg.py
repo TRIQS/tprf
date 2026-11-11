@@ -632,7 +632,7 @@ def solve_eliashberg_nonlinear(
                      If no symmetries are enforced, caution is need, because
                      unphysical symmetries can occur.
     gbar_wk : Gf, optional
-              The time-reverse Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
+              The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
               The mesh attribute of the Gf must be a MeshProduct with the components
               (MeshImFreq, MeshBrZone).
               If None, we set :math:`\bar{G}(i\nu_n, \mathbf{k}) = -G(-i\nu_n, \mathbf{k})`
