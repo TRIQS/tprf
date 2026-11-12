@@ -42,7 +42,8 @@ and :math:`G` is the one-particle Green's function.
 .. note::
    In the equation above and in the following we have assumed that the hole Green's 
    function :math:`\bar{G}` has the following relation to the electron Green's function 
-   :math:`\bar{G}(i\nu,k) = -G(-i\nu,-k)`.
+   :math:`\bar{G}(i\nu,k) = -G(-i\nu,-k)` (implemented in 
+   :meth:`triqs_tprf.lattice.gbar_wk_from_g_wk`).
    This may not always be true, for example in the case of finite momentum pairing.
    In such cases, one can explicitly give the hole Green's function to the
    Eliashberg solvers via the `gbar_wk` argument.

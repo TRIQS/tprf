@@ -578,7 +578,7 @@ def solve_eliashberg_nonlinear(
     gbar_wk=None,
     verbose = False,
 ):
-    r""" Solve the non-linearized single-band Eliashberg equation
+    r""" Solve the non-linearized Eliashberg equation
    
     Returns the anomalous self-energy, obtained by solving the non-linearized
     Eliashberg equation. The Eliashberg equation implementation is using fourier transformations
