@@ -25,6 +25,20 @@
 
 namespace triqs_tprf {
 
+ /** Evaluates the hole Green's function from the electron Green's function
+     using the expression
+
+     \f[
+        \bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})\,.
+     \f]
+
+     @param g_wk single particle Green's function \f$ G_{a\bar{b}}(i\nu_n,\mathbf{k}) \f$
+     @return gbar_wk hole Green's function \f$ \bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k}) \f$
+  */
+
+  g_wk_t gbar_wk_from_g_wk(g_wk_vt g_wk);
+  g_Dwk_t gbar_wk_from_g_wk(g_Dwk_vt g_wk);
+
  /** Eliashberg product via summation
 
      Computes the Eliashberg product in the singlet/triplet channel given by

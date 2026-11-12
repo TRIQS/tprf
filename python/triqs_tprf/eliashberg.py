@@ -35,6 +35,7 @@ from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 from .lattice import construct_phi_wk
+from .lattice import gbar_wk_from_g_wk
 
 # ----------------------------------------------------------------------
 
@@ -144,7 +145,7 @@ def solve_eliashberg(
 
     hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
     if gbar_wk is None:
-        gbar_wk = -g_wk.conjugate()
+        gbar_wk = gbar_wk_from_g_wk(g_wk)
 
     if product == "FFT":
 
@@ -659,7 +660,7 @@ def solve_eliashberg_nonlinear(
 
     hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
     if gbar_wk is None:
-        gbar_wk = -g_wk.conjugate()
+        gbar_wk = gbar_wk_from_g_wk(g_wk)
 
     if product == "FFT":
 

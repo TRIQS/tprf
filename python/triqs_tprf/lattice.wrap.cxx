@@ -442,13 +442,18 @@ static auto const _c2py_fun_56 = c2py::dispatcher_f_kw_t{
                  double delta) { return triqs_tprf::g0w_sigma(mu, beta, e_k, W_fk, v_k, delta); },
               "mu", "beta", "e_k", "W_fk", "v_k", "delta")};
 
+// gbar_wk_from_g_wk
+static auto const _c2py_fun_57 =
+   c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wk_vt g_wk) { return triqs_tprf::gbar_wk_from_g_wk(g_wk); }, "g_wk"),
+                           c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk) { return triqs_tprf::gbar_wk_from_g_wk(g_wk); }, "g_wk")};
+
 // gw_dynamic_sigma
-static auto const _c2py_fun_57 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_58 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr) { return triqs_tprf::gw_dynamic_sigma(W_tr, g_tr); }, "W_tr", "g_tr"),
    c2py::cfun([](triqs_tprf::chi_Dtr_cvt W_tr, triqs_tprf::g_Dtr_cvt g_tr) { return triqs_tprf::gw_dynamic_sigma(W_tr, g_tr); }, "W_tr", "g_tr")};
 
 // gw_sigma
-static auto const _c2py_fun_58 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_59 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::gw_sigma(W_wk, g_wk); }, "W_wk", "g_wk"),
    c2py::cfun(
       [](triqs_tprf::chi_Dwk_cvt W_wk, triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::gw_sigma(W_wk, v_k, g_wk); },
@@ -457,30 +462,30 @@ static auto const _c2py_fun_58 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::gw_sigma(v_k, g_wk); }, "v_k", "g_wk")};
 
 // hartree_sigma
-static auto const _c2py_fun_59 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_60 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::hartree_sigma(v_k, g_wk); }, "v_k", "g_wk"),
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::e_r_cvt rho_r) { return triqs_tprf::hartree_sigma(v_k, rho_r); }, "v_k", "rho_r")};
 
 // lattice_dyson_g0_fk
-static auto const _c2py_fun_60 = c2py::dispatcher_f_kw_t{c2py::cfun(
+static auto const _c2py_fun_61 = c2py::dispatcher_f_kw_t{c2py::cfun(
    [](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::refreq mesh, double delta) { return triqs_tprf::lattice_dyson_g0_fk(mu, e_k, mesh, delta); },
    "mu", "e_k", "mesh", "delta")};
 
 // lattice_dyson_g0_wk
-static auto const _c2py_fun_61 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_62 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh) { return triqs_tprf::lattice_dyson_g0_wk(mu, e_k, mesh); }, "mu",
               "e_k", "mesh"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::dlr_imfreq mesh) { return triqs_tprf::lattice_dyson_g0_wk(mu, e_k, mesh); }, "mu",
               "e_k", "mesh")};
 
 // lattice_dyson_g_f
-static auto const _c2py_fun_62 =
+static auto const _c2py_fun_63 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_f_cvt sigma_f,
                                          double delta) { return triqs_tprf::lattice_dyson_g_f(mu, e_k, sigma_f, delta); },
                                       "mu", "e_k", "sigma_f", "delta")};
 
 // lattice_dyson_g_fk
-static auto const _c2py_fun_63 =
+static auto const _c2py_fun_64 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_fk_cvt sigma_fk,
                                          double delta) { return triqs_tprf::lattice_dyson_g_fk(mu, e_k, sigma_fk, delta); },
                                       "mu", "e_k", "sigma_fk", "delta"),
@@ -489,14 +494,14 @@ static auto const _c2py_fun_63 =
                                       "mu", "e_k", "sigma_f", "delta")};
 
 // lattice_dyson_g_w
-static auto const _c2py_fun_64 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_w(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_Dw_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_w(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w")};
 
 // lattice_dyson_g_wk
-static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_66 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_wk(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_wk_cvt sigma_wk) { return triqs_tprf::lattice_dyson_g_wk(mu, e_k, sigma_wk); },
@@ -507,7 +512,7 @@ static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
               "e_k", "sigma_w")};
 
 // lindhard_chi00
-static auto const _c2py_fun_66 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_67 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh, double mu) { return triqs_tprf::lindhard_chi00(e_k, mesh, mu); }, "e_k", "mesh",
               "mu"),
    c2py::cfun([](triqs_tprf::e_k_cvt e_k, triqs::mesh::dlr_imfreq mesh, double mu) { return triqs_tprf::lindhard_chi00(e_k, mesh, mu); }, "e_k",
@@ -517,12 +522,12 @@ static auto const _c2py_fun_66 = c2py::dispatcher_f_kw_t{
               "e_k", "mesh", "beta", "mu", "delta")};
 
 // rho_k_from_g_wk
-static auto const _c2py_fun_67 =
+static auto const _c2py_fun_68 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::rho_k_from_g_wk(g_wk); }, "g_wk"),
                            c2py::cfun([](triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::rho_k_from_g_wk(g_wk); }, "g_wk")};
 
 // solve_rpa_PH
-static auto const _c2py_fun_68 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_69 = c2py::dispatcher_f_kw_t{
    c2py::cfun(
       [](triqs_tprf::chi_wk_vt chi0,
          nda::basic_array_view<std::complex<double>, 4, nda::C_layout, 'A', nda::default_accessor, nda::borrowed<nda::mem::AddressSpace::Host>> U) {
@@ -543,7 +548,7 @@ static auto const _c2py_fun_68 = c2py::dispatcher_f_kw_t{
       "chi0", "U")};
 
 // split_into_dynamic_wk_and_constant_k
-static auto const _c2py_fun_69 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_70 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_wk_cvt chi_wk) { return triqs_tprf::split_into_dynamic_wk_and_constant_k(chi_wk); }, "chi_wk")};
 
 static const auto _c2py_doc_0 = _c2py_fun_0.doc(
@@ -2073,8 +2078,29 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>(), c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_57 =
-   _c2py_fun_57.doc(R"DOC(
+static const auto _c2py_doc_57 = _c2py_fun_57.doc(R"DOC(
+Evaluates the hole Green's function from the electron Green's function
+    using the expression
+
+    
+
+.. math::
+
+   \bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})\,.
+
+Parameters
+----------
+g_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   gbar_wk hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})`
+)DOC",
+                                                  {{c2py::python_typename<triqs_tprf::g_wk_vt>()}}, {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_58 =
+   _c2py_fun_58.doc(R"DOC(
 Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 
    Computes the GW self-energy as the product
@@ -2100,7 +2126,7 @@ Returns
 )DOC",
                     {{c2py::python_typename<triqs_tprf::chi_tr_cvt>()}, {c2py::python_typename<triqs_tprf::g_tr_cvt>()}},
                     {c2py::python_typename<triqs_tprf::g_tr_t>()});
-static const auto _c2py_doc_58 = _c2py_fun_58.doc(
+static const auto _c2py_doc_59 = _c2py_fun_59.doc(
    R"DOC(
 [1] GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
@@ -2268,7 +2294,7 @@ Returns
     {c2py::python_typename<triqs_tprf::g_wk_cvt>(), c2py::python_typename<triqs_tprf::g_Dwk_cvt>()},
     {c2py::python_typename<triqs_tprf::chi_k_cvt>()}},
    {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>(), c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_59 = _c2py_fun_59.doc(R"DOC(
+static const auto _c2py_doc_60 = _c2py_fun_60.doc(R"DOC(
 Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
    Computes the Hartree self-energy of a static interaction as the sum
@@ -2297,7 +2323,7 @@ Returns
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::chi_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_60 = _c2py_fun_60.doc(R"DOC(
+static const auto _c2py_doc_61 = _c2py_fun_61.doc(R"DOC(
 Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
 
  Computes
@@ -2334,7 +2360,7 @@ Returns
                                                    {c2py::python_typename<triqs::mesh::refreq>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_61 = _c2py_fun_61.doc(R"DOC(
+static const auto _c2py_doc_62 = _c2py_fun_62.doc(R"DOC(
 Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
  Computes
@@ -2371,7 +2397,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::e_k_cvt>()},
                                                    {c2py::python_typename<triqs::mesh::imfreq>(), c2py::python_typename<triqs::mesh::dlr_imfreq>()}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>()});
-static const auto _c2py_doc_62 = _c2py_fun_62.doc(R"DOC(
+static const auto _c2py_doc_63 = _c2py_fun_63.doc(R"DOC(
 Construct an interacting real frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(\omega)`
   
 Computes
@@ -2407,7 +2433,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_f_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_f_t>()});
-static const auto _c2py_doc_63 = _c2py_fun_63.doc(R"DOC(
+static const auto _c2py_doc_64 = _c2py_fun_64.doc(R"DOC(
 [1] Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
   
 Computes
@@ -2461,7 +2487,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_fk_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_64 = _c2py_fun_64.doc(
+static const auto _c2py_doc_65 = _c2py_fun_65.doc(
    R"DOC(
 Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
   
@@ -2493,7 +2519,7 @@ Returns
 )DOC",
    {{c2py::python_typename<double>()}, {c2py::python_typename<triqs_tprf::e_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_w_cvt>()}},
    {c2py::python_typename<triqs_tprf::g_w_t>()});
-static const auto _c2py_doc_65 = _c2py_fun_65.doc(R"DOC(
+static const auto _c2py_doc_66 = _c2py_fun_66.doc(R"DOC(
 [1] Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
   
 Computes
@@ -2566,7 +2592,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_w_cvt>(), c2py::python_typename<triqs_tprf::g_Dw_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::g_wk_cvt>(), c2py::python_typename<triqs_tprf::g_Dwk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>()});
-static const auto _c2py_doc_66 = _c2py_fun_66.doc(R"DOC(
+static const auto _c2py_doc_67 = _c2py_fun_67.doc(R"DOC(
 [1] Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
@@ -2712,7 +2738,7 @@ Returns
                                                    {c2py::python_typename<double>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_67 = _c2py_fun_67.doc(R"DOC(
+static const auto _c2py_doc_68 = _c2py_fun_68.doc(R"DOC(
 Density matrix from lattic Green's function
 
 Parameters
@@ -2726,7 +2752,7 @@ Returns
    rho_k density matrix :math:`\rho_{ab}(\mathbf{k})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_68 = _c2py_fun_68.doc(
+static const auto _c2py_doc_69 = _c2py_fun_69.doc(
    R"DOC(
 Random Phase Approximation (RPA) in the particle-hole channel
 
@@ -2760,7 +2786,7 @@ Returns
     {c2py::python_typename<
        nda::basic_array_view<std::complex<double>, 4, nda::C_layout, 'A', nda::default_accessor, nda::borrowed<nda::mem::AddressSpace::Host>>>()}},
    {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_69 = _c2py_fun_69.doc(R"DOC(
+static const auto _c2py_doc_70 = _c2py_fun_70.doc(R"DOC(
 Splits a rank 4 tensor-valued Green's function into dynamic and constant parts by tail fitting
 
    Splits a general rank 4 tensor-valued Green's function :math:`\chi_{abcd}(i\omega_n, \mathbf{k})` 
@@ -2848,19 +2874,20 @@ static PyMethodDef module_methods[] = {
    {"g0_Tk_les_gtr_from_e_k", (PyCFunction)c2py::pyfkw<_c2py_fun_54>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_54.c_str()},
    {"g0w_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_55>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_55.c_str()},
    {"g0w_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_56>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_56.c_str()},
-   {"gw_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_57>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_57.c_str()},
-   {"gw_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_58>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_58.c_str()},
-   {"hartree_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_59>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_59.c_str()},
-   {"lattice_dyson_g0_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_60>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_60.c_str()},
-   {"lattice_dyson_g0_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_61>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_61.c_str()},
-   {"lattice_dyson_g_f", (PyCFunction)c2py::pyfkw<_c2py_fun_62>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_62.c_str()},
-   {"lattice_dyson_g_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_63>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_63.c_str()},
-   {"lattice_dyson_g_w", (PyCFunction)c2py::pyfkw<_c2py_fun_64>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_64.c_str()},
-   {"lattice_dyson_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_65>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_65.c_str()},
-   {"lindhard_chi00", (PyCFunction)c2py::pyfkw<_c2py_fun_66>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_66.c_str()},
-   {"rho_k_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_67>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_67.c_str()},
-   {"solve_rpa_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_68>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_68.c_str()},
-   {"split_into_dynamic_wk_and_constant_k", (PyCFunction)c2py::pyfkw<_c2py_fun_69>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_69.c_str()},
+   {"gbar_wk_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_57>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_57.c_str()},
+   {"gw_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_58>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_58.c_str()},
+   {"gw_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_59>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_59.c_str()},
+   {"hartree_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_60>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_60.c_str()},
+   {"lattice_dyson_g0_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_61>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_61.c_str()},
+   {"lattice_dyson_g0_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_62>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_62.c_str()},
+   {"lattice_dyson_g_f", (PyCFunction)c2py::pyfkw<_c2py_fun_63>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_63.c_str()},
+   {"lattice_dyson_g_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_64>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_64.c_str()},
+   {"lattice_dyson_g_w", (PyCFunction)c2py::pyfkw<_c2py_fun_65>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_65.c_str()},
+   {"lattice_dyson_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_66>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_66.c_str()},
+   {"lindhard_chi00", (PyCFunction)c2py::pyfkw<_c2py_fun_67>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_67.c_str()},
+   {"rho_k_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_68>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_68.c_str()},
+   {"solve_rpa_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_69>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_69.c_str()},
+   {"split_into_dynamic_wk_and_constant_k", (PyCFunction)c2py::pyfkw<_c2py_fun_70>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_70.c_str()},
    {nullptr, nullptr, 0, nullptr} // Sentinel
 };
 

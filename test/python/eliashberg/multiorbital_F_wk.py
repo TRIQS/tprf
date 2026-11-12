@@ -11,6 +11,7 @@ from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
 from triqs_tprf.lattice import lattice_dyson_g0_wk, dynamic_and_constant_to_tr
 
 from triqs_tprf.lattice import eliashberg_F_wk, eliashberg_g_wk, eliashberg_gbar_wk
+from triqs_tprf.lattice import gbar_wk_from_g_wk
 
 def test_multiorbital_F_wk():
     beta = 10.0
@@ -146,10 +147,9 @@ def test_multiorbital_F_wk():
                                          decimal=decimal)
 
     print('--> Check G(w) = -Gbar(-w)')
-    g_ref = -gbar_wk.conjugate().data[:]
-    g_ref = np.swapaxes(g_ref, 2, 3)
-    np.testing.assert_array_almost_equal(g_wk.data[:], 
-                                         g_ref, 
+    gbar_ref_wk = gbar_wk_from_g_wk(g_wk)
+    np.testing.assert_array_almost_equal(gbar_wk.data[:], 
+                                         gbar_ref_wk.data[:], 
                                          decimal=decimal)
 
 if __name__ == "__main__":
