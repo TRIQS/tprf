@@ -79,6 +79,7 @@ Eliashberg equation
 .. autofunction:: triqs_tprf.eliashberg.construct_gamma_triplet_rpa
 .. autofunction:: triqs_tprf.lattice.eliashberg_F_wk
 .. autofunction:: triqs_tprf.lattice.eliashberg_g_wk
+.. autofunction:: triqs_tprf.lattice.eliashberg_gbar_wk
 
 Hubbard atom analytic response functions
 ========================================

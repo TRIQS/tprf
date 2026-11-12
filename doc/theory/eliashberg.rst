@@ -42,7 +42,7 @@ and :math:`G` is the one-particle Green's function.
 .. note::
    In the equation above and in the following we have assumed that the hole Green's 
    function :math:`\bar{G}` has the following relation to the electron Green's function 
-   :math:`\bar{G}(i\nu,k) = -G(-i\nu,k)`.
+   :math:`\bar{G}(i\nu,k) = -G(-i\nu,-k)`.
    This may not always be true, for example in the case of finite momentum pairing.
    In such cases, one can explicitly give the hole Green's function to the
    Eliashberg solvers via the `gbar_wk` argument.
@@ -532,41 +532,44 @@ where :math:`\mathbf{G}(K)` is the dressed Green's function, :math:`\mathbf{G}^{
 We find
 
 .. math::
-    \mathbf{G}(i\nu,k) = 
+    \mathbf{G}(K) = 
             \begin{pmatrix} 
-              G^{(0),-1}(i\nu,k) & -\phi(i\nu,k) \\
-              -\phi^*(i\nu,k) & \bar{G}^{(0),-1}(i\nu,-k)
+              G^{(0),-1}(K) & -\phi(K) \\
+              -\phi^*(K) & \bar{G}^{(0),-1}(K)
             \end{pmatrix}^{-1} \,,
 
-where :math:`G^{(0),-1}(i\nu,k) = i\nu - \epsilon(\mathbf{k})` and :math:`\bar{G}^{(0),-1}(i\nu,k) = -G^{(0),-1}(-i\nu,k)`. 
+where :math:`G^{(0),-1}(K) = i\nu - \epsilon(\mathbf{k})` and :math:`\bar{G}^{(0),-1}(K) = -G^{(0),-1}(-K)`. 
 Performing the inversion we can define the normal and anomalous components of the dressed Green's function
 
 .. math::
-    \mathbf{G}(i\nu,k) = 
+    \mathbf{G}(K) = 
             \begin{pmatrix} 
-              G(i\nu,k) & -F(i\nu,k) \\
-              -F^*(i\nu,k) & \bar{G}(i\nu,-k)
+              G(K) & -F(K) \\
+              -F^*(K) & \bar{G}(K)
             \end{pmatrix} \,,
 
-where the anomalous and normal propagators are respectively given by
+where the normal electron, normal hole and anomalous propagators are respectively given by
 
 .. math::
-   G(i\nu,k) = \frac{G^{(0)}(i\nu,k)}{1 - G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k) \phi^*(i\nu,k)}\,.
+   G(K) = \frac{G^{(0)}(K)}{1 - G^{(0)}(K) \phi(K) \bar{G}^{(0)}(K) \phi^*(K)}\,,
 
 .. math::
-   F(i\nu,k) = \frac{- G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k)}{1 - G^{(0)}(i\nu,k) \phi(i\nu,k) \bar{G}^{(0)}(i\nu,-k) \phi^*(i\nu,k)}\,.
-
-These expressions are implemented in :meth:`triqs_tprf.lattice.eliashberg_g_wk` and :meth:`triqs_tprf.lattice.eliashberg_F_wk`, respectively.
-We now substitute :math:`F(i\nu,k)` into the Eliashberg approximation for the anomalous self-energy
+   \bar{G}(K) = \frac{\bar{G}^{(0)}(K)}{1 - \bar{G}^{(0)}(K) \phi^*(K) G^{(0)}(K) \phi(K)}\,,
 
 .. math::
-   \phi(i\nu,k) = - \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{i\nu',k'} \Gamma^{s/t}(i\nu-i\nu',k-k') F(i\nu',k')\,,
+   F(K) = \frac{- G^{(0)}(K) \phi(K) \bar{G}^{(0)}(K)}{1 - G^{(0)}(K) \phi(K) \bar{G}^{(0)}(K) \phi^*(K)}\,.
+
+These expressions are implemented in :meth:`triqs_tprf.lattice.eliashberg_g_wk`, :meth:`triqs_tprf.lattice.eliashberg_gbar_wk` and :meth:`triqs_tprf.lattice.eliashberg_F_wk`, respectively.
+We now substitute :math:`F(K)` into the Eliashberg approximation for the anomalous self-energy
+
+.. math::
+   \phi(K) = - \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') F(K')\,,
 
 which yields the non-linearized gap-equation
 
 .. math::
-   \phi(i\nu,k) = \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{i\nu',k'} \Gamma^{s/t}(i\nu-i\nu',k-k') 
-    \frac{G^{(0)}(i\nu',k') \phi(i\nu',k') \bar{G}^{(0)}(i\nu',-k')}{1 - G^{(0)}(i\nu',k') \phi(i\nu',k') \bar{G}^{(0)}(i\nu',-k') \phi^*(i\nu',k')}\,.
+   \phi(K) = \frac{1}{2 N_{\mathbf{k}} \beta} \sum_{K'} \Gamma^{s/t}(K-K') 
+    \frac{G^{(0)}(K') \phi(K') \bar{G}^{(0)}(K')}{1 - G^{(0)}(K') \phi(K') \bar{G}^{(0)}(K') \phi^*(K')}\,.
 
 It is a generalization of Eq. :eq:`linearized_eliashberg_1` and is implemented in :meth:`triqs_tprf.eliashberg.solve_eliashberg_nonlinear`.
 

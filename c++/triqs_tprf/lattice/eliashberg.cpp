@@ -31,6 +31,18 @@
 
 namespace triqs_tprf {
 
+// Helper function to construct the hole Greens function Gbar_ab(iw) = -G_ba(-iw)
+// Using the relation G(-iw) = G*(iw)
+template<typename G_out_t, typename g_t>
+G_out_t gbar_wk_from_g_wk_template(g_t g_wk) {
+  auto gbar_wk = make_gf(g_wk);
+  for (auto [n, k] : gbar_wk.mesh()) {
+    gbar_wk[n,k] = -nda::dagger(g_wk[n,-k]);
+  }
+  return gbar_wk;
+}
+
+
 // Helper function computing F = GG \Delta
 
 template<typename F_out_t, typename g_t>  
@@ -56,7 +68,7 @@ F_out_t eliashberg_g_delta_g_product_template(g_t g_wk, g_t gbar_wk, g_t delta_w
 
     for (auto [d, c] : F_wk.target_indices()) {
       for (auto [e, f] : delta_wk.target_indices()) {
-        F_wk[w, k](d, c) += - g_wk[w, k](c, f) * gbar_wk[w, -k](e, d) * delta_wk[w, k](e, f);
+        F_wk[w, k](c, d) += - g_wk[w, k](c, f) * gbar_wk[w, k](e, d) * delta_wk[w, k](e, f);
       }
     }
   }
@@ -70,8 +82,7 @@ g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt gbar_wk, g_wk_vt delta
   return eliashberg_g_delta_g_product_template<g_wk_t, g_wk_vt>(g_wk, gbar_wk, delta_wk);
 }
 g_wk_t eliashberg_g_delta_g_product(g_wk_vt g_wk, g_wk_vt delta_wk) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_wk);
   return eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
 }
 
@@ -109,7 +120,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt d
 	auto d_w = gf(wmesh);
 	
 	for( auto w : wmesh ) {
-	  gg_w[w] = - g_wk[w, k](c, f) * gbar_wk[w, -k](e, d);
+	  gg_w[w] = - g_wk[w, k](c, f) * gbar_wk[w, k](e, d);
 	  d_w[w] = delta_wk[w, k](e, f);
 	}
 
@@ -124,7 +135,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt d
 	auto f_w = make_gf_dlr_imfreq(f_c);
 	  
 	for( auto w : wmesh ) {
-	  F_wk[w, k](d, c) += f_w[w];
+	  F_wk[w, k](c, d) += f_w[w];
 	}
       }
     }
@@ -135,8 +146,7 @@ g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt d
   return F_wk;  
 }
 g_Dwk_t eliashberg_g_delta_g_product(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk);
   return eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk);
 }
 
@@ -148,7 +158,8 @@ d_out_t eliashberg_denominator_template(g_t g_wk, g_t gbar_wk, g_t delta_wk) {
   auto denom_wk = make_gf(delta_wk);
 
   for (auto [n, k] : denom_wk.mesh()) {
-    denom_wk[n,k] = nda::eye<std::complex<double>>(nb) + g_delta_g_wk[n,k] * nda::conj(delta_wk[n,k]);
+    denom_wk[n,k] = nda::eye<std::complex<double>>(nb)
+                  + g_delta_g_wk[n,k] * nda::conj(transpose(delta_wk[n,k]));
   }
   return denom_wk;
 }
@@ -180,16 +191,14 @@ g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt gbar_wk, g_wk_vt delta_wk) {
   return eliashberg_F_wk_template<g_wk_t, g_wk_vt>(g_wk, gbar_wk, delta_wk);
 }
 g_wk_t eliashberg_F_wk(g_wk_vt g_wk, g_wk_vt delta_wk) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_wk);
   return eliashberg_F_wk(g_wk, gbar_wk, delta_wk);
 }
 g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt gbar_wk, g_Dwk_vt delta_wk) {
   return eliashberg_F_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk, gbar_wk, delta_wk);
 }
 g_Dwk_t eliashberg_F_wk(g_Dwk_vt g_wk, g_Dwk_vt delta_wk) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk);
   return eliashberg_F_wk(g_wk, gbar_wk, delta_wk);
 }
 
@@ -220,18 +229,50 @@ g_wk_t eliashberg_g_wk(g_wk_vt g_in_wk, g_wk_vt gbar_in_wk, g_wk_vt delta_wk) {
   return eliashberg_g_wk_template<g_wk_t, g_wk_vt>(g_in_wk, gbar_in_wk, delta_wk);
 }
 g_wk_t eliashberg_g_wk(g_wk_vt g_in_wk, g_wk_vt delta_wk) {
-  auto gbar_in_wk = make_gf(g_in_wk);
-  gbar_in_wk = -conj(g_in_wk);
+  auto gbar_in_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_in_wk);
   return eliashberg_g_wk(g_in_wk, gbar_in_wk, delta_wk);
 }
 g_Dwk_t eliashberg_g_wk(g_Dwk_vt g_in_wk, g_Dwk_vt gbar_in_wk, g_Dwk_vt delta_wk) {
   return eliashberg_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_in_wk, gbar_in_wk, delta_wk);
 }
 g_Dwk_t eliashberg_g_wk(g_Dwk_vt g_in_wk, g_Dwk_vt delta_wk) {
-  auto gbar_in_wk = make_gf(g_in_wk);
-  gbar_in_wk = -conj(g_in_wk);
+  auto gbar_in_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_in_wk);
   return eliashberg_g_wk(g_in_wk, gbar_in_wk, delta_wk);
 }
+
+
+
+template<typename g_out_t, typename g_t>  
+g_out_t eliashberg_gbar_wk_template(g_t g_in_wk, g_t gbar_in_wk, g_t delta_wk) {
+
+  // Here we misuse the eliashberg_g_wk function to get the hole Greens function
+  // by supplying it with gbar_wk as g_wk, g_wk as gbar_wk
+  // and a conjugated delta_wk
+
+  auto delta_star_wk = make_gf(delta_wk);
+  for (auto [n, k] : delta_wk.mesh()) {
+    delta_star_wk[n,k] = nda::dagger(delta_wk[n,k]);
+  }
+
+  auto gbar_out_wk = eliashberg_g_wk(gbar_in_wk, g_in_wk, delta_star_wk);
+  return gbar_out_wk;
+}
+
+g_wk_t eliashberg_gbar_wk(g_wk_vt g_in_wk, g_wk_vt gbar_in_wk, g_wk_vt delta_wk) {
+  return eliashberg_gbar_wk_template<g_wk_t, g_wk_vt>(g_in_wk, gbar_in_wk, delta_wk);
+}
+g_wk_t eliashberg_gbar_wk(g_wk_vt g_in_wk, g_wk_vt delta_wk) {
+  auto gbar_in_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_in_wk);
+  return eliashberg_gbar_wk(g_in_wk, gbar_in_wk, delta_wk);
+}
+g_Dwk_t eliashberg_gbar_wk(g_Dwk_vt g_in_wk, g_Dwk_vt gbar_in_wk, g_Dwk_vt delta_wk) {
+  return eliashberg_gbar_wk_template<g_Dwk_t, g_Dwk_vt>(g_in_wk, gbar_in_wk, delta_wk);
+}
+g_Dwk_t eliashberg_gbar_wk(g_Dwk_vt g_in_wk, g_Dwk_vt delta_wk) {
+  auto gbar_in_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_in_wk);
+  return eliashberg_gbar_wk(g_in_wk, gbar_in_wk, delta_wk);
+}
+
 
 
 
@@ -265,7 +306,7 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk, g_wk_vt gbar_wk,
       for (auto w : wmesh) {
         for (auto [n, q] : delta_wk.mesh())
           for (auto [c, a, d, b] : Gamma_pp.target_indices())
-            delta_wk_out[w, k](a, b) += -0.5 * Gamma_pp(w - n, k - q)(c, a, d, b) * F_wk[n, q](d, c);
+            delta_wk_out[w, k](a, b) += -0.5 * Gamma_pp(w - n, k - q)(c, a, d, b) * F_wk[n, q](c, d);
       }
   }
 
@@ -277,8 +318,7 @@ g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk, g_wk_vt gbar_wk,
 }
 g_wk_t eliashberg_product(chi_wk_vt Gamma_pp, g_wk_vt g_wk,
                           g_wk_vt delta_wk, bool linearized) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_wk);
   return eliashberg_product(Gamma_pp, g_wk, gbar_wk, delta_wk, linearized);
 }
 
@@ -311,7 +351,7 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_tr_t F_tr
 
   for (auto r : std::get<1>(F_tr.mesh())) {
       auto F_t = F_tr[_, r];
-      for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices()) delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(d, c);
+      for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices()) delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_t(0)(c, d);
   }
 
   return delta_r_out;
@@ -330,7 +370,7 @@ e_r_t eliashberg_constant_gamma_f_product(chi_r_vt Gamma_pp_const_r, g_Dtr_t F_t
     F_t() = F_tr[_, r];
     auto F_Dc = make_gf_dlr(F_t);
     for (auto [c, a, d, b] : Gamma_pp_const_r.target_indices())
-        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_Dc(0)(d, c);
+        delta_r_out[r](a, b) += -0.5 * Gamma_pp_const_r[r](c, a, d, b) * F_Dc(0)(c, d);
   }
 
   return delta_r_out;
@@ -361,7 +401,7 @@ delta_t eliashberg_dynamic_gamma_f_product_template(chi_t Gamma_pp_dyn_tr, F_t F
       auto &[t, r] = meshes_mpi[idx];
 
       for (auto [c, a, d, b] : Gamma_pp_dyn_tr.target_indices())
-        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](d, c);
+        delta_tr_out[t, r](a, b) += -0.5 * Gamma_pp_dyn_tr[t, r](c, a, d, b) * F_tr[t, r](c, d);
   }
 
   delta_tr_out = mpi::all_reduce(delta_tr_out);
@@ -411,8 +451,7 @@ g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const
   return eliashberg_product_fft_template<g_wk_t, chi_tr_vt, g_wk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 g_wk_t eliashberg_product_fft(chi_tr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk, bool linearized) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_wk);
   return eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 
@@ -420,8 +459,7 @@ g_Dwk_t eliashberg_product_fft(chi_Dtr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_con
   return eliashberg_product_fft_template<g_Dwk_t, chi_Dtr_vt, g_Dwk_vt>(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 g_Dwk_t eliashberg_product_fft(chi_Dtr_vt Gamma_pp_dyn_tr, chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk, bool linearized) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk);
   return eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 
@@ -458,8 +496,7 @@ g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, 
   return eliashberg_product_fft_constant_template<g_wk_t, g_wk_vt>(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 g_wk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_wk_vt g_wk, g_wk_vt delta_wk, bool linearized) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_wk_t, g_wk_vt>(g_wk);
   return eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 
@@ -467,8 +504,7 @@ g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk
   return eliashberg_product_fft_constant_template<g_Dwk_t, g_Dwk_vt>(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 g_Dwk_t eliashberg_product_fft_constant(chi_r_vt Gamma_pp_const_r, g_Dwk_vt g_wk, g_Dwk_vt delta_wk, bool linearized) {
-  auto gbar_wk = make_gf(g_wk);
-  gbar_wk = -conj(g_wk);
+  auto gbar_wk = gbar_wk_from_g_wk_template<g_Dwk_t, g_Dwk_vt>(g_wk);
   return eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized);
 }
 

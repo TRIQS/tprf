@@ -117,7 +117,7 @@ def solve_eliashberg(
               The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
               The mesh attribute of the Gf must be a MeshProduct with the components
               (MeshImFreq, MeshBrZone).
-              If None, we set :math:`\bar{G}(i\nu_n, \mathbf{k}) = -G(-i\nu_n, \mathbf{k})`
+              If None, we set :math:`\bar{G}_{\bar{a}b}(i\nu_n, \mathbf{k}) = -G_{b\bar{a}}(-i\nu_n, -\mathbf{k})`
 
     Returns
     -------
@@ -635,7 +635,7 @@ def solve_eliashberg_nonlinear(
               The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
               The mesh attribute of the Gf must be a MeshProduct with the components
               (MeshImFreq, MeshBrZone).
-              If None, we set :math:`\bar{G}(i\nu_n, \mathbf{k}) = -G(-i\nu_n, \mathbf{k})`
+              If None, we set :math:`\bar{G}_{\bar{a}b}(i\nu_n, \mathbf{k}) = -G_{b\bar{a}}(-i\nu_n, -\mathbf{k})`
 
     Returns
     -------
