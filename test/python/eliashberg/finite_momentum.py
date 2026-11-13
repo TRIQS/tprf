@@ -140,7 +140,8 @@ def SolveEliashbergAtTemperature(T, q_fmp):
                                                  initial_delta=delta_lin_wk, 
                                                  Gamma_pp_const_k=I_k, 
                                                  product="FFT", 
-                                                 tol=1e-8,
+                                                 tol=1e-6,
+                                                 steffensens_method=True,
                                                  gbar_wk=g0bar_wk)
    
     delta_iw0 = np.abs( GetDeltaAtiw0(delta_nonlin_wk, T) )
