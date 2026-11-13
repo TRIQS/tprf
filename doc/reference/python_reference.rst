@@ -66,16 +66,20 @@ Two-particle self-consistent solver (TPSC)
 .. autoclass:: triqs_tprf.tpsc_solver.tpsc_solver
    :members:
 
-Linearized Eliashberg equation 
-==============================
+Eliashberg equation 
+===================
 
 .. autofunction:: triqs_tprf.eliashberg.solve_eliashberg
+.. autofunction:: triqs_tprf.eliashberg.solve_eliashberg_nonlinear
 .. autofunction:: triqs_tprf.eliashberg.preprocess_gamma_for_fft
 .. autofunction:: triqs_tprf.eliashberg.semi_random_initial_delta
 .. autofunction:: triqs_tprf.eliashberg.power_method_LR
 .. autofunction:: triqs_tprf.eliashberg.implicitly_restarted_arnoldi_method
 .. autofunction:: triqs_tprf.eliashberg.construct_gamma_singlet_rpa
 .. autofunction:: triqs_tprf.eliashberg.construct_gamma_triplet_rpa
+.. autofunction:: triqs_tprf.lattice.eliashberg_F_wk
+.. autofunction:: triqs_tprf.lattice.eliashberg_g_wk
+.. autofunction:: triqs_tprf.lattice.eliashberg_gbar_wk
 
 Hubbard atom analytic response functions
 ========================================

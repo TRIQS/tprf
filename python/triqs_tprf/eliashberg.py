@@ -35,6 +35,7 @@ from .lattice import eliashberg_product
 from .lattice import eliashberg_product_fft, eliashberg_product_fft_constant
 from .lattice import split_into_dynamic_wk_and_constant_k, dynamic_and_constant_to_tr
 from .lattice import construct_phi_wk
+from .lattice import gbar_wk_from_g_wk
 
 # ----------------------------------------------------------------------
 
@@ -49,6 +50,8 @@ def solve_eliashberg(
     solver="IRAM",
     symmetrize_fct=lambda x: x,
     k=6,
+    max_it=1e5,
+    gbar_wk=None,
 ):
     r""" Solve the linearized Eliashberg equation
     
@@ -107,6 +110,16 @@ def solve_eliashberg(
         The number of leading superconducting gaps that shall be calculated. Does
         only have an effect, if 'IRAM' is used as a solver.
 
+    max_it : float, optional
+             The maximum number of iterations that shall be done before a error is raised.
+             Does only have an effect, if 'PM' is used as a solver.
+
+    gbar_wk : Gf, optional
+              The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
+              The mesh attribute of the Gf must be a MeshProduct with the components
+              (MeshImFreq, MeshBrZone).
+              If None, we set :math:`\bar{G}_{\bar{a}b}(i\nu_n, \mathbf{k}) = -G_{b\bar{a}}(-i\nu_n, -\mathbf{k})`
+
     Returns
     -------
     Es : list of float,
@@ -131,6 +144,8 @@ def solve_eliashberg(
         return delta_x
 
     hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
+    if gbar_wk is None:
+        gbar_wk = gbar_wk_from_g_wk(g_wk)
 
     if product == "FFT":
 
@@ -142,12 +157,12 @@ def solve_eliashberg(
             Gamma_pp_dyn_tr.data, 0
         ):  # -- If dynamic part is zero reduced calculation
             eli_prod = functools.partial(
-                eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk
+                eliashberg_product_fft_constant, Gamma_pp_const_r, g_wk, gbar_wk
             )
 
         else:
             eli_prod = functools.partial(
-                eliashberg_product_fft, Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk
+                eliashberg_product_fft, Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk
             )
 
     elif product == "SUM":
@@ -157,7 +172,7 @@ def solve_eliashberg(
                 "called %s when using DLR. Please use the FFT product instead."%product
             )
 
-        eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk)
+        eli_prod = functools.partial(eliashberg_product, Gamma_pp_wk, g_wk, gbar_wk)
 
     else:
         raise NotImplementedError(
@@ -177,7 +192,7 @@ def solve_eliashberg(
     initial_delta = from_wk_to_x(initial_delta)
 
     if solver == "PM":
-        es, evs = power_method_LR(matvec, initial_delta, tol=tol)
+        es, evs = power_method_LR(matvec, initial_delta, tol=tol, max_it=max_it)
         es, evs = [es], [evs]
 
     elif solver == "IRAM":
@@ -547,3 +562,170 @@ def construct_gamma_triplet_rpa(U_d, U_m, phi_d_wk, phi_m_wk):
 
     gamma_triplet.data[:] += -0.5 * U_d + 0.5 * U_m
     return gamma_triplet
+
+
+def solve_eliashberg_nonlinear(
+    Gamma_pp_wk,
+    g_wk,
+    initial_delta=None,
+    Gamma_pp_const_k=None,
+    tol=1e-10,
+    max_it=1e5,
+    mixing_frac = 0.1,
+    steffensens_method = False,
+    product="FFT",
+    symmetrize_fct=lambda x: x,
+    gbar_wk=None,
+    verbose = False,
+):
+    r""" Solve the non-linearized Eliashberg equation
+   
+    Returns the anomalous self-energy, obtained by solving the non-linearized
+    Eliashberg equation. The Eliashberg equation implementation is using fourier transformations
+    for computational efficiency. The anomalous self-energy is found using an iterative
+    root-finding algorithm.
+    In this implementation we neglect normal state (mass) renormalization.
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
+
+    Parameters
+    ----------
+    Gamma_pp_wk : Gf,
+               Pairing vertex :math:`\Gamma(i\omega_n, \mathbf{k})`. The mesh attribute of
+               the Gf must be a MeshProduct with the components (MeshImFreq, MeshBrZone).
+    g_wk : Gf, 
+           Green's function :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the Gf must
+           be a MeshProduct with the components (MeshImFreq, MeshBrZone).
+    initial_delta : Gf, optional
+                   An initial anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` to start
+                   an iterative solver, given as a Gf with MeshProduct with the components
+                   (MeshImFreq, MeshBrZone).
+                   If not given :func:`semi_random_initial_delta` will be called.
+    Gamma_pp_const_k : float or np.ndarray or Gf, optional
+                       Part of the pairing vertex that is constant in Matsubara frequency space
+                       :math:`\Gamma(\mathbf{k})`. If given as a Gf its mesh attribute needs to
+                       be a MeshBrZone. If not given, the constant part will be fitted.
+    tol : float, optional
+          Relative accuracy for anomalous self-energy (stopping criterion).
+    max_it : int, optional
+          Maximum number of iterations performed.
+    mixing_frac : float, optional
+          Fraction of the delta of the previous iteration is mixed in with the new delta to
+          avoid trapping of the algorithm.
+    steffensens_method : bool, optional
+          Whether to use Steffensen's method as the iterative root-finding algorithm.
+    product : str, ['FFT', 'SUM'], optional
+              Which function of the Eliashberg product shall be used:
+
+                  'FFT' : triqs_tprf.lattice.eliashberg_product_fft,
+                          which uses Fourier transformation for optimal computational efficiency.
+
+                  'SUM' : triqs_tprf.lattice.eliashberg_product, uses the explicit sum.
+                          Restrictions : wmesh of Gamma_pp_wk must be atleast twice the size of the one of g_wk.
+    symmetrize_fct : function, optional
+                     A function that takes one parameter: A Green's function 
+                     :math:`G(i\nu_n, \mathbf{k})`. The mesh attribute of the
+                     Gf must be a MeshProduct with the components 
+                     (MeshImFreq, MeshBrZone).
+                     This function is applied after every iteration of the
+                     solver and can be used to enforce a specific symmetry.
+                     If no symmetries are enforced, caution is need, because
+                     unphysical symmetries can occur.
+    gbar_wk : Gf, optional
+              The hole Green's function :math:`\bar{G}(i\nu_n, \mathbf{k})`.
+              The mesh attribute of the Gf must be a MeshProduct with the components
+              (MeshImFreq, MeshBrZone).
+              If None, we set :math:`\bar{G}_{\bar{a}b}(i\nu_n, \mathbf{k}) = -G_{b\bar{a}}(-i\nu_n, -\mathbf{k})`
+
+    Returns
+    -------
+    delta_wk : Gf,
+               The anomalous self-energy :math:`\Delta(i\nu_n, \mathbf{k})` 
+               as Gf with MeshProduct with the components (MeshImFreq, MeshBrZone).
+
+    See Also
+    --------
+    :ref:`eliashberg` : Derivation of the non-linearized Eliashberg equation.
+    """
+    
+    def from_x_to_wk(delta_x):
+        delta_wk = g_wk.copy()
+        delta_wk.data[:] = delta_x.reshape(delta_wk.data.shape)
+        return delta_wk
+
+    def from_wk_to_x(delta_wk):
+        delta_x = delta_wk.data.copy().flatten()
+        return delta_x
+
+    hasDLRMesh = type(Gamma_pp_wk.mesh.components[0]) == MeshDLRImFreq
+    if gbar_wk is None:
+        gbar_wk = gbar_wk_from_g_wk(g_wk)
+
+    if product == "FFT":
+
+        Gamma_pp_dyn_tr, Gamma_pp_const_r = preprocess_gamma_for_fft(
+            Gamma_pp_wk, Gamma_pp_const_k
+        )
+
+        if np.allclose(
+            Gamma_pp_dyn_tr.data, 0
+        ):  # -- If dynamic part is zero reduced calculation
+            eli_prod = lambda delta_wk: eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized=False)
+
+        else:
+            eli_prod = lambda delta_wk: eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized=False)
+
+    elif product == "SUM":
+        if(hasDLRMesh): 
+            raise NotImplementedError(
+                "There is no implementation of the eliashberg product "
+                "called %s when using DLR. Please use the FFT product instead."%product
+            )
+
+        eli_prod = lambda delta_wk: eliashberg_product(Gamma_pp_wk, g_wk, gbar_wk, delta_wk, linearized=False)
+
+    else:
+        raise NotImplementedError(
+            "There is no implementation of the eliashberg product"
+            " called %s." % product
+        )
+
+    if not initial_delta:
+        initial_delta = semi_random_initial_delta(g_wk)
+
+    delta_prev = initial_delta
+
+    it = 1 
+    while True:
+
+        if steffensens_method:
+            fDelta = delta_prev - eli_prod(delta_prev)
+            
+            nonzeroinds = ~np.isclose(fDelta.data[:],0.0)
+            gDelta = np.ones_like(fDelta.data[:])
+            gDelta[nonzeroinds] = (delta_prev.data[nonzeroinds] + fDelta.data[nonzeroinds] - eli_prod(delta_prev + fDelta).data[nonzeroinds]) / fDelta.data[nonzeroinds] - 1.0
+
+            delta_wk = delta_prev - fDelta / gDelta
+        else:
+            delta_wk = eli_prod(delta_prev)
+        
+        # Mixing of previous solution to avoid trapping
+        delta_wk = mixing_frac * delta_prev + (1.0 - mixing_frac) * delta_wk
+
+        # Symmetrizing
+        delta_wk = symmetrize_fct(delta_wk)
+
+        diff = np.max(np.abs(delta_prev.data[:] - delta_wk.data[:]))
+        if verbose and (it%10==0):
+            print("(%i) Error: %.14f"%(it, diff))
+        if np.allclose(diff, 0, atol=tol):
+            break
+
+        delta_prev = delta_wk
+        it += 1
+        if it > max_it:
+            raise AssertionError("Did not converge.")
+
+    return delta_wk
+

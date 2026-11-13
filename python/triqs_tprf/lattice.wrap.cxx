@@ -254,100 +254,164 @@ static auto const _c2py_fun_35 = c2py::dispatcher_f_kw_t{
                  triqs_tprf::chi_fk_cvt V_fk) { return triqs_tprf::dynamical_screened_interaction_W_from_generalized_susceptibility(chi_fk, V_fk); },
               "chi_fk", "V_fk")};
 
+// eliashberg_F_wk
+static auto const _c2py_fun_36 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt gbar_wk,
+                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_F_wk(g_wk, gbar_wk, delta_wk); },
+              "g_wk", "gbar_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_F_wk(g_wk, delta_wk); }, "g_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt gbar_wk,
+                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_F_wk(g_wk, gbar_wk, delta_wk); },
+              "g_wk", "gbar_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_F_wk(g_wk, delta_wk); }, "g_wk",
+              "delta_wk")};
+
 // eliashberg_constant_gamma_f_product
-static auto const _c2py_fun_36 =
+static auto const _c2py_fun_37 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r,
                                          triqs_tprf::g_tr_t F_tr) { return triqs_tprf::eliashberg_constant_gamma_f_product(Gamma_pp_const_r, F_tr); },
                                       "Gamma_pp_const_r", "F_tr")};
 
 // eliashberg_g_delta_g_product
-static auto const _c2py_fun_37 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_38 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt gbar_wk,
+                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk); },
+              "g_wk", "gbar_wk", "delta_wk"),
    c2py::cfun([](triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_g_delta_g_product(g_wk, delta_wk); }, "g_wk",
               "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt gbar_wk,
+                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_g_delta_g_product(g_wk, gbar_wk, delta_wk); },
+              "g_wk", "gbar_wk", "delta_wk"),
    c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_g_delta_g_product(g_wk, delta_wk); },
               "g_wk", "delta_wk")};
 
+// eliashberg_g_wk
+static auto const _c2py_fun_39 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::g_wk_vt g_in_wk, triqs_tprf::g_wk_vt gbar_wk,
+                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_g_wk(g_in_wk, gbar_wk, delta_wk); },
+              "g_in_wk", "gbar_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_wk_vt g_in_wk, triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_g_wk(g_in_wk, delta_wk); }, "g_in_wk",
+              "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_in_wk, triqs_tprf::g_Dwk_vt gbar_in_wk,
+                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_g_wk(g_in_wk, gbar_in_wk, delta_wk); },
+              "g_in_wk", "gbar_in_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_in_wk, triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_g_wk(g_in_wk, delta_wk); }, "g_in_wk",
+              "delta_wk")};
+
+// eliashberg_gbar_wk
+static auto const _c2py_fun_40 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::g_wk_vt g_in_wk, triqs_tprf::g_wk_vt gbar_wk,
+                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_gbar_wk(g_in_wk, gbar_wk, delta_wk); },
+              "g_in_wk", "gbar_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_wk_vt g_in_wk, triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_gbar_wk(g_in_wk, delta_wk); }, "g_in_wk",
+              "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_in_wk, triqs_tprf::g_Dwk_vt gbar_in_wk,
+                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_gbar_wk(g_in_wk, gbar_in_wk, delta_wk); },
+              "g_in_wk", "gbar_in_wk", "delta_wk"),
+   c2py::cfun([](triqs_tprf::g_Dwk_vt g_in_wk, triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_gbar_wk(g_in_wk, delta_wk); },
+              "g_in_wk", "delta_wk")};
+
 // eliashberg_product
-static auto const _c2py_fun_38 =
-   c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk,
-                                         triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_product(Gamma_pp, g_wk, delta_wk); },
-                                      "Gamma_pp", "g_wk", "delta_wk")};
+static auto const _c2py_fun_41 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product(Gamma_pp, g_wk, delta_wk, linearized); },
+              "Gamma_pp", "g_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun([](triqs_tprf::chi_wk_vt Gamma_pp, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt gbar_wk, triqs_tprf::g_wk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product(Gamma_pp, g_wk, gbar_wk, delta_wk, linearized); },
+              "Gamma_pp", "g_wk", "gbar_wk", "delta_wk", "linearized"_a = true)};
 
 // eliashberg_product_fft
-static auto const _c2py_fun_39 = c2py::dispatcher_f_kw_t{
-   c2py::cfun([](triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk,
-                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk); },
-              "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "delta_wk"),
+static auto const _c2py_fun_42 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized); },
+              "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun(
+      [](triqs_tprf::chi_tr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt gbar_wk,
+         triqs_tprf::g_wk_vt delta_wk,
+         bool linearized) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized); },
+      "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "gbar_wk", "delta_wk", "linearized"_a = true),
    c2py::cfun([](triqs_tprf::chi_Dtr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk,
-                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk); },
-              "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "delta_wk")};
+                 triqs_tprf::g_Dwk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, delta_wk, linearized); },
+              "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun(
+      [](triqs_tprf::chi_Dtr_vt Gamma_pp_dyn_tr, triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt gbar_wk,
+         triqs_tprf::g_Dwk_vt delta_wk,
+         bool linearized) { return triqs_tprf::eliashberg_product_fft(Gamma_pp_dyn_tr, Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized); },
+      "Gamma_pp_dyn_tr", "Gamma_pp_const_r", "g_wk", "gbar_wk", "delta_wk", "linearized"_a = true)};
 
 // eliashberg_product_fft_constant
-static auto const _c2py_fun_40 = c2py::dispatcher_f_kw_t{
-   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk,
-                 triqs_tprf::g_wk_vt delta_wk) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk); },
-              "Gamma_pp_const_r", "g_wk", "delta_wk"),
-   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk,
-                 triqs_tprf::g_Dwk_vt delta_wk) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk); },
-              "Gamma_pp_const_r", "g_wk", "delta_wk")};
+static auto const _c2py_fun_43 = c2py::dispatcher_f_kw_t{
+   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt gbar_wk, triqs_tprf::g_wk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized); },
+              "Gamma_pp_const_r", "g_wk", "gbar_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_wk_vt g_wk, triqs_tprf::g_wk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk, linearized); },
+              "Gamma_pp_const_r", "g_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt gbar_wk, triqs_tprf::g_Dwk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, gbar_wk, delta_wk, linearized); },
+              "Gamma_pp_const_r", "g_wk", "gbar_wk", "delta_wk", "linearized"_a = true),
+   c2py::cfun([](triqs_tprf::chi_r_vt Gamma_pp_const_r, triqs_tprf::g_Dwk_vt g_wk, triqs_tprf::g_Dwk_vt delta_wk,
+                 bool linearized) { return triqs_tprf::eliashberg_product_fft_constant(Gamma_pp_const_r, g_wk, delta_wk, linearized); },
+              "Gamma_pp_const_r", "g_wk", "delta_wk", "linearized"_a = true)};
 
 // fermi
-static auto const _c2py_fun_41 = c2py::dispatcher_f_kw_t{c2py::cfun([](double e) { return triqs_tprf::fermi(e); }, "e")};
+static auto const _c2py_fun_44 = c2py::dispatcher_f_kw_t{c2py::cfun([](double e) { return triqs_tprf::fermi(e); }, "e")};
 
 // fock_sigma
-static auto const _c2py_fun_42 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_45 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::fock_sigma(v_k, g_wk); }, "v_k", "g_wk"),
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::fock_sigma(v_k, g_wk); }, "v_k", "g_wk"),
    c2py::cfun([](triqs_tprf::chi_r_cvt v_r, triqs_tprf::e_r_cvt rho_r) { return triqs_tprf::fock_sigma(v_r, rho_r); }, "v_r", "rho_r")};
 
 // fourier_Tk_to_Tr
-static auto const _c2py_fun_43 =
+static auto const _c2py_fun_46 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_Tk_cvt g_Tk) { return triqs_tprf::fourier_Tk_to_Tr(g_Tk); }, "g_Tk")};
 
 // fourier_Tr_to_Tk
-static auto const _c2py_fun_44 =
+static auto const _c2py_fun_47 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_Tr_cvt g_Tr) { return triqs_tprf::fourier_Tr_to_Tk(g_Tr); }, "g_Tr"),
                            c2py::cfun([](triqs_tprf::chi_Tr_cvt chi_Tr) { return triqs_tprf::fourier_Tr_to_Tk(chi_Tr); }, "chi_Tr")};
 
 // fourier_fk_to_fr
-static auto const _c2py_fun_45 =
+static auto const _c2py_fun_48 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_fk_cvt g_fk) { return triqs_tprf::fourier_fk_to_fr(g_fk); }, "g_fk")};
 
 // fourier_fr_to_fk
-static auto const _c2py_fun_46 =
+static auto const _c2py_fun_49 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_fr_cvt g_fr) { return triqs_tprf::fourier_fr_to_fk(g_fr); }, "g_fr")};
 
 // fourier_tr_to_wr
-static auto const _c2py_fun_47 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_50 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::g_tr_cvt g_tr, int nw) { return triqs_tprf::fourier_tr_to_wr(g_tr, nw); }, "g_tr", "nw"_a = -1),
    c2py::cfun([](triqs_tprf::g_Dtr_cvt g_tr, int nw) { return triqs_tprf::fourier_tr_to_wr(g_tr, nw); }, "g_tr", "nw"_a = -1),
    c2py::cfun([](triqs_tprf::chi_Dtr_cvt chi_tr, int nw) { return triqs_tprf::fourier_tr_to_wr(chi_tr, nw); }, "chi_tr", "nw"_a = -1)};
 
 // fourier_wk_to_wr
-static auto const _c2py_fun_48 =
+static auto const _c2py_fun_51 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::fourier_wk_to_wr(g_wk); }, "g_wk"),
                            c2py::cfun([](triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::fourier_wk_to_wr(g_wk); }, "g_wk"),
                            c2py::cfun([](triqs_tprf::chi_Dwk_cvt chi_wk) { return triqs_tprf::fourier_wk_to_wr(chi_wk); }, "chi_wk")};
 
 // fourier_wr_to_tr
-static auto const _c2py_fun_49 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_52 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::g_wr_cvt g_wr, int nt) { return triqs_tprf::fourier_wr_to_tr(g_wr, nt); }, "g_wr", "nt"_a = -1),
    c2py::cfun([](triqs_tprf::g_Dwr_cvt g_wr, int nt) { return triqs_tprf::fourier_wr_to_tr(g_wr, nt); }, "g_wr", "nt"_a = -1),
    c2py::cfun([](triqs_tprf::chi_Dwr_cvt chi_wr, int nt) { return triqs_tprf::fourier_wr_to_tr(chi_wr, nt); }, "chi_wr", "nt"_a = -1)};
 
 // fourier_wr_to_wk
-static auto const _c2py_fun_50 =
+static auto const _c2py_fun_53 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wr_cvt g_wr) { return triqs_tprf::fourier_wr_to_wk(g_wr); }, "g_wr"),
                            c2py::cfun([](triqs_tprf::g_Dwr_cvt g_wr) { return triqs_tprf::fourier_wr_to_wk(g_wr); }, "g_wr"),
                            c2py::cfun([](triqs_tprf::chi_Dwr_cvt chi_wr) { return triqs_tprf::fourier_wr_to_wk(chi_wr); }, "chi_wr")};
 
 // g0_Tk_les_gtr_from_e_k
-static auto const _c2py_fun_51 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_54 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::e_k_cvt e_k, triqs::mesh::retime Tmesh, double beta) { return triqs_tprf::g0_Tk_les_gtr_from_e_k(e_k, Tmesh, beta); },
               "e_k", "Tmesh", "beta")};
 
 // g0w_dynamic_sigma
-static auto const _c2py_fun_52 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_55 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_fk_cvt W_fk, triqs_tprf::chi_k_cvt v_k, double delta,
                  triqs::mesh::brzone::value_t kpoint) { return triqs_tprf::g0w_dynamic_sigma(mu, beta, e_k, W_fk, v_k, delta, kpoint); },
               "mu", "beta", "e_k", "W_fk", "v_k", "delta", "kpoint"),
@@ -359,7 +423,7 @@ static auto const _c2py_fun_52 = c2py::dispatcher_f_kw_t{
               "mu", "beta", "e_k", "W_fk", "v_k", "delta")};
 
 // g0w_sigma
-static auto const _c2py_fun_53 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_56 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, double beta, triqs_tprf::e_k_cvt e_k, triqs_tprf::chi_k_cvt v_k,
                  triqs::mesh::brzone::value_t kpoint) { return triqs_tprf::g0w_sigma(mu, beta, e_k, v_k, kpoint); },
               "mu", "beta", "e_k", "v_k", "kpoint"),
@@ -378,13 +442,18 @@ static auto const _c2py_fun_53 = c2py::dispatcher_f_kw_t{
                  double delta) { return triqs_tprf::g0w_sigma(mu, beta, e_k, W_fk, v_k, delta); },
               "mu", "beta", "e_k", "W_fk", "v_k", "delta")};
 
+// gbar_wk_from_g_wk
+static auto const _c2py_fun_57 =
+   c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wk_vt g_wk) { return triqs_tprf::gbar_wk_from_g_wk(g_wk); }, "g_wk"),
+                           c2py::cfun([](triqs_tprf::g_Dwk_vt g_wk) { return triqs_tprf::gbar_wk_from_g_wk(g_wk); }, "g_wk")};
+
 // gw_dynamic_sigma
-static auto const _c2py_fun_54 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_58 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_tr_cvt W_tr, triqs_tprf::g_tr_cvt g_tr) { return triqs_tprf::gw_dynamic_sigma(W_tr, g_tr); }, "W_tr", "g_tr"),
    c2py::cfun([](triqs_tprf::chi_Dtr_cvt W_tr, triqs_tprf::g_Dtr_cvt g_tr) { return triqs_tprf::gw_dynamic_sigma(W_tr, g_tr); }, "W_tr", "g_tr")};
 
 // gw_sigma
-static auto const _c2py_fun_55 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_59 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_wk_cvt W_wk, triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::gw_sigma(W_wk, g_wk); }, "W_wk", "g_wk"),
    c2py::cfun(
       [](triqs_tprf::chi_Dwk_cvt W_wk, triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::gw_sigma(W_wk, v_k, g_wk); },
@@ -393,30 +462,30 @@ static auto const _c2py_fun_55 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::gw_sigma(v_k, g_wk); }, "v_k", "g_wk")};
 
 // hartree_sigma
-static auto const _c2py_fun_56 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_60 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::hartree_sigma(v_k, g_wk); }, "v_k", "g_wk"),
    c2py::cfun([](triqs_tprf::chi_k_cvt v_k, triqs_tprf::e_r_cvt rho_r) { return triqs_tprf::hartree_sigma(v_k, rho_r); }, "v_k", "rho_r")};
 
 // lattice_dyson_g0_fk
-static auto const _c2py_fun_57 = c2py::dispatcher_f_kw_t{c2py::cfun(
+static auto const _c2py_fun_61 = c2py::dispatcher_f_kw_t{c2py::cfun(
    [](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::refreq mesh, double delta) { return triqs_tprf::lattice_dyson_g0_fk(mu, e_k, mesh, delta); },
    "mu", "e_k", "mesh", "delta")};
 
 // lattice_dyson_g0_wk
-static auto const _c2py_fun_58 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_62 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh) { return triqs_tprf::lattice_dyson_g0_wk(mu, e_k, mesh); }, "mu",
               "e_k", "mesh"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs::mesh::dlr_imfreq mesh) { return triqs_tprf::lattice_dyson_g0_wk(mu, e_k, mesh); }, "mu",
               "e_k", "mesh")};
 
 // lattice_dyson_g_f
-static auto const _c2py_fun_59 =
+static auto const _c2py_fun_63 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_f_cvt sigma_f,
                                          double delta) { return triqs_tprf::lattice_dyson_g_f(mu, e_k, sigma_f, delta); },
                                       "mu", "e_k", "sigma_f", "delta")};
 
 // lattice_dyson_g_fk
-static auto const _c2py_fun_60 =
+static auto const _c2py_fun_64 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_fk_cvt sigma_fk,
                                          double delta) { return triqs_tprf::lattice_dyson_g_fk(mu, e_k, sigma_fk, delta); },
                                       "mu", "e_k", "sigma_fk", "delta"),
@@ -425,14 +494,14 @@ static auto const _c2py_fun_60 =
                                       "mu", "e_k", "sigma_f", "delta")};
 
 // lattice_dyson_g_w
-static auto const _c2py_fun_61 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_w(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_Dw_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_w(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w")};
 
 // lattice_dyson_g_wk
-static auto const _c2py_fun_62 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_66 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_w_cvt sigma_w) { return triqs_tprf::lattice_dyson_g_wk(mu, e_k, sigma_w); }, "mu",
               "e_k", "sigma_w"),
    c2py::cfun([](double mu, triqs_tprf::e_k_cvt e_k, triqs_tprf::g_wk_cvt sigma_wk) { return triqs_tprf::lattice_dyson_g_wk(mu, e_k, sigma_wk); },
@@ -443,7 +512,7 @@ static auto const _c2py_fun_62 = c2py::dispatcher_f_kw_t{
               "e_k", "sigma_w")};
 
 // lindhard_chi00
-static auto const _c2py_fun_63 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_67 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::e_k_cvt e_k, triqs::mesh::imfreq mesh, double mu) { return triqs_tprf::lindhard_chi00(e_k, mesh, mu); }, "e_k", "mesh",
               "mu"),
    c2py::cfun([](triqs_tprf::e_k_cvt e_k, triqs::mesh::dlr_imfreq mesh, double mu) { return triqs_tprf::lindhard_chi00(e_k, mesh, mu); }, "e_k",
@@ -453,12 +522,12 @@ static auto const _c2py_fun_63 = c2py::dispatcher_f_kw_t{
               "e_k", "mesh", "beta", "mu", "delta")};
 
 // rho_k_from_g_wk
-static auto const _c2py_fun_64 =
+static auto const _c2py_fun_68 =
    c2py::dispatcher_f_kw_t{c2py::cfun([](triqs_tprf::g_wk_cvt g_wk) { return triqs_tprf::rho_k_from_g_wk(g_wk); }, "g_wk"),
                            c2py::cfun([](triqs_tprf::g_Dwk_cvt g_wk) { return triqs_tprf::rho_k_from_g_wk(g_wk); }, "g_wk")};
 
 // solve_rpa_PH
-static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_69 = c2py::dispatcher_f_kw_t{
    c2py::cfun(
       [](triqs_tprf::chi_wk_vt chi0,
          nda::basic_array_view<std::complex<double>, 4, nda::C_layout, 'A', nda::default_accessor, nda::borrowed<nda::mem::AddressSpace::Host>> U) {
@@ -479,7 +548,7 @@ static auto const _c2py_fun_65 = c2py::dispatcher_f_kw_t{
       "chi0", "U")};
 
 // split_into_dynamic_wk_and_constant_k
-static auto const _c2py_fun_66 = c2py::dispatcher_f_kw_t{
+static auto const _c2py_fun_70 = c2py::dispatcher_f_kw_t{
    c2py::cfun([](triqs_tprf::chi_wk_cvt chi_wk) { return triqs_tprf::split_into_dynamic_wk_and_constant_k(chi_wk); }, "chi_wk")};
 
 static const auto _c2py_doc_0 = _c2py_fun_0.doc(
@@ -1067,7 +1136,7 @@ Computes reducible ladder vertex for the approximation of a local and static ver
    where all products are particle-hole products.
    The reducible ladder vertex in then only dependent on one bosonic frequency and momentum.
    It can then be used in :meth:`triqs_tprf.eliashberg.construct_gamma_singlet_rpa`
-   or :meth:`triqs_tprf.eliashberg.construct_gamma__rpa` to construct the
+   or :meth:`triqs_tprf.eliashberg.construct_gamma_rpa` to construct the
    irreducible singlet/triplet vertex.
 
 Parameters
@@ -1302,68 +1371,27 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::chi_wk_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_36 = _c2py_fun_36.doc(R"DOC()DOC");
-static const auto _c2py_doc_37 = _c2py_fun_37.doc(R"DOC()DOC");
-static const auto _c2py_doc_38 = _c2py_fun_38.doc(
+static const auto _c2py_doc_36 = _c2py_fun_36.doc(
    R"DOC(
-Linearized Eliashberg product via summation
+Anomalous propagator in Eliashberg theory
 
-    Computes the linearized Eliashberg product in the singlet/triplet channel given by
-
-    
-
-.. math::
-
-   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
-   =
-   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
-   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-   \\
-   \times
-   G_{c\bar{e}}(i\nu',\mathbf{k}')
-   G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
-
-    by summation.
-
-Parameters
-----------
-Gamma_pp : {par_0}
-   particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
-g_wk : {par_1}
-   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
-delta_wk : {par_2}
-   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
-
-Returns
--------
-{ret_0}
-   Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
-)DOC",
-   {{c2py::python_typename<triqs_tprf::chi_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
-   {c2py::python_typename<triqs_tprf::g_wk_t>()});
-static const auto _c2py_doc_39 = _c2py_fun_39.doc(R"DOC(
-Linearized Eliashberg product via FFT
-
-    Computes the linearized Eliashberg product in the singlet/triplet channel given by
+    Computes the full (i.e., not linearized) anomalous propagator in Eliashberg theory.
+    We first construct the denominator
 
     
 
 .. math::
 
-   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
-   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
-   \\
-   \times
-   G_{c\bar{e}}(i\nu',\mathbf{k}')
-   G_{d\bar{f}}(-i\nu',-\mathbf{k}')
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{e}\bar{f}}(i\nu',\mathbf{k}')\,,
+   \delta_{ab}
+   -
+   G_{a\bar{c}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{d}e}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, *}_{eb}(i\nu,\mathbf{k})\,,
 
-    by taking advantage of the convolution theorem.
-
-    We therefore first calculate
+    which we then invert and substitute into
 
     
 
@@ -1371,11 +1399,223 @@ Linearized Eliashberg product via FFT
 
    F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
    =
-   G_{a\bar{c}}(i\nu,\mathbf{k})
-   G_{b\bar{d}}(-i\nu,-\mathbf{k})
-   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})\,,
+   -\Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+   G_{c\bar{d}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}}_{\bar{d}\bar{e}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{e}b}(i\nu,\mathbf{k})\,.
 
-    which we then Fourier transform to imaginary time and real-space
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
+
+Parameters
+----------
+g_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_1}
+   hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})`)
+delta_wk : {par_2}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   The anomalous propagator :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`
+)DOC",
+   {{c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+   {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_37 = _c2py_fun_37.doc(R"DOC()DOC");
+static const auto _c2py_doc_38 = _c2py_fun_38.doc(R"DOC()DOC");
+static const auto _c2py_doc_39 = _c2py_fun_39.doc(
+   R"DOC(
+Normal propagator in Eliashberg theory
+
+    Computes the full (i.e., not linearized) normal propagator in Eliashberg theory.
+    We first construct the denominator
+
+    
+
+.. math::
+
+   \Theta^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   \delta_{ab}
+   -
+   G_{a\bar{c}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}}_{\bar{c}\bar{d}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{d}e}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, *}_{eb}(i\nu,\mathbf{k})\,,
+
+    which we then invert and substitute into
+
+    
+
+.. math::
+
+   G^{\mathrm{s/t}}_{a\bar{b}}(i\nu,\mathbf{k})
+   =
+   \Theta^{\mathrm{s/t}, -1}_{ac}(i\nu,\mathbf{k})
+   G_{c\bar{b}}(i\nu,\mathbf{k})
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
+
+Parameters
+----------
+g_in_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_1}
+   hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})`)
+delta_wk : {par_2}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   The normal propagator :math:`G^{\mathrm{s/t}}_{a\bar{b}}(i\nu_n,\mathbf{k})`
+)DOC",
+   {{c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+   {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_40 = _c2py_fun_40.doc(
+   R"DOC(
+Normal hole propagator in Eliashberg theory
+
+    Computes the full (i.e., not linearized) normal hole propagator in Eliashberg theory.
+    We first construct the denominator
+
+    
+
+.. math::
+
+   \bar{\Theta}^{\mathrm{s/t}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   =
+   \delta_{ab}
+   -
+   \bar{G}_{\bar{a}c}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t},*}_{cd}(i\nu,\mathbf{k})
+   G_{d\bar{e}}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}}_{\bar{e}\bar{b}}(i\nu,\mathbf{k})\,,
+
+    which we then invert and substitute into
+
+    
+
+.. math::
+
+   \bar{G}^{\mathrm{s/t}}_{\bar{a}b}(i\nu,\mathbf{k})
+   =
+   \bar{\Theta}^{\mathrm{s/t}, -1}_{\bar{a}\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{c}b}(i\nu,\mathbf{k})
+
+    WARNING: This method has only been tested for single-orbital systems.
+    For multi-orbital systems the index ordering should be debugged carefully.
+
+Parameters
+----------
+g_in_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_1}
+   hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})`)
+delta_wk : {par_2}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   The normal hole propagator :math:`\bar{G}^{\mathrm{s/t}}_{\bar{a}b}(i\nu_n,\mathbf{k})`
+)DOC",
+   {{c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}, {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+   {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_41 = _c2py_fun_41.doc(R"DOC(
+Eliashberg product via summation
+
+    Computes the Eliashberg product in the singlet/triplet channel given by
+
+    
+
+.. math::
+
+   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   =
+   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+   F^{\mathrm{s/t}}_{cd}(i\nu',\mathbf{k}')\,,
+
+    by summation.
+
+    Here :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})` is the anomalous propagator. 
+    If linearized=true (default) it will evaluate the linearized propagator
+
+    
+
+.. math::
+
+   F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   -G_{a\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{d}b}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{d}\bar{c}}(i\nu,\mathbf{k})\,,
+
+    otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
+Parameters
+----------
+Gamma_pp : {par_0}
+   particle-particle vertex :math:`\Gamma^{\mathrm{s/t}}_{a\bar{b}c\bar{d}}(i\nu_n,\mathbf{k})`
+g_wk : {par_1}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+gbar_wk : {par_2}
+   hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})`)
+delta_wk : {par_3}
+   superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+linearized: : {par_4}
+   a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
+
+Returns
+-------
+{ret_0}
+   Gives the result of the product :math:`\Delta^{\mathrm{s/t}, \mathrm{out}}`
+)DOC",
+                                                  {{c2py::python_typename<triqs_tprf::chi_wk_vt>()},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {}},
+                                                  {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_42 = _c2py_fun_42.doc(R"DOC(
+Eliashberg product via FFT
+
+    Computes the Eliashberg product in the singlet/triplet channel given by
+
+    
+
+.. math::
+
+   \Delta^{\mathrm{s/t}, \mathrm{out}}_{\bar{a}\bar{b}}(i\nu,\mathbf{k})
+   =
+   -\frac{1}{2N_\mathbf{k} \beta}\sum_{i\nu'}\sum_{\mathbf{k}'}
+   \Gamma^{\mathrm{s/t}}_{c\bar{a}d\bar{b}}(i\nu - i\nu',\mathbf{k}-\mathbf{k}')
+   \\
+   \times
+   F^{\mathrm{s/t}}_{cd}(i\nu',\mathbf{k}')\,,
+
+    by taking advantage of the convolution theorem.
+
+    We therefore first calculate the anomalous propagator :math:`F^{\mathrm{s/t}}_{ab}(i\nu_n,\mathbf{k})`.
+    If linearized=true (default) we will evaluate the linearized propagator
+
+    
+
+.. math::
+
+   F^{\mathrm{s/t}}_{ab}(i\nu,\mathbf{k})
+   =
+   -G_{a\bar{c}}(i\nu,\mathbf{k})
+   \bar{G}_{\bar{d}b}(i\nu,\mathbf{k})
+   \Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{d}\bar{c}}(i\nu,\mathbf{k})\,,
+
+    otherwise the full propagator will be evaluated (see :meth:`triqs_tprf.lattice.eliashberg_F_wk`).
+
+    We then Fourier transform it to imaginary time and real-space
 
     
 
@@ -1458,8 +1698,12 @@ Gamma_pp_const_r : {par_1}
    static part of the particle-particle vertex :math:`\Gamma^{\mathrm{s/t}, \mathrm{static}}_{c\bar{a}d\bar{b}}(\mathbf{r})`
 g_wk : {par_2}
    one-particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
-delta_wk : {par_3}
+gbar_wk : {par_3}
+   hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})` (optional; defaults to :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})`)
+delta_wk : {par_4}
    superconducting gap :math:`\Delta^{\mathrm{s/t}, \mathrm{in}}_{\bar{a}\bar{b}}(i\nu_n,\mathbf{k})`
+linearized: : {par_5}
+   a boolean determining whether the linearized Eliashberg product should be returned (optional; defaults to true)
 
 Returns
 -------
@@ -1469,10 +1713,12 @@ Returns
                                                   {{c2py::python_typename<triqs_tprf::chi_tr_vt>()},
                                                    {c2py::python_typename<triqs_tprf::chi_r_vt>()},
                                                    {c2py::python_typename<triqs_tprf::g_wk_vt>()},
-                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()}},
+                                                   {},
+                                                   {c2py::python_typename<triqs_tprf::g_wk_vt>()},
+                                                   {}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>()});
-static const auto _c2py_doc_40 = _c2py_fun_40.doc(R"DOC()DOC");
-static const auto _c2py_doc_41 = _c2py_fun_41.doc(R"DOC(
+static const auto _c2py_doc_43 = _c2py_fun_43.doc(R"DOC()DOC");
+static const auto _c2py_doc_44 = _c2py_fun_44.doc(R"DOC(
 Helper function to evaluate the Fermi-Dirac distribution function
 
  
@@ -1492,7 +1738,7 @@ Returns
    The value of :math:`f(\epsilon)`.
 )DOC",
                                                   {{c2py::python_typename<double>()}}, {c2py::python_typename<double>()});
-static const auto _c2py_doc_42 = _c2py_fun_42.doc(R"DOC(
+static const auto _c2py_doc_45 = _c2py_fun_45.doc(R"DOC(
 Fock self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
    Computes the Fock self-energy of a static interaction as the sum
@@ -1521,7 +1767,7 @@ Returns
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::chi_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_43 = _c2py_fun_43.doc(R"DOC(
+static const auto _c2py_doc_46 = _c2py_fun_46.doc(R"DOC(
 Inverse fast fourier transform of real time Green's function from k-space to real space
 
    Computes: :math:`G_{a\bar{b}}(t, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(t, \mathbf{k})\right\}`
@@ -1537,7 +1783,7 @@ Returns
    real-space real time Green's function :math:`G_{a\bar{b}}(t, \mathbf{r})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_Tk_cvt>()}}, {c2py::python_typename<triqs_tprf::g_Tr_t>()});
-static const auto _c2py_doc_44 = _c2py_fun_44.doc(R"DOC(
+static const auto _c2py_doc_47 = _c2py_fun_47.doc(R"DOC(
 [1] Fast fourier transform of real time Green's function from real-space to k-space
 
    Computes: :math:`G_{a\bar{b}}(t, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(t, \mathbf{r}) \right\}`
@@ -1565,7 +1811,7 @@ Returns
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_Tr_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::g_Tk_t>(), c2py::python_typename<triqs_tprf::chi_Tk_t>()});
-static const auto _c2py_doc_45 = _c2py_fun_45.doc(R"DOC(
+static const auto _c2py_doc_48 = _c2py_fun_48.doc(R"DOC(
 Inverse fast fourier transform of real frequency Green's function from k-space to real space
 
    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(\omega, \mathbf{k})\right\}`
@@ -1581,7 +1827,7 @@ Returns
    real-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{r})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_fk_cvt>()}}, {c2py::python_typename<triqs_tprf::g_fr_t>()});
-static const auto _c2py_doc_46 = _c2py_fun_46.doc(R"DOC(
+static const auto _c2py_doc_49 = _c2py_fun_49.doc(R"DOC(
 Fast fourier transform of real frequency Green's function from real-space to k-space
 
    Computes: :math:`G_{a\bar{b}}(\omega, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(\omega, \mathbf{r}) \right\}`
@@ -1597,7 +1843,7 @@ Returns
    k-space real frequency Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_fr_cvt>()}}, {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_47 = _c2py_fun_47.doc(R"DOC(
+static const auto _c2py_doc_50 = _c2py_fun_50.doc(R"DOC(
 Fast fourier transform of real-space Green's function from imaginary time to Matsubara frequency
 
    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F} \left\{ G_{a\bar{b}}(\tau, \mathbf{r}) \right\}`
@@ -1613,7 +1859,7 @@ Returns
    real-space Matsubara frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_tr_cvt>()}}, {c2py::python_typename<triqs_tprf::g_wr_t>()});
-static const auto _c2py_doc_48 = _c2py_fun_48.doc(R"DOC(
+static const auto _c2py_doc_51 = _c2py_fun_51.doc(R"DOC(
 Inverse fast fourier transform of imaginary frequency Green's function from k-space to real space
 
    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r}) = \mathcal{F}^{-1} \left\{G_{a\bar{b}}(i\omega_n, \mathbf{k})\right\}`
@@ -1629,7 +1875,7 @@ Returns
    real-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{r})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::g_wr_t>()});
-static const auto _c2py_doc_49 = _c2py_fun_49.doc(R"DOC(
+static const auto _c2py_doc_52 = _c2py_fun_52.doc(R"DOC(
 Fast fourier transform of real-space Green's function from Matsubara frequency to imaginary time
 
    Computes: :math:`G_{a\bar{b}}(\tau, \mathbf{r}) = \mathcal{F} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{r}) \right\}`
@@ -1645,7 +1891,7 @@ Returns
    real-space imaginary time Green's function :math:`G_{a\bar{b}}(\tau, \mathbf{r})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_wr_cvt>()}}, {c2py::python_typename<triqs_tprf::g_tr_t>()});
-static const auto _c2py_doc_50 = _c2py_fun_50.doc(R"DOC(
+static const auto _c2py_doc_53 = _c2py_fun_53.doc(R"DOC(
 Fast fourier transform of imaginary frequency Green's function from real-space to k-space
 
    Computes: :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k}) = \mathcal{F} \left\{ G_{a\bar{b}}(i\omega_n, \mathbf{r}) \right\}`
@@ -1661,8 +1907,8 @@ Returns
    k-space imaginary frequency Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_wr_cvt>()}}, {c2py::python_typename<triqs_tprf::g_wk_t>()});
-static const auto _c2py_doc_51 = _c2py_fun_51.doc(R"DOC()DOC");
-static const auto _c2py_doc_52 = _c2py_fun_52.doc(R"DOC(
+static const auto _c2py_doc_54 = _c2py_fun_54.doc(R"DOC()DOC");
+static const auto _c2py_doc_55 = _c2py_fun_55.doc(R"DOC(
 [1, 2] some documentation
 
 ------
@@ -1730,7 +1976,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::chi_k_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_53 = _c2py_fun_53.doc(R"DOC(
+static const auto _c2py_doc_56 = _c2py_fun_56.doc(R"DOC(
 [1, 2] Some documentation
 
 ------
@@ -1832,8 +2078,29 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::chi_fk_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>(), c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_54 =
-   _c2py_fun_54.doc(R"DOC(
+static const auto _c2py_doc_57 = _c2py_fun_57.doc(R"DOC(
+Evaluates the hole Green's function from the electron Green's function
+    using the expression
+
+    
+
+.. math::
+
+   \bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})=-G_{b\bar{a}}(-i\nu_n,-\mathbf{k})\,.
+
+Parameters
+----------
+g_wk : {par_0}
+   single particle Green's function :math:`G_{a\bar{b}}(i\nu_n,\mathbf{k})`
+
+Returns
+-------
+{ret_0}
+   gbar_wk hole Green's function :math:`\bar{G}_{\bar{a}b}(i\nu_n,\mathbf{k})`
+)DOC",
+                                                  {{c2py::python_typename<triqs_tprf::g_wk_vt>()}}, {c2py::python_typename<triqs_tprf::g_wk_t>()});
+static const auto _c2py_doc_58 =
+   _c2py_fun_58.doc(R"DOC(
 Dynamic GW self energy :math:`\Sigma(\tau, \mathbf{r})` calculator 
 
    Computes the GW self-energy as the product
@@ -1859,7 +2126,7 @@ Returns
 )DOC",
                     {{c2py::python_typename<triqs_tprf::chi_tr_cvt>()}, {c2py::python_typename<triqs_tprf::g_tr_cvt>()}},
                     {c2py::python_typename<triqs_tprf::g_tr_t>()});
-static const auto _c2py_doc_55 = _c2py_fun_55.doc(
+static const auto _c2py_doc_59 = _c2py_fun_59.doc(
    R"DOC(
 [1] GW self energy :math:`\Sigma(i\omega_n, \mathbf{k})` calculator for dynamic interactions
 
@@ -2027,7 +2294,7 @@ Returns
     {c2py::python_typename<triqs_tprf::g_wk_cvt>(), c2py::python_typename<triqs_tprf::g_Dwk_cvt>()},
     {c2py::python_typename<triqs_tprf::chi_k_cvt>()}},
    {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>(), c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_56 = _c2py_fun_56.doc(R"DOC(
+static const auto _c2py_doc_60 = _c2py_fun_60.doc(R"DOC(
 Hartree self energy :math:`\Sigma_{ab}(\mathbf{k})` calculator
 
    Computes the Hartree self-energy of a static interaction as the sum
@@ -2056,7 +2323,7 @@ Returns
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::chi_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_wk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_57 = _c2py_fun_57.doc(R"DOC(
+static const auto _c2py_doc_61 = _c2py_fun_61.doc(R"DOC(
 Construct a non-interacting real frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(\omega, \mathbf{k})`
 
  Computes
@@ -2093,7 +2360,7 @@ Returns
                                                    {c2py::python_typename<triqs::mesh::refreq>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_58 = _c2py_fun_58.doc(R"DOC(
+static const auto _c2py_doc_62 = _c2py_fun_62.doc(R"DOC(
 Construct a non-interacting Matsubara frequency lattice Green's function :math:`G^{(0)}_{a\bar{b}}(i\omega_n, \mathbf{k})`
 
  Computes
@@ -2130,7 +2397,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::e_k_cvt>()},
                                                    {c2py::python_typename<triqs::mesh::imfreq>(), c2py::python_typename<triqs::mesh::dlr_imfreq>()}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>()});
-static const auto _c2py_doc_59 = _c2py_fun_59.doc(R"DOC(
+static const auto _c2py_doc_63 = _c2py_fun_63.doc(R"DOC(
 Construct an interacting real frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(\omega)`
   
 Computes
@@ -2166,7 +2433,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_f_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_f_t>()});
-static const auto _c2py_doc_60 = _c2py_fun_60.doc(R"DOC(
+static const auto _c2py_doc_64 = _c2py_fun_64.doc(R"DOC(
 [1] Construct an interacting real frequency lattice Green's function :math:`G_{a\bar{b}}(\omega, \mathbf{k})`
   
 Computes
@@ -2220,7 +2487,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_fk_cvt>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::g_fk_t>()});
-static const auto _c2py_doc_61 = _c2py_fun_61.doc(
+static const auto _c2py_doc_65 = _c2py_fun_65.doc(
    R"DOC(
 Construct an interacting Matsubara frequency local (:math:`\mathbf{r}=\mathbf{0}`) lattice Green's function :math:`G_{a\bar{b}}(i\omega_n)`
   
@@ -2252,7 +2519,7 @@ Returns
 )DOC",
    {{c2py::python_typename<double>()}, {c2py::python_typename<triqs_tprf::e_k_cvt>()}, {c2py::python_typename<triqs_tprf::g_w_cvt>()}},
    {c2py::python_typename<triqs_tprf::g_w_t>()});
-static const auto _c2py_doc_62 = _c2py_fun_62.doc(R"DOC(
+static const auto _c2py_doc_66 = _c2py_fun_66.doc(R"DOC(
 [1] Construct an interacting Matsubara frequency lattice Green's function :math:`G_{a\bar{b}}(i\omega_n, \mathbf{k})`
   
 Computes
@@ -2325,7 +2592,7 @@ Returns
                                                    {c2py::python_typename<triqs_tprf::g_w_cvt>(), c2py::python_typename<triqs_tprf::g_Dw_cvt>()},
                                                    {c2py::python_typename<triqs_tprf::g_wk_cvt>(), c2py::python_typename<triqs_tprf::g_Dwk_cvt>()}},
                                                   {c2py::python_typename<triqs_tprf::g_wk_t>(), c2py::python_typename<triqs_tprf::g_Dwk_t>()});
-static const auto _c2py_doc_63 = _c2py_fun_63.doc(R"DOC(
+static const auto _c2py_doc_67 = _c2py_fun_67.doc(R"DOC(
 [1] Generalized Lindhard susceptibility in the particle-hole channel :math:`\chi^{(00)}_{\bar{a}b\bar{c}d}(i\omega_n, \mathbf{q})`.
 
    Analytic calculation of the generalized (non-interacting) Lindhard susceptibility 
@@ -2471,7 +2738,7 @@ Returns
                                                    {c2py::python_typename<double>()},
                                                    {c2py::python_typename<double>()}},
                                                   {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_64 = _c2py_fun_64.doc(R"DOC(
+static const auto _c2py_doc_68 = _c2py_fun_68.doc(R"DOC(
 Density matrix from lattic Green's function
 
 Parameters
@@ -2485,7 +2752,7 @@ Returns
    rho_k density matrix :math:`\rho_{ab}(\mathbf{k})`
 )DOC",
                                                   {{c2py::python_typename<triqs_tprf::g_wk_cvt>()}}, {c2py::python_typename<triqs_tprf::e_k_t>()});
-static const auto _c2py_doc_65 = _c2py_fun_65.doc(
+static const auto _c2py_doc_69 = _c2py_fun_69.doc(
    R"DOC(
 Random Phase Approximation (RPA) in the particle-hole channel
 
@@ -2519,7 +2786,7 @@ Returns
     {c2py::python_typename<
        nda::basic_array_view<std::complex<double>, 4, nda::C_layout, 'A', nda::default_accessor, nda::borrowed<nda::mem::AddressSpace::Host>>>()}},
    {c2py::python_typename<triqs_tprf::chi_wk_t>(), c2py::python_typename<triqs_tprf::chi_fk_t>()});
-static const auto _c2py_doc_66 = _c2py_fun_66.doc(R"DOC(
+static const auto _c2py_doc_70 = _c2py_fun_70.doc(R"DOC(
 Splits a rank 4 tensor-valued Green's function into dynamic and constant parts by tail fitting
 
    Splits a general rank 4 tensor-valued Green's function :math:`\chi_{abcd}(i\omega_n, \mathbf{k})` 
@@ -2586,37 +2853,41 @@ static PyMethodDef module_methods[] = {
    {"dynamical_screened_interaction_W", (PyCFunction)c2py::pyfkw<_c2py_fun_34>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_34.c_str()},
    {"dynamical_screened_interaction_W_from_generalized_susceptibility", (PyCFunction)c2py::pyfkw<_c2py_fun_35>, METH_VARARGS | METH_KEYWORDS,
     _c2py_doc_35.c_str()},
-   {"eliashberg_constant_gamma_f_product", (PyCFunction)c2py::pyfkw<_c2py_fun_36>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_36.c_str()},
-   {"eliashberg_g_delta_g_product", (PyCFunction)c2py::pyfkw<_c2py_fun_37>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_37.c_str()},
-   {"eliashberg_product", (PyCFunction)c2py::pyfkw<_c2py_fun_38>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_38.c_str()},
-   {"eliashberg_product_fft", (PyCFunction)c2py::pyfkw<_c2py_fun_39>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_39.c_str()},
-   {"eliashberg_product_fft_constant", (PyCFunction)c2py::pyfkw<_c2py_fun_40>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_40.c_str()},
-   {"fermi", (PyCFunction)c2py::pyfkw<_c2py_fun_41>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_41.c_str()},
-   {"fock_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_42>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_42.c_str()},
-   {"fourier_Tk_to_Tr", (PyCFunction)c2py::pyfkw<_c2py_fun_43>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_43.c_str()},
-   {"fourier_Tr_to_Tk", (PyCFunction)c2py::pyfkw<_c2py_fun_44>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_44.c_str()},
-   {"fourier_fk_to_fr", (PyCFunction)c2py::pyfkw<_c2py_fun_45>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_45.c_str()},
-   {"fourier_fr_to_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_46>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_46.c_str()},
-   {"fourier_tr_to_wr", (PyCFunction)c2py::pyfkw<_c2py_fun_47>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_47.c_str()},
-   {"fourier_wk_to_wr", (PyCFunction)c2py::pyfkw<_c2py_fun_48>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_48.c_str()},
-   {"fourier_wr_to_tr", (PyCFunction)c2py::pyfkw<_c2py_fun_49>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_49.c_str()},
-   {"fourier_wr_to_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_50>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_50.c_str()},
-   {"g0_Tk_les_gtr_from_e_k", (PyCFunction)c2py::pyfkw<_c2py_fun_51>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_51.c_str()},
-   {"g0w_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_52>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_52.c_str()},
-   {"g0w_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_53>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_53.c_str()},
-   {"gw_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_54>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_54.c_str()},
-   {"gw_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_55>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_55.c_str()},
-   {"hartree_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_56>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_56.c_str()},
-   {"lattice_dyson_g0_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_57>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_57.c_str()},
-   {"lattice_dyson_g0_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_58>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_58.c_str()},
-   {"lattice_dyson_g_f", (PyCFunction)c2py::pyfkw<_c2py_fun_59>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_59.c_str()},
-   {"lattice_dyson_g_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_60>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_60.c_str()},
-   {"lattice_dyson_g_w", (PyCFunction)c2py::pyfkw<_c2py_fun_61>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_61.c_str()},
-   {"lattice_dyson_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_62>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_62.c_str()},
-   {"lindhard_chi00", (PyCFunction)c2py::pyfkw<_c2py_fun_63>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_63.c_str()},
-   {"rho_k_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_64>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_64.c_str()},
-   {"solve_rpa_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_65>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_65.c_str()},
-   {"split_into_dynamic_wk_and_constant_k", (PyCFunction)c2py::pyfkw<_c2py_fun_66>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_66.c_str()},
+   {"eliashberg_F_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_36>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_36.c_str()},
+   {"eliashberg_constant_gamma_f_product", (PyCFunction)c2py::pyfkw<_c2py_fun_37>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_37.c_str()},
+   {"eliashberg_g_delta_g_product", (PyCFunction)c2py::pyfkw<_c2py_fun_38>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_38.c_str()},
+   {"eliashberg_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_39>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_39.c_str()},
+   {"eliashberg_gbar_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_40>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_40.c_str()},
+   {"eliashberg_product", (PyCFunction)c2py::pyfkw<_c2py_fun_41>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_41.c_str()},
+   {"eliashberg_product_fft", (PyCFunction)c2py::pyfkw<_c2py_fun_42>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_42.c_str()},
+   {"eliashberg_product_fft_constant", (PyCFunction)c2py::pyfkw<_c2py_fun_43>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_43.c_str()},
+   {"fermi", (PyCFunction)c2py::pyfkw<_c2py_fun_44>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_44.c_str()},
+   {"fock_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_45>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_45.c_str()},
+   {"fourier_Tk_to_Tr", (PyCFunction)c2py::pyfkw<_c2py_fun_46>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_46.c_str()},
+   {"fourier_Tr_to_Tk", (PyCFunction)c2py::pyfkw<_c2py_fun_47>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_47.c_str()},
+   {"fourier_fk_to_fr", (PyCFunction)c2py::pyfkw<_c2py_fun_48>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_48.c_str()},
+   {"fourier_fr_to_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_49>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_49.c_str()},
+   {"fourier_tr_to_wr", (PyCFunction)c2py::pyfkw<_c2py_fun_50>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_50.c_str()},
+   {"fourier_wk_to_wr", (PyCFunction)c2py::pyfkw<_c2py_fun_51>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_51.c_str()},
+   {"fourier_wr_to_tr", (PyCFunction)c2py::pyfkw<_c2py_fun_52>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_52.c_str()},
+   {"fourier_wr_to_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_53>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_53.c_str()},
+   {"g0_Tk_les_gtr_from_e_k", (PyCFunction)c2py::pyfkw<_c2py_fun_54>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_54.c_str()},
+   {"g0w_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_55>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_55.c_str()},
+   {"g0w_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_56>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_56.c_str()},
+   {"gbar_wk_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_57>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_57.c_str()},
+   {"gw_dynamic_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_58>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_58.c_str()},
+   {"gw_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_59>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_59.c_str()},
+   {"hartree_sigma", (PyCFunction)c2py::pyfkw<_c2py_fun_60>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_60.c_str()},
+   {"lattice_dyson_g0_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_61>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_61.c_str()},
+   {"lattice_dyson_g0_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_62>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_62.c_str()},
+   {"lattice_dyson_g_f", (PyCFunction)c2py::pyfkw<_c2py_fun_63>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_63.c_str()},
+   {"lattice_dyson_g_fk", (PyCFunction)c2py::pyfkw<_c2py_fun_64>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_64.c_str()},
+   {"lattice_dyson_g_w", (PyCFunction)c2py::pyfkw<_c2py_fun_65>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_65.c_str()},
+   {"lattice_dyson_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_66>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_66.c_str()},
+   {"lindhard_chi00", (PyCFunction)c2py::pyfkw<_c2py_fun_67>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_67.c_str()},
+   {"rho_k_from_g_wk", (PyCFunction)c2py::pyfkw<_c2py_fun_68>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_68.c_str()},
+   {"solve_rpa_PH", (PyCFunction)c2py::pyfkw<_c2py_fun_69>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_69.c_str()},
+   {"split_into_dynamic_wk_and_constant_k", (PyCFunction)c2py::pyfkw<_c2py_fun_70>, METH_VARARGS | METH_KEYWORDS, _c2py_doc_70.c_str()},
    {nullptr, nullptr, 0, nullptr} // Sentinel
 };
 

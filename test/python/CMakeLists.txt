@@ -60,6 +60,10 @@ set(all_tests
   eliashberg/symmetrize_delta
   eliashberg/compare_dlr_and_direct
   eliashberg/dlr_eliashberg_solver
+  eliashberg/nonlinear_eliashberg_solver
+  eliashberg/finite_momentum
+  eliashberg/eliashberg_BCS_benchmark
+  eliashberg/multiorbital_F_wk
   tpsc/test_tpsc_sum_rules
   tpsc/test_tpsc_hubbard_square_lattice
   tpsc/test_tpsc_hubbard_triangular_lattice
