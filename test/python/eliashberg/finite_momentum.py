@@ -1,9 +1,4 @@
 import numpy as np
-import sys
-import time
-import os
-
-import matplotlib.pyplot as plt
 
 from triqs.gfs import *
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
@@ -203,6 +198,8 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
         
     
     if verbose:
+        import matplotlib.pyplot as plt
+
         leadingEvLst = np.array(leadingEvLst, dtype=float)
         Qc = np.interp(1.0, leadingEvLst[::-1], QLst[::-1])
         print("Qc =", Qc)
@@ -214,11 +211,11 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
 
         ax1.plot(QLst, leadingEvLst, marker='.', color='cornflowerblue')
         ax1.axhline(y=1.0, linewidth=0.5, color='gray', linestyle=':')
-        ax1.set_ylabel("$\lambda$", color="cornflowerblue")
+        ax1.set_ylabel(r"$\lambda$", color="cornflowerblue")
 
         ax2.plot(QLst, np.abs(delta_iw0Lst), marker='.', color='firebrick')
         ax2.axhline(y=0.0, linewidth=0.5, color='black', linestyle='--')
-        ax2.set_ylabel("$|\Delta_{k=0}(i\omega_n=0)$|", color="firebrick")
+        ax2.set_ylabel(r"$|\Delta_{k=0}(i\omega_n=0)$|", color="firebrick")
 
         ax1.set_xlabel("Q")
 

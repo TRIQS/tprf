@@ -1,9 +1,4 @@
 import numpy as np
-import sys
-import time
-import os
-
-import matplotlib.pyplot as plt
 
 from triqs.gfs import *
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice

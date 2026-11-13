@@ -1,9 +1,4 @@
 import numpy as np
-import sys
-import time
-import os
-
-import matplotlib.pyplot as plt
 
 from triqs.gfs import *
 from triqs.lattice.lattice_tools import BrillouinZone, BravaisLattice
@@ -138,6 +133,8 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
             assert np.isclose(delta_iw0, 0.0, atol=1e-6), "Gap should vanish above Tc!"
     
     if verbose:
+        import matplotlib.pyplot as plt
+
         leadingEvLst = np.array(leadingEvLst, dtype=float)
         Tc = np.interp(1.0, leadingEvLst[::-1], TLst[::-1])
         print("Tc =", Tc, "K")
@@ -149,11 +146,11 @@ def test_nonlinear_Eliashberg_solver(verbose=False):
 
         ax1.plot(TLst, leadingEvLst, marker='.', color='cornflowerblue')
         ax1.axhline(y=1.0, linewidth=0.5, color='gray', linestyle=':')
-        ax1.set_ylabel("$\lambda$", color="cornflowerblue")
+        ax1.set_ylabel(r"$\lambda$", color="cornflowerblue")
 
         ax2.plot(TLst, np.abs(delta_iw0Lst), marker='.', color='firebrick')
         ax2.axhline(y=0.0, linewidth=0.5, color='black', linestyle='--')
-        ax2.set_ylabel("$|\Delta_{k=0}(i\omega_n=0)$|", color="firebrick")
+        ax2.set_ylabel(r"$|\Delta_{k=0}(i\omega_n=0)$|", color="firebrick")
 
         ax1.set_xlabel("T (K)")
 
